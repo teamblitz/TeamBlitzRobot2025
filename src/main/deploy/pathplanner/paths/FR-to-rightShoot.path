@@ -1,0 +1,52 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 7.822830432390724,
+        "y": 0.7781323619519257
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 6.684811853036028,
+        "y": 0.8462189436227204
+      },
+      "isLocked": false,
+      "linkedName": "note-FR-pickup"
+    },
+    {
+      "anchor": {
+        "x": 2.3661772442028295,
+        "y": 3.4335090471128806
+      },
+      "prevControl": {
+        "x": 2.5218037165932152,
+        "y": 3.1806160294785033
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "right-shoot"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -32.00538320808351,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "note-shoot-note",
+  "previewStartingState": {
+    "rotation": 0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}
