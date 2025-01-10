@@ -61,13 +61,6 @@ public class RobotContainer {
 
     /* ***** --- Subsystems --- ***** */
     private Drive drive;
-    private Intake intake;
-    private Shooter shooter;
-    private Arm arm;
-    private Climber climber;
-
-    /* ***** --- Shared Commands --- ***** */
-    public Command autoShootSpeed;
 
     /* ***** --- Autonomous --- ***** */
     private final LoggedDashboardChooser<Command> autoChooser;
@@ -93,21 +86,6 @@ public class RobotContainer {
         startingPositionChooser.addDefaultOption("Center", StartingPosition.CENTER);
         startingPositionChooser.addOption("Left", StartingPosition.LEFT);
         startingPositionChooser.addOption("Right", StartingPosition.RIGHT);
-
-        //        Shuffleboard.getTab("AutoShoot")
-        //                .addDouble(
-        //                        "distance",
-        //                        () ->
-        //                                AutoAimCalculator.calculateDistanceToGoal(
-        //                                        new Pose3d(drive.getEstimatedPose())));
-        //
-        //        Shuffleboard.getTab("AutoShoot")
-        //                .addDouble(
-        //                        "speed",
-        //                        () ->
-        //                                AutoAimCalculator.calculateShooterSpeedInterpolation(
-        //                                        AutoAimCalculator.calculateDistanceToGoal(
-        //                                                new Pose3d(drive.getEstimatedPose()))));
     }
 
     private void setDefaultCommands() {
@@ -129,17 +107,6 @@ public class RobotContainer {
                                                         : -90)
                                                 : Double.NaN)
                         .withName("TeleopSwerve"));
-
-        new Trigger(() -> Math.abs(OIConstants.Arm.MANUAL_ARM_SPEED.getAsDouble()) > .08)
-                .whileTrue(
-                        Commands.run(
-                                        () -> {
-                                            arm.setArmRotationSpeed(
-                                                    OIConstants.Arm.MANUAL_ARM_SPEED.getAsDouble());
-                                        })
-                                .finallyDo(() -> arm.setArmRotationSpeed(0))
-                                .raceWith(arm.setGoal(Arm.Goals.MANUAL))
-                                .withName("arm/manual"));
     }
 
     private void configureSubsystems() {
@@ -195,25 +162,6 @@ public class RobotContainer {
                             new RangeSensorIO() {},
                             new NoteVisionIO() {});
                 };
-
-        intake = new Intake(new IntakeIOSpark(), OIConstants.Overrides.INTAKE_OVERRIDE);
-        shooter = new Shooter(new ShooterIOSpark());
-        arm = new Arm(new ArmIOSpark(true));
-
-        arm.setAimGoal(
-                () ->
-                        AutoAimCalculator.calculateArmAngleInterpolation(
-                                AutoAimCalculator.calculateDistanceToGoal(
-                                        new Pose3d(drive.getEstimatedPose()))));
-
-        climber = new Climber(Constants.compBot() ? new ClimberIOKraken() {} : new ClimberIO() {});
-
-        autoShootSpeed =
-                shooter.shootClosedLoopCommand(
-                        () ->
-                                AutoAimCalculator.calculateShooterSpeedInterpolation(
-                                        AutoAimCalculator.calculateDistanceToGoal(
-                                                new Pose3d(drive.getLimelightPose()))));
     }
 
     private void configureButtonBindings() {
@@ -267,169 +215,9 @@ public class RobotContainer {
                                         () -> Leds.getInstance().autoPickupReady = true,
                                         () -> Leds.getInstance().autoPickupReady = false)
                                 .ignoringDisable(true));
-
-        OIConstants.Drive.AMP_ASSIST.whileTrue(
-                drive.useVelocityFilter(drive.ampAssistFilter)
-                        .alongWith(arm.setGoal(Arm.Goals.AMP_BACK)));
-        OIConstants.Drive.AUTO_PICKUP.whileTrue(drive.useVelocityFilter(drive.noteAssistFilter));
-
-        OIConstants.Intake.FEED.whileTrue(intake.feedShooter());
-        OIConstants.Intake.EJECT.whileTrue(intake.ejectCommand());
-        OIConstants.Shooter.MANUAL_FEED.whileTrue(shooter.shootCommand());
-        OIConstants.Shooter.SHOOTER_AMP.whileTrue(shooter.shootCommand());
-        OIConstants.Shooter.EJECT.whileTrue(shooter.reverseCommand());
-        OIConstants.Shooter.SPEED_AUTO.whileTrue(autoShootSpeed);
-
-        OIConstants.Intake.SCORE
-                .and(OIConstants.Arm.AMP_BACK)
-                .whileTrue(ManipulatorCommands.scoreAmpBack(shooter, intake));
-
-        OIConstants.Intake.SCORE
-                .and(OIConstants.Arm.AMP_FRONT)
-                .whileTrue(ManipulatorCommands.scoreAmpFront(shooter, intake));
-
-        OIConstants.Arm.INTAKE.whileTrue(ManipulatorCommands.intakeGround(intake, arm));
-
-        OIConstants.Arm.SPEAKER_SUB_FRONT.whileTrue(
-                ManipulatorCommands.shootSubwoofer(shooter, arm));
-        OIConstants.Arm.SPEAKER_PODIUM.whileTrue(ManipulatorCommands.shootPodium(shooter, arm));
-
-        OIConstants.Arm.AMP_BACK.whileTrue(arm.setGoal(Arm.Goals.AMP_BACK));
-        OIConstants.Arm.AMP_FRONT.whileTrue(arm.setGoal(Arm.Goals.AMP_FRONT));
-
-        OIConstants.Arm.AUTO_AIM_SPEAKER.whileTrue(
-                ManipulatorCommands.shootAim(shooter, arm, drive::getEstimatedPose));
-
-        // CLIMBER COMMANDS
-        OIConstants.Climber.UP_BOTH.whileTrue(
-                climber.goUp()
-                        .beforeStarting(() -> Leds.getInstance().climbing = true)
-                        .finallyDo(() -> Leds.getInstance().climbing = false));
-        OIConstants.Climber.DOWN_BOTH.whileTrue(
-                climber.climb()
-                        .beforeStarting(() -> Leds.getInstance().climbing = true)
-                        .finallyDo(() -> Leds.getInstance().climbing = false));
-        OIConstants.Climber.DOWN_MANUAL.whileTrue(
-                climber.setSpeed(-0.3, -0.3)
-                        .beforeStarting(() -> Leds.getInstance().climbing = true)
-                        .finallyDo(() -> Leds.getInstance().climbing = false));
-
-        // Lower the arm when climbing
-        OIConstants.Climber.DOWN_BOTH.onTrue(arm.setGoal(Arm.Goals.CLIMB));
-        OIConstants.Climber.UP_BOTH.onTrue(arm.setGoal(Arm.Goals.CLIMB));
-
-        // Stage avoidance
-        arm.setStageSafety(OIConstants.Arm.TRANSIT_STAGE);
-
-        // TEST STUFF
-        //        OIConstants.TestMode.ZERO_ABS_ENCODERS.onTrue(drive.zeroAbsEncoders());
-        //        OIConstants.TestMode.SysId.Arm.QUASISTATIC_FWD.whileTrue(
-        //                arm.sysIdQuasistatic(SysIdRoutine.Direction.kForward)
-        //                        .beforeStarting(Commands.print("ArmQuasFwd")));
-        //        OIConstants.TestMode.SysId.Arm.QUASISTATIC_REV.whileTrue(
-        //                arm.sysIdQuasistatic(SysIdRoutine.Direction.kReverse)
-        //                        .beforeStarting(Commands.print("ArmQuasRev")));
-        //        OIConstants.TestMode.SysId.Arm.DYNAMIC_FWD.whileTrue(
-        //                arm.sysIdDynamic(SysIdRoutine.Direction.kForward)
-        //                        .beforeStarting(Commands.print("ArmDynamicFwd")));
-        //        OIConstants.TestMode.SysId.Arm.DYNAMIC_REV.whileTrue(
-        //                arm.sysIdDynamic(SysIdRoutine.Direction.kReverse)
-        //                        .beforeStarting(Commands.print("ArmDynamicRev")));
-        //
-        //        OIConstants.TestMode.SysId.Drive.QUASISTATIC_FWD.whileTrue(
-        //                drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward)
-        //                        .beforeStarting(Commands.print("DriveQuasFwd")));
-        //        OIConstants.TestMode.SysId.Drive.QUASISTATIC_REV.whileTrue(
-        //                drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse)
-        //                        .beforeStarting(Commands.print("DriveQuasRev")));
-        //        OIConstants.TestMode.SysId.Drive.DYNAMIC_FWD.whileTrue(
-        //                drive.sysIdDynamic(SysIdRoutine.Direction.kForward)
-        //                        .beforeStarting(Commands.print("DriveDynamicFwd")));
-        //        OIConstants.TestMode.SysId.Drive.DYNAMIC_REV.whileTrue(
-        //                drive.sysIdDynamic(SysIdRoutine.Direction.kReverse)
-        //                        .beforeStarting(Commands.print("DriveDynamicRev")));
-
-        new Trigger(RobotController::getUserButton).toggleOnTrue(arm.coastCommand());
     }
 
     private void configureAutoCommands() {
-
-        // This is the worst, no need to mess with it too much until we get choreo set up, but
-        // seriously we need to fix this.
-        InternalButton readyShoot = new InternalButton();
-        InternalButton shoot = new InternalButton();
-        InternalButton qShoot = new InternalButton();
-
-        //        shoot.whileTrue(
-        //                arm.setGoal(Arm.Goals.SUBWOOFER)
-        //                        .raceWith(Commands.waitSeconds(1))
-        //                        .andThen(intake.feedShooter().asProxy().withTimeout(.5))
-        //                        .raceWith(shooter.shootCommand())
-        //                        .asProxy()
-        //                        .withName("auto/shoot"));
-
-        shoot.whileTrue(
-                arm.setGoal(Arm.Goals.SUBWOOFER)
-                        .raceWith(
-                                Commands.waitSeconds(1)
-                                        .andThen(intake.feedShooter().asProxy().withTimeout(.5))
-                                        .raceWith(shooter.shootCommand())
-                                        .asProxy())
-                        .withName("auto/shoot"));
-
-        qShoot.whileTrue(
-                arm.setGoal(Arm.Goals.SUBWOOFER)
-                        .alongWith(intake.feedShooter(.7).asProxy())
-                        .raceWith(shooter.shootCommand())
-                        .asProxy()
-                        .withTimeout(.75)
-                        .withName("auto/qShoot"));
-
-        readyShoot.whileTrue(
-                arm.setGoal(Arm.Goals.SUBWOOFER)
-                        .asProxy()
-                        .alongWith(shooter.shootCommand().asProxy())
-                        .asProxy()
-                        .withName("auto/readyShoot"));
-        // Does end
-        NamedCommands.registerCommand(
-                "shoot",
-                Commands.runOnce(
-                                () -> {
-                                    shoot.setPressed(true);
-                                    qShoot.setPressed(false);
-                                    readyShoot.setPressed(false);
-                                })
-                        .andThen(Commands.waitSeconds(1.5)));
-
-        NamedCommands.registerCommand(
-                "qshoot",
-                Commands.runOnce(
-                                () -> {
-                                    shoot.setPressed(false);
-                                    qShoot.setPressed(true);
-                                    readyShoot.setPressed(false);
-                                })
-                        .andThen(Commands.waitSeconds(.75)));
-
-        // Does not end
-        NamedCommands.registerCommand(
-                "intake",
-                arm.setGoal(Arm.Goals.INTAKE)
-                        .asProxy()
-                        .alongWith(intake.intakeGroundAutomatic(.7).asProxy())
-                        .alongWith(shooter.setSpeedCommand(-.1).asProxy()));
-
-        NamedCommands.registerCommand(
-                "readyShoot",
-                Commands.runOnce(
-                                () -> {
-                                    System.out.println("READY SHOOT");
-                                    shoot.setPressed(false);
-                                    qShoot.setPressed(false);
-                                    readyShoot.setPressed(true);
-                                })
-                        .andThen(Commands.waitSeconds(1)));
     }
 
     public Command getAutonomousCommand() { // Autonomous code goes here
