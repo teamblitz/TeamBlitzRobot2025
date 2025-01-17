@@ -18,9 +18,6 @@ public class OIConstants {
 
     public static final CommandJoystick DRIVE_CONTROLLER = new CommandJoystick(0);
     public static final CommandXboxController OPERATOR_CONTROLLER = new CommandXboxController(1);
-    public static final boolean TEST_CONTROLS = false;
-    public static final CommandXboxController TEST_CONTROLLER =
-            TEST_CONTROLS ? new CommandXboxController(2) : null;
 
     public static final Trigger TELEOP = new Trigger(DriverStation::isTeleop);
     public static final Trigger UNBOUND = new Trigger(() -> false);
@@ -29,6 +26,11 @@ public class OIConstants {
     public static final Function<Double, Double> SPIN_CURVE = (x) -> (x * x * x);
 
     public static final class Drive {
+        public enum RotationMode {
+            HeadingControl, // The rotation stick controls the heading of the robot
+            OmegaControl // The rotation stick controls the angular velocity of the robot
+        }
+
         public static double STICK_DEADBAND = 0.08;
 
         // Values are in percents, we have full power
@@ -75,54 +77,6 @@ public class OIConstants {
         public static final Trigger COAST = UNBOUND;
         public static final Trigger BRAKE = UNBOUND;
         public static final Trigger AUTO_PICKUP = DRIVE_CONTROLLER.button(2);
-
-        public static final Trigger AIM_SPEAKER = Arm.AUTO_AIM_SPEAKER;
-        public static final Trigger AMP_ASSIST = OPERATOR_CONTROLLER.b();
-    }
-
-    public static final class Intake {
-        public static final Trigger FEED = OPERATOR_CONTROLLER.leftBumper();
-        public static final Trigger EJECT = OPERATOR_CONTROLLER.povUp();
-
-        public static final Trigger SCORE = DRIVE_CONTROLLER.button(3);
-    }
-
-    public static final class Shooter {
-        public static final Trigger MANUAL_FEED = OPERATOR_CONTROLLER.rightBumper();
-        public static final Trigger SHOOTER_AMP = UNBOUND;
-        public static final Trigger EJECT = OPERATOR_CONTROLLER.povUp();
-        public static final Trigger SPEED_AUTO = OPERATOR_CONTROLLER.back();
-    }
-
-    public static final class Arm {
-        public static final DoubleSupplier MANUAL_ARM_SPEED =
-                () -> -OPERATOR_CONTROLLER.getLeftY() * .2;
-
-        public static final Trigger INTAKE =
-                TELEOP.and(OPERATOR_CONTROLLER.a()).or(Drive.AUTO_PICKUP);
-
-        public static final Trigger TRANSIT_STAGE =
-                TELEOP.and(
-                        OPERATOR_CONTROLLER
-                                .povDown()
-                                .or(OPERATOR_CONTROLLER.povDownLeft())
-                                .or(OPERATOR_CONTROLLER.povDownRight()));
-
-        public static final Trigger SPEAKER_SUB_FRONT =
-                TELEOP.and(OPERATOR_CONTROLLER.y().and(OPERATOR_CONTROLLER.b().negate()));
-        public static final Trigger SPEAKER_SUB_SIDE = UNBOUND;
-        public static final Trigger SPEAKER_PODIUM = UNBOUND;
-
-        public static final Trigger AMP_FRONT = UNBOUND; // TELEOP.and(OPERATOR_CONTROLLER.b());
-        public static final Trigger AMP_BACK = TELEOP.and(OPERATOR_CONTROLLER.x());
-
-        public static final Trigger AUTO_AIM_SPEAKER = TELEOP.and(OPERATOR_CONTROLLER.start());
-    }
-
-    public static final class Climber {
-        public static final Trigger UP_BOTH = OPERATOR_CONTROLLER.leftTrigger();
-        public static final Trigger DOWN_BOTH = OPERATOR_CONTROLLER.rightTrigger();
-        public static final Trigger DOWN_MANUAL = OPERATOR_CONTROLLER.povRight();
     }
 
     public static final class Overrides {

@@ -18,7 +18,6 @@ public class TeleopSwerve extends Command {
     private final DoubleSupplier rotationSup;
     private final BooleanSupplier robotCentricSup;
     private final DoubleSupplier headingSup;
-    private final Logger logger = Logger.getInstance();
 
     public TeleopSwerve(
             Drive s_Swerve,

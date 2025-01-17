@@ -7,11 +7,9 @@
 
 package frc.robot;
 
-import com.ctre.phoenix6.signals.InvertedValue;
 import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.RobotConfig;
 import edu.wpi.first.math.geometry.*;
-import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -30,7 +28,8 @@ import java.util.function.DoubleUnaryOperator;
  * <p>It is advised to statically import this class (or one of its inner classes) wherever the
  * constants are needed, to reduce verbosity.
  *
- * <p>Units: Distance in meters Rotation in radians Time in seconds
+ * <p>Units: Unless defined otherwise, or wrapped with the wpilib units library, all values should
+ * be in <a href="https://en.wikipedia.org/wiki/International_System_of_Units">SI Units</a>
  */
 public final class Constants {
 
@@ -76,7 +75,6 @@ public final class Constants {
 
         public static final int PIGEON_ID = 14;
         public static final int FUSION_TIME_OF_FLIGHT_ID = 0;
-        public static final boolean USE_PIGEON = true;
 
         public static final COTSSwerveConstants CHOSEN_MODULE =
                 COTSSwerveConstants.SDSMK4i(
@@ -271,10 +269,12 @@ public final class Constants {
                                         .DRIVE_STATOR, // TODO, WRONG PROBABLY, might be SUPPLY
                                 // limit, which we don't actualy set.,
                                 1),
-                        TRACK_WIDTH,
-                        WHEEL_BASE);
+                        CENTER_TO_MODULE.get(FL),
+                        CENTER_TO_MODULE.get(FR),
+                        CENTER_TO_MODULE.get(BL),
+                        CENTER_TO_MODULE.get(BR));
     }
-    
+
     public static final class AutoConstants {
 
         public static final double MAX_SPEED_METERS_PER_SECOND = 3;

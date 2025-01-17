@@ -42,7 +42,7 @@ public class DriveMotorIOSpark implements DriveMotorIO {
         pidController.setReference(
                 setpoint,
                 SparkBase.ControlType.kVelocity,
-                0,
+                ClosedLoopSlot.kSlot0,
                 ffVolts,
                 SparkClosedLoopController.ArbFFUnits.kVoltage);
     }

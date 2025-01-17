@@ -83,12 +83,12 @@ public class Robot extends LoggedRobot {
 
         } else
             switch (Constants.SIM_MODE) {
-                    // Running a physics simulator, log to local folder
+                // Running a physics simulator, log to local folder
                 case SIM -> {
                     Logger.addDataReceiver(new WPILOGWriter(""));
                     Logger.addDataReceiver(new NT4Publisher());
                 }
-                    // Replaying a log, set up replay source
+                // Replaying a log, set up replay source
                 case REPLAY -> {
                     setUseTiming(false); // Run as fast as possible
                     String logPath = LogFileUtil.findReplayLog();

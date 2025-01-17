@@ -8,32 +8,21 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.InternalButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.MutableReference;
 import frc.lib.util.LimelightHelpers;
 import frc.robot.Constants.AutoConstants.StartingPosition;
-import frc.robot.commands.ManipulatorCommands;
 import frc.robot.commands.TeleopSwerve;
-import frc.robot.subsystems.arm.Arm;
-import frc.robot.subsystems.arm.ArmIOSpark;
-import frc.robot.subsystems.climber.Climber;
-import frc.robot.subsystems.climber.ClimberIO;
-import frc.robot.subsystems.climber.ClimberIOKraken;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.gyro.GyroIO;
-import frc.robot.subsystems.drive.gyro.GyroIONavx;
 import frc.robot.subsystems.drive.gyro.GyroIOPigeon;
 import frc.robot.subsystems.drive.range.RangeSensorIO;
 import frc.robot.subsystems.drive.range.RangeSensorIOFusion;
@@ -42,11 +31,7 @@ import frc.robot.subsystems.drive.swerveModule.SwerveModuleConfiguration;
 import frc.robot.subsystems.drive.swerveModule.angle.AngleMotorIOSim;
 import frc.robot.subsystems.drive.swerveModule.drive.DriveMotorIOSim;
 import frc.robot.subsystems.drive.swerveModule.encoder.EncoderIO;
-import frc.robot.subsystems.intake.Intake;
-import frc.robot.subsystems.intake.IntakeIOSpark;
 import frc.robot.subsystems.leds.Leds;
-import frc.robot.subsystems.shooter.Shooter;
-import frc.robot.subsystems.shooter.ShooterIOSpark;
 import frc.robot.subsystems.vision.notes.NoteVisionIO;
 import frc.robot.subsystems.vision.notes.NoteVisionIOLimelight;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -98,69 +83,79 @@ public class RobotContainer {
                                 () -> false,
                                 () -> // TODO: THis should be declarative, when button do xyz, not
                                         // imperative as it is currently
-                                        OIConstants.Drive.AMP_ASSIST.getAsBoolean()
-                                                ? (DriverStation.getAlliance().isPresent()
-                                                                && DriverStation.getAlliance().get()
-                                                                        == DriverStation.Alliance
-                                                                                .Red
-                                                        ? 90
-                                                        : -90)
-                                                : Double.NaN)
+                                        //
+                                        // OIConstants.Drive.AMP_ASSIST.getAsBoolean()
+                                        //                                                ?
+                                        // (DriverStation.getAlliance().isPresent()
+                                        //
+                                        //      && DriverStation.getAlliance().get()
+                                        //
+                                        //              == DriverStation.Alliance
+                                        //
+                                        //                      .Red
+                                        //                                                        ?
+                                        // 90
+                                        //                                                        :
+                                        // -90)
+                                        Double.NaN)
                         .withName("TeleopSwerve"));
     }
 
     private void configureSubsystems() {
         drive =
                 switch (Constants.ROBOT) {
-                    case CompBot -> new Drive(
-                            new SwerveModuleConfiguration(
-                                    SwerveModuleConfiguration.MotorType.KRAKEN,
-                                    SwerveModuleConfiguration.MotorType.NEO,
-                                    SwerveModuleConfiguration.EncoderType.CANCODER),
-                            Constants.Drive.Mod0.CONSTANTS,
-                            Constants.Drive.Mod1.CONSTANTS,
-                            Constants.Drive.Mod2.CONSTANTS,
-                            Constants.Drive.Mod3.CONSTANTS,
-                            Constants.Drive.USE_PIGEON ? new GyroIOPigeon() : new GyroIONavx(),
-                            new RangeSensorIOFusion(),
-                            new NoteVisionIOLimelight("limelight-intake"));
+                    case CompBot ->
+                            new Drive(
+                                    new SwerveModuleConfiguration(
+                                            SwerveModuleConfiguration.MotorType.KRAKEN,
+                                            SwerveModuleConfiguration.MotorType.NEO,
+                                            SwerveModuleConfiguration.EncoderType.CANCODER),
+                                    Constants.Drive.Mod0.CONSTANTS,
+                                    Constants.Drive.Mod1.CONSTANTS,
+                                    Constants.Drive.Mod2.CONSTANTS,
+                                    Constants.Drive.Mod3.CONSTANTS,
+                                    new GyroIOPigeon(),
+                                    new RangeSensorIOFusion(),
+                                    new NoteVisionIOLimelight("limelight-intake"));
 
-                    case DevBot -> new Drive(
-                            new SwerveModuleConfiguration(
-                                    SwerveModuleConfiguration.MotorType.NEO,
-                                    SwerveModuleConfiguration.MotorType.NEO,
-                                    SwerveModuleConfiguration.EncoderType.HELIUM),
-                            Constants.Drive.Mod0.CONSTANTS,
-                            Constants.Drive.Mod1.CONSTANTS,
-                            Constants.Drive.Mod2.CONSTANTS,
-                            Constants.Drive.Mod3.CONSTANTS,
-                            Constants.Drive.USE_PIGEON ? new GyroIOPigeon() : new GyroIONavx(),
-                            new RangeSensorIO() {},
-                            new NoteVisionIO() {});
-                    case SimBot -> new Drive(
-                            new SwerveModule(
-                                    Constants.Drive.FL,
-                                    new AngleMotorIOSim(),
-                                    new DriveMotorIOSim(),
-                                    new EncoderIO() {}),
-                            new SwerveModule(
-                                    Constants.Drive.FR,
-                                    new AngleMotorIOSim(),
-                                    new DriveMotorIOSim(),
-                                    new EncoderIO() {}),
-                            new SwerveModule(
-                                    Constants.Drive.BL,
-                                    new AngleMotorIOSim(),
-                                    new DriveMotorIOSim(),
-                                    new EncoderIO() {}),
-                            new SwerveModule(
-                                    Constants.Drive.BR,
-                                    new AngleMotorIOSim(),
-                                    new DriveMotorIOSim(),
-                                    new EncoderIO() {}),
-                            new GyroIO() {},
-                            new RangeSensorIO() {},
-                            new NoteVisionIO() {});
+                    case DevBot ->
+                            new Drive(
+                                    new SwerveModuleConfiguration(
+                                            SwerveModuleConfiguration.MotorType.NEO,
+                                            SwerveModuleConfiguration.MotorType.NEO,
+                                            SwerveModuleConfiguration.EncoderType.HELIUM),
+                                    Constants.Drive.Mod0.CONSTANTS,
+                                    Constants.Drive.Mod1.CONSTANTS,
+                                    Constants.Drive.Mod2.CONSTANTS,
+                                    Constants.Drive.Mod3.CONSTANTS,
+                                    new GyroIOPigeon(),
+                                    new RangeSensorIO() {},
+                                    new NoteVisionIO() {});
+                    case SimBot ->
+                            new Drive(
+                                    new SwerveModule(
+                                            Constants.Drive.FL,
+                                            new AngleMotorIOSim(),
+                                            new DriveMotorIOSim(),
+                                            new EncoderIO() {}),
+                                    new SwerveModule(
+                                            Constants.Drive.FR,
+                                            new AngleMotorIOSim(),
+                                            new DriveMotorIOSim(),
+                                            new EncoderIO() {}),
+                                    new SwerveModule(
+                                            Constants.Drive.BL,
+                                            new AngleMotorIOSim(),
+                                            new DriveMotorIOSim(),
+                                            new EncoderIO() {}),
+                                    new SwerveModule(
+                                            Constants.Drive.BR,
+                                            new AngleMotorIOSim(),
+                                            new DriveMotorIOSim(),
+                                            new EncoderIO() {}),
+                                    new GyroIO() {},
+                                    new RangeSensorIO() {},
+                                    new NoteVisionIO() {});
                 };
     }
 
@@ -217,8 +212,7 @@ public class RobotContainer {
                                 .ignoringDisable(true));
     }
 
-    private void configureAutoCommands() {
-    }
+    private void configureAutoCommands() {}
 
     public Command getAutonomousCommand() { // Autonomous code goes here
         return Commands.runOnce(() -> drive.setGyro(startingPositionChooser.get().angle))
