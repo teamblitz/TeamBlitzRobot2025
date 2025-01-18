@@ -7,6 +7,7 @@
 
 package frc.robot;
 
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.RobotConfig;
 import edu.wpi.first.math.geometry.*;
@@ -316,5 +317,20 @@ public final class Constants {
         public static final String JETSON_IP_ADDRESS = "10.20.83.130";
         public static final int PORT = 5810;
         public static final int INTERVAL = 5;
+    }
+
+    public static final class Elevator {
+        public static final double L2_EXTENSION = 5; //TODO get exact value
+        public static final double L3_EXTENSION = 6; //TODO get exact value
+        public static final double L4_EXTENSION = 7; //TODO get exact value
+
+        public static final double CURRENT_LIMIT = 1; //TODO config
+
+        public static final InvertedValue LEFT_INVERT = InvertedValue.Clockwise_Positive; //TODO ensure that this is correct
+        public static final InvertedValue RIGHT_INVERT = InvertedValue.CounterClockwise_Positive; //TODO ensure that this is correct
+
+        public static final double P = 180; //TODO config
+
+
     }
 }
