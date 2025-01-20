@@ -1,61 +1,64 @@
 package frc.robot.subsystems.elevator;
 
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import static edu.wpi.first.units.Units.*;
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.ElevatorFeedforward;
+
 import edu.wpi.first.wpilibj2.command.*;
-import frc.robot.Constants;
-import org.littletonrobotics.junction.Logger;
+import frc.lib.BlitzSubsystem;
 
+public class Elevator extends BlitzSubsystem {
+    private final ElevatorIO io;
 
-public class Elevator extends SubsystemBase{
-    
-    public Elevator() {
-
+    public Elevator(ElevatorIO io) {
+        super("elevator");
+        this.io = io;
     }
 
-    public void periodic() {
-
-    }
+    @Override
+    public void periodic() {}
 
     public Command setSpeed(double left, double right) {
-        return startEnd (
-            () -> {
-                io.setSpeedLeft(left);
-                io.setSpeedRight(right);
-            },
-            () -> {
-                io.setSpeedLeft(0);
-                io.setSpeedRight(0);
-            })
-            .withName(logKey + "/speed " + left + " " + right);
+        return startEnd(
+                        () -> {
+                            io.setSpeedLeft(left);
+                            io.setSpeedRight(right);
+                        },
+                        () -> {
+                            io.setSpeedLeft(0);
+                            io.setSpeedRight(0);
+                        })
+                .withName(logKey + "/speed " + left + " " + right);
     }
 
+    // TODO: Implement
     public Command l2Extension() {
-        return runEnd (
-            () -> {
-                /* left motor*/(Constants.Elevator.L2_EXTENSION);
-                /*right motor*/(Constants.Elevator.L2_EXTENSION);
-            }
-        )
+        return Commands.none();
+        //        return runEnd (
+        //            () -> {
+        //                /* left motor*/(Constants.Elevator.L2_EXTENSION);
+        //                /*right motor*/(Constants.Elevator.L2_EXTENSION);
+        //            }
+        //        )
     }
 
+    // TODO: Implement
     public Command l3Extension() {
-        return runEnd (
-            () -> {
-                /*left motor */(Constants.Elevator.L3_EXTENSION);
-                /*right motor */(Constants.Elevator.L3_EXTENSION);
-            }
-        )
+        return Commands.none();
+        //        return runEnd (
+        //            () -> {
+        //                /*left motor */(Constants.Elevator.L3_EXTENSION);
+        //                /*right motor */(Constants.Elevator.L3_EXTENSION);
+        //            }
+        //        )
     }
 
+    // TODO: Implement
     public Command l4Extension() {
-        return runEnd (
-            () -> {
-                /*left motor */(Constants.Elevator.L4_EXTENSION);
-                /*right motor */(Constants.Elevator.L4_EXTENSION);
-            }
-        )
+        return Commands.none();
+        //        return runEnd (
+        //            () -> {
+        //                /*left motor */(Constants.Elevator.L4_EXTENSION);
+        //                /*right motor */(Constants.Elevator.L4_EXTENSION);
+        //            }
+        //        )
     }
 }

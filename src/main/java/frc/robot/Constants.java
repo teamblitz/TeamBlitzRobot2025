@@ -320,17 +320,17 @@ public final class Constants {
     }
 
     public static final class Elevator {
-        public static final double L2_EXTENSION = 5; //TODO get exact value
-        public static final double L3_EXTENSION = 6; //TODO get exact value
-        public static final double L4_EXTENSION = 7; //TODO get exact value
+        public static final double L2_EXTENSION = 5; // TODO get exact value
+        public static final double L3_EXTENSION = 6; // TODO get exact value
+        public static final double L4_EXTENSION = 7; // TODO get exact value
 
-        public static final double CURRENT_LIMIT = 1; //TODO config
+        public static final double CURRENT_LIMIT = 1; // TODO config
 
-        public static final InvertedValue LEFT_INVERT = InvertedValue.Clockwise_Positive; //TODO ensure that this is correct
-        public static final InvertedValue RIGHT_INVERT = InvertedValue.CounterClockwise_Positive; //TODO ensure that this is correct
+        public static final InvertedValue LEFT_INVERT =
+                InvertedValue.Clockwise_Positive; // TODO ensure that this is correct
+        public static final InvertedValue RIGHT_INVERT =
+                InvertedValue.CounterClockwise_Positive; // TODO ensure that this is correct
 
-        public static final double P = 180; //TODO config
-
-
+        public static final double P = 180; // TODO config
     }
 }
