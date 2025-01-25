@@ -333,4 +333,10 @@ public final class Constants {
 
         public static final double P = 180; // TODO config
     }
+
+
+    public static  final class EndEffector {
+        public static final int CAN_ID = 9;
+        public static final double ENDEFFECTOR_SPEED = 1.0;
+    }
 }

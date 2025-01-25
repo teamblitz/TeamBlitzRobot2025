@@ -1,4 +1,4 @@
-package frc.robot.subsystems.elevator;
+package frc.robot.subsystems.superstructure.elevator;
 
 import static edu.wpi.first.units.Units.*;
 
@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj2.command.*;
 import frc.lib.BlitzSubsystem;
 
 public class Elevator extends BlitzSubsystem {
-    private final ElevatorIO io;
+    private final frc.robot.subsystems.superstructure.elevator.ElevatorIO io;
 
     public Elevator(ElevatorIO io) {
         super("elevator");
