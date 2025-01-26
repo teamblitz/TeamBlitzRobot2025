@@ -1,10 +1,10 @@
 package frc.robot.subsystems.endEffector;
 
+import static frc.robot.Constants.EndEffector.*;
+
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import frc.lib.BlitzSubsystem;
 import org.littletonrobotics.junction.Logger;
-import static frc.robot.Constants.EndEffector.*;
 
 public class EndEffector extends BlitzSubsystem {
     private final EndEffectorIO io;
@@ -25,9 +25,11 @@ public class EndEffector extends BlitzSubsystem {
     }
 
     public Command intake() {
-        return startEnd(
-                () -> io.setSpeed(ENDEFFECTOR_SPEED),
-                () -> io.setSpeed(0)
-        );
+        return startEnd(() -> io.setSpeed(INTAKE_SPEED), () -> io.setSpeed(0));
+    }
+
+    // TODO: Implement
+    public Command outtake() {
+        throw new UnsupportedOperationException();
     }
 }

@@ -9,6 +9,8 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import frc.robot.Constants.Elevator;
 
+// TODO: With the current elevator design it is unlikely that we will want to be able to control
+// both sides separately
 public class ElevatorIOKraken implements ElevatorIO {
     public final TalonFX left;
     public final TalonFX right;

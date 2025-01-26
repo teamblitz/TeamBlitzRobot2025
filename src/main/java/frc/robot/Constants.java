@@ -334,9 +334,12 @@ public final class Constants {
         public static final double P = 180; // TODO config
     }
 
+    public static final class Wrist {
+        public static final double CAN_ID = -1; // TODO CONFIG
+    }
 
-    public static  final class EndEffector {
-        public static final int CAN_ID = 9;
-        public static final double ENDEFFECTOR_SPEED = 1.0;
+    public static final class EndEffector {
+        public static final int CAN_ID = 9; // TODO CONFIG
+        public static final double INTAKE_SPEED = .5; // TODO CONFIG
     }
 }

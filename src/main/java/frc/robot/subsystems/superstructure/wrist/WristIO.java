@@ -1,3 +1,3 @@
 package frc.robot.subsystems.superstructure.wrist;
 
-public class Spark {}
+public interface WristIO {}
