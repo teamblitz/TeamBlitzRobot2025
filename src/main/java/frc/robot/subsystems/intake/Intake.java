@@ -1,4 +1,4 @@
-package frc.robot.subsystems.endEffector;
+package frc.robot.subsystems.intake;
 
 import static frc.robot.Constants.EndEffector.*;
 
@@ -6,11 +6,11 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.BlitzSubsystem;
 import org.littletonrobotics.junction.Logger;
 
-public class EndEffector extends BlitzSubsystem {
-    private final EndEffectorIO io;
+public class Intake extends BlitzSubsystem {
+    private final IntakeIO io;
     private final EndEffectorInputsAutoLogged inputs = new EndEffectorInputsAutoLogged();
 
-    public EndEffector(EndEffectorIO io) {
+    public Intake(IntakeIO io) {
         super("EndEffector");
 
         this.io = io;

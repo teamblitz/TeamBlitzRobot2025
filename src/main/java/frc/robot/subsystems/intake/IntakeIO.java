@@ -1,8 +1,8 @@
-package frc.robot.subsystems.endEffector;
+package frc.robot.subsystems.intake;
 
 import org.littletonrobotics.junction.AutoLog;
 
-public interface EndEffectorIO {
+public interface IntakeIO {
 
     @AutoLog
     public class EndEffectorInputs {

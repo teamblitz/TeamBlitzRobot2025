@@ -1,14 +1,13 @@
-package frc.robot.subsystems.endEffector;
+package frc.robot.subsystems.intake;
 
 import static frc.robot.Constants.EndEffector.*;
 
 import com.revrobotics.spark.*;
 
-public class EndEffectorIOSpark implements EndEffectorIO {
+public class IntakeIOSpark implements IntakeIO {
     private final SparkMax motor;
 
-    // TODO Do we need a breakBeamSensor?
-    public EndEffectorIOSpark() {
+    public IntakeIOSpark() {
         // TODO: Motor needs current limit.
         // https://docs.revrobotics.com/brushless/faq#generally-we-recommend-20a-40a
         motor = new SparkMax(CAN_ID, SparkLowLevel.MotorType.kBrushless);
