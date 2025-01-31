@@ -37,20 +37,20 @@ public class WristIOSpark implements WristIO {
 
         config.encoder
                 .positionConversionFactor( (1 / Wrist.GEAR_RATIO) * (2 * Math.PI))
-                .velocityConversionFactor((1 / Constants.Wrist.GEAR_RATIO) * (1.0 / 60.0) * (2 * Math.PI);
+                .velocityConversionFactor((1 / Constants.Wrist.GEAR_RATIO) * (1.0 / 60.0) * (2 * Math.PI));
 
 
 
-                @Override
-        public void setPid(double p, double i, double d) {
-            wristMotor.configure(
-                    new SparkMaxConfig().apply(new ClosedLoopConfig().pid(p, i, d)),
-                    SparkBase.ResetMode.kNoResetSafeParameters,
-                    SparkBase.PersistMode.kNoPersistParameters);
-        }
 
         wristMotor.configure(config, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kNoPersistParameters);
     }
 
 
+    @Override
+    public void setPid(double p, double i, double d) {
+        wristMotor.configure(
+                new SparkMaxConfig().apply(new ClosedLoopConfig().pid(p, i, d)),
+                SparkBase.ResetMode.kNoResetSafeParameters,
+                SparkBase.PersistMode.kNoPersistParameters);
+    }
 }

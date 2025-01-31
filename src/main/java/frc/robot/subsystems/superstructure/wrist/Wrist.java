@@ -6,8 +6,9 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.lib.BlitzSubsystem;
 import frc.robot.Constants;
 import frc.robot.subsystems.superstructure.wrist.WristIOSpark;
-import frc.robot.subsystems.superstructure.wrist.WristIOKraken;
+import frc.robot.subsystems.superstructure.wrist.WristIO.WristIOInputs;
 import frc.robot.subsystems.superstructure.wrist.WristIO;
+import frc.robot.subsystems.superstructure.wrist.WristIOKraken;
 
 
 public class Wrist extends BlitzSubsystem {
@@ -29,13 +30,13 @@ public class Wrist extends BlitzSubsystem {
                  () -> {
                      io.setSpeedwristMotor(0);
                  })
-                 .withName(logkey + "/speed " + wristMotor);
+                 .withName(logKey + "/speed " + wristMotor);
      }
 
      public Command r1Rotation() {
          return runEnd(
                  () -> {
-                     wristMotor.set(WristIO.wristRotations.r1RotationValue);
+                     io.setSetpoint(WristIO.wristRotations.r1RotationValue, 0, 0);
                  }
          );
      }

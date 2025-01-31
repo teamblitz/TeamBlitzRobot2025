@@ -1,70 +1,75 @@
 package frc.robot.subsystems.superstructure.wrist;
 
+import com.ctre.phoenix6.BaseStatusSignal;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import frc.robot.subsystems.superstructure.wrist.Wrist;
+import static frc.robot.Constants.Wrist.*;
 
 public class WristIOKraken implements WristIO {
-    public final TalonFX wristMotor;
+        public TalonFX wristMotor;
 
-    public final PositionVoltage closedLoopPosition = new PositionVoltage(0);
-    public final MotionMagicVoltage motionMagic =
-            new MotionMagicVoltage(0).withSlot(0);
 
-    public WristIOKraken() {
-        wristMotor = new TalonFX(0); //TODO SET VAL
+        public final PositionVoltage closedLoopPosition = new PositionVoltage(0);
+        public final MotionMagicVoltage motionMagic =
+                new MotionMagicVoltage(0).withSlot(0);
 
-        TalonFXConfiguration config = new TalonFXConfiguration();
+        public WristIOKraken() {
+            wristMotor = new TalonFX(0); //TODO SET VAL
 
-        config.MotorOutput.withNeutralMode(NeutralModeValue.Brake);
+            TalonFXConfiguration config = new TalonFXConfiguration();
 
-        config.CurrentLimits.withStatorCurrentLimit(Wrist.CURRENT_LIMIT); //TODO CONFIGURE
+            config.MotorOutput.withNeutralMode(NeutralModeValue.Brake);
 
-        //TODO GET GEAR RATIO FIGURED OUT WITH MECH
+            config.CurrentLimits.withStatorCurrentLimit(CURRENT_LIMIT); //TODO CONFIGURE
 
-        config.MotionMagic.withMotionMagicCruiseVelocity(.5).withMotionMagicAcceleration(1);
+            //TODO GET GEAR RATIO FIGURED OUT WITH MECH
 
-        //TODO SET VALUES
+            config.MotionMagic.withMotionMagicCruiseVelocity(.5).withMotionMagicAcceleration(1);
 
-        config.Slot0.withKP(Wrist.P); //TODO CONFIGURE
+            //TODO SET VALUES
 
-        config.MotorOutput.withInverted(Wrist.wristMotor_INVERT);
-        wristMotor.getConfigurator().apply(config);
+//            config.Slot0.withKP(Wrist.P); //TODO CONFIGURE
 
-        wristMotor.setPosition(0);
+            config.MotorOutput.withInverted(INVERTED ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive);
+            wristMotor.getConfigurator().apply(config);
 
-        ParentDevice.optimizeBusUtilizationForAll(wristMotor);
+            wristMotor.setPosition(0);
 
-        BassStatusSignal.setUpdateFrequencyForAll(
-                100,
-                wristMotor.getPosition(),
-                wristMotor.getVelocity(),
-                wristMotor.getMotorVoltage(),
-                wristMotor.getTorqueCurrent());
+            ParentDevice.optimizeBusUtilizationForAll(wristMotor);
+
+            BaseStatusSignal.setUpdateFrequencyForAll(
+                    100,
+                    wristMotor.getPosition(),
+                    wristMotor.getVelocity(),
+                    wristMotor.getMotorVoltage(),
+                    wristMotor.getTorqueCurrent());
+        }
+
+        @Override
+        public void updateInputs(WristIOInputs inputs) {
+            inputs.positionRadians = wristMotor.getPosition().getValueAsDouble();
+
+            inputs.velocityRadiansPerSecond = wristMotor.getVelocity().getValueAsDouble();
+
+            inputs.volts = wristMotor.getMotorVoltage().getValueAsDouble();
+
+            inputs.torqueCurrent = wristMotor.getTorqueCurrent().getValueAsDouble();
+        }
+
+        @Override
+        public void setPercent(double percent) {
+            wristMotor.set(percent);
+        }
+
+        @Override
+        public void setSetpoint(double position, double velocity, double acceleration) {
+            throw new UnsupportedOperationException("Not supported yet.");
+            wristMotor.setControl(motionMagic.withPosition(extension));
+        }
     }
 
-    @Override
-    public void updateInputs(WristIOInputs inputs) {
-        inputs.positionwristMotor = wristMotor.getPosition().getValueAsDouble();
-
-        inputs.velocitywristMotor = wristMotor.getVelocity().getValueAsDouble();
-
-        inputs.voltswristMotor = wristMotor.getMotorVoltage().getValueAsDouble();
-
-        inputs.torqueCurrentwristMotor = wristMotor.getTorqueCurrent().getValueAsDouble();
-    }
-
-    @Override
-    public void setSpeedwristMotor(double speed) {
-
-        wristMotor.set(speed);
-    }
-
-    @Override
-    public void setMotionMagicwristMotor(double extension) {
-        wristMotor.setControl(motionMagic.withPosition(extension));
-    }
-}

@@ -26,6 +26,6 @@ public interface WristIO {
 
     public default void setPid(double p, double i, double d) {}
 
-    public default void setSpeedwristMotor(double percent) {}
+    public default void setPercent(double percent) {}
 }
 

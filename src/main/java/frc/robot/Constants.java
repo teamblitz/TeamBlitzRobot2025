@@ -339,9 +339,10 @@ public final class Constants {
 
     public static final class Wrist {
         public static final int CAN_ID = -1; // TODO CONFIG
-        public static double OPEN_LOOP_RAMP;
-        public static double GEAR_RATIO;
-        public static int CURRENT_LIMIT;
+        public static final double OPEN_LOOP_RAMP = 0;
+        public static final double GEAR_RATIO = 1;
+        public static final int CURRENT_LIMIT = 40;
+        public static final boolean INVERTED = false;
         }
 
     public static final class EndEffector {
