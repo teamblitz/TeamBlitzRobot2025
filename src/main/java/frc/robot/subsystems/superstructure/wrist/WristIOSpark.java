@@ -8,9 +8,8 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.ClosedLoopConfig;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
-import edu.wpi.first.wpilibj.DutyCycleEncoder;
-import frc.robot.Constants.Wrist;
 import frc.robot.Constants;
+import frc.robot.Constants.Wrist;
 
 public class WristIOSpark implements WristIO {
 
@@ -20,7 +19,6 @@ public class WristIOSpark implements WristIO {
 
     boolean useInternalEncoder;
 
-
     public WristIOSpark() {
         wristMotor = new SparkMax(Wrist.CAN_ID, SparkLowLevel.MotorType.kBrushless);
 
@@ -29,22 +27,20 @@ public class WristIOSpark implements WristIO {
         encoder = wristMotor.getEncoder();
         pid = wristMotor.getClosedLoopController();
 
-
         config.idleMode(SparkBaseConfig.IdleMode.kBrake)
-            .openLoopRampRate(Wrist.OPEN_LOOP_RAMP)
-            .smartCurrentLimit(Wrist.CURRENT_LIMIT);
-
+                .openLoopRampRate(Wrist.OPEN_LOOP_RAMP)
+                .smartCurrentLimit(Wrist.CURRENT_LIMIT);
 
         config.encoder
-                .positionConversionFactor( (1 / Wrist.GEAR_RATIO) * (2 * Math.PI))
-                .velocityConversionFactor((1 / Constants.Wrist.GEAR_RATIO) * (1.0 / 60.0) * (2 * Math.PI));
+                .positionConversionFactor((1 / Wrist.GEAR_RATIO) * (2 * Math.PI))
+                .velocityConversionFactor(
+                        (1 / Constants.Wrist.GEAR_RATIO) * (1.0 / 60.0) * (2 * Math.PI));
 
-
-
-
-        wristMotor.configure(config, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kNoPersistParameters);
+        wristMotor.configure(
+                config,
+                SparkBase.ResetMode.kResetSafeParameters,
+                SparkBase.PersistMode.kNoPersistParameters);
     }
-
 
     @Override
     public void setPid(double p, double i, double d) {

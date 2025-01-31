@@ -7,14 +7,9 @@
 
 package frc.robot;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.function.DoubleUnaryOperator;
-
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.RobotConfig;
-
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -23,6 +18,9 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import frc.lib.util.COTSSwerveConstants;
 import frc.lib.util.SwerveModuleConstants;
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.DoubleUnaryOperator;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -343,12 +341,17 @@ public final class Constants {
         public static final double GEAR_RATIO = 1;
         public static final int CURRENT_LIMIT = 40;
         public static final boolean INVERTED = false;
+
+        public static class wristRotations {
+            public static final double r1RotationValue = 1;
+            public static final double r2RotationValue = 0.5;
+            public static final double r3RotationValue = 0;
         }
+    }
 
     public static final class EndEffector {
         public static final int CAN_ID = 9; // TODO CONFIG
         public static final double INTAKE_SPEED = .5; // TODO CONFIG
         public static final double OUTTAKE_SPEED = -.5; // TODO CONFIG
-        }
-
+    }
 }

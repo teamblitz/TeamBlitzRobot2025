@@ -19,7 +19,7 @@ public class IntakeIOSpark implements IntakeIO {
     }
 
     @Override
-    public void updateInputs(EndEffectorInputs inputs) {
+    public void updateInputs(IntakeInputs inputs) {
         inputs.rpm = motor.getEncoder().getVelocity();
         inputs.current = motor.getOutputCurrent();
     }
