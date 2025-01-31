@@ -1,9 +1,14 @@
 package frc.robot.subsystems.intake;
 
-import static frc.robot.Constants.EndEffector.*;
+import static frc.robot.Constants.EndEffector.OUTTAKE_SPEED;
+import static frc.robot.Constants.EndEffector.INTAKE_SPEED;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.BlitzSubsystem;
+import frc.robot.subsystems.intake.; //TODO import the new autolog & fix other autologs
+import frc.robot.subsystems.intake.IntakeIO;
+import frc.robot.Constants;
+
 import org.littletonrobotics.junction.Logger;
 
 public class Intake extends BlitzSubsystem {
@@ -28,8 +33,10 @@ public class Intake extends BlitzSubsystem {
         return startEnd(() -> io.setSpeed(INTAKE_SPEED), () -> io.setSpeed(0));
     }
 
-    // TODO: Implement
     public Command outtake() {
-        throw new UnsupportedOperationException();
+        return startEnd(
+            () -> io.setSpeed(OUTTAKE_SPEED),
+            () -> io.setSpeed(0));
     }
+
 }
