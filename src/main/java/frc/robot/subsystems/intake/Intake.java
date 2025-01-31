@@ -5,7 +5,7 @@ import static frc.robot.Constants.EndEffector.INTAKE_SPEED;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.BlitzSubsystem;
-import frc.robot.subsystems.intake.; //TODO import the new autolog & fix other autologs
+import frc.robot.subsystems.intake.IntakeInputsAutoLogged; //TODO import the new autolog & fix other autologs
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.Constants;
 
