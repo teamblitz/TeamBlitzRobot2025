@@ -12,6 +12,12 @@ public interface WristIO {
         public double torqueCurrent;
     }
 
+    public class wristRotations {
+        public static final double r1RotationValue = 1;
+        public static final double r2RotationValue = 0.5;
+        public static final double r3RotationValue = 0;
+    }
+
     public default void updateInputs(WristIOInputs inputs) {}
 
     public default void setVolts(double volts) {}
@@ -19,5 +25,7 @@ public interface WristIO {
     public default void setSetpoint(double position, double velocity, double acceleration) {}
 
     public default void setPid(double p, double i, double d) {}
+
+    public default void setSpeedwristMotor(double percent) {}
 }
 

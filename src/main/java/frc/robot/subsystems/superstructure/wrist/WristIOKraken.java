@@ -59,6 +59,7 @@ public class WristIOKraken implements WristIO {
 
     @Override
     public void setSpeedwristMotor(double speed) {
+
         wristMotor.set(speed);
     }
 

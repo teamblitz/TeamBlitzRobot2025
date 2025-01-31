@@ -340,8 +340,11 @@ public final class Constants {
         public static double GEAR_RATIO;
         public static int CURRENT_LIMIT;
 
+
+
     public static final class EndEffector {
         public static final int CAN_ID = 9; // TODO CONFIG
         public static final double INTAKE_SPEED = .5; // TODO CONFIG
     }
+}
 }

@@ -10,12 +10,13 @@ import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import frc.robot.Constants.Wrist;
+import frc.robot.Constants;
 
 public class WristIOSpark implements WristIO {
 
-    private final SparkMax wristMotor;
-    private final RelativeEncoder encoder;
-    private final SparkClosedLoopController pid;
+    private SparkMax wristMotor;
+    private RelativeEncoder encoder;
+    private SparkClosedLoopController pid;
 
     boolean useInternalEncoder;
 
@@ -39,9 +40,10 @@ public class WristIOSpark implements WristIO {
                 .velocityConversionFactor((1 / Constants.Wrist.GEAR_RATIO) * (1.0 / 60.0) * (2 * Math.PI);
 
 
-        @Override
-        public void setPid(double p, double i, double d); {
-            motor.configure(
+
+                @Override
+        public void setPid(double p, double i, double d) {
+            wristMotor.configure(
                     new SparkMaxConfig().apply(new ClosedLoopConfig().pid(p, i, d)),
                     SparkBase.ResetMode.kNoResetSafeParameters,
                     SparkBase.PersistMode.kNoPersistParameters);
