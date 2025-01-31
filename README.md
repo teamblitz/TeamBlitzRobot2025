@@ -1,8 +1,11 @@
-# FRC Robot Project
+# 2025 Team Blitz (#2083) FIRST Robotics
 
 ## Overview
 
-This project is an FRC (FIRST Robotics Competition) robot codebase. It includes various subsystems, commands, and utilities to control and manage the robot's operations. The project is structured to follow the Command-Based programming paradigm provided by WPILib.
+This project contains the FRC (FIRST Robotics Competition) robot codebase for [Team Blitz](https://teamblitz.net) in Conifer, Colorado. It includes the subsystems, commands, and utilities to control and manage our robots. The project is structured to follow the Command-Based programming paradigm provided by WPILib.
+
+## Competition Overview
+This year's competition, [FIRST Dive](https://info.firstinspires.org/first-dive) REEFSCAPE, mimics an underwater reef where the teams must collaborate to remove "algae" and seed new "coral".
 
 ## Tools, Languages, and Libraries
 
