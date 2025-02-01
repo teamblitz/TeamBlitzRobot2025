@@ -30,4 +30,6 @@ public interface ElevatorIO {
     public default void setMotionMagicLeft(double extension) {}
 
     public default void setMotionMagicRight(double extension) {}
+
+    public default void setPid(double p, double i, double d) {}
 }

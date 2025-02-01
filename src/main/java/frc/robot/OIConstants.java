@@ -108,7 +108,19 @@ public class OIConstants {
 
     public static final class Intake {
         public static final Trigger FEED = OPERATOR_CONTROLLER.leftBumper();
-        public static final Trigger EJECT = OPERATOR_CONTROLLER.povUp();
+        public static final Trigger EJECT = OPERATOR_CONTROLLER.rightBumper();
+    }
+
+    public static final class Elevator {
+        //        public static final Trigger ELEVATOR_L1 = OPERATOR_CONTROLLER.povDown();
+        //        public static final Trigger ELEVATOR_L2 = OPERATOR_CONTROLLER.povLeft();
+        //        public static final Trigger ELEVATOR_L3 = OPERATOR_CONTROLLER.povRight();
+        //        public static final Trigger ELEVATOR_L4 = OPERATOR_CONTROLLER.povUp();
+        //
+        //        public static final Trigger ELEVATOR_DOWN = OPERATOR_CONTROLLER.a();
+
+        public static final Trigger ELEVATOR_UP_TEST = OPERATOR_CONTROLLER.povUp();
+        public static final Trigger ELEVATOR_DOWN_TEST = OPERATOR_CONTROLLER.povDown();
     }
 
     //    public static final class TestMode {

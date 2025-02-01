@@ -32,6 +32,7 @@ import frc.robot.subsystems.drive.swerveModule.angle.AngleMotorIOSim;
 import frc.robot.subsystems.drive.swerveModule.drive.DriveMotorIOSim;
 import frc.robot.subsystems.drive.swerveModule.encoder.EncoderIO;
 import frc.robot.subsystems.leds.Leds;
+import frc.robot.subsystems.superstructure.elevator.Elevator;
 import frc.robot.subsystems.vision.notes.NoteVisionIO;
 import frc.robot.subsystems.vision.notes.NoteVisionIOLimelight;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -46,6 +47,7 @@ public class RobotContainer {
 
     /* ***** --- Subsystems --- ***** */
     private Drive drive;
+    private Elevator elevator;
 
     /* ***** --- Autonomous --- ***** */
     private final LoggedDashboardChooser<Command> autoChooser;
@@ -166,6 +168,16 @@ public class RobotContainer {
         OIConstants.Drive.BRAKE.onTrue(Commands.runOnce(() -> drive.setBrakeMode(true)));
         OIConstants.Drive.COAST.onTrue(Commands.runOnce(() -> drive.setBrakeMode(false)));
 
+        //        OIConstants.Elevator.ELEVATOR_L4.onTrue(elevator.l4Extension());
+        //        OIConstants.Elevator.ELEVATOR_L3.onTrue(elevator.l3Extension());
+        //        OIConstants.Elevator.ELEVATOR_L2.onTrue(elevator.l2Extension());
+        //        OIConstants.Elevator.ELEVATOR_L1.onTrue(elevator.l1Extension());
+        //
+        //        OIConstants.Elevator.ELEVATOR_DOWN.onTrue(elevator.down());
+
+        OIConstants.Elevator.ELEVATOR_UP_TEST.onTrue(elevator.upTest());
+        OIConstants.Elevator.ELEVATOR_DOWN_TEST.onTrue(elevator.downTest());
+
         NetworkTableEntry intakeTx =
                 LimelightHelpers.getLimelightNTTableEntry("limelight-intake", "tx");
         NetworkTableEntry intakeTv =
@@ -210,8 +222,6 @@ public class RobotContainer {
                                         () -> Leds.getInstance().autoPickupReady = true,
                                         () -> Leds.getInstance().autoPickupReady = false)
                                 .ignoringDisable(true));
-
-        new Trigger(() -> )
     }
 
     private void configureAutoCommands() {}
