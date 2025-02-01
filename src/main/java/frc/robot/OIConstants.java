@@ -106,6 +106,11 @@ public class OIConstants {
                         ::get;
     }
 
+    public static final class Intake {
+        public static final Trigger FEED = OPERATOR_CONTROLLER.leftBumper();
+        public static final Trigger EJECT = OPERATOR_CONTROLLER.povUp();
+    }
+
     //    public static final class TestMode {
     //        public static final Trigger ZERO_ABS_ENCODERS = UNBOUND;
     //

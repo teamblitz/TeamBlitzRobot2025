@@ -210,6 +210,8 @@ public class RobotContainer {
                                         () -> Leds.getInstance().autoPickupReady = true,
                                         () -> Leds.getInstance().autoPickupReady = false)
                                 .ignoringDisable(true));
+
+        new Trigger(() -> )
     }
 
     private void configureAutoCommands() {}
