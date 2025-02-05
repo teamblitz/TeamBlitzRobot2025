@@ -33,6 +33,7 @@ import frc.robot.subsystems.drive.swerveModule.drive.DriveMotorIOSim;
 import frc.robot.subsystems.drive.swerveModule.encoder.EncoderIO;
 import frc.robot.subsystems.leds.Leds;
 import frc.robot.subsystems.superstructure.elevator.Elevator;
+import frc.robot.subsystems.superstructure.elevator.ElevatorIOSpark;
 import frc.robot.subsystems.vision.notes.NoteVisionIO;
 import frc.robot.subsystems.vision.notes.NoteVisionIOLimelight;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -159,6 +160,9 @@ public class RobotContainer {
                                     new RangeSensorIO() {},
                                     new NoteVisionIO() {});
                 };
+
+
+        elevator = new Elevator(new ElevatorIOSpark());
     }
 
     private void configureButtonBindings() {
@@ -175,8 +179,8 @@ public class RobotContainer {
         //
         //        OIConstants.Elevator.ELEVATOR_DOWN.onTrue(elevator.down());
 
-        OIConstants.Elevator.ELEVATOR_UP_TEST.onTrue(elevator.upTest());
-        OIConstants.Elevator.ELEVATOR_DOWN_TEST.onTrue(elevator.downTest());
+        OIConstants.Elevator.ELEVATOR_UP_TEST.whileTrue(elevator.upTest());
+        OIConstants.Elevator.ELEVATOR_DOWN_TEST.whileTrue(elevator.downTest());
 
         NetworkTableEntry intakeTx =
                 LimelightHelpers.getLimelightNTTableEntry("limelight-intake", "tx");

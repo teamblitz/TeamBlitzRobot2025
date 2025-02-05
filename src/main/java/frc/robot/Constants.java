@@ -321,13 +321,18 @@ public final class Constants {
     }
 
     public static final class Elevator {
+
+        public static final int RIGHT_ID = 20;
+        public static final int LEFT_ID = 21;
+
         public static final double L1_EXTENSION = 4; // TODO get exact value
         public static final double L2_EXTENSION = 5; // TODO get exact value
         public static final double L3_EXTENSION = 6; // TODO get exact value
         public static final double L4_EXTENSION = 7; // TODO get exact value
 
-        public static final double CURRENT_LIMIT = 1; // TODO config
-        public static final double ELEVATOR_GEAR_RATIO = 1;
+        public static final double OPEN_LOOP_RAMP = 0;
+        public static final int CURRENT_LIMIT = 1; // TODO config
+        public static final double ELEVATOR_GEAR_RATIO = 9.0 / 1.0;
 
         public static final InvertedValue LEFT_INVERT =
                 InvertedValue.Clockwise_Positive; // TODO ensure that this is correct

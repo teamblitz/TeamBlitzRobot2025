@@ -5,9 +5,11 @@ import static edu.wpi.first.units.Units.*;
 import edu.wpi.first.wpilibj2.command.*;
 import frc.lib.BlitzSubsystem;
 import frc.robot.Constants;
+import org.littletonrobotics.junction.Logger;
 
 public class Elevator extends BlitzSubsystem {
     private final frc.robot.subsystems.superstructure.elevator.ElevatorIO io;
+    private final ElevatorIOInputsAutoLogged inputs = new ElevatorIOInputsAutoLogged();
 
     public Elevator(ElevatorIO io) {
         super("elevator");
@@ -15,7 +17,14 @@ public class Elevator extends BlitzSubsystem {
     }
 
     @Override
-    public void periodic() {}
+    public void periodic() {
+
+        io.updateInputs(inputs);
+        Logger.processInputs(logKey, inputs);
+
+        Logger.recordOutput(logKey + "/rotLeftDeg", Math.toDegrees(inputs.positionLeft) % 360);
+        Logger.recordOutput(logKey + "/rotRightDeg", Math.toDegrees(inputs.positionRight) % 360);
+    }
 
     public Command setSpeed(double left, double right) {
         return startEnd(
@@ -33,17 +42,17 @@ public class Elevator extends BlitzSubsystem {
     public Command upTest() {
         return run(
                 () -> {
-                    io.setSpeedLeft(0.5);
-                    io.setSpeedRight(0.5);
-                });
+                    io.setSpeedLeft(0.1);
+                    io.setSpeedRight(0.1);
+                }).alongWith(Commands.print("Up test"));
     }
 
     public Command downTest() {
         return run(
                 () -> {
-                    io.setSpeedLeft(-0.5);
-                    io.setSpeedRight(-0.5);
-                });
+                    io.setSpeedLeft(-0.1);
+                    io.setSpeedRight(-0.1);
+                }).alongWith(Commands.print("dwn test"));
     }
 
     // TODO Iplement

@@ -9,7 +9,7 @@ import com.revrobotics.spark.config.ClosedLoopConfig;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import frc.robot.Constants;
-import frc.robot.Constants.Wrist;
+import frc.robot.Constants.Elevator;
 
 public class ElevatorIOSpark implements ElevatorIO {
 
@@ -25,8 +25,8 @@ public class ElevatorIOSpark implements ElevatorIO {
     boolean useInternalEncoder;
 
     public ElevatorIOSpark() {
-        right = new SparkMax(Wrist.CAN_ID, SparkLowLevel.MotorType.kBrushless);
-        left = new SparkMax(Wrist.CAN_ID, SparkLowLevel.MotorType.kBrushless);
+        right = new SparkMax(Elevator.RIGHT_ID, SparkLowLevel.MotorType.kBrushless);
+        left = new SparkMax(Elevator.LEFT_ID, SparkLowLevel.MotorType.kBrushless);
         SparkMaxConfig config = new SparkMaxConfig();
 
         rightEncoder = right.getEncoder();
@@ -36,8 +36,8 @@ public class ElevatorIOSpark implements ElevatorIO {
         leftPid = left.getClosedLoopController();
 
         config.idleMode(SparkBaseConfig.IdleMode.kBrake)
-                .openLoopRampRate(Wrist.OPEN_LOOP_RAMP)
-                .smartCurrentLimit(Wrist.CURRENT_LIMIT);
+                .openLoopRampRate(Elevator.OPEN_LOOP_RAMP)
+                .smartCurrentLimit(Elevator.CURRENT_LIMIT);
 
         config.encoder
                 .positionConversionFactor(
@@ -52,10 +52,14 @@ public class ElevatorIOSpark implements ElevatorIO {
                 SparkBase.ResetMode.kResetSafeParameters,
                 SparkBase.PersistMode.kNoPersistParameters);
 
+        config.inverted(true);
+
         left.configure(
                 config,
                 SparkBase.ResetMode.kResetSafeParameters,
                 SparkBase.PersistMode.kNoPersistParameters);
+
+
     }
 
     @Override
@@ -69,5 +73,27 @@ public class ElevatorIOSpark implements ElevatorIO {
                 new SparkMaxConfig().apply(new ClosedLoopConfig().pid(p, i, d)),
                 SparkBase.ResetMode.kNoResetSafeParameters,
                 SparkBase.PersistMode.kNoPersistParameters);
+    }
+
+    @Override
+    public void setSpeedLeft(double speed) {
+        left.set(speed);
+    }
+
+    @Override
+    public void setSpeedRight(double speed) {
+        right.set(speed);
+    }
+
+    @Override
+    public void updateInputs(ElevatorIOInputs inputs) {
+        inputs.velocityLeft = leftEncoder.getVelocity();
+        inputs.velocityRight = rightEncoder.getVelocity();
+
+        inputs.voltsLeft = left.getAppliedOutput() * left.getBusVoltage();
+        inputs.voltsRight = right.getAppliedOutput() * right.getBusVoltage();
+
+        inputs.positionLeft = leftEncoder.getPosition();
+        inputs.positionRight = rightEncoder.getPosition();
     }
 }
