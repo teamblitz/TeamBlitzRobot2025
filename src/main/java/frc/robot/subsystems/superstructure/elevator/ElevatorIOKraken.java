@@ -74,14 +74,10 @@ public class ElevatorIOKraken implements ElevatorIO {
     }
 
     @Override
-    public void setSpeedLeft(double speed) {
+    public void setSpeed(double speed) {
         left.set(speed);
     }
 
-    @Override
-    public void setSpeedRight(double speed) {
-        right.set(speed);
-    }
 
     @Override
     public void setMotionMagicLeft(double extension) {

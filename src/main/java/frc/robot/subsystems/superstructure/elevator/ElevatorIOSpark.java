@@ -8,6 +8,7 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.ClosedLoopConfig;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import edu.wpi.first.math.controller.ElevatorFeedforward;
 import frc.robot.Constants;
 import frc.robot.Constants.Elevator;
 
@@ -22,12 +23,15 @@ public class ElevatorIOSpark implements ElevatorIO {
     private final SparkClosedLoopController rightPid;
     private final SparkClosedLoopController leftPid;
 
+    private ElevatorFeedforward feedforward = null;
+
     boolean useInternalEncoder;
 
     public ElevatorIOSpark() {
         right = new SparkMax(Elevator.RIGHT_ID, SparkLowLevel.MotorType.kBrushless);
         left = new SparkMax(Elevator.LEFT_ID, SparkLowLevel.MotorType.kBrushless);
-        SparkMaxConfig config = new SparkMaxConfig();
+
+        SparkMaxConfig sharedConfig = new SparkMaxConfig();
 
         rightEncoder = right.getEncoder();
         leftEncoder = left.getEncoder();
@@ -35,11 +39,11 @@ public class ElevatorIOSpark implements ElevatorIO {
         rightPid = right.getClosedLoopController();
         leftPid = left.getClosedLoopController();
 
-        config.idleMode(SparkBaseConfig.IdleMode.kBrake)
+        sharedConfig.idleMode(SparkBaseConfig.IdleMode.kBrake)
                 .openLoopRampRate(Elevator.OPEN_LOOP_RAMP)
                 .smartCurrentLimit(Elevator.CURRENT_LIMIT);
 
-        config.encoder
+        sharedConfig.encoder
                 .positionConversionFactor(
                         (1 / Constants.Elevator.ELEVATOR_GEAR_RATIO) * (2 * Math.PI))
                 .velocityConversionFactor(
@@ -47,18 +51,19 @@ public class ElevatorIOSpark implements ElevatorIO {
                                 * (1.0 / 60.0)
                                 * (2 * Math.PI));
 
-        right.configure(
-                config,
-                SparkBase.ResetMode.kResetSafeParameters,
-                SparkBase.PersistMode.kNoPersistParameters);
-
-        config.inverted(true);
+        SparkMaxConfig followerConfig = new SparkMaxConfig();
+        followerConfig.apply(sharedConfig);
+        followerConfig.follow(left, true);
 
         left.configure(
-                config,
+                sharedConfig,
                 SparkBase.ResetMode.kResetSafeParameters,
                 SparkBase.PersistMode.kNoPersistParameters);
 
+        right.configure(
+                followerConfig,
+                SparkBase.ResetMode.kResetSafeParameters,
+                SparkBase.PersistMode.kNoPersistParameters);
 
     }
 
@@ -75,14 +80,13 @@ public class ElevatorIOSpark implements ElevatorIO {
                 SparkBase.PersistMode.kNoPersistParameters);
     }
 
-    @Override
-    public void setSpeedLeft(double speed) {
-        left.set(speed);
-    }
 
+    public void setFF(double kS, double kV, double kA, double kG) {
+        ElevatorFeedforward ff = new ElevatorFeedforward(kS, kV, kA, kG);
+    }
     @Override
-    public void setSpeedRight(double speed) {
-        right.set(speed);
+    public void setSpeed(double speed) {
+        left.set(speed);
     }
 
     @Override

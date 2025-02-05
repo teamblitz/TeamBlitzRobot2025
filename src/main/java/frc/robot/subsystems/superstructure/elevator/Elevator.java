@@ -1,7 +1,6 @@
 package frc.robot.subsystems.superstructure.elevator;
 
-import static edu.wpi.first.units.Units.*;
-
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.*;
 import frc.lib.BlitzSubsystem;
 import frc.robot.Constants;
@@ -11,6 +10,13 @@ public class Elevator extends BlitzSubsystem {
     private final frc.robot.subsystems.superstructure.elevator.ElevatorIO io;
     private final ElevatorIOInputsAutoLogged inputs = new ElevatorIOInputsAutoLogged();
 
+    private final TrapezoidProfile.Constraints constraints = new TrapezoidProfile.Constraints(0.8, 1.6);
+    private final TrapezoidProfile profile
+            = new TrapezoidProfile(constraints);
+
+    private TrapezoidProfile.State goal;
+    private TrapezoidProfile.State setpoint;
+
     public Elevator(ElevatorIO io) {
         super("elevator");
         this.io = io;
@@ -18,50 +24,58 @@ public class Elevator extends BlitzSubsystem {
 
     @Override
     public void periodic() {
-
         io.updateInputs(inputs);
         Logger.processInputs(logKey, inputs);
 
         Logger.recordOutput(logKey + "/rotLeftDeg", Math.toDegrees(inputs.positionLeft) % 360);
         Logger.recordOutput(logKey + "/rotRightDeg", Math.toDegrees(inputs.positionRight) % 360);
+
+        // Thou shalt not touch the below code unless it broke
+        setpoint = profile.calculate(Constants.LOOP_PERIOD_SEC, setpoint, goal);
+        TrapezoidProfile.State future_setpoint = profile.calculate(Constants.LOOP_PERIOD_SEC * 2, setpoint, goal);
+
+        io.setSetpoint(setpoint.position, setpoint.velocity, (future_setpoint.velocity - setpoint.velocity) / Constants.LOOP_PERIOD_SEC);
     }
 
     public Command setSpeed(double left, double right) {
         return startEnd(
                         () -> {
-                            io.setSpeedLeft(left);
-                            io.setSpeedRight(right);
+                            io.setSpeed(left);
                         },
                         () -> {
-                            io.setSpeedLeft(0);
-                            io.setSpeedRight(0);
+                            io.setSpeed(0);
                         })
                 .withName(logKey + "/speed " + left + " " + right);
     }
 
     public Command upTest() {
-        return run(
+        return runEnd(
                 () -> {
-                    io.setSpeedLeft(0.1);
-                    io.setSpeedRight(0.1);
+                    io.setSpeed(0.1);
+                },
+                () -> {
+                    io.setSpeed(0);
                 }).alongWith(Commands.print("Up test"));
     }
 
     public Command downTest() {
-        return run(
+        return runEnd(
                 () -> {
-                    io.setSpeedLeft(-0.1);
-                    io.setSpeedRight(-0.1);
+                    io.setSpeed(-0.1);
+                },
+                () -> {
+                    io.setSpeed(0);
                 }).alongWith(Commands.print("dwn test"));
     }
 
-    // TODO Iplement
+
+
+    // TODO Implement
     public Command l1Extension() {
         // return Commands.none();
         return runEnd(
                 () -> {
-                    io.setSpeedLeft(1);
-                    io.setSpeedRight(1);
+                    io.setSpeed(1);
                 },
                 () -> {
                     io.setMotionMagicLeft(Constants.Elevator.L1_EXTENSION);

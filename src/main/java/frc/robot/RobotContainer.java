@@ -34,6 +34,8 @@ import frc.robot.subsystems.drive.swerveModule.encoder.EncoderIO;
 import frc.robot.subsystems.leds.Leds;
 import frc.robot.subsystems.superstructure.elevator.Elevator;
 import frc.robot.subsystems.superstructure.elevator.ElevatorIOSpark;
+import frc.robot.subsystems.superstructure.wrist.Wrist;
+import frc.robot.subsystems.superstructure.wrist.WristIOSpark;
 import frc.robot.subsystems.vision.notes.NoteVisionIO;
 import frc.robot.subsystems.vision.notes.NoteVisionIOLimelight;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -49,6 +51,7 @@ public class RobotContainer {
     /* ***** --- Subsystems --- ***** */
     private Drive drive;
     private Elevator elevator;
+    private Wrist wrist;
 
     /* ***** --- Autonomous --- ***** */
     private final LoggedDashboardChooser<Command> autoChooser;
@@ -163,6 +166,8 @@ public class RobotContainer {
 
 
         elevator = new Elevator(new ElevatorIOSpark());
+
+        wrist = new Wrist(new WristIOSpark());
     }
 
     private void configureButtonBindings() {
@@ -181,6 +186,8 @@ public class RobotContainer {
 
         OIConstants.Elevator.ELEVATOR_UP_TEST.whileTrue(elevator.upTest());
         OIConstants.Elevator.ELEVATOR_DOWN_TEST.whileTrue(elevator.downTest());
+
+        new Trigger(() -> OIConstants.Wrist.wristManual.getAsDouble()>.05).whileTrue(wrist.setSpeed(OIConstants.Wrist.wristManual));
 
         NetworkTableEntry intakeTx =
                 LimelightHelpers.getLimelightNTTableEntry("limelight-intake", "tx");

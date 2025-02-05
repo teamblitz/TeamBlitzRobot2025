@@ -111,6 +111,10 @@ public class OIConstants {
         public static final Trigger EJECT = OPERATOR_CONTROLLER.rightBumper();
     }
 
+    public static final class Wrist {
+        public static final DoubleSupplier wristManual = () -> -OPERATOR_CONTROLLER.getRightY();
+    }
+
     public static final class Elevator {
         //        public static final Trigger ELEVATOR_L1 = OPERATOR_CONTROLLER.povDown();
         //        public static final Trigger ELEVATOR_L2 = OPERATOR_CONTROLLER.povLeft();
@@ -129,17 +133,17 @@ public class OIConstants {
     //        // TODO, Move these to shuffleboard buttons in their respective dashboards.
     //        public static final class SysId {
     //            public static final class Arm {
-    ////                public static final Trigger ARM_TEST =
-    ////                        new Trigger(DriverStation::isTest).and(TEST_CONTROLLER.povLeft());
-    ////                public static final Trigger QUASISTATIC_FWD =
+    //                public static final Trigger ARM_TEST =
+    //                        new Trigger(DriverStation::isTest).and(TEST_CONTROLLER.povLeft());
+    //                public static final Trigger QUASISTATIC_FWD =
     // ARM_TEST.and(TEST_CONTROLLER.y());
-    ////                public static final Trigger QUASISTATIC_REV =
+    //                public static final Trigger QUASISTATIC_REV =
     // ARM_TEST.and(TEST_CONTROLLER.x());
-    ////                public static final Trigger DYNAMIC_FWD = UNBOUND;
-    // //ARM_TEST.and(TEST_CONTROLLER.b());
-    //////                public static final Trigger DYNAMIC_FWD =
+    //                public static final Trigger DYNAMIC_FWD = UNBOUND;
     // ARM_TEST.and(TEST_CONTROLLER.b());
-    ////                public static final Trigger DYNAMIC_REV = ARM_TEST.and(TEST_CONTROLLER.a());
+    //               public static final Trigger DYNAMIC_FWD =
+    // ARM_TEST.and(TEST_CONTROLLER.b());
+    //                public static final Trigger DYNAMIC_REV = ARM_TEST.and(TEST_CONTROLLER.a());
     //            }
     //
     //            public static final class Drive {

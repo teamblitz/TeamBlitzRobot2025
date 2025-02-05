@@ -23,13 +23,17 @@ public interface ElevatorIO {
     /** Updates the set of loggable inputs. */
     public default void updateInputs(ElevatorIOInputs inputs) {}
 
-    public default void setSpeedLeft(double percent) {}
+    public default void setSpeed(double percent) {}
 
-    public default void setSpeedRight(double percent) {}
+    public default void setSetpoint(double position, double velocity, double acceleration) {}
 
     public default void setMotionMagicLeft(double extension) {}
 
     public default void setMotionMagicRight(double extension) {}
 
     public default void setPid(double p, double i, double d) {}
+
+    public default void setFF(double kV) {
+//        new
+    }
 }
