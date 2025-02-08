@@ -62,6 +62,8 @@ import frc.robot.subsystems.vision.notes.NoteVisionInputsAutoLogged;
 import java.util.Optional;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
+
+import lombok.extern.java.Log;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -258,7 +260,21 @@ public class Drive extends BlitzSubsystem {
                                             }
                                         })
                                 .ignoringDisable(true))
+                .andThen(() -> {
+                    // Initialize the previous setpoint to the robot's current speeds & module states
+                    ChassisSpeeds currentSpeeds =
+                            getChassisSpeeds(); // Method to get current robot-relative chassis speeds
+                    SwerveModuleState[] currentStates =
+                            getModuleStates(); // Method to get the current swerve module states
+                    previousSetpoint =
+                            new SwerveSetpoint(
+                                    currentSpeeds,
+                                    currentStates,
+                                    DriveFeedforwards.zeros(PHYSICAL_CONSTANTS.numModules));
+                })
                 .schedule();
+
+
 
         // Creates a SysIdRoutine
         routine =
@@ -392,16 +408,22 @@ public class Drive extends BlitzSubsystem {
 
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, MAX_SPEED);
 
-        // Note: it is important to not discretize speeds before or after
-        // using the setpoint generator, as it will discretize them for you
-        previousSetpoint =
-                setpointGenerator.generateSetpoint(
-                        previousSetpoint, // The previous setpoint
-                        speeds, // The desired target speeds
-                        Constants.LOOP_PERIOD_SEC // The loop time of the robot code, in seconds
-                        );
+//        Logger.recordOutput(logKey + "/drivespeeds", speeds);
+//        Logger.recordOutput(logKey + "/driveopen", openLoop);
+//        // Note: it is important to not discretize speeds before or after
+//        // using the setpoint generator, as it will discretize them for you
+//        previousSetpoint =
+//                setpointGenerator.generateSetpoint(
+//                        previousSetpoint, // The previous setpoint
+//                        speeds, // The desired target speeds
+//                        Constants.LOOP_PERIOD_SEC // The loop time of the robot code, in seconds
+//                        );
+//
+//        Logger.recordOutput(logKey + "/setpoint/speeds", previousSetpoint.robotRelativeSpeeds());
+//        Logger.recordOutput(logKey + "/setpoint/states", previousSetpoint.moduleStates());
+//        Logger.recordOutput(logKey + "/setpoint/ff", previousSetpoint.feedforwards());
 
-        setModuleStates(previousSetpoint.moduleStates(), openLoop, false, false);
+        setModuleStates(swerveModuleStates, openLoop, false, false);
     }
 
     /* Used by SwerveControllerCommand in Auto */

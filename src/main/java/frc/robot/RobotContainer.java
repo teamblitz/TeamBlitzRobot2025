@@ -33,8 +33,10 @@ import frc.robot.subsystems.drive.swerveModule.drive.DriveMotorIOSim;
 import frc.robot.subsystems.drive.swerveModule.encoder.EncoderIO;
 import frc.robot.subsystems.leds.Leds;
 import frc.robot.subsystems.superstructure.elevator.Elevator;
+import frc.robot.subsystems.superstructure.elevator.ElevatorIO;
 import frc.robot.subsystems.superstructure.elevator.ElevatorIOSpark;
 import frc.robot.subsystems.superstructure.wrist.Wrist;
+import frc.robot.subsystems.superstructure.wrist.WristIO;
 import frc.robot.subsystems.superstructure.wrist.WristIOSpark;
 import frc.robot.subsystems.vision.notes.NoteVisionIO;
 import frc.robot.subsystems.vision.notes.NoteVisionIOLimelight;
@@ -87,23 +89,7 @@ public class RobotContainer {
                                 OIConstants.Drive.Y_TRANSLATION,
                                 OIConstants.Drive.ROTATION_SPEED,
                                 () -> false,
-                                () -> // TODO: THis should be declarative, when button do xyz, not
-                                        // imperative as it is currently
-                                        //
-                                        // OIConstants.Drive.AMP_ASSIST.getAsBoolean()
-                                        //                                                ?
-                                        // (DriverStation.getAlliance().isPresent()
-                                        //
-                                        //      && DriverStation.getAlliance().get()
-                                        //
-                                        //              == DriverStation.Alliance
-                                        //
-                                        //                      .Red
-                                        //                                                        ?
-                                        // 90
-                                        //                                                        :
-                                        // -90)
-                                        Double.NaN)
+                                OIConstants.Drive.HEADING_CONTROL)
                         .withName("TeleopSwerve"));
     }
 
@@ -165,9 +151,9 @@ public class RobotContainer {
                 };
 
 
-        elevator = new Elevator(new ElevatorIOSpark());
+        elevator = new Elevator(new ElevatorIO() {});
 
-        wrist = new Wrist(new WristIOSpark());
+        wrist = new Wrist(new WristIO() {});
     }
 
     private void configureButtonBindings() {
