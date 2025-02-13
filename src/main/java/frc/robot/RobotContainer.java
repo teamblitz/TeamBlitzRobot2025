@@ -151,7 +151,7 @@ public class RobotContainer {
                 };
 
 
-        elevator = new Elevator(new ElevatorIO() {});
+        elevator = new Elevator(new ElevatorIOSpark());
 
         wrist = new Wrist(new WristIO() {});
     }

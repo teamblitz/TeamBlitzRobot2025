@@ -31,10 +31,10 @@ public class Elevator extends BlitzSubsystem {
         Logger.recordOutput(logKey + "/rotRightDeg", Math.toDegrees(inputs.positionRight) % 360);
 
         // Thou shalt not touch the below code unless it broke
-        setpoint = profile.calculate(Constants.LOOP_PERIOD_SEC, setpoint, goal);
-        TrapezoidProfile.State future_setpoint = profile.calculate(Constants.LOOP_PERIOD_SEC * 2, setpoint, goal);
-
-        io.setSetpoint(setpoint.position, setpoint.velocity, (future_setpoint.velocity - setpoint.velocity) / Constants.LOOP_PERIOD_SEC);
+//        setpoint = profile.calculate(Constants.LOOP_PERIOD_SEC, setpoint, goal);
+//        TrapezoidProfile.State future_setpoint = profile.calculate(Constants.LOOP_PERIOD_SEC * 2, setpoint, goal);
+//
+//        io.setSetpoint(setpoint.position, setpoint.velocity, (future_setpoint.velocity - setpoint.velocity) / Constants.LOOP_PERIOD_SEC);
     }
 
     public Command setSpeed(double left, double right) {
@@ -51,7 +51,7 @@ public class Elevator extends BlitzSubsystem {
     public Command upTest() {
         return runEnd(
                 () -> {
-                    io.setSpeed(0.1);
+                    io.setSpeed(0.2);
                 },
                 () -> {
                     io.setSpeed(0);
@@ -61,7 +61,7 @@ public class Elevator extends BlitzSubsystem {
     public Command downTest() {
         return runEnd(
                 () -> {
-                    io.setSpeed(-0.1);
+                    io.setSpeed(-0.2);
                 },
                 () -> {
                     io.setSpeed(0);

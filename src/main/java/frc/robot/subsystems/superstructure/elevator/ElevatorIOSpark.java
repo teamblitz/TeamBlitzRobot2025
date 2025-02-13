@@ -51,6 +51,9 @@ public class ElevatorIOSpark implements ElevatorIO {
                                 * (1.0 / 60.0)
                                 * (2 * Math.PI));
 
+        // todo fix when we switch back to split control
+        sharedConfig.inverted(true);
+
         SparkMaxConfig followerConfig = new SparkMaxConfig();
         followerConfig.apply(sharedConfig);
         followerConfig.follow(left, true);

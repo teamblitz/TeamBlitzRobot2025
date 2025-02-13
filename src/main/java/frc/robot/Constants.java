@@ -54,7 +54,7 @@ public final class Constants {
         SimBot
     }
 
-    public static final Robot ROBOT = Robot.CompBot;
+    public static final Robot ROBOT = Robot.DevBot;
 
     public static boolean compBot() {
         return ROBOT == Robot.CompBot;
@@ -329,9 +329,9 @@ public final class Constants {
         public static final double L3_EXTENSION = 6; // TODO get exact value
         public static final double L4_EXTENSION = 7; // TODO get exact value
 
-        public static final double OPEN_LOOP_RAMP = 0;
-        public static final int CURRENT_LIMIT = 1; // TODO config
-        public static final double ELEVATOR_GEAR_RATIO = 9.0 / 1.0;
+        public static final double OPEN_LOOP_RAMP = .25;
+        public static final int CURRENT_LIMIT = 40; // TODO config
+        public static final double ELEVATOR_GEAR_RATIO = 20.0 / 1.0;
 
         public static final InvertedValue LEFT_INVERT =
                 InvertedValue.Clockwise_Positive; // TODO ensure that this is correct
