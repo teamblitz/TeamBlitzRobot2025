@@ -8,17 +8,12 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.lib.MutableReference;
-import frc.lib.util.LimelightHelpers;
 import frc.robot.Constants.AutoConstants.StartingPosition;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.subsystems.drive.Drive;
@@ -31,9 +26,10 @@ import frc.robot.subsystems.drive.swerveModule.SwerveModuleConfiguration;
 import frc.robot.subsystems.drive.swerveModule.angle.AngleMotorIOSim;
 import frc.robot.subsystems.drive.swerveModule.drive.DriveMotorIOSim;
 import frc.robot.subsystems.drive.swerveModule.encoder.EncoderIO;
+import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeIOSpark;
 import frc.robot.subsystems.leds.Leds;
 import frc.robot.subsystems.superstructure.elevator.Elevator;
-import frc.robot.subsystems.superstructure.elevator.ElevatorIO;
 import frc.robot.subsystems.superstructure.elevator.ElevatorIOSpark;
 import frc.robot.subsystems.superstructure.wrist.Wrist;
 import frc.robot.subsystems.superstructure.wrist.WristIO;
@@ -54,6 +50,7 @@ public class RobotContainer {
     private Drive drive;
     private Elevator elevator;
     private Wrist wrist;
+    private Intake intake;
 
     /* ***** --- Autonomous --- ***** */
     private final LoggedDashboardChooser<Command> autoChooser;
@@ -153,7 +150,9 @@ public class RobotContainer {
 
         elevator = new Elevator(new ElevatorIOSpark());
 
-        wrist = new Wrist(new WristIO() {});
+        wrist = new Wrist(new WristIOSpark());
+
+        intake = new Intake(new IntakeIOSpark());
     }
 
     private void configureButtonBindings() {
@@ -173,52 +172,11 @@ public class RobotContainer {
         OIConstants.Elevator.ELEVATOR_UP_TEST.whileTrue(elevator.upTest());
         OIConstants.Elevator.ELEVATOR_DOWN_TEST.whileTrue(elevator.downTest());
 
-        new Trigger(() -> OIConstants.Wrist.wristManual.getAsDouble()>.05).whileTrue(wrist.setSpeed(OIConstants.Wrist.wristManual));
+        OIConstants.Intake.INTAKE.whileTrue(intake.intake());
+        OIConstants.Intake.EJECT.whileTrue(intake.outtake());
 
-        NetworkTableEntry intakeTx =
-                LimelightHelpers.getLimelightNTTableEntry("limelight-intake", "tx");
-        NetworkTableEntry intakeTv =
-                LimelightHelpers.getLimelightNTTableEntry("limelight-intake", "tv");
+        new Trigger(() -> Math.abs(OIConstants.Wrist.WRIST_MANUAL.getAsDouble())>.05).whileTrue(wrist.setSpeed(OIConstants.Wrist.WRIST_MANUAL));
 
-        Debouncer tvBouncer = new Debouncer(2. / 30., Debouncer.DebounceType.kBoth);
-        MutableReference<Double> txCache = new MutableReference<>(0.);
-        MutableReference<Boolean> tvCache = new MutableReference<>(false);
-
-        OIConstants.UNBOUND.whileTrue(
-                drive.chaseVector(
-                                () ->
-                                        new Translation2d(
-                                                        Math.cos(
-                                                                Math.toRadians(
-                                                                        txCache.get() * 1.7)),
-                                                        Math.sin(
-                                                                Math.toRadians(
-                                                                        txCache.get() * 1.7)))
-                                                .rotateBy(drive.getYaw()),
-                                () -> -txCache.get(),
-                                2,
-                                4)
-                        .until(() -> !tvCache.get())
-                        .beforeStarting(() -> Leds.getInstance().autoPickupActive = true)
-                        .finallyDo(() -> Leds.getInstance().autoPickupActive = false)
-                        .onlyIf(tvCache::get));
-
-        Commands.run(
-                        () -> {
-                            tvCache.set(tvBouncer.calculate(intakeTv.getDouble(0) == 1));
-                            if (intakeTv.getDouble(0) == 1) {
-                                txCache.set(intakeTx.getDouble(0));
-                            }
-                        })
-                .ignoringDisable(true)
-                .schedule();
-
-        new Trigger(() -> tvBouncer.calculate(intakeTv.getDouble(0) == 1))
-                .whileTrue(
-                        Commands.startEnd(
-                                        () -> Leds.getInstance().autoPickupReady = true,
-                                        () -> Leds.getInstance().autoPickupReady = false)
-                                .ignoringDisable(true));
     }
 
     private void configureAutoCommands() {}

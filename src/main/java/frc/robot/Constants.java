@@ -357,7 +357,9 @@ public final class Constants {
 
     public static final class Intake {
         public static final int CAN_ID = 40;
-        public static final double INTAKE_SPEED = .5; // TODO CONFIG
-        public static final double OUTTAKE_SPEED = -.5; // TODO CONFIG
+        public static final boolean INVERTED = true;
+        public static final int CURRENT_LIMIT = 40;
+        public static final double INTAKE_SPEED = 1; // TODO CONFIG
+        public static final double OUTTAKE_SPEED = -1; // TODO CONFIG
     }
 }

@@ -43,10 +43,22 @@ public class WristIOSpark implements WristIO {
     }
 
     @Override
+    public void setPercent(double percent) {
+        wristMotor.set(percent);
+    }
+
+    @Override
     public void setPid(double p, double i, double d) {
         wristMotor.configure(
                 new SparkMaxConfig().apply(new ClosedLoopConfig().pid(p, i, d)),
                 SparkBase.ResetMode.kNoResetSafeParameters,
                 SparkBase.PersistMode.kNoPersistParameters);
+    }
+
+    @Override
+    public void updateInputs(WristIOInputs inputs) {
+        inputs.volts = wristMotor.getAppliedOutput() * wristMotor.getEncoder().getPosition();
+        inputs.positionRadians = encoder.getPosition();
+        inputs.velocityRadiansPerSecond = encoder.getVelocity();
     }
 }

@@ -107,12 +107,12 @@ public class OIConstants {
     }
 
     public static final class Intake {
-        public static final Trigger FEED = OPERATOR_CONTROLLER.leftBumper();
+        public static final Trigger INTAKE = OPERATOR_CONTROLLER.leftBumper();
         public static final Trigger EJECT = OPERATOR_CONTROLLER.rightBumper();
     }
 
     public static final class Wrist {
-        public static final DoubleSupplier wristManual = () -> -OPERATOR_CONTROLLER.getRightY();
+        public static final DoubleSupplier WRIST_MANUAL = () -> -OPERATOR_CONTROLLER.getRightY();
     }
 
     public static final class Elevator {

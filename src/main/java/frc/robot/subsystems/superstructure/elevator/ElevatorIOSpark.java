@@ -74,18 +74,7 @@ public class ElevatorIOSpark implements ElevatorIO {
                 SparkBase.ResetMode.kResetSafeParameters,
                 SparkBase.PersistMode.kNoPersistParameters);
 
-// TODO Set Moter Type and set moter values
-        if (topLimitSwitch.get()) {
-        } else {
-            left.set(0.0);
-            right.set(0.0);
-        }
 
-        if (bottomLimitSwitch.get()) {
-        } else {
-            left.set(0.0);
-            right.set(0.0);
-        }
     }
 
     @Override

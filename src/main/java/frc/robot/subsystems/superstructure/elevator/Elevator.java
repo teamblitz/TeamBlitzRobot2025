@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.BlitzSubsystem;
 import frc.robot.Constants;
 import org.littletonrobotics.junction.Logger;
+import frc.robot.subsystems.superstructure.elevator.ElevatorIOSpark;
 
 public class Elevator extends BlitzSubsystem {
     private final frc.robot.subsystems.superstructure.elevator.ElevatorIO io;
@@ -55,6 +56,19 @@ public class Elevator extends BlitzSubsystem {
     public void periodic() {
         io.updateInputs(inputs);
         Logger.processInputs(logKey, inputs);
+//
+//        // TODO Set Motor Type and set motor values
+//        if (inputs.topLimitSwitch) {
+//        } else {
+//            left.set(0.0);
+//            right.set(0.0);
+//        }
+//
+//        if (inputs.bottomLimitSwitch) {
+//        } else {
+//            left.set(0.0);
+//            right.set(0.0);
+//        }
 
         Logger.recordOutput(logKey + "/rotLeftDeg", Math.toDegrees(inputs.positionLeft) % 360);
         Logger.recordOutput(logKey + "/rotRightDeg", Math.toDegrees(inputs.positionRight) % 360);

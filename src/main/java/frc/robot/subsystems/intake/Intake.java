@@ -12,7 +12,7 @@ public class Intake extends BlitzSubsystem {
     private final IntakeInputsAutoLogged inputs = new IntakeInputsAutoLogged();
 
     public Intake(IntakeIO io) {
-        super("Intake");
+        super("intake");
 
         this.io = io;
     }

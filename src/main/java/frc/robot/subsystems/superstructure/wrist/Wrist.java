@@ -10,11 +10,14 @@ import frc.lib.BlitzSubsystem;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.superstructure.elevator.ElevatorIO;
+import org.littletonrobotics.junction.Logger;
 
 import java.util.function.DoubleSupplier;
 
 public class Wrist extends BlitzSubsystem {
     public final WristIO io;
+
+    private final WristIOInputsAutoLogged inputs = new WristIOInputsAutoLogged();
 
     private TrapezoidProfile.State goal;
     private TrapezoidProfile.State setpoint;
@@ -46,7 +49,12 @@ public class Wrist extends BlitzSubsystem {
 
 
     @Override
-    public void periodic() {}
+    public void periodic() {
+        super.periodic();
+
+        io.updateInputs(inputs);
+        Logger.processInputs(logKey, inputs);
+    }
 
    final TrapezoidProfile wristTrapezoid
             = new TrapezoidProfile(new TrapezoidProfile.Constraints(0.8, 1.6));
@@ -56,14 +64,14 @@ public class Wrist extends BlitzSubsystem {
 
     public Command setSpeed(DoubleSupplier speed) {
 
-        return startEnd(
+        return runEnd(
                         () -> {
                             io.setPercent(speed.getAsDouble());
                         },
                         () -> {
                             io.setPercent(0);
                         })
-                .withName(logKey + "/speed " + speed.getAsDouble());
+                .withName(logKey + "/speed");
     }
 
     public Command r1Rotation() {
