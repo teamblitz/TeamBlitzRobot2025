@@ -18,6 +18,9 @@ public interface ElevatorIO {
 
         public double torqueCurrentLeft; // do we need?
         public double torqueCurrentRight; // do we need?
+
+        public boolean topLimitSwitch;
+        public boolean bottomLimitSwitch;
     }
 
     /** Updates the set of loggable inputs. */

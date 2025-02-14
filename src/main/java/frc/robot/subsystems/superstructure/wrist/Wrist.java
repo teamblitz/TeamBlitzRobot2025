@@ -40,11 +40,6 @@ public class Wrist extends BlitzSubsystem {
                 .withName(logKey + "/speed " + speed.getAsDouble());
     }
 
-    public Command setSpeed(double speed) {
-        return setSpeed(() -> speed);
-    }
-
-
     public Command r1Rotation() {
         if (Math.random() < 2) {
             throw new UnsupportedOperationException("Not supported yet.");

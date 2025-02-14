@@ -9,6 +9,7 @@ import com.revrobotics.spark.config.ClosedLoopConfig;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
+import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.Constants;
 import frc.robot.Constants.Elevator;
 
@@ -25,6 +26,9 @@ public class ElevatorIOSpark implements ElevatorIO {
 
     private ElevatorFeedforward feedforward = null;
 
+    private final DigitalInput topLimitSwitch;
+    private final DigitalInput bottomLimitSwitch;
+
     boolean useInternalEncoder;
 
     public ElevatorIOSpark() {
@@ -39,6 +43,8 @@ public class ElevatorIOSpark implements ElevatorIO {
         rightPid = right.getClosedLoopController();
         leftPid = left.getClosedLoopController();
 
+        topLimitSwitch = new DigitalInput(2);
+        bottomLimitSwitch = new DigitalInput(1);
         sharedConfig.idleMode(SparkBaseConfig.IdleMode.kBrake)
                 .openLoopRampRate(Elevator.OPEN_LOOP_RAMP)
                 .smartCurrentLimit(Elevator.CURRENT_LIMIT);
@@ -68,6 +74,22 @@ public class ElevatorIOSpark implements ElevatorIO {
                 SparkBase.ResetMode.kResetSafeParameters,
                 SparkBase.PersistMode.kNoPersistParameters);
 
+// TODO Set Moter Type and set moter values
+        if (topLimitSwitch.get()) {
+            left.set(0.2);
+            right.set(0.2);
+        } else {
+            left.set(0.0);
+            right.set(0.0);
+        }
+
+        if (bottomLimitSwitch.get()) {
+            left.set(0.2);
+            right.set(0.2);
+        } else {
+            left.set(0.0);
+            right.set(0.0);
+        }
     }
 
     @Override
