@@ -1,7 +1,12 @@
 package frc.robot.subsystems.superstructure.elevator;
 
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.units.Units;
+import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.*;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.BlitzSubsystem;
 import frc.robot.Constants;
 import org.littletonrobotics.junction.Logger;
@@ -17,10 +22,34 @@ public class Elevator extends BlitzSubsystem {
     private TrapezoidProfile.State goal;
     private TrapezoidProfile.State setpoint;
 
+    private final SysIdRoutine routine;
+
     public Elevator(ElevatorIO io) {
         super("elevator");
         this.io = io;
+
+        ShuffleboardTab characterizationTab = Shuffleboard.getTab("Characterization");
+
+        routine = new SysIdRoutine(
+                new SysIdRoutine.Config(
+                        null,
+                        Units.Volts.of(5),
+                        null
+                ),
+                new SysIdRoutine.Mechanism((volts) -> volts.in(Units.Volts),
+                        null, this)
+        );
+
+        characterizationTab.add(sysIdQuasistatic(SysIdRoutine.Direction.kForward).withName("Elevator Quasistic Forward"));
+        characterizationTab.add(sysIdQuasistatic(SysIdRoutine.Direction.kReverse).withName("Elevator Quasistic Reverse"));
+
+        characterizationTab.add(sysIdDynamic(SysIdRoutine.Direction.kForward).withName("Elevator Dynamic Forward"));
+        characterizationTab.add(sysIdDynamic(SysIdRoutine.Direction.kReverse).withName("Elevator Dynamic Reverse"));
+
+
+
     }
+
 
     @Override
     public void periodic() {
@@ -118,5 +147,13 @@ public class Elevator extends BlitzSubsystem {
     // TODO Implement
     public Command down() {
         return Commands.none();
+    }
+
+    public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
+        return routine.quasistatic(direction);
+    }
+
+    public Command sysIdDynamic(SysIdRoutine.Direction direction) {
+        return routine.dynamic(direction);
     }
 }

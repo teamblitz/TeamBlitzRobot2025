@@ -111,6 +111,11 @@ public class ElevatorIOSpark implements ElevatorIO {
     }
 
     @Override
+    public void setVolts(double volts) {
+        left.setVoltage(volts);
+    }
+
+    @Override
     public void updateInputs(ElevatorIOInputs inputs) {
         inputs.velocityLeft = leftEncoder.getVelocity();
         inputs.velocityRight = rightEncoder.getVelocity();

@@ -1,7 +1,7 @@
 package frc.robot.subsystems.intake;
 
-import static frc.robot.Constants.EndEffector.INTAKE_SPEED;
-import static frc.robot.Constants.EndEffector.OUTTAKE_SPEED;
+import static frc.robot.Constants.Intake.INTAKE_SPEED;
+import static frc.robot.Constants.Intake.OUTTAKE_SPEED;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.BlitzSubsystem;
@@ -12,7 +12,7 @@ public class Intake extends BlitzSubsystem {
     private final IntakeInputsAutoLogged inputs = new IntakeInputsAutoLogged();
 
     public Intake(IntakeIO io) {
-        super("EndEffector");
+        super("Intake");
 
         this.io = io;
     }

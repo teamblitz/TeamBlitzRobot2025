@@ -1,6 +1,6 @@
 package frc.robot.subsystems.intake;
 
-import static frc.robot.Constants.EndEffector.*;
+import static frc.robot.Constants.Intake.*;
 
 import com.revrobotics.spark.*;
 
