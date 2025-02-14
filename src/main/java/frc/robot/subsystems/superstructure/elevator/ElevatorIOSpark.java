@@ -76,16 +76,12 @@ public class ElevatorIOSpark implements ElevatorIO {
 
 // TODO Set Moter Type and set moter values
         if (topLimitSwitch.get()) {
-            left.set(0.2);
-            right.set(0.2);
         } else {
             left.set(0.0);
             right.set(0.0);
         }
 
         if (bottomLimitSwitch.get()) {
-            left.set(0.2);
-            right.set(0.2);
         } else {
             left.set(0.0);
             right.set(0.0);
