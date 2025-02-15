@@ -32,7 +32,6 @@ import frc.robot.subsystems.leds.Leds;
 import frc.robot.subsystems.superstructure.elevator.Elevator;
 import frc.robot.subsystems.superstructure.elevator.ElevatorIOSpark;
 import frc.robot.subsystems.superstructure.wrist.Wrist;
-import frc.robot.subsystems.superstructure.wrist.WristIO;
 import frc.robot.subsystems.superstructure.wrist.WristIOSpark;
 import frc.robot.subsystems.vision.notes.NoteVisionIO;
 import frc.robot.subsystems.vision.notes.NoteVisionIOLimelight;
@@ -147,7 +146,6 @@ public class RobotContainer {
                                     new NoteVisionIO() {});
                 };
 
-
         elevator = new Elevator(new ElevatorIOSpark());
 
         wrist = new Wrist(new WristIOSpark());
@@ -175,8 +173,8 @@ public class RobotContainer {
         OIConstants.Intake.INTAKE.whileTrue(intake.intake());
         OIConstants.Intake.EJECT.whileTrue(intake.outtake());
 
-        new Trigger(() -> Math.abs(OIConstants.Wrist.WRIST_MANUAL.getAsDouble())>.05).whileTrue(wrist.setSpeed(OIConstants.Wrist.WRIST_MANUAL));
-
+        new Trigger(() -> Math.abs(OIConstants.Wrist.WRIST_MANUAL.getAsDouble()) > .05)
+                .whileTrue(wrist.setSpeed(OIConstants.Wrist.WRIST_MANUAL));
     }
 
     private void configureAutoCommands() {}

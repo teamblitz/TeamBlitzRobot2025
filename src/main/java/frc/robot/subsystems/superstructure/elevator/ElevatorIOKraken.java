@@ -78,7 +78,6 @@ public class ElevatorIOKraken implements ElevatorIO {
         left.set(speed);
     }
 
-
     @Override
     public void setMotionMagicLeft(double extension) {
         left.setControl(motionMagic.withPosition(extension));

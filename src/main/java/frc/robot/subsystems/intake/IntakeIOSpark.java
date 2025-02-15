@@ -14,13 +14,14 @@ public class IntakeIOSpark implements IntakeIO {
 
         SparkMaxConfig config = new SparkMaxConfig();
 
-        config
-                .inverted(INVERTED)
-                .smartCurrentLimit(CURRENT_LIMIT);
+        config.inverted(INVERTED).smartCurrentLimit(CURRENT_LIMIT);
 
         motor = new SparkMax(CAN_ID, SparkLowLevel.MotorType.kBrushless);
 
-        motor.configure(config, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kNoPersistParameters);
+        motor.configure(
+                config,
+                SparkBase.ResetMode.kResetSafeParameters,
+                SparkBase.PersistMode.kNoPersistParameters);
     }
 
     @Override
