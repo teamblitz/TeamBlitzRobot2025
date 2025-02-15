@@ -53,11 +53,11 @@ public class ElevatorIOSpark implements ElevatorIO {
         sharedConfig
                 .encoder
                 .positionConversionFactor(
-                        (1 / Constants.Elevator.ELEVATOR_GEAR_RATIO) * (2 * Math.PI))
+                        (1 / Constants.Elevator.ELEVATOR_GEAR_RATIO) * Constants.Elevator.SPROCKET_CIRCUMFERANCE * 2)
                 .velocityConversionFactor(
                         (1 / Constants.Elevator.ELEVATOR_GEAR_RATIO)
                                 * (1.0 / 60.0)
-                                * (2 * Math.PI));
+                                * Constants.Elevator.SPROCKET_CIRCUMFERANCE * 2);
 
         // todo fix when we switch back to split control
         sharedConfig.inverted(true);

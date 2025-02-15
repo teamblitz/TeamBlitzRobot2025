@@ -332,6 +332,7 @@ public final class Constants {
         public static final double OPEN_LOOP_RAMP = .5;
         public static final int CURRENT_LIMIT = 40; // TODO config
         public static final double ELEVATOR_GEAR_RATIO = 20.0 / 1;
+        public static final double SPROCKET_CIRCUMFERANCE = Units.inchesToMeters(.25) * 24;
 
         public static final InvertedValue LEFT_INVERT =
                 InvertedValue.Clockwise_Positive; // TODO ensure that this is correct
@@ -344,7 +345,7 @@ public final class Constants {
     public static final class Wrist {
         public static final int CAN_ID = 30; // TODO CONFIG
         public static final double OPEN_LOOP_RAMP = .5;
-        public static final double GEAR_RATIO = (9.0) * (5.0) * (54.0 / 16.5);
+        public static final double GEAR_RATIO = (9.0) * (5.0) * (54.0 / 16.0);
         public static final int CURRENT_LIMIT = 40;
         public static final boolean INVERTED = false;
 
