@@ -8,6 +8,8 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.ClosedLoopConfig;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.math.controller.ElevatorFeedforward;
 import frc.robot.Constants;
 import frc.robot.Constants.Wrist;
 
@@ -46,6 +48,20 @@ public class WristIOSpark implements WristIO {
     @Override
     public void setPercent(double percent) {
         wristMotor.set(percent);
+    }
+
+    @Override
+    public void setFF(double kS, double kV, double kA, double kG) {
+        ArmFeedforward ff = new ArmFeedforward(kS, kV, kA, kG);
+    }
+
+    @Override
+    public void setSetPoint(double position, double velocity, double nextVelocity) {
+        pid.setReference(
+                position,
+                SparkBase.ControlType.kPosition,
+                ClosedLoopSlot.kSlot0,
+                feedforward.calculateWithVelocities(5velocity, nextVelocity), SparkClosedLoopController.ArbFFUnits.kVoltage);
     }
 
     @Override

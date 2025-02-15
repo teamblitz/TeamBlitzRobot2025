@@ -38,7 +38,5 @@ public interface ElevatorIO {
 
     public default void setPid(double p, double i, double d) {}
 
-    public default void setFF(double kV) {
-        //        new
-    }
+    public default void setFF(double kS, double kV, double kA, double kG) {}
 }

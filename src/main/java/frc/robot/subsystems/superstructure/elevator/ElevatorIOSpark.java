@@ -1,10 +1,7 @@
 package frc.robot.subsystems.superstructure.elevator;
 
 import com.revrobotics.*;
-import com.revrobotics.spark.SparkBase;
-import com.revrobotics.spark.SparkClosedLoopController;
-import com.revrobotics.spark.SparkLowLevel;
-import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.*;
 import com.revrobotics.spark.config.ClosedLoopConfig;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
@@ -92,7 +89,7 @@ public class ElevatorIOSpark implements ElevatorIO {
 
     @Override
     public void setFF(double kS, double kV, double kA, double kG) {
-        ElevatorFeedforward ff = new ElevatorFeedforward(kS, kV, kA, kG);
+        feedforward = new ElevatorFeedforward(kS, kV, kA, kG);
     }
 
     @Override
@@ -104,6 +101,16 @@ public class ElevatorIOSpark implements ElevatorIO {
     public void setVolts(double volts) {
         left.setVoltage(volts);
     }
+
+    @Override
+    public void setSetpoint(double position, double velocity, double nextVelocity) {
+        leftPid.setReference(
+                position,
+                SparkBase.ControlType.kPosition,
+                ClosedLoopSlot.kSlot0,
+                feedforward.calculateWithVelocities(velocity, nextVelocity), SparkClosedLoopController.ArbFFUnits.kVoltage);
+    }
+
 
     @Override
     public void updateInputs(ElevatorIOInputs inputs) {

@@ -9,6 +9,7 @@ public interface WristIO {
         public double velocityRadiansPerSecond;
         public double volts;
         public double torqueCurrent;
+        //public double feedforward;
     }
 
     public default void updateInputs(WristIOInputs inputs) {}
@@ -20,4 +21,7 @@ public interface WristIO {
     public default void setPid(double p, double i, double d) {}
 
     public default void setPercent(double percent) {}
+
+    public default void setFF(double kS, double kV, double kA, double kG) {}
+
 }
