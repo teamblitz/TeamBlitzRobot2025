@@ -86,7 +86,7 @@ public class RobotContainer {
                                 OIConstants.Drive.Y_TRANSLATION,
                                 OIConstants.Drive.ROTATION_SPEED,
                                 () -> false,
-                                OIConstants.Drive.HEADING_CONTROL)
+                        () -> Double.NaN)
                         .withName("TeleopSwerve"));
     }
 
