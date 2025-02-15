@@ -90,6 +90,7 @@ public class ElevatorIOSpark implements ElevatorIO {
                 SparkBase.PersistMode.kNoPersistParameters);
     }
 
+    @Override
     public void setFF(double kS, double kV, double kA, double kG) {
         ElevatorFeedforward ff = new ElevatorFeedforward(kS, kV, kA, kG);
     }
