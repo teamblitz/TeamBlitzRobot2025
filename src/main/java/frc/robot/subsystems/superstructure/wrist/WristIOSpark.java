@@ -40,6 +40,7 @@ public class WristIOSpark implements WristIO {
                 config,
                 SparkBase.ResetMode.kResetSafeParameters,
                 SparkBase.PersistMode.kNoPersistParameters);
+
     }
 
     @Override

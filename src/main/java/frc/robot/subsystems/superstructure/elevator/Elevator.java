@@ -32,7 +32,7 @@ public class Elevator extends BlitzSubsystem {
         routine =
                 new SysIdRoutine(
                         new SysIdRoutine.Config(null, Units.Volts.of(5), null),
-                        new SysIdRoutine.Mechanism((volts) -> volts.in(Units.Volts), null, this));
+                        new SysIdRoutine.Mechanism((volts) -> io.setVolts(volts.in(Units.Volts)), null, this));
 
         characterizationTab.add(
                 sysIdQuasistatic(SysIdRoutine.Direction.kForward)
@@ -49,6 +49,7 @@ public class Elevator extends BlitzSubsystem {
 
     @Override
     public void periodic() {
+        super.periodic();
         io.updateInputs(inputs);
         Logger.processInputs(logKey, inputs);
         //
@@ -91,7 +92,7 @@ public class Elevator extends BlitzSubsystem {
     public Command upTest() {
         return runEnd(
                         () -> {
-                            io.setSpeed(0.2);
+                            io.setSpeed(0.6);
                         },
                         () -> {
                             io.setSpeed(0);
@@ -102,7 +103,7 @@ public class Elevator extends BlitzSubsystem {
     public Command downTest() {
         return runEnd(
                         () -> {
-                            io.setSpeed(-0.2);
+                            io.setSpeed(-0.4);
                         },
                         () -> {
                             io.setSpeed(0);
