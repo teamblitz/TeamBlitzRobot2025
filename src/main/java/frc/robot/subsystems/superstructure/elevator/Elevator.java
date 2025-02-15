@@ -2,7 +2,6 @@ package frc.robot.subsystems.superstructure.elevator;
 
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.Units;
-import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.*;
@@ -10,15 +9,14 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.BlitzSubsystem;
 import frc.robot.Constants;
 import org.littletonrobotics.junction.Logger;
-import frc.robot.subsystems.superstructure.elevator.ElevatorIOSpark;
 
 public class Elevator extends BlitzSubsystem {
     private final frc.robot.subsystems.superstructure.elevator.ElevatorIO io;
     private final ElevatorIOInputsAutoLogged inputs = new ElevatorIOInputsAutoLogged();
 
-    private final TrapezoidProfile.Constraints constraints = new TrapezoidProfile.Constraints(0.8, 1.6);
-    private final TrapezoidProfile profile
-            = new TrapezoidProfile(constraints);
+    private final TrapezoidProfile.Constraints constraints =
+            new TrapezoidProfile.Constraints(0.8, 1.6);
+    private final TrapezoidProfile profile = new TrapezoidProfile(constraints);
 
     private TrapezoidProfile.State goal;
     private TrapezoidProfile.State setpoint;
@@ -31,53 +29,52 @@ public class Elevator extends BlitzSubsystem {
 
         ShuffleboardTab characterizationTab = Shuffleboard.getTab("Characterization");
 
-        routine = new SysIdRoutine(
-                new SysIdRoutine.Config(
-                        null,
-                        Units.Volts.of(5),
-                        null
-                ),
-                new SysIdRoutine.Mechanism((volts) -> volts.in(Units.Volts),
-                        null, this)
-        );
+        routine =
+                new SysIdRoutine(
+                        new SysIdRoutine.Config(null, Units.Volts.of(5), null),
+                        new SysIdRoutine.Mechanism((volts) -> volts.in(Units.Volts), null, this));
 
-        characterizationTab.add(sysIdQuasistatic(SysIdRoutine.Direction.kForward).withName("Elevator Quasistic Forward"));
-        characterizationTab.add(sysIdQuasistatic(SysIdRoutine.Direction.kReverse).withName("Elevator Quasistic Reverse"));
+        characterizationTab.add(
+                sysIdQuasistatic(SysIdRoutine.Direction.kForward)
+                        .withName("Elevator Quasistic Forward"));
+        characterizationTab.add(
+                sysIdQuasistatic(SysIdRoutine.Direction.kReverse)
+                        .withName("Elevator Quasistic Reverse"));
 
-        characterizationTab.add(sysIdDynamic(SysIdRoutine.Direction.kForward).withName("Elevator Dynamic Forward"));
-        characterizationTab.add(sysIdDynamic(SysIdRoutine.Direction.kReverse).withName("Elevator Dynamic Reverse"));
-
-
-
+        characterizationTab.add(
+                sysIdDynamic(SysIdRoutine.Direction.kForward).withName("Elevator Dynamic Forward"));
+        characterizationTab.add(
+                sysIdDynamic(SysIdRoutine.Direction.kReverse).withName("Elevator Dynamic Reverse"));
     }
-
 
     @Override
     public void periodic() {
         io.updateInputs(inputs);
         Logger.processInputs(logKey, inputs);
-//
-//        // TODO Set Motor Type and set motor values
-//        if (inputs.topLimitSwitch) {
-//        } else {
-//            left.set(0.0);
-//            right.set(0.0);
-//        }
-//
-//        if (inputs.bottomLimitSwitch) {
-//        } else {
-//            left.set(0.0);
-//            right.set(0.0);
-//        }
+        //
+        //        // TODO Set Motor Type and set motor values
+        //        if (inputs.topLimitSwitch) {
+        //        } else {
+        //            left.set(0.0);
+        //            right.set(0.0);
+        //        }
+        //
+        //        if (inputs.bottomLimitSwitch) {
+        //        } else {
+        //            left.set(0.0);
+        //            right.set(0.0);
+        //        }
 
         Logger.recordOutput(logKey + "/rotLeftDeg", Math.toDegrees(inputs.positionLeft) % 360);
         Logger.recordOutput(logKey + "/rotRightDeg", Math.toDegrees(inputs.positionRight) % 360);
 
         // Thou shalt not touch the below code unless it broke
-//        setpoint = profile.calculate(Constants.LOOP_PERIOD_SEC, setpoint, goal);
-//        TrapezoidProfile.State future_setpoint = profile.calculate(Constants.LOOP_PERIOD_SEC * 2, setpoint, goal);
-//
-//        io.setSetpoint(setpoint.position, setpoint.velocity, (future_setpoint.velocity - setpoint.velocity) / Constants.LOOP_PERIOD_SEC);
+        //        setpoint = profile.calculate(Constants.LOOP_PERIOD_SEC, setpoint, goal);
+        //        TrapezoidProfile.State future_setpoint =
+        // profile.calculate(Constants.LOOP_PERIOD_SEC * 2, setpoint, goal);
+        //
+        //        io.setSetpoint(setpoint.position, setpoint.velocity, (future_setpoint.velocity -
+        // setpoint.velocity) / Constants.LOOP_PERIOD_SEC);
     }
 
     public Command setSpeed(double left, double right) {
@@ -93,25 +90,25 @@ public class Elevator extends BlitzSubsystem {
 
     public Command upTest() {
         return runEnd(
-                () -> {
-                    io.setSpeed(0.2);
-                },
-                () -> {
-                    io.setSpeed(0);
-                }).alongWith(Commands.print("Up test"));
+                        () -> {
+                            io.setSpeed(0.2);
+                        },
+                        () -> {
+                            io.setSpeed(0);
+                        })
+                .alongWith(Commands.print("Up test"));
     }
 
     public Command downTest() {
         return runEnd(
-                () -> {
-                    io.setSpeed(-0.2);
-                },
-                () -> {
-                    io.setSpeed(0);
-                }).alongWith(Commands.print("dwn test"));
+                        () -> {
+                            io.setSpeed(-0.2);
+                        },
+                        () -> {
+                            io.setSpeed(0);
+                        })
+                .alongWith(Commands.print("dwn test"));
     }
-
-
 
     // TODO Implement
     public Command l1Extension() {

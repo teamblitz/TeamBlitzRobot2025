@@ -8,11 +8,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.BlitzSubsystem;
 import frc.robot.Constants;
-import frc.robot.RobotContainer;
-import frc.robot.subsystems.superstructure.elevator.ElevatorIO;
-import org.littletonrobotics.junction.Logger;
-
 import java.util.function.DoubleSupplier;
+import org.littletonrobotics.junction.Logger;
 
 public class Wrist extends BlitzSubsystem {
     public final WristIO io;
@@ -30,23 +27,23 @@ public class Wrist extends BlitzSubsystem {
 
         ShuffleboardTab characterizationTab = Shuffleboard.getTab("Characterization");
 
-        routine = new SysIdRoutine(
-                new SysIdRoutine.Config(
-                        null,
-                        Units.Volts.of(5),
-                        null
-                ),
-                new SysIdRoutine.Mechanism((volts) -> volts.in(Units.Volts),
-                        null, this)
-        );
+        routine =
+                new SysIdRoutine(
+                        new SysIdRoutine.Config(null, Units.Volts.of(5), null),
+                        new SysIdRoutine.Mechanism((volts) -> volts.in(Units.Volts), null, this));
 
-        characterizationTab.add(sysIdQuasistatic(SysIdRoutine.Direction.kForward).withName("Wrist Quasistic Forward"));
-        characterizationTab.add(sysIdQuasistatic(SysIdRoutine.Direction.kReverse).withName("Wrist Quasistic Reverse"));
+        characterizationTab.add(
+                sysIdQuasistatic(SysIdRoutine.Direction.kForward)
+                        .withName("Wrist Quasistic Forward"));
+        characterizationTab.add(
+                sysIdQuasistatic(SysIdRoutine.Direction.kReverse)
+                        .withName("Wrist Quasistic Reverse"));
 
-        characterizationTab.add(sysIdDynamic(SysIdRoutine.Direction.kForward).withName("Wrist Dynamic Forward"));
-        characterizationTab.add(sysIdDynamic(SysIdRoutine.Direction.kReverse).withName("Wrist Dynamic Reverse"));
+        characterizationTab.add(
+                sysIdDynamic(SysIdRoutine.Direction.kForward).withName("Wrist Dynamic Forward"));
+        characterizationTab.add(
+                sysIdDynamic(SysIdRoutine.Direction.kReverse).withName("Wrist Dynamic Reverse"));
     }
-
 
     @Override
     public void periodic() {
@@ -56,11 +53,17 @@ public class Wrist extends BlitzSubsystem {
         Logger.processInputs(logKey, inputs);
     }
 
-   final TrapezoidProfile wristTrapezoid
-            = new TrapezoidProfile(new TrapezoidProfile.Constraints(0.8, 1.6));
-//    private TrapezoidProfile.State m_goal = new TrapezoidProfile.State(double position, double velocity);
-//    private TrapezoidProfile.State m_setPoint = new TrapezoidProfile.State(double position, double velocity);
-//
+    final TrapezoidProfile wristTrapezoid =
+            new TrapezoidProfile(new TrapezoidProfile.Constraints(0.8, 1.6));
+
+    //    private TrapezoidProfile.State m_goal = new TrapezoidProfile.State(double position, double
+    // velocity);
+    //    private TrapezoidProfile.State m_setPoint = new TrapezoidProfile.State(double position,
+    // double velocity);
+    //
+    public Command setSpeed(double speed) {
+        return setSpeed(() -> speed);
+    }
 
     public Command setSpeed(DoubleSupplier speed) {
 
@@ -75,7 +78,6 @@ public class Wrist extends BlitzSubsystem {
     }
 
     public Command r1Rotation() {
-
 
         return run(() -> io.setSetpoint(Constants.Wrist.wristRotations.r1RotationValue, 0, 0));
     }
@@ -99,6 +101,7 @@ public class Wrist extends BlitzSubsystem {
                     io.setSetpoint(Constants.Wrist.wristRotations.r1RotationValue, 0, 0);
                 });
     }
+
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
         return routine.quasistatic(direction);
     }

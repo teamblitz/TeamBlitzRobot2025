@@ -45,11 +45,13 @@ public class ElevatorIOSpark implements ElevatorIO {
 
         topLimitSwitch = new DigitalInput(2);
         bottomLimitSwitch = new DigitalInput(1);
-        sharedConfig.idleMode(SparkBaseConfig.IdleMode.kBrake)
+        sharedConfig
+                .idleMode(SparkBaseConfig.IdleMode.kBrake)
                 .openLoopRampRate(Elevator.OPEN_LOOP_RAMP)
                 .smartCurrentLimit(Elevator.CURRENT_LIMIT);
 
-        sharedConfig.encoder
+        sharedConfig
+                .encoder
                 .positionConversionFactor(
                         (1 / Constants.Elevator.ELEVATOR_GEAR_RATIO) * (2 * Math.PI))
                 .velocityConversionFactor(
@@ -73,8 +75,6 @@ public class ElevatorIOSpark implements ElevatorIO {
                 followerConfig,
                 SparkBase.ResetMode.kResetSafeParameters,
                 SparkBase.PersistMode.kNoPersistParameters);
-
-
     }
 
     @Override
@@ -90,10 +90,10 @@ public class ElevatorIOSpark implements ElevatorIO {
                 SparkBase.PersistMode.kNoPersistParameters);
     }
 
-
     public void setFF(double kS, double kV, double kA, double kG) {
         ElevatorFeedforward ff = new ElevatorFeedforward(kS, kV, kA, kG);
     }
+
     @Override
     public void setSpeed(double speed) {
         left.set(speed);
