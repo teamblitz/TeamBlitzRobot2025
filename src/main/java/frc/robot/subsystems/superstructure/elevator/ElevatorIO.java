@@ -32,14 +32,13 @@ public interface ElevatorIO {
 
     public default void setSetpoint(double position, double velocity, double acceleration) {}
 
+    @Deprecated
     public default void setMotionMagicLeft(double extension) {}
 
+    @Deprecated
     public default void setMotionMagicRight(double extension) {}
 
     public default void setPid(double p, double i, double d) {}
 
-    public default void setFF(double kS, double kV, double kA, double kG) {}
-
-    public default void setBreakMode(boolean breakMode) {}
-
+    public default void setFF(double kS, double kG, double kV, double kA) {}
 }

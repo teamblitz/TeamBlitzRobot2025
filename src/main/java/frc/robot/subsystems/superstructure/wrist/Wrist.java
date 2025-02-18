@@ -8,16 +8,18 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.BlitzSubsystem;
-import frc.robot.Constants;
-import java.util.function.DoubleSupplier;
-
+import frc.lib.math.EqualsUtil;
 import frc.robot.subsystems.leds.Leds;
+import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 
 public class Wrist extends BlitzSubsystem {
     public final WristIO io;
 
     private final WristIOInputsAutoLogged inputs = new WristIOInputsAutoLogged();
+
+    private TrapezoidProfile profile =
+            new TrapezoidProfile(new TrapezoidProfile.Constraints(0.8, 1.6));
 
     private TrapezoidProfile.State goal;
     private TrapezoidProfile.State setpoint;
@@ -55,24 +57,23 @@ public class Wrist extends BlitzSubsystem {
         io.updateInputs(inputs);
         Logger.processInputs(logKey, inputs);
 
-
-        Logger.recordOutput(logKey + "/absEncoderDegrees", Math.toRadians(inputs.absoluteEncoderPosition));
+        Logger.recordOutput(
+                logKey + "/absEncoderDegrees", Math.toRadians(inputs.absoluteEncoderPosition));
     }
 
-    final TrapezoidProfile wristTrapezoid =
-            new TrapezoidProfile(new TrapezoidProfile.Constraints(0.8, 1.6));
+    public double getPosition() {
+        return inputs.positionRadians;
+    }
 
-    //    private TrapezoidProfile.State m_goal = new TrapezoidProfile.State(double position, double
-    // velocity);
-    //    private TrapezoidProfile.State m_setPoint = new TrapezoidProfile.State(double position,
-    // double velocity);
-    //
+    public double getVelocity() {
+        return inputs.velocityRadiansPerSecond;
+    }
+
     public Command setSpeed(double speed) {
         return setSpeed(() -> speed);
     }
 
     public Command setSpeed(DoubleSupplier speed) {
-
         return runEnd(
                         () -> {
                             io.setPercent(speed.getAsDouble());
@@ -83,29 +84,25 @@ public class Wrist extends BlitzSubsystem {
                 .withName(logKey + "/speed");
     }
 
-    public Command r1Rotation() {
-
-        return run(() -> io.setSetpoint(Constants.Wrist.wristRotations.r1RotationValue, 0, 0));
+    public Command withGoal(TrapezoidProfile.State goal) {
+        return runOnce(
+                        () -> {
+                            this.goal = goal;
+                        })
+                .until(() -> setpoint.equals(goal))
+                .handleInterrupt(() -> this.goal = setpoint)
+                .beforeStarting(refreshCurrentState());
     }
 
-    public Command r2Rotation() {
-        if (Math.random() < 2) {
-            throw new UnsupportedOperationException("Not supported yet. UwU");
-        }
-        return run(
-                () -> {
-                    io.setSetpoint(Constants.Wrist.wristRotations.r1RotationValue, 0, 0);
-                });
-    }
-
-    public Command r3Rotation() {
-        if (Math.random() < 2) {
-            throw new UnsupportedOperationException("Not supported yet. <- DO NOT REMOVE");
-        }
-        return run(
-                () -> {
-                    io.setSetpoint(Constants.Wrist.wristRotations.r1RotationValue, 0, 0);
-                });
+    private Command refreshCurrentState() {
+        return runOnce(() -> setpoint = new TrapezoidProfile.State(getPosition(), getVelocity()))
+                .onlyIf(
+                        () ->
+                                setpoint == null
+                                        || !EqualsUtil.epsilonEquals(
+                                                setpoint.position, getPosition(), .02)
+                                        || !EqualsUtil.epsilonEquals(
+                                                setpoint.velocity, getVelocity(), 0.04));
     }
 
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {

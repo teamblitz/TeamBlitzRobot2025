@@ -50,11 +50,14 @@ public class ElevatorIOSpark implements ElevatorIO {
         sharedConfig
                 .encoder
                 .positionConversionFactor(
-                        (1 / Constants.Elevator.ELEVATOR_GEAR_RATIO) * Constants.Elevator.SPROCKET_CIRCUMFERANCE * 2)
+                        (1 / Constants.Elevator.ELEVATOR_GEAR_RATIO)
+                                * Constants.Elevator.SPROCKET_CIRCUMFERANCE
+                                * 2)
                 .velocityConversionFactor(
                         (1 / Constants.Elevator.ELEVATOR_GEAR_RATIO)
                                 * (1.0 / 60.0)
-                                * Constants.Elevator.SPROCKET_CIRCUMFERANCE * 2);
+                                * Constants.Elevator.SPROCKET_CIRCUMFERANCE
+                                * 2);
 
         // todo fix when we switch back to split control
         sharedConfig.inverted(true);
@@ -88,26 +91,25 @@ public class ElevatorIOSpark implements ElevatorIO {
     }
 
     @Override
-    public void setFF(double kS, double kV, double kA, double kG) {
-        feedforward = new ElevatorFeedforward(kS, kV, kA, kG);
+    public void setFF(double kS, double kG, double kV, double kA) {
+        feedforward = new ElevatorFeedforward(kS, kG, kV, kA);
     }
 
     public void setBreakMode(boolean breakMode) {
         SparkMaxConfig brakeConfig = new SparkMaxConfig();
 
-        brakeConfig.idleMode(breakMode ? SparkBaseConfig.IdleMode.kBrake : SparkBaseConfig.IdleMode.kCoast);
+        brakeConfig.idleMode(
+                breakMode ? SparkBaseConfig.IdleMode.kBrake : SparkBaseConfig.IdleMode.kCoast);
 
         left.configure(
                 brakeConfig,
                 SparkBase.ResetMode.kNoResetSafeParameters,
-                SparkBase.PersistMode.kNoPersistParameters
-        );
+                SparkBase.PersistMode.kNoPersistParameters);
 
         right.configure(
                 brakeConfig,
                 SparkBase.ResetMode.kNoResetSafeParameters,
-                SparkBase.PersistMode.kNoPersistParameters
-        );
+                SparkBase.PersistMode.kNoPersistParameters);
     }
 
     @Override
@@ -126,9 +128,9 @@ public class ElevatorIOSpark implements ElevatorIO {
                 position,
                 SparkBase.ControlType.kPosition,
                 ClosedLoopSlot.kSlot0,
-                feedforward.calculateWithVelocities(velocity, nextVelocity), SparkClosedLoopController.ArbFFUnits.kVoltage);
+                feedforward.calculateWithVelocities(velocity, nextVelocity),
+                SparkClosedLoopController.ArbFFUnits.kVoltage);
     }
-
 
     @Override
     public void updateInputs(ElevatorIOInputs inputs) {

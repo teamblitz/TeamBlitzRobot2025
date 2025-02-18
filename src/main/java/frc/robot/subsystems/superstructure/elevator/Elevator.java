@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.BlitzSubsystem;
+import frc.lib.math.EqualsUtil;
 import frc.robot.Constants;
 import frc.robot.subsystems.leds.Leds;
 import org.littletonrobotics.junction.Logger;
@@ -33,7 +34,8 @@ public class Elevator extends BlitzSubsystem {
         routine =
                 new SysIdRoutine(
                         new SysIdRoutine.Config(null, Units.Volts.of(5), null),
-                        new SysIdRoutine.Mechanism((volts) -> io.setVolts(volts.in(Units.Volts)), null, this));
+                        new SysIdRoutine.Mechanism(
+                                (volts) -> io.setVolts(volts.in(Units.Volts)), null, this));
 
         characterizationTab.add(
                 sysIdQuasistatic(SysIdRoutine.Direction.kForward)
@@ -71,12 +73,14 @@ public class Elevator extends BlitzSubsystem {
         Logger.recordOutput(logKey + "/rotRightDeg", Math.toDegrees(inputs.positionRight) % 360);
 
         // Thou shalt not touch the below code unless it broke
-        //        setpoint = profile.calculate(Constants.LOOP_PERIOD_SEC, setpoint, goal);
-        //        TrapezoidProfile.State future_setpoint =
-        // profile.calculate(Constants.LOOP_PERIOD_SEC * 2, setpoint, goal);
-        //
-        //        io.setSetpoint(setpoint.position, setpoint.velocity, (future_setpoint.velocity -
-        // setpoint.velocity) / Constants.LOOP_PERIOD_SEC);
+        setpoint = profile.calculate(Constants.LOOP_PERIOD_SEC, setpoint, goal);
+        TrapezoidProfile.State future_setpoint =
+                profile.calculate(Constants.LOOP_PERIOD_SEC * 2, setpoint, goal);
+
+        io.setSetpoint(
+                setpoint.position,
+                setpoint.velocity,
+                (future_setpoint.velocity - setpoint.velocity) / Constants.LOOP_PERIOD_SEC);
     }
 
     public Command setSpeed(double left, double right) {
@@ -110,6 +114,39 @@ public class Elevator extends BlitzSubsystem {
                             io.setSpeed(0);
                         })
                 .alongWith(Commands.print("dwn test"));
+    }
+
+    public Command withGoal(TrapezoidProfile.State goal) {
+        return runOnce(
+                        () -> {
+                            this.goal = goal;
+                        })
+                .until(() -> setpoint.equals(goal))
+                .handleInterrupt(() -> this.goal = setpoint)
+                .beforeStarting(refreshCurrentState());
+    }
+
+    /**
+     * Generates a command to reset the current internal setpoint to the actual state if they
+     * conflict
+     */
+    private Command refreshCurrentState() {
+        return runOnce(() -> setpoint = new TrapezoidProfile.State(getPosition(), getVelocity()))
+                .onlyIf(
+                        () ->
+                                setpoint == null
+                                        || !EqualsUtil.epsilonEquals(
+                                                setpoint.position, getPosition(), .02)
+                                        || !EqualsUtil.epsilonEquals(
+                                                setpoint.velocity, getVelocity(), 0.04));
+    }
+
+    private double getPosition() {
+        return inputs.positionLeft;
+    }
+
+    private double getVelocity() {
+        return inputs.velocityLeft;
     }
 
     // TODO Implement

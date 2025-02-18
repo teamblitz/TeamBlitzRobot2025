@@ -23,7 +23,7 @@ public interface WristIO {
 
     public default void setPercent(double percent) {}
 
-    public default void setFF(double kS, double kV, double kA, double kG) {}
+    public default void setFF(double kS, double kG, double kV, double kA) {}
 
     public default void setBreakMode(boolean breakMode) {}
 }

@@ -85,7 +85,7 @@ public class RobotContainer {
                                 OIConstants.Drive.Y_TRANSLATION,
                                 OIConstants.Drive.ROTATION_SPEED,
                                 () -> false,
-                        () -> Double.NaN)
+                                () -> Double.NaN)
                         .withName("TeleopSwerve"));
     }
 
@@ -176,12 +176,8 @@ public class RobotContainer {
         new Trigger(() -> Math.abs(OIConstants.Wrist.WRIST_MANUAL.getAsDouble()) > .05)
                 .whileTrue(wrist.setSpeed(OIConstants.Wrist.WRIST_MANUAL));
 
-        new Trigger(RobotController::getUserButton).toggleOnTrue(
-                Commands.parallel(
-                        wrist.coastCommand(),
-                        elevator.coastCommand()
-                )
-        );
+        new Trigger(RobotController::getUserButton)
+                .toggleOnTrue(Commands.parallel(wrist.coastCommand(), elevator.coastCommand()));
     }
 
     private void configureAutoCommands() {}
