@@ -329,7 +329,7 @@ public final class Constants {
         public static final double L3_EXTENSION = 6; // TODO get exact value
         public static final double L4_EXTENSION = 7; // TODO get exact value
 
-        public static final double OPEN_LOOP_RAMP = 0; //FIX AFTER SYSID PLEASE FOR THE LOVE OF GOD
+        public static final double OPEN_LOOP_RAMP = .25; //FIX AFTER SYSID PLEASE FOR THE LOVE OF GOD
         public static final int CURRENT_LIMIT = 40; 
         public static final double ELEVATOR_GEAR_RATIO = 20.0 / 1;
         public static final double SPROCKET_CIRCUMFERANCE = Units.inchesToMeters(.25) * 24;
@@ -344,7 +344,7 @@ public final class Constants {
 
     public static final class Wrist {
         public static final int CAN_ID = 30; // TODO CONFIG
-        public static final double OPEN_LOOP_RAMP = .5;
+        public static final double OPEN_LOOP_RAMP = .25;
         public static final double GEAR_RATIO = (9.0) * (5.0) * (54.0 / 16.0);
         public static final int CURRENT_LIMIT = 40;
         public static final boolean INVERTED = false;

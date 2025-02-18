@@ -73,6 +73,15 @@ public class WristIOSpark implements WristIO {
     }
 
     @Override
+    public void setBreakMode(boolean breakMode) {
+        wristMotor.configure(
+                new SparkMaxConfig().idleMode(breakMode ? SparkBaseConfig.IdleMode.kBrake : SparkBaseConfig.IdleMode.kCoast),
+                SparkBase.ResetMode.kNoResetSafeParameters,
+                SparkBase.PersistMode.kNoPersistParameters
+        );
+    }
+
+    @Override
     public void updateInputs(WristIOInputs inputs) {
         inputs.volts = wristMotor.getAppliedOutput() * wristMotor.getEncoder().getPosition();
         inputs.positionRadians = encoder.getPosition();

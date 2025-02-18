@@ -5,10 +5,13 @@ import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.BlitzSubsystem;
 import frc.robot.Constants;
 import java.util.function.DoubleSupplier;
+
+import frc.robot.subsystems.leds.Leds;
 import org.littletonrobotics.junction.Logger;
 
 public class Wrist extends BlitzSubsystem {
@@ -108,5 +111,13 @@ public class Wrist extends BlitzSubsystem {
 
     public Command sysIdDynamic(SysIdRoutine.Direction direction) {
         return routine.dynamic(direction);
+    }
+
+    public Command coastCommand() {
+        return Commands.startEnd(() -> io.setBreakMode(false), () -> io.setBreakMode(true))
+                .beforeStarting(() -> Leds.getInstance().armCoast = true)
+                .finallyDo(() -> Leds.getInstance().armCoast = false)
+                .ignoringDisable(true)
+                .withName(logKey + "/coast");
     }
 }

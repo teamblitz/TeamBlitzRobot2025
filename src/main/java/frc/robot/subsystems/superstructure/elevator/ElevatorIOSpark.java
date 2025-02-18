@@ -92,6 +92,24 @@ public class ElevatorIOSpark implements ElevatorIO {
         feedforward = new ElevatorFeedforward(kS, kV, kA, kG);
     }
 
+    public void setBreakMode(boolean breakMode) {
+        SparkMaxConfig brakeConfig = new SparkMaxConfig();
+
+        brakeConfig.idleMode(breakMode ? SparkBaseConfig.IdleMode.kBrake : SparkBaseConfig.IdleMode.kCoast);
+
+        left.configure(
+                brakeConfig,
+                SparkBase.ResetMode.kNoResetSafeParameters,
+                SparkBase.PersistMode.kNoPersistParameters
+        );
+
+        right.configure(
+                brakeConfig,
+                SparkBase.ResetMode.kNoResetSafeParameters,
+                SparkBase.PersistMode.kNoPersistParameters
+        );
+    }
+
     @Override
     public void setSpeed(double speed) {
         left.set(speed);

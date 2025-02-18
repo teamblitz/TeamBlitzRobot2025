@@ -175,6 +175,13 @@ public class RobotContainer {
 
         new Trigger(() -> Math.abs(OIConstants.Wrist.WRIST_MANUAL.getAsDouble()) > .05)
                 .whileTrue(wrist.setSpeed(OIConstants.Wrist.WRIST_MANUAL));
+
+        new Trigger(RobotController::getUserButton).toggleOnTrue(
+                Commands.parallel(
+                        wrist.coastCommand(),
+                        elevator.coastCommand()
+                )
+        );
     }
 
     private void configureAutoCommands() {}

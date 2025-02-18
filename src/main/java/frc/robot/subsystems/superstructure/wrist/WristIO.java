@@ -24,4 +24,5 @@ public interface WristIO {
 
     public default void setFF(double kS, double kV, double kA, double kG) {}
 
+    public default void setBreakMode(boolean breakMode) {}
 }

@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.BlitzSubsystem;
 import frc.robot.Constants;
+import frc.robot.subsystems.leds.Leds;
 import org.littletonrobotics.junction.Logger;
 
 public class Elevator extends BlitzSubsystem {
@@ -167,5 +168,13 @@ public class Elevator extends BlitzSubsystem {
 
     public Command sysIdDynamic(SysIdRoutine.Direction direction) {
         return routine.dynamic(direction);
+    }
+
+    public Command coastCommand() {
+        return Commands.startEnd(() -> io.setBreakMode(false), () -> io.setBreakMode(true))
+                .beforeStarting(() -> Leds.getInstance().armCoast = true)
+                .finallyDo(() -> Leds.getInstance().armCoast = false)
+                .ignoringDisable(true)
+                .withName(logKey + "/coast");
     }
 }
