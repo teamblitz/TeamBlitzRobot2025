@@ -17,6 +17,7 @@ public class WristIOSpark implements WristIO {
 
     private SparkMax wristMotor;
     private RelativeEncoder encoder;
+    private AbsoluteEncoder absoluteEncoder;
     private SparkClosedLoopController pid;
 
     boolean useInternalEncoder;
@@ -27,6 +28,7 @@ public class WristIOSpark implements WristIO {
         SparkMaxConfig config = new SparkMaxConfig();
 
         encoder = wristMotor.getEncoder();
+        absoluteEncoder = wristMotor.getAbsoluteEncoder();
         pid = wristMotor.getClosedLoopController();
 
         config.idleMode(SparkBaseConfig.IdleMode.kBrake)
@@ -37,6 +39,13 @@ public class WristIOSpark implements WristIO {
                 .positionConversionFactor((1 / Wrist.GEAR_RATIO) * (2 * Math.PI))
                 .velocityConversionFactor(
                         (1 / Constants.Wrist.GEAR_RATIO) * (1.0 / 60.0) * (2 * Math.PI));
+
+        config.absoluteEncoder
+                .zeroCentered(true)
+                .positionConversionFactor((2 * Math.PI))
+                .velocityConversionFactor((2 * Math.PI));
+
+
 
         wristMotor.configure(
                 config,
@@ -86,5 +95,7 @@ public class WristIOSpark implements WristIO {
         inputs.volts = wristMotor.getAppliedOutput() * wristMotor.getEncoder().getPosition();
         inputs.positionRadians = encoder.getPosition();
         inputs.velocityRadiansPerSecond = encoder.getVelocity();
+
+        inputs.absoluteEncoderPosition = absoluteEncoder.getPosition();
     }
 }

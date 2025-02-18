@@ -54,6 +54,9 @@ public class Wrist extends BlitzSubsystem {
 
         io.updateInputs(inputs);
         Logger.processInputs(logKey, inputs);
+
+
+        Logger.recordOutput(logKey + "/absEncoderDegrees", Math.toRadians(inputs.absoluteEncoderPosition));
     }
 
     final TrapezoidProfile wristTrapezoid =

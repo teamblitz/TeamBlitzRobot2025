@@ -9,7 +9,8 @@ public interface WristIO {
         public double velocityRadiansPerSecond;
         public double volts;
         public double torqueCurrent;
-        //public double feedforward;
+
+        public double absoluteEncoderPosition;
     }
 
     public default void updateInputs(WristIOInputs inputs) {}
