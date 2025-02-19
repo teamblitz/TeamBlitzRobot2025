@@ -343,6 +343,24 @@ public final class Constants {
         public static final double P = 180; // TODO config
     }
 
+    public static final class elevatorRightMotor {
+        public static final double KS = 0.10768;
+        public static final double KV = 8.1174;
+        public static final double KA = 1.13;
+        public static final double KG = 0.24133;
+        public static final double KP = 4.3951;
+        public static final double KD = 952.83;
+    }
+
+    public static final class elevatorLeftMotor {
+        public static final double KS = 0.10986;
+        public static final double KV = 8.259;
+        public static final double KA = 1.0318;
+        public static final double KG = 0.24188;
+        public static final double KP = 4.2941;
+        public static final double KD = 905.76;
+    }
+
     public static final class Wrist {
         public static final int CAN_ID = 30; // TODO CONFIG
         public static final double OPEN_LOOP_RAMP = .25;
