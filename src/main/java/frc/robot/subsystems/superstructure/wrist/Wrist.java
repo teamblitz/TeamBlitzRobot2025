@@ -114,7 +114,7 @@ public class Wrist extends BlitzSubsystem {
     }
 
     public Command coastCommand() {
-        return Commands.startEnd(() -> io.setBreakMode(false), () -> io.setBreakMode(true))
+        return Commands.startEnd(() -> io.setBrakeMode(false), () -> io.setBrakeMode(true))
                 .beforeStarting(() -> Leds.getInstance().armCoast = true)
                 .finallyDo(() -> Leds.getInstance().armCoast = false)
                 .ignoringDisable(true)

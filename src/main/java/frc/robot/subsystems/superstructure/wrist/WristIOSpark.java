@@ -40,6 +40,8 @@ public class WristIOSpark implements WristIO {
 
         config.absoluteEncoder
                 .zeroCentered(true)
+                .inverted(true)
+                .zeroOffset(Wrist.ABS_ENCODER_ZERO)
                 .positionConversionFactor((2 * Math.PI))
                 .velocityConversionFactor((2 * Math.PI));
 
@@ -78,11 +80,11 @@ public class WristIOSpark implements WristIO {
     }
 
     @Override
-    public void setBreakMode(boolean breakMode) {
+    public void setBrakeMode(boolean brakeMode) {
         wristMotor.configure(
                 new SparkMaxConfig()
                         .idleMode(
-                                breakMode
+                                brakeMode
                                         ? SparkBaseConfig.IdleMode.kBrake
                                         : SparkBaseConfig.IdleMode.kCoast),
                 SparkBase.ResetMode.kNoResetSafeParameters,

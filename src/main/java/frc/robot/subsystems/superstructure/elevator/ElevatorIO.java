@@ -41,4 +41,6 @@ public interface ElevatorIO {
     public default void setPid(double p, double i, double d) {}
 
     public default void setFF(double kS, double kG, double kV, double kA) {}
+
+    public default void setBrakeMode(boolean brakeMode) {}
 }

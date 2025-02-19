@@ -95,11 +95,12 @@ public class ElevatorIOSpark implements ElevatorIO {
         feedforward = new ElevatorFeedforward(kS, kG, kV, kA);
     }
 
-    public void setBreakMode(boolean breakMode) {
+    @Override
+    public void setBrakeMode(boolean brakeMode) {
         SparkMaxConfig brakeConfig = new SparkMaxConfig();
 
         brakeConfig.idleMode(
-                breakMode ? SparkBaseConfig.IdleMode.kBrake : SparkBaseConfig.IdleMode.kCoast);
+                brakeMode ? SparkBaseConfig.IdleMode.kBrake : SparkBaseConfig.IdleMode.kCoast);
 
         left.configure(
                 brakeConfig,

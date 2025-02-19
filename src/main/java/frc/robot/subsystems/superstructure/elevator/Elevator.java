@@ -73,14 +73,14 @@ public class Elevator extends BlitzSubsystem {
         Logger.recordOutput(logKey + "/rotRightDeg", Math.toDegrees(inputs.positionRight) % 360);
 
         // Thou shalt not touch the below code unless it broke
-        setpoint = profile.calculate(Constants.LOOP_PERIOD_SEC, setpoint, goal);
-        TrapezoidProfile.State future_setpoint =
-                profile.calculate(Constants.LOOP_PERIOD_SEC * 2, setpoint, goal);
-
-        io.setSetpoint(
-                setpoint.position,
-                setpoint.velocity,
-                (future_setpoint.velocity - setpoint.velocity) / Constants.LOOP_PERIOD_SEC);
+//        setpoint = profile.calculate(Constants.LOOP_PERIOD_SEC, setpoint, goal);
+//        TrapezoidProfile.State future_setpoint =
+//                profile.calculate(Constants.LOOP_PERIOD_SEC * 2, setpoint, goal);
+//
+//        io.setSetpoint(
+//                setpoint.position,
+//                setpoint.velocity,
+//                (future_setpoint.velocity - setpoint.velocity) / Constants.LOOP_PERIOD_SEC);
     }
 
     public Command setSpeed(double left, double right) {
@@ -208,7 +208,7 @@ public class Elevator extends BlitzSubsystem {
     }
 
     public Command coastCommand() {
-        return Commands.startEnd(() -> io.setBreakMode(false), () -> io.setBreakMode(true))
+        return Commands.startEnd(() -> io.setBrakeMode(false), () -> io.setBrakeMode(true))
                 .beforeStarting(() -> Leds.getInstance().armCoast = true)
                 .finallyDo(() -> Leds.getInstance().armCoast = false)
                 .ignoringDisable(true)
