@@ -1,5 +1,6 @@
 package frc.robot.subsystems.superstructure.wrist;
 
+import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -9,8 +10,12 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.BlitzSubsystem;
 import frc.lib.math.EqualsUtil;
+import frc.lib.util.LoggedTunableNumber;
+import frc.robot.Constants;
 import frc.robot.subsystems.leds.Leds;
 import java.util.function.DoubleSupplier;
+
+import lombok.extern.java.Log;
 import org.littletonrobotics.junction.Logger;
 
 public class Wrist extends BlitzSubsystem {
@@ -25,6 +30,22 @@ public class Wrist extends BlitzSubsystem {
     private TrapezoidProfile.State setpoint;
 
     private final SysIdRoutine routine;
+
+    private final LoggedTunableNumber kP =
+            new LoggedTunableNumber("wrist/kP", Constants.Wrist.WristGains.KP);
+    private final LoggedTunableNumber kI =
+            new LoggedTunableNumber("wrist/kI", Constants.Wrist.WristGains.KP);
+    private final LoggedTunableNumber kD =
+            new LoggedTunableNumber("wrist/kD", Constants.Wrist.WristGains.KD);
+
+    private final LoggedTunableNumber kS =
+            new LoggedTunableNumber("wrist/kS", Constants.Wrist.WristGains.KS);
+    private final LoggedTunableNumber kV =
+            new LoggedTunableNumber("wrist/kV", Constants.Wrist.WristGains.KV);
+    private final LoggedTunableNumber kA =
+            new LoggedTunableNumber("wrist/kA", Constants.Wrist.WristGains.KA);
+    private final LoggedTunableNumber kG =
+            new LoggedTunableNumber("wrist/kG", Constants.Wrist.WristGains.KG);
 
     public Wrist(WristIO io) {
         super("wrist");
@@ -58,7 +79,18 @@ public class Wrist extends BlitzSubsystem {
         Logger.processInputs(logKey, inputs);
 
         Logger.recordOutput(
-                logKey + "/absEncoderDegrees", Math.toDegrees(inputs.absoluteEncoderPosition));
+                logKey + "/absEncoderDegrees", Math.toRadians(inputs.absoluteEncoderPosition));
+        
+        LoggedTunableNumber.ifChanged(
+                hashCode(), pid -> io.setPid(pid[0], pid[1], pid[2]), kP, kI, kD);
+
+        LoggedTunableNumber.ifChanged(
+                hashCode(),
+                (kSGVA) -> io.setFF(kSGVA[0], kSGVA[1], kSGVA[2], kSGVA[3]),
+                kS,
+                kG,
+                kV,
+                kA);
     }
 
     public double getPosition() {

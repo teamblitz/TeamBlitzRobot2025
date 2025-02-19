@@ -341,24 +341,26 @@ public final class Constants {
                 InvertedValue.CounterClockwise_Positive; // TODO ensure that this is correct
 
         public static final double P = 180; // TODO config
-    }
 
-    public static final class elevatorRightMotor {
-        public static final double KS = 0.10768;
-        public static final double KV = 8.1174;
-        public static final double KA = 1.13;
-        public static final double KG = 0.24133;
-        public static final double KP = 4.3951;
-        public static final double KD = 952.83;
-    }
+//        public static final class RightGains {
+//            public static final double KS = 0.10768;
+//            public static final double KV = 8.1174;
+//            public static final double KA = 1.13;
+//            public static final double KG = 0.24133;
+//            public static final double KP = 4.3951;
+//            public static final double KD = 952.83;
+//        }
 
-    public static final class elevatorLeftMotor {
-        public static final double KS = 0.10986;
-        public static final double KV = 8.259;
-        public static final double KA = 1.0318;
-        public static final double KG = 0.24188;
-        public static final double KP = 4.2941;
-        public static final double KD = 905.76;
+        // LEFT GAINS
+        public static final class gains {
+            public static final double KS = 0.10986;
+            public static final double KV = 8.259;
+            public static final double KA = 1.0318;
+            public static final double KG = 0.24188;
+            public static final double KP = 4.2941;
+            public static final double KD = 905.76;
+            public static final double KI = 0;
+        }
     }
 
     public static final class Wrist {
@@ -374,6 +376,15 @@ public final class Constants {
             public static final double r1RotationValue = 1;
             public static final double r2RotationValue = 0.5;
             public static final double r3RotationValue = 0;
+        }
+
+        public static final class WristGains {
+            public static final double KS = 0; //TODO UPDATE ALL THESE VALUES
+            public static final double KV = 0;
+            public static final double KA = 0;
+            public static final double KG = 0;
+            public static final double KP = 0;
+            public static final double KD = 0;
         }
     }
 

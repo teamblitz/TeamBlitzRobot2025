@@ -1,5 +1,6 @@
 package frc.robot.subsystems.superstructure.elevator;
 
+import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -8,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.BlitzSubsystem;
 import frc.lib.math.EqualsUtil;
+import frc.lib.util.LoggedTunableNumber;
 import frc.robot.Constants;
 import frc.robot.subsystems.leds.Leds;
 import org.littletonrobotics.junction.Logger;
@@ -24,6 +26,24 @@ public class Elevator extends BlitzSubsystem {
     private TrapezoidProfile.State setpoint;
 
     private final SysIdRoutine routine;
+
+    // Left Elevator Tunable Numbers
+    private final LoggedTunableNumber leftKP =
+            new LoggedTunableNumber("elevator/kP", Constants.Elevator.gains.KP);
+    private final LoggedTunableNumber leftKI =
+            new LoggedTunableNumber("elevator/kI", Constants.Elevator.gains.KI);
+    private final LoggedTunableNumber leftKD =
+            new LoggedTunableNumber("elevator/kD", Constants.Elevator.gains.KD);
+
+
+    private final LoggedTunableNumber leftKS =
+            new LoggedTunableNumber("elevator/kS", Constants.Elevator.gains.KS);
+    private final LoggedTunableNumber leftKV =
+            new LoggedTunableNumber("elevator/kV", Constants.Elevator.gains.KV);
+    private final LoggedTunableNumber leftKA =
+            new LoggedTunableNumber("elevator/kA", Constants.Elevator.gains.KA);
+    private final LoggedTunableNumber leftKG =
+            new LoggedTunableNumber("elevator/kG", Constants.Elevator.gains.KG);
 
     public Elevator(ElevatorIO io) {
         super("elevator");
@@ -76,14 +96,39 @@ public class Elevator extends BlitzSubsystem {
         Logger.recordOutput(logKey + "/rotRightDeg", Math.toDegrees(inputs.positionRight) % 360);
 
         // Thou shalt not touch the below code unless it broke
-//        setpoint = profile.calculate(Constants.LOOP_PERIOD_SEC, setpoint, goal);
-//        TrapezoidProfile.State future_setpoint =
-//                profile.calculate(Constants.LOOP_PERIOD_SEC * 2, setpoint, goal);
+        setpoint = profile.calculate(Constants.LOOP_PERIOD_SEC, setpoint, goal);
+        TrapezoidProfile.State future_setpoint =
+                profile.calculate(Constants.LOOP_PERIOD_SEC * 2, setpoint, goal);
+
+        io.setSetpoint(
+                setpoint.position,
+                setpoint.velocity,
+                (future_setpoint.velocity - setpoint.velocity) / Constants.LOOP_PERIOD_SEC);
+
+        io.updateInputs(inputs);
+        Logger.processInputs(logKey, inputs);
+
+        LoggedTunableNumber.ifChanged(
+                hashCode(), pid -> io.setPid(pid[0], pid[1], pid[2]), leftKP, leftKI, leftKD);
+
+        LoggedTunableNumber.ifChanged(
+                hashCode(),
+                (kSGVA) -> io.setFF(kSGVA[0], kSGVA[1], kSGVA[2], kSGVA[3]),
+                leftKS,
+                leftKG,
+                leftKV,
+                leftKA);
+
+//        LoggedTunableNumber.ifChanged(
+//                hashCode(), pid -> io.setPid(pid[0], pid[1], pid[2]), rightKP, rightKD);
 //
-//        io.setSetpoint(
-//                setpoint.position,
-//                setpoint.velocity,
-//                (future_setpoint.velocity - setpoint.velocity) / Constants.LOOP_PERIOD_SEC);
+//        LoggedTunableNumber.ifChanged(
+//                hashCode(),
+//                kSGVA -> io.setFF()  = new ElevatorFeedforward(kSGVA[0], kSGVA[1], kSGVA[2], kSGVA[3]),
+//                rightKS,
+//                rightKV,
+//                rightKA,
+//                rightKG);
     }
 
     public Command setSpeed(double left, double right) {
@@ -150,56 +195,6 @@ public class Elevator extends BlitzSubsystem {
 
     private double getVelocity() {
         return inputs.velocityLeft;
-    }
-
-    // TODO Implement
-    public Command l1Extension() {
-        // return Commands.none();
-        return runEnd(
-                () -> {
-                    io.setSpeed(1);
-                },
-                () -> {
-                    io.setMotionMagicLeft(Constants.Elevator.L1_EXTENSION);
-                    io.setMotionMagicRight(Constants.Elevator.L1_EXTENSION);
-                });
-    }
-
-    // TODO: Implement
-    public Command l2Extension() {
-        return Commands.none();
-        //        return runEnd (
-        //            () -> {
-        //                /* left motor*/(Constants.Elevator.L2_EXTENSION);
-        //                /*right motor*/(Constants.Elevator.L2_EXTENSION);
-        //            }
-        //        )
-    }
-
-    // TODO: Implement
-    public Command l3Extension() {
-        return Commands.none();
-        //        return runEnd (
-        //            () -> {
-        //                /*left motor */(Constants.Elevator.L3_EXTENSION);
-        //                /*right motor */(Constants.Elevator.L3_EXTENSION);
-        //            }
-        //        )
-    }
-
-    // TODO: Implement
-    public Command l4Extension() {
-        return Commands.none();
-        //       return runEnd (
-        //                /*left motor */(Constants.Elevator.L4_EXTENSION);
-        //                /*right motor */(Constants.Elevator.L4_EXTENSION);//          () -> {
-        //            }
-        //        )
-    }
-
-    // TODO Implement
-    public Command down() {
-        return Commands.none();
     }
 
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
