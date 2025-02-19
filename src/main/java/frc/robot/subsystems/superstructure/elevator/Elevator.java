@@ -1,6 +1,5 @@
 package frc.robot.subsystems.superstructure.elevator;
 
-import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.Units;
@@ -13,7 +12,6 @@ import frc.lib.math.EqualsUtil;
 import frc.lib.util.LoggedTunableNumber;
 import frc.robot.Constants;
 import frc.robot.subsystems.leds.Leds;
-import org.apache.commons.math3.exception.MathIllegalNumberException;
 import org.littletonrobotics.junction.Logger;
 
 public class Elevator extends BlitzSubsystem {
@@ -30,32 +28,22 @@ public class Elevator extends BlitzSubsystem {
     private final SysIdRoutine routine;
 
     // Left Elevator Tunable Numbers
-    private final LoggedTunableNumber LeftkP =
-            new LoggedTunableNumber("LeftElevator/kP", Constants.Elevator.LeftGains.KP);
-    private final LoggedTunableNumber LeftkD =
-            new LoggedTunableNumber("LeftElevator/kD", Constants.Elevator.LeftGains.KD);
-    private final LoggedTunableNumber LeftkS =
-            new LoggedTunableNumber("LeftElevator/kS", Constants.Elevator.LeftGains.KS);
-    private final LoggedTunableNumber LeftkV =
-            new LoggedTunableNumber("LeftElevator/kV", Constants.Elevator.LeftGains.KV);
-    private final LoggedTunableNumber LeftkA =
-            new LoggedTunableNumber("LeftElevator/kA", Constants.Elevator.LeftGains.KA);
-    private final LoggedTunableNumber LeftkG =
-            new LoggedTunableNumber("LeftElevator/kG", Constants.Elevator.LeftGains.KG);
+    private final LoggedTunableNumber leftKP =
+            new LoggedTunableNumber("elevator/kP", Constants.Elevator.gains.KP);
+    private final LoggedTunableNumber leftKI =
+            new LoggedTunableNumber("elevator/kI", Constants.Elevator.gains.KI);
+    private final LoggedTunableNumber leftKD =
+            new LoggedTunableNumber("elevator/kD", Constants.Elevator.gains.KD);
 
-    //Right Elevator Tunable Numbers
-    private final LoggedTunableNumber RightkP =
-            new LoggedTunableNumber("RightElevator/kP", Constants.Elevator.RightGains.KP);
-    private final LoggedTunableNumber RightkD =
-            new LoggedTunableNumber("RightElevator/kD", Constants.Elevator.RightGains.KD);
-    private final LoggedTunableNumber RightkS =
-            new LoggedTunableNumber("RightElevator/kS", Constants.Elevator.RightGains.KS);
-    private final LoggedTunableNumber RightkV =
-            new LoggedTunableNumber("RightElevator/kV", Constants.Elevator.RightGains.KV);
-    private final LoggedTunableNumber RightkA =
-            new LoggedTunableNumber("RightElevator/kA", Constants.Elevator.RightGains.KA);
-    private final LoggedTunableNumber RightkG =
-            new LoggedTunableNumber("RightElevator/kG", Constants.Elevator.RightGains.KG);
+
+    private final LoggedTunableNumber leftKS =
+            new LoggedTunableNumber("elevator/kS", Constants.Elevator.gains.KS);
+    private final LoggedTunableNumber leftKV =
+            new LoggedTunableNumber("elevator/kV", Constants.Elevator.gains.KV);
+    private final LoggedTunableNumber leftKA =
+            new LoggedTunableNumber("elevator/kA", Constants.Elevator.gains.KA);
+    private final LoggedTunableNumber leftKG =
+            new LoggedTunableNumber("elevator/kG", Constants.Elevator.gains.KG);
 
     public Elevator(ElevatorIO io) {
         super("elevator");
@@ -121,29 +109,26 @@ public class Elevator extends BlitzSubsystem {
         Logger.processInputs(logKey, inputs);
 
         LoggedTunableNumber.ifChanged(
-                hashCode(), pid -> io.setPid(pid[0], pid[1], pid[2]), LeftkP, LeftkD);
+                hashCode(), pid -> io.setPid(pid[0], pid[1], pid[2]), leftKP, leftKI, leftKD);
 
         LoggedTunableNumber.ifChanged(
                 hashCode(),
-                kSGVA -> io.setFF() = new ElevatorFeedforward(kSGVA[0], kSGVA[1], kSGVA[2], kSGVA[3]),
-                LeftkS,
-                LeftkV,
-                LeftkA,
-                LeftkG);
+                (kSGVA) -> io.setFF(kSGVA[0], kSGVA[1], kSGVA[2], kSGVA[3]),
+                leftKS,
+                leftKG,
+                leftKV,
+                leftKA);
 
-        io.updateInputs(inputs);
-        Logger.processInputs(logKey, inputs);
-
-        LoggedTunableNumber.ifChanged(
-                hashCode(), pid -> io.setPid(pid[0], pid[1], pid[2]), RightkP, RightkD);
-
-        LoggedTunableNumber.ifChanged(
-                hashCode(),
-                kSGVA -> io.setFF()  = new ElevatorFeedforward(kSGVA[0], kSGVA[1], kSGVA[2], kSGVA[3]),
-                RightkS,
-                RightkV,
-                RightkA,
-                RightkG);
+//        LoggedTunableNumber.ifChanged(
+//                hashCode(), pid -> io.setPid(pid[0], pid[1], pid[2]), rightKP, rightKD);
+//
+//        LoggedTunableNumber.ifChanged(
+//                hashCode(),
+//                kSGVA -> io.setFF()  = new ElevatorFeedforward(kSGVA[0], kSGVA[1], kSGVA[2], kSGVA[3]),
+//                rightKS,
+//                rightKV,
+//                rightKA,
+//                rightKG);
     }
 
     public Command setSpeed(double left, double right) {
@@ -212,56 +197,6 @@ public class Elevator extends BlitzSubsystem {
         return inputs.velocityLeft;
     }
 
-    // TODO Implement
-    public Command l1Extension() {
-        // return Commands.none();
-        return runEnd(
-                () -> {
-                    io.setSpeed(1);
-                },
-                () -> {
-                    io.setMotionMagicLeft(Constants.Elevator.L1_EXTENSION);
-                    io.setMotionMagicRight(Constants.Elevator.L1_EXTENSION);
-                });
-    }
-
-    // TODO: Implement
-    public Command l2Extension() {
-        return Commands.none();
-        //        return runEnd (
-        //            () -> {
-        //                /* left motor*/(Constants.Elevator.L2_EXTENSION);
-        //                /*right motor*/(Constants.Elevator.L2_EXTENSION);
-        //            }
-        //        )
-    }
-
-    // TODO: Implement
-    public Command l3Extension() {
-        return Commands.none();
-        //        return runEnd (
-        //            () -> {
-        //                /*left motor */(Constants.Elevator.L3_EXTENSION);
-        //                /*right motor */(Constants.Elevator.L3_EXTENSION);
-        //            }
-        //        )
-    }
-
-    // TODO: Implement
-    public Command l4Extension() {
-        return Commands.none();
-        //       return runEnd (
-        //                /*left motor */(Constants.Elevator.L4_EXTENSION);
-        //                /*right motor */(Constants.Elevator.L4_EXTENSION);//          () -> {
-        //            }
-        //        )
-    }
-
-    // TODO Implement
-    public Command down() {
-        return Commands.none();
-    }
-
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
         return routine.quasistatic(direction);
     }
@@ -276,10 +211,5 @@ public class Elevator extends BlitzSubsystem {
                 .finallyDo(() -> Leds.getInstance().armCoast = false)
                 .ignoringDisable(true)
                 .withName(logKey + "/coast");
-    }
-
-    @Override
-    public int hashCode() {
-        return super.hashCode();
     }
 }

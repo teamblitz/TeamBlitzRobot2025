@@ -31,18 +31,21 @@ public class Wrist extends BlitzSubsystem {
 
     private final SysIdRoutine routine;
 
-    private final LoggedTunableNumber WristkP =
-            new LoggedTunableNumber("Wrist/kP", Constants.Wrist.WristGains.KP);
-    private final LoggedTunableNumber WristkD =
-            new LoggedTunableNumber("Wrist/kD", Constants.Wrist.WristGains.KD);
-    private final LoggedTunableNumber WristkS =
-            new LoggedTunableNumber("Wrist/kS", Constants.Wrist.WristGains.KS);
-    private final LoggedTunableNumber WristkV =
-            new LoggedTunableNumber("Wrist/kV", Constants.Wrist.WristGains.KV);
-    private final LoggedTunableNumber WristkA =
-            new LoggedTunableNumber("Wrist/kA", Constants.Wrist.WristGains.KA);
-    private final LoggedTunableNumber WristkG =
-            new LoggedTunableNumber("Wrist/kG", Constants.Wrist.WristGains.KG);
+    private final LoggedTunableNumber kP =
+            new LoggedTunableNumber("wrist/kP", Constants.Wrist.WristGains.KP);
+    private final LoggedTunableNumber kI =
+            new LoggedTunableNumber("wrist/kI", Constants.Wrist.WristGains.KP);
+    private final LoggedTunableNumber kD =
+            new LoggedTunableNumber("wrist/kD", Constants.Wrist.WristGains.KD);
+
+    private final LoggedTunableNumber kS =
+            new LoggedTunableNumber("wrist/kS", Constants.Wrist.WristGains.KS);
+    private final LoggedTunableNumber kV =
+            new LoggedTunableNumber("wrist/kV", Constants.Wrist.WristGains.KV);
+    private final LoggedTunableNumber kA =
+            new LoggedTunableNumber("wrist/kA", Constants.Wrist.WristGains.KA);
+    private final LoggedTunableNumber kG =
+            new LoggedTunableNumber("wrist/kG", Constants.Wrist.WristGains.KG);
 
     public Wrist(WristIO io) {
         super("wrist");
@@ -77,20 +80,17 @@ public class Wrist extends BlitzSubsystem {
 
         Logger.recordOutput(
                 logKey + "/absEncoderDegrees", Math.toRadians(inputs.absoluteEncoderPosition));
-
-        io.updateInputs(inputs);
-        Logger.processInputs(logKey, inputs);
-
+        
         LoggedTunableNumber.ifChanged(
-                hashCode(), pid -> io.setPid(pid[0], pid[1], pid[2]), WristkP, WristkD);
+                hashCode(), pid -> io.setPid(pid[0], pid[1], pid[2]), kP, kI, kD);
 
         LoggedTunableNumber.ifChanged(
                 hashCode(),
-                kSGVA -> io.setFF() = new WristFeedforward(kSGVA[0], kSGVA[1], kSGVA[2], kSGVA[3]),
-                WristkS,
-                WristkV,
-                WristkA,
-                WristkG);
+                (kSGVA) -> io.setFF(kSGVA[0], kSGVA[1], kSGVA[2], kSGVA[3]),
+                kS,
+                kG,
+                kV,
+                kA);
     }
 
     public double getPosition() {
