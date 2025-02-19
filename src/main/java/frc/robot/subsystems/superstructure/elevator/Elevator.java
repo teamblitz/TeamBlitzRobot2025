@@ -31,6 +31,9 @@ public class Elevator extends BlitzSubsystem {
 
         ShuffleboardTab characterizationTab = Shuffleboard.getTab("Characterization");
 
+        setpoint = new TrapezoidProfile.State(getPosition(), 0.0);
+        goal = setpoint;
+
         routine =
                 new SysIdRoutine(
                         new SysIdRoutine.Config(null, Units.Volts.of(5), null),

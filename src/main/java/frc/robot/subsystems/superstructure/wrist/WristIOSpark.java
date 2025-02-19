@@ -5,7 +5,10 @@ import com.revrobotics.spark.*;
 import com.revrobotics.spark.config.ClosedLoopConfig;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants;
 import frc.robot.Constants.Wrist;
 
@@ -41,19 +44,31 @@ public class WristIOSpark implements WristIO {
         config.absoluteEncoder
                 .zeroCentered(true)
                 .inverted(true)
-                .zeroOffset(Wrist.ABS_ENCODER_ZERO)
+                .zeroOffset(
+                        Units.radiansToRotations(
+                                MathUtil.inputModulus(Wrist.ABS_ENCODER_ZERO, 0, 2 * Math.PI)))
                 .positionConversionFactor((2 * Math.PI))
                 .velocityConversionFactor((2 * Math.PI));
+
+
 
         wristMotor.configure(
                 config,
                 SparkBase.ResetMode.kResetSafeParameters,
                 SparkBase.PersistMode.kNoPersistParameters);
+
+
+        Commands.waitSeconds(.25).andThen(Commands.runOnce(() -> encoder.setPosition(absoluteEncoder.getPosition())).ignoringDisable(true)).schedule();
     }
 
     @Override
     public void setPercent(double percent) {
         wristMotor.set(percent);
+    }
+
+    @Override
+    public void setVolts(double volts) {
+        wristMotor.setVoltage(volts);
     }
 
     @Override

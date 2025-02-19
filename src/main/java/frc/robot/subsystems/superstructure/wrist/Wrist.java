@@ -35,7 +35,7 @@ public class Wrist extends BlitzSubsystem {
         routine =
                 new SysIdRoutine(
                         new SysIdRoutine.Config(null, Units.Volts.of(5), null),
-                        new SysIdRoutine.Mechanism((volts) -> volts.in(Units.Volts), null, this));
+                        new SysIdRoutine.Mechanism((volts) -> io.setVolts(volts.in(Units.Volts)), null, this));
 
         characterizationTab.add(
                 sysIdQuasistatic(SysIdRoutine.Direction.kForward)
@@ -58,7 +58,7 @@ public class Wrist extends BlitzSubsystem {
         Logger.processInputs(logKey, inputs);
 
         Logger.recordOutput(
-                logKey + "/absEncoderDegrees", Math.toRadians(inputs.absoluteEncoderPosition));
+                logKey + "/absEncoderDegrees", Math.toDegrees(inputs.absoluteEncoderPosition));
     }
 
     public double getPosition() {

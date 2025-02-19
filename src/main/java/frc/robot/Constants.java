@@ -368,7 +368,7 @@ public final class Constants {
         public static final int CURRENT_LIMIT = 40;
         public static final boolean INVERTED = false;
 
-        public static final double ABS_ENCODER_ZERO = -2.23445420129 - Math.toRadians(90);
+        public static final double ABS_ENCODER_ZERO = Math.toDegrees(214.64152 - 90);
 
         public static class wristRotations {
             public static final double r1RotationValue = 1;
