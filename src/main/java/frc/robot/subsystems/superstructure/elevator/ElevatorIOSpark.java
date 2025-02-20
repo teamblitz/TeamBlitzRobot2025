@@ -8,8 +8,10 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.Notifier;
 import frc.robot.Constants;
 import frc.robot.Constants.Elevator;
+import org.littletonrobotics.junction.Logger;
 
 public class ElevatorIOSpark implements ElevatorIO {
 
@@ -61,6 +63,9 @@ public class ElevatorIOSpark implements ElevatorIO {
                                 * Constants.Elevator.SPROCKET_CIRCUMFERANCE
                                 * 2);
 
+//        sharedConfig.closedLoop
+//                .
+
         SparkMaxConfig leftConfig = new SparkMaxConfig();
 
         leftConfig.apply(sharedConfig)
@@ -68,8 +73,6 @@ public class ElevatorIOSpark implements ElevatorIO {
 
 
         SparkMaxConfig rightConfig = new SparkMaxConfig();
-
-
 
         rightConfig.apply(sharedConfig);
 
@@ -82,6 +85,7 @@ public class ElevatorIOSpark implements ElevatorIO {
                 rightConfig,
                 SparkBase.ResetMode.kResetSafeParameters,
                 SparkBase.PersistMode.kNoPersistParameters);
+
 
         setPidLeft(
                 Elevator.LeftGains.KP,
@@ -103,6 +107,21 @@ public class ElevatorIOSpark implements ElevatorIO {
                 Elevator.RightGains.KS, Elevator.RightGains.KG, Elevator.RightGains.KV, Elevator.RightGains.KA
         );
 
+        leftEncoder.setPosition(0);
+        rightEncoder.setPosition(0);
+
+        new Notifier(
+                () -> {
+                    Logger.recordOutput("elevator/elevatorIOSpark/leftP", left.configAccessor.closedLoop.getP());
+                    Logger.recordOutput("elevator/elevatorIOSpark/rightP", right.configAccessor.closedLoop.getP());
+
+                    Logger.recordOutput("elevator/elevatorIOSpark/leftD", left.configAccessor.closedLoop.getP());
+                    Logger.recordOutput("elevator/elevatorIOSpark/rightD", right.configAccessor.closedLoop.getD());
+
+                    Logger.recordOutput("elevator/elevatorIOSpark/leftFollowerModeInverted", left.configAccessor.getFollowerModeInverted());
+                    Logger.recordOutput("elevator/elevatorIOSpark/rightFollowerModeInverted", right.configAccessor.getFollowerModeInverted());
+                }
+        ).startPeriodic(5);
     }
 
     @Override
@@ -140,19 +159,19 @@ public class ElevatorIOSpark implements ElevatorIO {
 
         left.configure(
                 brakeConfig,
-                SparkBase.ResetMode.kNoResetSafeParameters,
+                SparkBase.ResetMode.kResetSafeParameters,
                 SparkBase.PersistMode.kNoPersistParameters);
 
         right.configure(
                 brakeConfig,
-                SparkBase.ResetMode.kNoResetSafeParameters,
+                SparkBase.ResetMode.kResetSafeParameters,
                 SparkBase.PersistMode.kNoPersistParameters);
     }
 
     @Override
     public void setSpeed(double speed) {
-//        left.set(speed);
-//        right.set(speed);
+        left.set(speed);
+        right.set(speed);
     }
 
     @Override
@@ -163,8 +182,8 @@ public class ElevatorIOSpark implements ElevatorIO {
 
     @Override
     public void setVolts(double volts) {
-//        left.setVoltage(volts);
-//        right.setVoltage(volts);
+        left.setVoltage(volts);
+        right.setVoltage(volts);
     }
 
     @Override
@@ -201,5 +220,8 @@ public class ElevatorIOSpark implements ElevatorIO {
         // Our limit switches are wired nominally closed (nc), so a value of false means the switch is active
         inputs.bottomLimitSwitch = !bottomLimitSwitch.get();
         inputs.topLimitSwitch = !topLimitSwitch.get();
+
+        inputs.topLimitSwitch = false;
+        inputs.bottomLimitSwitch = false;
     }
 }

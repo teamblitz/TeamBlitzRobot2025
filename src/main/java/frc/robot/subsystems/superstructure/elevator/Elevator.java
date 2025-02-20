@@ -23,7 +23,7 @@ public class Elevator extends BlitzSubsystem {
     private final ElevatorIOInputsAutoLogged inputs = new ElevatorIOInputsAutoLogged();
 
     private final TrapezoidProfile.Constraints constraints =
-            new TrapezoidProfile.Constraints(0.2, 0.4);
+            new TrapezoidProfile.Constraints(0.6, 1);
     private final TrapezoidProfile profile = new TrapezoidProfile(constraints);
 
     private TrapezoidProfile.State goal;
@@ -96,12 +96,12 @@ public class Elevator extends BlitzSubsystem {
                 sysIdDynamic(SysIdRoutine.Direction.kReverse).withName("Elevator Dynamic Reverse"));
 
         characterizationTab.add(
-                "elevator/0.2m",
-                withGoal(new TrapezoidProfile.State(.2,0)).withName("elevator/0.2m test"));
+                "elevator/0.1m",
+                withGoal(new TrapezoidProfile.State(.1,0)).withName("elevator/0.1m test"));
 
         characterizationTab.add(
                 "elevator/0.4m",
-                withGoal(new TrapezoidProfile.State(.4,0)).withName("elevator/0.4m test"));
+                withGoal(new TrapezoidProfile.State(.5,0)).withName("elevator/0.5m test"));
 
     }
 
@@ -120,7 +120,7 @@ public class Elevator extends BlitzSubsystem {
         if (goal != null) {
             setpoint = profile.calculate(Constants.LOOP_PERIOD_SEC, setpoint, goal);
             TrapezoidProfile.State future_setpoint =
-                    profile.calculate(Constants.LOOP_PERIOD_SEC * 2, setpoint, goal);
+                    profile.calculate(Constants.LOOP_PERIOD_SEC, setpoint, goal);
 
             io.setSetpoint(
                     setpoint.position,
@@ -218,19 +218,20 @@ public class Elevator extends BlitzSubsystem {
                         () ->
                                 setpoint == null
                                         || !EqualsUtil.epsilonEquals(
-                                                setpoint.position, getPosition(), .02)
+                                                setpoint.position, getPosition(), .005
+                                )
                                         || !EqualsUtil.epsilonEquals(
                                                 setpoint.velocity, getVelocity(), 0.04));
     }
 
     @AutoLogOutput(key = "elevator/position")
     public double getPosition() {
-        return inputs.positionLeft;
+        return (inputs.positionLeft + inputs.positionRight) / 2;
     }
 
     @AutoLogOutput(key = "elevator/velocity")
     public double getVelocity() {
-        return inputs.velocityLeft;
+        return (inputs.velocityLeft + inputs.velocityRight) / 2;
     }
 
     // TODO: Implement limit switch override
