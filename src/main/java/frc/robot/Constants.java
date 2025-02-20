@@ -386,10 +386,13 @@ public final class Constants {
         }
 
         public static final class WristGains {
-            public static final double KS = 0; //TODO UPDATE ALL THESE VALUES
-            public static final double KV = 0;
-            public static final double KA = 0;
-            public static final double KG = 0;
+            public static final double KS = 0.39671; //TODO UPDATE ALL THESE VALUES
+            public static final double KV = 2.7167;
+            public static final double KA = 0.50799;
+            public static final double KG = 0.2708;
+
+            public static final double KP = 4.1249;
+            public static final double KD = 0;
         }
     }
 
