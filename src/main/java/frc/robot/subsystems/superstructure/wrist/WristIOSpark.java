@@ -50,13 +50,22 @@ public class WristIOSpark implements WristIO {
                 .positionConversionFactor((2 * Math.PI))
                 .velocityConversionFactor((2 * Math.PI));
 
-
+        config.closedLoop.feedbackSensor(ClosedLoopConfig.FeedbackSensor.kAbsoluteEncoder);
 
         wristMotor.configure(
                 config,
                 SparkBase.ResetMode.kResetSafeParameters,
                 SparkBase.PersistMode.kNoPersistParameters);
 
+        setPid(
+                Constants.Wrist.PidGains.KP,
+                Constants.Wrist.PidGains.KI,
+                Constants.Wrist.PidGains.KD
+        );
+
+        setFF(
+                Constants.Wrist.WristGains.KS, Constants.Wrist.WristGains.KG, Constants.Wrist.WristGains.KV, Constants.Wrist.WristGains.KA
+        );
 
         Commands.waitSeconds(.25).andThen(Commands.runOnce(() -> encoder.setPosition(absoluteEncoder.getPosition())).ignoringDisable(true)).schedule();
     }

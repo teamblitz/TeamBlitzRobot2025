@@ -28,6 +28,8 @@ public interface ElevatorIO {
 
     public default void setSpeed(double percent) {}
 
+    public default void stop() {}
+
     public default void setVolts(double volts) {}
 
     public default void setSetpoint(double position, double velocity, double nextVelocity) {}

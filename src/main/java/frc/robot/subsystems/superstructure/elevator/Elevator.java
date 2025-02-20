@@ -1,17 +1,20 @@
 package frc.robot.subsystems.superstructure.elevator;
 
-import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.Units;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.*;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.BlitzSubsystem;
 import frc.lib.math.EqualsUtil;
 import frc.lib.util.LoggedTunableNumber;
 import frc.robot.Constants;
 import frc.robot.subsystems.leds.Leds;
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Elevator extends BlitzSubsystem {
@@ -29,21 +32,21 @@ public class Elevator extends BlitzSubsystem {
 
     // Left Elevator Tunable Numbers
     private final LoggedTunableNumber leftKP =
-            new LoggedTunableNumber("elevator/kP", Constants.Elevator.gains.KP);
+            new LoggedTunableNumber("elevator/kP", Constants.Elevator.Gains.KP);
     private final LoggedTunableNumber leftKI =
-            new LoggedTunableNumber("elevator/kI", Constants.Elevator.gains.KI);
+            new LoggedTunableNumber("elevator/kI", Constants.Elevator.Gains.KI);
     private final LoggedTunableNumber leftKD =
-            new LoggedTunableNumber("elevator/kD", Constants.Elevator.gains.KD);
+            new LoggedTunableNumber("elevator/kD", Constants.Elevator.Gains.KD);
 
 
     private final LoggedTunableNumber leftKS =
-            new LoggedTunableNumber("elevator/kS", Constants.Elevator.gains.KS);
+            new LoggedTunableNumber("elevator/kS", Constants.Elevator.Gains.KS);
     private final LoggedTunableNumber leftKV =
-            new LoggedTunableNumber("elevator/kV", Constants.Elevator.gains.KV);
+            new LoggedTunableNumber("elevator/kV", Constants.Elevator.Gains.KV);
     private final LoggedTunableNumber leftKA =
-            new LoggedTunableNumber("elevator/kA", Constants.Elevator.gains.KA);
+            new LoggedTunableNumber("elevator/kA", Constants.Elevator.Gains.KA);
     private final LoggedTunableNumber leftKG =
-            new LoggedTunableNumber("elevator/kG", Constants.Elevator.gains.KG);
+            new LoggedTunableNumber("elevator/kG", Constants.Elevator.Gains.KG);
 
     public Elevator(ElevatorIO io) {
         super("elevator");
@@ -52,7 +55,8 @@ public class Elevator extends BlitzSubsystem {
         ShuffleboardTab characterizationTab = Shuffleboard.getTab("Characterization");
 
         setpoint = new TrapezoidProfile.State(getPosition(), 0.0);
-        goal = setpoint;
+        goal = null;
+
 
         routine =
                 new SysIdRoutine(
@@ -104,15 +108,33 @@ public class Elevator extends BlitzSubsystem {
         Logger.recordOutput(logKey + "/rotLeftDeg", Math.toDegrees(inputs.positionLeft) % 360);
         Logger.recordOutput(logKey + "/rotRightDeg", Math.toDegrees(inputs.positionRight) % 360);
 
-        // Thou shalt not touch the below code unless it broke
-        setpoint = profile.calculate(Constants.LOOP_PERIOD_SEC, setpoint, goal);
-        TrapezoidProfile.State future_setpoint =
-                profile.calculate(Constants.LOOP_PERIOD_SEC * 2, setpoint, goal);
 
-        io.setSetpoint(
-                setpoint.position,
-                setpoint.velocity,
-                future_setpoint.velocity);
+        if (goal != null) {
+            setpoint = profile.calculate(Constants.LOOP_PERIOD_SEC, setpoint, goal);
+            TrapezoidProfile.State future_setpoint =
+                    profile.calculate(Constants.LOOP_PERIOD_SEC * 2, setpoint, goal);
+
+            io.setSetpoint(
+                    setpoint.position,
+                    setpoint.velocity,
+                    future_setpoint.velocity);
+
+            Logger.recordOutput(logKey + "/profile/positionSetpoint", setpoint.position);
+            Logger.recordOutput(logKey + "/profile/velocitySetpoint", setpoint.velocity);
+
+            Logger.recordOutput(logKey + "/profile/positionGoal", goal.position);
+            Logger.recordOutput(logKey + "/profile/velocityGoal", goal.velocity);
+        }
+
+        if (DriverStation.isDisabled()) {
+            // Reset profile when disabled
+            setpoint = new TrapezoidProfile.State(getPosition(), 0);
+            goal = null;
+
+            // Stop arm
+            io.stop();
+            return;
+        }
 
 
         io.updateInputs(inputs);
@@ -149,13 +171,16 @@ public class Elevator extends BlitzSubsystem {
                         () -> {
                             io.setSpeed(0);
                         })
-                .withName(logKey + "/speed " + left + " " + right);
+                .withName(logKey + "/speed " + left + " " + right)
+                .beforeStarting(
+                        () -> this.goal = null
+                );
     }
 
     public Command upTest() {
         return runEnd(
                         () -> {
-                            io.setSpeed(0.6);
+                            io.setSpeed(0.2);
                         },
                         () -> {
                             io.setSpeed(0);
@@ -166,7 +191,7 @@ public class Elevator extends BlitzSubsystem {
     public Command downTest() {
         return runEnd(
                         () -> {
-                            io.setSpeed(-0.4);
+                            io.setSpeed(-0.2);
                         },
                         () -> {
                             io.setSpeed(0);
@@ -199,10 +224,12 @@ public class Elevator extends BlitzSubsystem {
                                                 setpoint.velocity, getVelocity(), 0.04));
     }
 
+    @AutoLogOutput(key = "elevator/position")
     private double getPosition() {
         return inputs.positionLeft;
     }
 
+    @AutoLogOutput(key = "elevator/velocity")
     private double getVelocity() {
         return inputs.velocityLeft;
     }

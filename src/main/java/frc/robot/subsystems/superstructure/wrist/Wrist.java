@@ -14,6 +14,7 @@ import frc.robot.Constants;
 import frc.robot.subsystems.leds.Leds;
 import java.util.function.DoubleSupplier;
 
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Wrist extends BlitzSubsystem {
@@ -49,6 +50,9 @@ public class Wrist extends BlitzSubsystem {
         super("wrist");
         this.io = io;
 
+        setpoint = new TrapezoidProfile.State(getPosition(), 0.0);
+        goal = null;
+
         ShuffleboardTab characterizationTab = Shuffleboard.getTab("Characterization");
 
         routine =
@@ -80,15 +84,22 @@ public class Wrist extends BlitzSubsystem {
     public void periodic() {
         super.periodic();
 
-        setpoint = profile.calculate(Constants.LOOP_PERIOD_SEC, setpoint, goal);
-        TrapezoidProfile.State future_setpoint =
-                profile.calculate(Constants.LOOP_PERIOD_SEC * 2, setpoint, goal);
+        if (goal != null) {
+            setpoint = profile.calculate(Constants.LOOP_PERIOD_SEC, setpoint, goal);
+            TrapezoidProfile.State future_setpoint =
+                    profile.calculate(Constants.LOOP_PERIOD_SEC * 2, setpoint, goal);
 
-        io.setSetpoint(
-                setpoint.position,
-                setpoint.velocity,
-                future_setpoint.velocity);
+            io.setSetpoint(
+                    setpoint.position,
+                    setpoint.velocity,
+                    future_setpoint.velocity);
 
+            Logger.recordOutput(logKey + "/profile/positionSetpoint", setpoint.position);
+            Logger.recordOutput(logKey + "/profile/velocitySetpoint", setpoint.velocity);
+
+            Logger.recordOutput(logKey + "/profile/positionGoal", goal.position);
+            Logger.recordOutput(logKey + "/profile/velocityGoal", goal.velocity);
+        }
 
         io.updateInputs(inputs);
         Logger.processInputs(logKey, inputs);
@@ -108,10 +119,12 @@ public class Wrist extends BlitzSubsystem {
                 kA);
     }
 
+    @AutoLogOutput(key = "wrist/position")
     public double getPosition() {
         return inputs.positionRadians;
     }
 
+    @AutoLogOutput(key = "wrist/velocity")
     public double getVelocity() {
         return inputs.velocityRadiansPerSecond;
     }
@@ -128,6 +141,9 @@ public class Wrist extends BlitzSubsystem {
                         () -> {
                             io.setPercent(0);
                         })
+                .beforeStarting(
+                        () -> this.goal = null
+                )
                 .withName(logKey + "/speed");
     }
 

@@ -352,7 +352,7 @@ public final class Constants {
 //        }
 
         // LEFT GAINS
-        public static final class gains {
+        public static final class Gains {
             public static final double KS = 0.10986;
             public static final double KV = 8.259;
             public static final double KA = 1.0318;
@@ -379,10 +379,9 @@ public final class Constants {
         }
 
         public static final class PidGains {
-
-            public static final double KP = 0;
+            public static final double KP = 4.1249;
             public static final double KI = 0;
-            public static final double KD = 0;
+            public static final double KD = 0;// 524.32
         }
 
         public static final class WristGains {
@@ -390,9 +389,6 @@ public final class Constants {
             public static final double KV = 2.7167;
             public static final double KA = 0.50799;
             public static final double KG = 0.2708;
-
-            public static final double KP = 4.1249;
-            public static final double KD = 0;
         }
     }
 

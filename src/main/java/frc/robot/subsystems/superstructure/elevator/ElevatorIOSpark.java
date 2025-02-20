@@ -9,6 +9,7 @@ import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.Constants;
 import frc.robot.Constants.Elevator;
+import org.littletonrobotics.junction.Logger;
 
 public class ElevatorIOSpark implements ElevatorIO {
 
@@ -67,6 +68,9 @@ public class ElevatorIOSpark implements ElevatorIO {
 
         SparkMaxConfig rightConfig = new SparkMaxConfig();
 
+//        rightConfig.follow(left, true);
+
+
         rightConfig.apply(sharedConfig);
 
         left.configure(
@@ -78,6 +82,16 @@ public class ElevatorIOSpark implements ElevatorIO {
                 rightConfig,
                 SparkBase.ResetMode.kResetSafeParameters,
                 SparkBase.PersistMode.kNoPersistParameters);
+
+        setPid(
+                Elevator.Gains.KP,
+                Elevator.Gains.KI,
+                Elevator.Gains.KD
+        );
+
+        setFF(
+                Elevator.Gains.KS, Elevator.Gains.KG, Elevator.Gains.KV, Elevator.Gains.KA
+        );
     }
 
     @Override
@@ -120,6 +134,12 @@ public class ElevatorIOSpark implements ElevatorIO {
     public void setSpeed(double speed) {
         left.set(speed);
         right.set(speed);
+    }
+
+    @Override
+    public void stop() {
+        left.stopMotor();
+        right.stopMotor();
     }
 
     @Override
