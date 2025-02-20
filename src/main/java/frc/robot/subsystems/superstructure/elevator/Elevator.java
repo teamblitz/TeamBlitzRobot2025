@@ -177,31 +177,6 @@ public class Elevator extends BlitzSubsystem {
                 rightKG,
                 rightKV,
                 rightKA);
-
-//        LoggedTunableNumber.ifChanged(
-//                hashCode(), pid -> io.setPid(pid[0], pid[1], pid[2]), rightKP, rightKD);
-//
-//        LoggedTunableNumber.ifChanged(
-//                hashCode(),
-//                kSGVA -> io.setFF()  = new ElevatorFeedforward(kSGVA[0], kSGVA[1], kSGVA[2], kSGVA[3]),
-//                rightKS,
-//                rightKV,
-//                rightKA,
-//                rightKG);
-    }
-
-    public Command setSpeed(double left, double right) {
-        return startEnd(
-                        () -> {
-                            io.setSpeed(left);
-                        },
-                        () -> {
-                            io.setSpeed(0);
-                        })
-                .withName(logKey + "/speed " + left + " " + right)
-                .beforeStarting(
-                        () -> this.goal = null
-                );
     }
 
     public Command upTest() {

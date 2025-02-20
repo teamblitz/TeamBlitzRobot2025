@@ -67,7 +67,7 @@ public class ElevatorIOSpark implements ElevatorIO {
 
 
         SparkMaxConfig rightConfig = new SparkMaxConfig();
-        
+
 
 
         rightConfig.apply(sharedConfig);

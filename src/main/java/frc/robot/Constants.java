@@ -365,19 +365,17 @@ public final class Constants {
     }
 
     public static final class Wrist {
-        public static final int CAN_ID = 30; // TODO CONFIG
-        public static final double OPEN_LOOP_RAMP = .25;
+        public static final int CAN_ID = 30;
         public static final double GEAR_RATIO = (9.0) * (5.0) * (54.0 / 16.0);
+
+        public static final double OPEN_LOOP_RAMP = .25;
         public static final int CURRENT_LIMIT = 40;
         public static final boolean INVERTED = false;
 
-        public static final double ABS_ENCODER_ZERO = Math.toDegrees(214.64152 - 90);
+        public static final double FORWARD_SOFT_LIMIT = Units.degreesToRadians(90);
+        public static final double REVERSE_SOFT_LIMIT = Units.degreesToRadians(-90);
 
-        public static class wristRotations {
-            public static final double r1RotationValue = 1;
-            public static final double r2RotationValue = 0.5;
-            public static final double r3RotationValue = 0;
-        }
+        public static final double ABS_ENCODER_ZERO = Math.toDegrees(214.64152 - 90);
 
         public static final class PidGains {
             public static final double KP = 4.1249;
@@ -386,7 +384,7 @@ public final class Constants {
         }
 
         public static final class WristGains {
-            public static final double KS = 0.39671; //TODO UPDATE ALL THESE VALUES
+            public static final double KS = 0.39671;
             public static final double KV = 2.7167;
             public static final double KA = 0.50799;
             public static final double KG = 0.2708;
