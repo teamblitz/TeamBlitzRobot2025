@@ -378,13 +378,18 @@ public final class Constants {
             public static final double r3RotationValue = 0;
         }
 
+        public static final class PidGains {
+
+            public static final double KP = 0;
+            public static final double KI = 0;
+            public static final double KD = 0;
+        }
+
         public static final class WristGains {
             public static final double KS = 0; //TODO UPDATE ALL THESE VALUES
             public static final double KV = 0;
             public static final double KA = 0;
             public static final double KG = 0;
-            public static final double KP = 0;
-            public static final double KD = 0;
         }
     }
 
