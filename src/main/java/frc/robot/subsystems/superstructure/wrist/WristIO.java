@@ -17,7 +17,7 @@ public interface WristIO {
 
     public default void setVolts(double volts) {}
 
-    public default void setSetpoint(double position, double velocity, double acceleration) {}
+    public default void setSetpoint(double position, double velocity, double nextVelocity) {}
 
     public default void setPid(double p, double i, double d) {}
 

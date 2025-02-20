@@ -1,6 +1,5 @@
 package frc.robot.subsystems.superstructure.wrist;
 
-import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -15,7 +14,6 @@ import frc.robot.Constants;
 import frc.robot.subsystems.leds.Leds;
 import java.util.function.DoubleSupplier;
 
-import lombok.extern.java.Log;
 import org.littletonrobotics.junction.Logger;
 
 public class Wrist extends BlitzSubsystem {
@@ -24,7 +22,7 @@ public class Wrist extends BlitzSubsystem {
     private final WristIOInputsAutoLogged inputs = new WristIOInputsAutoLogged();
 
     private TrapezoidProfile profile =
-            new TrapezoidProfile(new TrapezoidProfile.Constraints(0.8, 1.6));
+            new TrapezoidProfile(new TrapezoidProfile.Constraints(Math.toRadians(30), Math.toRadians(60)));
 
     private TrapezoidProfile.State goal;
     private TrapezoidProfile.State setpoint;
@@ -32,11 +30,11 @@ public class Wrist extends BlitzSubsystem {
     private final SysIdRoutine routine;
 
     private final LoggedTunableNumber kP =
-            new LoggedTunableNumber("wrist/kP", Constants.Wrist.WristGains.KP);
+            new LoggedTunableNumber("wrist/kP", Constants.Wrist.PidGains.KP);
     private final LoggedTunableNumber kI =
-            new LoggedTunableNumber("wrist/kI", Constants.Wrist.WristGains.KP);
+            new LoggedTunableNumber("wrist/kI", Constants.Wrist.PidGains.KI);
     private final LoggedTunableNumber kD =
-            new LoggedTunableNumber("wrist/kD", Constants.Wrist.WristGains.KD);
+            new LoggedTunableNumber("wrist/kD", Constants.Wrist.PidGains.KD);
 
     private final LoggedTunableNumber kS =
             new LoggedTunableNumber("wrist/kS", Constants.Wrist.WristGains.KS);
@@ -69,11 +67,28 @@ public class Wrist extends BlitzSubsystem {
                 sysIdDynamic(SysIdRoutine.Direction.kForward).withName("Wrist Dynamic Forward"));
         characterizationTab.add(
                 sysIdDynamic(SysIdRoutine.Direction.kReverse).withName("Wrist Dynamic Reverse"));
+
+        characterizationTab.add(
+                "wrist/45",
+                withGoal(new TrapezoidProfile.State(Math.toRadians(45),0)).withName("wrist/test45"));
+        characterizationTab.add(
+                "wrist/minus45",
+                withGoal(new TrapezoidProfile.State(Math.toRadians(-45),0)).withName("wrist/testminus45"));
     }
 
     @Override
     public void periodic() {
         super.periodic();
+
+        setpoint = profile.calculate(Constants.LOOP_PERIOD_SEC, setpoint, goal);
+        TrapezoidProfile.State future_setpoint =
+                profile.calculate(Constants.LOOP_PERIOD_SEC * 2, setpoint, goal);
+
+        io.setSetpoint(
+                setpoint.position,
+                setpoint.velocity,
+                future_setpoint.velocity);
+
 
         io.updateInputs(inputs);
         Logger.processInputs(logKey, inputs);

@@ -59,20 +59,23 @@ public class ElevatorIOSpark implements ElevatorIO {
                                 * Constants.Elevator.SPROCKET_CIRCUMFERANCE
                                 * 2);
 
-        // todo fix when we switch back to split control
-        sharedConfig.inverted(true);
+        SparkMaxConfig leftConfig = new SparkMaxConfig();
 
-        SparkMaxConfig followerConfig = new SparkMaxConfig();
-        followerConfig.apply(sharedConfig);
-        followerConfig.follow(left, true);
+        leftConfig.apply(sharedConfig)
+                .inverted(true);
+
+
+        SparkMaxConfig rightConfig = new SparkMaxConfig();
+
+        rightConfig.apply(sharedConfig);
 
         left.configure(
-                sharedConfig,
+                leftConfig,
                 SparkBase.ResetMode.kResetSafeParameters,
                 SparkBase.PersistMode.kNoPersistParameters);
 
         right.configure(
-                followerConfig,
+                rightConfig,
                 SparkBase.ResetMode.kResetSafeParameters,
                 SparkBase.PersistMode.kNoPersistParameters);
     }
@@ -116,16 +119,25 @@ public class ElevatorIOSpark implements ElevatorIO {
     @Override
     public void setSpeed(double speed) {
         left.set(speed);
+        right.set(speed);
     }
 
     @Override
     public void setVolts(double volts) {
         left.setVoltage(volts);
+        right.setVoltage(volts);
     }
 
     @Override
     public void setSetpoint(double position, double velocity, double nextVelocity) {
         leftPid.setReference(
+                position,
+                SparkBase.ControlType.kPosition,
+                ClosedLoopSlot.kSlot0,
+                feedforward.calculateWithVelocities(velocity, nextVelocity),
+                SparkClosedLoopController.ArbFFUnits.kVoltage);
+
+        rightPid.setReference(
                 position,
                 SparkBase.ControlType.kPosition,
                 ClosedLoopSlot.kSlot0,

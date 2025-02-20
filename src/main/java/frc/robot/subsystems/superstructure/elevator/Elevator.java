@@ -19,7 +19,7 @@ public class Elevator extends BlitzSubsystem {
     private final ElevatorIOInputsAutoLogged inputs = new ElevatorIOInputsAutoLogged();
 
     private final TrapezoidProfile.Constraints constraints =
-            new TrapezoidProfile.Constraints(0.8, 1.6);
+            new TrapezoidProfile.Constraints(0.2, 0.4);
     private final TrapezoidProfile profile = new TrapezoidProfile(constraints);
 
     private TrapezoidProfile.State goal;
@@ -71,6 +71,15 @@ public class Elevator extends BlitzSubsystem {
                 sysIdDynamic(SysIdRoutine.Direction.kForward).withName("Elevator Dynamic Forward"));
         characterizationTab.add(
                 sysIdDynamic(SysIdRoutine.Direction.kReverse).withName("Elevator Dynamic Reverse"));
+
+        characterizationTab.add(
+                "elevator/0.2m",
+                withGoal(new TrapezoidProfile.State(.2,0)).withName("elevator/0.2m test"));
+
+        characterizationTab.add(
+                "elevator/0.4m",
+                withGoal(new TrapezoidProfile.State(.4,0)).withName("elevator/0.4m test"));
+
     }
 
     @Override
@@ -103,7 +112,8 @@ public class Elevator extends BlitzSubsystem {
         io.setSetpoint(
                 setpoint.position,
                 setpoint.velocity,
-                (future_setpoint.velocity - setpoint.velocity) / Constants.LOOP_PERIOD_SEC);
+                future_setpoint.velocity);
+
 
         io.updateInputs(inputs);
         Logger.processInputs(logKey, inputs);

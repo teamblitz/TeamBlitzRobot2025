@@ -30,7 +30,7 @@ public interface ElevatorIO {
 
     public default void setVolts(double volts) {}
 
-    public default void setSetpoint(double position, double velocity, double acceleration) {}
+    public default void setSetpoint(double position, double velocity, double nextVelocity) {}
 
     @Deprecated
     public default void setMotionMagicLeft(double extension) {}
