@@ -1,5 +1,6 @@
 package frc.robot.subsystems.superstructure.elevator;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -14,6 +15,8 @@ import frc.robot.Constants;
 import frc.robot.subsystems.leds.Leds;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
+
+import java.util.function.DoubleSupplier;
 
 public class Elevator extends BlitzSubsystem {
     private final frc.robot.subsystems.superstructure.elevator.ElevatorIO io;
@@ -107,22 +110,11 @@ public class Elevator extends BlitzSubsystem {
         super.periodic();
         io.updateInputs(inputs);
         Logger.processInputs(logKey, inputs);
-        //
-        //        // TODO Set Motor Type and set motor values
-        //        if (inputs.topLimitSwitch) {
-        //        } else {
-        //            left.set(0.0);
-        //            right.set(0.0);
-        //        }
-        //
-        //        if (inputs.bottomLimitSwitch) {
-        //        } else {
-        //            left.set(0.0);
-        //            right.set(0.0);
-        //        }
+
 
         Logger.recordOutput(logKey + "/rotLeftDeg", Math.toDegrees(inputs.positionLeft) % 360);
         Logger.recordOutput(logKey + "/rotRightDeg", Math.toDegrees(inputs.positionRight) % 360);
+
 
 
         if (goal != null) {
@@ -179,26 +171,31 @@ public class Elevator extends BlitzSubsystem {
                 rightKA);
     }
 
-    public Command upTest() {
+    public Command withSpeed(DoubleSupplier speed) {
         return runEnd(
-                        () -> {
-                            io.setSpeed(0.2);
-                        },
-                        () -> {
-                            io.setSpeed(0);
-                        })
-                .alongWith(Commands.print("Up test"));
+                () -> {
+                    io.setSpeed(MathUtil.clamp(
+                            speed.getAsDouble(),
+                            atBottomLimit() ? 0 : -1,
+                            atTopLimit() ? 0 : 1)
+                    );
+                },
+                () -> {
+                    io.setSpeed(0);
+                }
+        );
     }
 
-    public Command downTest() {
-        return runEnd(
-                        () -> {
-                            io.setSpeed(-0.2);
-                        },
-                        () -> {
-                            io.setSpeed(0);
-                        })
-                .alongWith(Commands.print("dwn test"));
+    public Command withSpeed(double speed) {
+        return withSpeed(() -> speed);
+    }
+
+    public Command upManual() {
+        return withSpeed(0.2).withName("Up Manual");
+    }
+
+    public Command downManual() {
+        return withSpeed(-0.2).withName("downManual");
     }
 
     public Command withGoal(TrapezoidProfile.State goal) {
@@ -227,13 +224,22 @@ public class Elevator extends BlitzSubsystem {
     }
 
     @AutoLogOutput(key = "elevator/position")
-    private double getPosition() {
+    public double getPosition() {
         return inputs.positionLeft;
     }
 
     @AutoLogOutput(key = "elevator/velocity")
-    private double getVelocity() {
+    public double getVelocity() {
         return inputs.velocityLeft;
+    }
+
+    // TODO: Implement limit switch override
+    public boolean atBottomLimit() {
+        return inputs.bottomLimitSwitch;
+    }
+
+    public boolean atTopLimit() {
+        return inputs.topLimitSwitch;
     }
 
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {

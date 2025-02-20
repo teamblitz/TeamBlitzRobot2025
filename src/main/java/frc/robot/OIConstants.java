@@ -123,8 +123,8 @@ public class OIConstants {
         //
         //        public static final Trigger ELEVATOR_DOWN = OPERATOR_CONTROLLER.a();
 
-        public static final Trigger ELEVATOR_UP_TEST = OPERATOR_CONTROLLER.povUp();
-        public static final Trigger ELEVATOR_DOWN_TEST = OPERATOR_CONTROLLER.povDown();
+        public static final Trigger MANUAL_UP = OPERATOR_CONTROLLER.povUp();
+        public static final Trigger MANUAL_DOWN = OPERATOR_CONTROLLER.povDown();
     }
 
     //    public static final class TestMode {

@@ -5,6 +5,7 @@ import com.revrobotics.spark.*;
 import com.revrobotics.spark.config.ClosedLoopConfig;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.Constants;
@@ -196,5 +197,9 @@ public class ElevatorIOSpark implements ElevatorIO {
 
         inputs.positionLeft = leftEncoder.getPosition();
         inputs.positionRight = rightEncoder.getPosition();
+
+        // Our limit switches are wired nominally closed (nc), so a value of false means the switch is active
+        inputs.bottomLimitSwitch = !bottomLimitSwitch.get();
+        inputs.topLimitSwitch = !topLimitSwitch.get();
     }
 }

@@ -168,8 +168,8 @@ public class RobotContainer {
         //
         //        OIConstants.Elevator.ELEVATOR_DOWN.onTrue(elevator.down());
 
-        OIConstants.Elevator.ELEVATOR_UP_TEST.whileTrue(elevator.upTest());
-        OIConstants.Elevator.ELEVATOR_DOWN_TEST.whileTrue(elevator.downTest());
+        OIConstants.Elevator.MANUAL_UP.whileTrue(elevator.upManual());
+        OIConstants.Elevator.MANUAL_DOWN.whileTrue(elevator.downManual());
 
         OIConstants.Intake.INTAKE.whileTrue(intake.intake());
         OIConstants.Intake.EJECT.whileTrue(intake.outtake());
