@@ -1,5 +1,6 @@
 package frc.robot;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.networktables.NetworkTableType;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -14,6 +15,9 @@ import java.util.function.DoubleSupplier;
 import java.util.function.Function;
 
 public class OIConstants {
+
+    public static final double XBOX_STICK_DEADBAND = 0.06;
+
 
     public static final CommandXboxController DRIVE_CONTROLLER = new CommandXboxController(0);
     public static final CommandXboxController OPERATOR_CONTROLLER = new CommandXboxController(1);
@@ -112,7 +116,7 @@ public class OIConstants {
     }
 
     public static final class Wrist {
-        public static final DoubleSupplier WRIST_MANUAL = () -> -OPERATOR_CONTROLLER.getRightY();
+        public static final DoubleSupplier WRIST_MANUAL = () -> MathUtil.applyDeadband(-OPERATOR_CONTROLLER.getRightY(), XBOX_STICK_DEADBAND);
     }
 
     public static final class Elevator {

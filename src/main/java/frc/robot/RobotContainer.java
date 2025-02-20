@@ -174,7 +174,7 @@ public class RobotContainer {
         OIConstants.Intake.INTAKE.whileTrue(intake.intake());
         OIConstants.Intake.EJECT.whileTrue(intake.outtake());
 
-        new Trigger(() -> Math.abs(OIConstants.Wrist.WRIST_MANUAL.getAsDouble()) > .05)
+        new Trigger(() -> Math.abs(OIConstants.Wrist.WRIST_MANUAL.getAsDouble()) > 0)
                 .whileTrue(wrist.setSpeed(OIConstants.Wrist.WRIST_MANUAL));
 
         new Trigger(RobotController::getUserButton)
