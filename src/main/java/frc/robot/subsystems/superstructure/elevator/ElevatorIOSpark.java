@@ -9,7 +9,6 @@ import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.Constants;
 import frc.robot.Constants.Elevator;
-import org.littletonrobotics.junction.Logger;
 
 public class ElevatorIOSpark implements ElevatorIO {
 
@@ -22,7 +21,8 @@ public class ElevatorIOSpark implements ElevatorIO {
     private final SparkClosedLoopController rightPid;
     private final SparkClosedLoopController leftPid;
 
-    private ElevatorFeedforward feedforward = null;
+    private ElevatorFeedforward leftFeedforward = null;
+    private ElevatorFeedforward rightFeedforward = null;
 
     private final DigitalInput topLimitSwitch;
     private final DigitalInput bottomLimitSwitch;
@@ -67,8 +67,7 @@ public class ElevatorIOSpark implements ElevatorIO {
 
 
         SparkMaxConfig rightConfig = new SparkMaxConfig();
-
-//        rightConfig.follow(left, true);
+        
 
 
         rightConfig.apply(sharedConfig);
@@ -83,24 +82,30 @@ public class ElevatorIOSpark implements ElevatorIO {
                 SparkBase.ResetMode.kResetSafeParameters,
                 SparkBase.PersistMode.kNoPersistParameters);
 
-        setPid(
-                Elevator.Gains.KP,
-                Elevator.Gains.KI,
-                Elevator.Gains.KD
+        setPidLeft(
+                Elevator.LeftGains.KP,
+                Elevator.LeftGains.KI,
+                Elevator.LeftGains.KD
         );
 
-        setFF(
-                Elevator.Gains.KS, Elevator.Gains.KG, Elevator.Gains.KV, Elevator.Gains.KA
+        setFFLeft(
+                Elevator.LeftGains.KS, Elevator.LeftGains.KG, Elevator.LeftGains.KV, Elevator.LeftGains.KA
         );
+
+        setPidRight(
+                Elevator.RightGains.KP,
+                Elevator.RightGains.KI,
+                Elevator.RightGains.KD
+        );
+
+        setFFRight(
+                Elevator.RightGains.KS, Elevator.RightGains.KG, Elevator.RightGains.KV, Elevator.RightGains.KA
+        );
+
     }
 
     @Override
-    public void setPid(double p, double i, double d) {
-        right.configure(
-                new SparkMaxConfig().apply(new ClosedLoopConfig().pid(p, i, d)),
-                SparkBase.ResetMode.kNoResetSafeParameters,
-                SparkBase.PersistMode.kNoPersistParameters);
-
+    public void setPidLeft(double p, double i, double d) {
         left.configure(
                 new SparkMaxConfig().apply(new ClosedLoopConfig().pid(p, i, d)),
                 SparkBase.ResetMode.kNoResetSafeParameters,
@@ -108,8 +113,21 @@ public class ElevatorIOSpark implements ElevatorIO {
     }
 
     @Override
-    public void setFF(double kS, double kG, double kV, double kA) {
-        feedforward = new ElevatorFeedforward(kS, kG, kV, kA);
+    public void setPidRight(double p, double i, double d) {
+        right.configure(
+                new SparkMaxConfig().apply(new ClosedLoopConfig().pid(p, i, d)),
+                SparkBase.ResetMode.kNoResetSafeParameters,
+                SparkBase.PersistMode.kNoPersistParameters);
+
+    }
+
+    @Override
+    public void setFFLeft(double kS, double kG, double kV, double kA) {
+        leftFeedforward = new ElevatorFeedforward(kS, kG, kV, kA);
+    }
+    @Override
+    public void setFFRight(double kS, double kG, double kV, double kA) {
+        rightFeedforward = new ElevatorFeedforward(kS, kG, kV, kA);
     }
 
     @Override
@@ -132,8 +150,8 @@ public class ElevatorIOSpark implements ElevatorIO {
 
     @Override
     public void setSpeed(double speed) {
-        left.set(speed);
-        right.set(speed);
+//        left.set(speed);
+//        right.set(speed);
     }
 
     @Override
@@ -144,8 +162,8 @@ public class ElevatorIOSpark implements ElevatorIO {
 
     @Override
     public void setVolts(double volts) {
-        left.setVoltage(volts);
-        right.setVoltage(volts);
+//        left.setVoltage(volts);
+//        right.setVoltage(volts);
     }
 
     @Override
@@ -154,14 +172,14 @@ public class ElevatorIOSpark implements ElevatorIO {
                 position,
                 SparkBase.ControlType.kPosition,
                 ClosedLoopSlot.kSlot0,
-                feedforward.calculateWithVelocities(velocity, nextVelocity),
+                leftFeedforward.calculateWithVelocities(velocity, nextVelocity),
                 SparkClosedLoopController.ArbFFUnits.kVoltage);
 
         rightPid.setReference(
                 position,
                 SparkBase.ControlType.kPosition,
                 ClosedLoopSlot.kSlot0,
-                feedforward.calculateWithVelocities(velocity, nextVelocity),
+                rightFeedforward.calculateWithVelocities(velocity, nextVelocity),
                 SparkClosedLoopController.ArbFFUnits.kVoltage);
     }
 
@@ -172,6 +190,9 @@ public class ElevatorIOSpark implements ElevatorIO {
 
         inputs.voltsLeft = left.getAppliedOutput() * left.getBusVoltage();
         inputs.voltsRight = right.getAppliedOutput() * right.getBusVoltage();
+
+        inputs.appliedOutputLeft = left.getAppliedOutput();
+        inputs.appliedOutputRight = right.getAppliedOutput();
 
         inputs.positionLeft = leftEncoder.getPosition();
         inputs.positionRight = rightEncoder.getPosition();

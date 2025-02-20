@@ -3,11 +3,9 @@ package frc.robot.subsystems.superstructure.elevator;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.*;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.BlitzSubsystem;
 import frc.lib.math.EqualsUtil;
@@ -32,21 +30,39 @@ public class Elevator extends BlitzSubsystem {
 
     // Left Elevator Tunable Numbers
     private final LoggedTunableNumber leftKP =
-            new LoggedTunableNumber("elevator/kP", Constants.Elevator.Gains.KP);
+            new LoggedTunableNumber("elevator/leftKP", Constants.Elevator.LeftGains.KP);
     private final LoggedTunableNumber leftKI =
-            new LoggedTunableNumber("elevator/kI", Constants.Elevator.Gains.KI);
+            new LoggedTunableNumber("elevator/leftKI", Constants.Elevator.LeftGains.KI);
     private final LoggedTunableNumber leftKD =
-            new LoggedTunableNumber("elevator/kD", Constants.Elevator.Gains.KD);
+            new LoggedTunableNumber("elevator/leftKD", Constants.Elevator.LeftGains.KD);
 
 
     private final LoggedTunableNumber leftKS =
-            new LoggedTunableNumber("elevator/kS", Constants.Elevator.Gains.KS);
+            new LoggedTunableNumber("elevator/leftKS", Constants.Elevator.LeftGains.KS);
     private final LoggedTunableNumber leftKV =
-            new LoggedTunableNumber("elevator/kV", Constants.Elevator.Gains.KV);
+            new LoggedTunableNumber("elevator/leftKV", Constants.Elevator.LeftGains.KV);
     private final LoggedTunableNumber leftKA =
-            new LoggedTunableNumber("elevator/kA", Constants.Elevator.Gains.KA);
+            new LoggedTunableNumber("elevator/leftKA", Constants.Elevator.LeftGains.KA);
     private final LoggedTunableNumber leftKG =
-            new LoggedTunableNumber("elevator/kG", Constants.Elevator.Gains.KG);
+            new LoggedTunableNumber("elevator/leftKG", Constants.Elevator.LeftGains.KG);
+
+    // Right Elevator Tunable Numbers
+    private final LoggedTunableNumber rightKP =
+            new LoggedTunableNumber("elevator/rightKP", Constants.Elevator.RightGains.KP);
+    private final LoggedTunableNumber rightKI =
+            new LoggedTunableNumber("elevator/rightKI", Constants.Elevator.RightGains.KI);
+    private final LoggedTunableNumber rightKD =
+            new LoggedTunableNumber("elevator/rightKD", Constants.Elevator.RightGains.KD);
+
+
+    private final LoggedTunableNumber rightKS =
+            new LoggedTunableNumber("elevator/rightKS", Constants.Elevator.RightGains.KS);
+    private final LoggedTunableNumber rightKV =
+            new LoggedTunableNumber("elevator/rightKV", Constants.Elevator.RightGains.KV);
+    private final LoggedTunableNumber rightKA =
+            new LoggedTunableNumber("elevator/rightKA", Constants.Elevator.RightGains.KA);
+    private final LoggedTunableNumber rightKG =
+            new LoggedTunableNumber("elevator/rightKG", Constants.Elevator.RightGains.KG);
 
     public Elevator(ElevatorIO io) {
         super("elevator");
@@ -141,15 +157,26 @@ public class Elevator extends BlitzSubsystem {
         Logger.processInputs(logKey, inputs);
 
         LoggedTunableNumber.ifChanged(
-                hashCode(), pid -> io.setPid(pid[0], pid[1], pid[2]), leftKP, leftKI, leftKD);
+                hashCode(), pid -> io.setPidLeft(pid[0], pid[1], pid[2]), leftKP, leftKI, leftKD);
 
         LoggedTunableNumber.ifChanged(
                 hashCode(),
-                (kSGVA) -> io.setFF(kSGVA[0], kSGVA[1], kSGVA[2], kSGVA[3]),
+                (kSGVA) -> io.setFFLeft(kSGVA[0], kSGVA[1], kSGVA[2], kSGVA[3]),
                 leftKS,
                 leftKG,
                 leftKV,
                 leftKA);
+
+        LoggedTunableNumber.ifChanged(
+                hashCode(), pid -> io.setPidRight(pid[0], pid[1], pid[2]), rightKP, rightKI, rightKD);
+
+        LoggedTunableNumber.ifChanged(
+                hashCode(),
+                (kSGVA) -> io.setFFRight(kSGVA[0], kSGVA[1], kSGVA[2], kSGVA[3]),
+                rightKS,
+                rightKG,
+                rightKV,
+                rightKA);
 
 //        LoggedTunableNumber.ifChanged(
 //                hashCode(), pid -> io.setPid(pid[0], pid[1], pid[2]), rightKP, rightKD);

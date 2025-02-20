@@ -16,6 +16,9 @@ public interface ElevatorIO {
         public double voltsLeft;
         public double voltsRight;
 
+        public double appliedOutputLeft;
+        public double appliedOutputRight;
+
         public double torqueCurrentLeft; // do we need?
         public double torqueCurrentRight; // do we need?
 
@@ -40,9 +43,13 @@ public interface ElevatorIO {
     @Deprecated
     public default void setMotionMagicRight(double extension) {}
 
-    public default void setPid(double p, double i, double d) {}
+    public default void setPidLeft(double p, double i, double d) {}
 
-    public default void setFF(double kS, double kG, double kV, double kA) {}
+    public default void setFFLeft(double kS, double kG, double kV, double kA) {}
+
+    public default void setPidRight(double p, double i, double d) {}
+
+    public default void setFFRight(double kS, double kG, double kV, double kA) {}
 
     public default void setBrakeMode(boolean brakeMode) {}
 }
