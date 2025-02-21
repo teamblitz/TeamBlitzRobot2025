@@ -72,9 +72,6 @@ import org.littletonrobotics.junction.Logger;
 public class Drive extends BlitzSubsystem {
     private final SwerveDriveOdometry swerveOdometry;
     private final SwerveDrivePoseEstimator poseEstimator;
-    private final TimeInterpolatableBuffer<Pose2d> odoBuffer =
-            TimeInterpolatableBuffer.createBuffer(1.5);
-
     private final SwerveModule[] swerveModules;
     private final GyroIO gyroIO;
     private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
@@ -118,15 +115,6 @@ public class Drive extends BlitzSubsystem {
     private ChassisSpeedController velocityController = null;
     private ChassisSpeedFilter velocityFilter = null;
     private HeadingController headingController = null;
-
-    NetworkTableEntry intakeTx =
-            LimelightHelpers.getLimelightNTTableEntry("limelight-intake", "tx");
-    NetworkTableEntry intakeTv =
-            LimelightHelpers.getLimelightNTTableEntry("limelight-intake", "tv");
-
-    Debouncer tvBouncer = new Debouncer(2. / 30., Debouncer.DebounceType.kBoth);
-    MutableReference<Double> txCache = new MutableReference<>(0.);
-    MutableReference<Boolean> tvCache = new MutableReference<>(false);
 
     public final AmpAssistFilter ampAssistFilter = new AmpAssistFilter(this);
     public final NoteAssistFilter noteAssistFilter = new NoteAssistFilter(this, noteVisionInputs);
@@ -236,7 +224,7 @@ public class Drive extends BlitzSubsystem {
 
         rotateToHeadingPid = new ProfiledPIDController(.1, 0, 0, new Constraints(180, 360));
         rotateToHeadingPid.enableContinuousInput(-180, 180);
-        keepHeadingPid.setTolerance(2);
+        rotateToHeadingPid.setTolerance(2);
         initTelemetry();
 
         zeroGyro();
@@ -640,7 +628,6 @@ public class Drive extends BlitzSubsystem {
 
         swerveOdometry.update(getYaw(), getModulePositions());
         poseEstimator.update(getYaw(), getModulePositions());
-        odoBuffer.addSample(Timer.getFPGATimestamp(), swerveOdometry.getPoseMeters());
 
         ///////////////////////////////////////////////////////////////
 
@@ -714,6 +701,6 @@ public class Drive extends BlitzSubsystem {
     }
 
     public Optional<Pose2d> samplePreviousPose(double timestamp) {
-        return odoBuffer.getSample(timestamp);
+        return poseEstimator.sampleAt(timestamp);
     }
 }
