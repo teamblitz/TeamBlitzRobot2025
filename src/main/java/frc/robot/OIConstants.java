@@ -116,7 +116,7 @@ public class OIConstants {
     }
 
     public static final class Wrist {
-        public static final DoubleSupplier WRIST_MANUAL = () -> MathUtil.applyDeadband(-OPERATOR_CONTROLLER.getRightY(), XBOX_STICK_DEADBAND);
+        public static final DoubleSupplier WRIST_MANUAL = () -> -OPERATOR_CONTROLLER.getRightY();
     }
 
     public static final class Elevator {

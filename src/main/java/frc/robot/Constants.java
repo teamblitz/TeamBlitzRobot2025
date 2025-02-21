@@ -372,7 +372,7 @@ public final class Constants {
         public static final int CURRENT_LIMIT = 60;
         public static final boolean INVERTED = false;
 
-        public static final double FORWARD_SOFT_LIMIT = Units.degreesToRadians(90);
+        public static final double FORWARD_SOFT_LIMIT = Units.degreesToRadians(85);
         public static final double REVERSE_SOFT_LIMIT = Units.degreesToRadians(-90);
 
         public static final double ABS_ENCODER_ZERO = Math.toDegrees(214.64152 - 90);

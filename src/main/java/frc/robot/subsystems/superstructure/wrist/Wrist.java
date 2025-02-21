@@ -87,7 +87,7 @@ public class Wrist extends BlitzSubsystem {
         if (goal != null) {
             setpoint = profile.calculate(Constants.LOOP_PERIOD_SEC, setpoint, goal);
             TrapezoidProfile.State future_setpoint =
-                    profile.calculate(Constants.LOOP_PERIOD_SEC * 2, setpoint, goal);
+                    profile.calculate(Constants.LOOP_PERIOD_SEC, setpoint, goal);
 
             io.setSetpoint(
                     setpoint.position,
