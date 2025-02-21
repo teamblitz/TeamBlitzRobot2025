@@ -57,8 +57,6 @@ import frc.robot.subsystems.drive.swerveModule.drive.DriveMotorIOKraken;
 import frc.robot.subsystems.drive.swerveModule.drive.DriveMotorIOSpark;
 import frc.robot.subsystems.drive.swerveModule.encoder.EncoderIOCanCoder;
 import frc.robot.subsystems.drive.swerveModule.encoder.EncoderIOHelium;
-import frc.robot.subsystems.vision.notes.NoteVisionIO;
-import frc.robot.subsystems.vision.notes.NoteVisionInputsAutoLogged;
 import java.util.Optional;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
@@ -77,8 +75,6 @@ public class Drive extends BlitzSubsystem {
     private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
     private final RangeSensorIO rangeIO;
     private final RangeSensorIOInputsAutoLogged rangeInputs = new RangeSensorIOInputsAutoLogged();
-    private final NoteVisionIO noteVisionIO;
-    private final NoteVisionInputsAutoLogged noteVisionInputs = new NoteVisionInputsAutoLogged();
     private final ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("Drive");
     private final ShuffleboardTab tuningTab = Shuffleboard.getTab("DriveTuning");
 
@@ -116,9 +112,6 @@ public class Drive extends BlitzSubsystem {
     private ChassisSpeedFilter velocityFilter = null;
     private HeadingController headingController = null;
 
-    public final AmpAssistFilter ampAssistFilter = new AmpAssistFilter(this);
-    public final NoteAssistFilter noteAssistFilter = new NoteAssistFilter(this, noteVisionInputs);
-
     public Command setControl(ChassisSpeedController velocityController) {
         return Commands.startEnd(
                 () -> this.velocityController = velocityController,
@@ -150,8 +143,7 @@ public class Drive extends BlitzSubsystem {
             SwerveModuleConstants blConstants,
             SwerveModuleConstants brConstants,
             GyroIO gyroIO,
-            RangeSensorIO rangeIO,
-            NoteVisionIO noteVisionIO) {
+            RangeSensorIO rangeIO) {
         this(
                 new SwerveModule(
                         FL,
@@ -190,8 +182,7 @@ public class Drive extends BlitzSubsystem {
                                 ? new EncoderIOCanCoder(brConstants.cancoderID, CAN_CODER_INVERT)
                                 : new EncoderIOHelium(brConstants.cancoderID, CAN_CODER_INVERT)),
                 gyroIO,
-                rangeIO,
-                noteVisionIO);
+                rangeIO);
     }
 
     public Drive(
@@ -200,8 +191,7 @@ public class Drive extends BlitzSubsystem {
             SwerveModule backLeft,
             SwerveModule backRight,
             GyroIO gyroIO,
-            RangeSensorIO rangeIO,
-            NoteVisionIO noteVisionIO) {
+            RangeSensorIO rangeIO) {
         super("drive");
 
         swerveModules =
@@ -216,7 +206,6 @@ public class Drive extends BlitzSubsystem {
 
         this.gyroIO = gyroIO;
         this.rangeIO = rangeIO;
-        this.noteVisionIO = noteVisionIO;
 
         keepHeadingPid = new PIDController(.15, 0, 0);
         keepHeadingPid.enableContinuousInput(-180, 180);
@@ -360,7 +349,7 @@ public class Drive extends BlitzSubsystem {
 
             rotation = rotateToHeadingPid.calculate(getYaw().getDegrees(), rotationSetpoint);
         } else {
-            if (rotation != 0 || velocityFilter == noteAssistFilter) {
+            if (rotation != 0) {
                 lastTurnCommandSeconds = Timer.getFPGATimestamp();
                 keepHeadingSetpointSet = false;
                 Logger.recordOutput("Drive/Turning", true);
@@ -372,7 +361,7 @@ public class Drive extends BlitzSubsystem {
                 Logger.recordOutput("Drive/Turning", false);
             }
 
-            if (keepHeadingSetpointSet && maintainHeading && velocityFilter != noteAssistFilter) {
+            if (keepHeadingSetpointSet && maintainHeading) {
                 rotation = keepHeadingPid.calculate(getYaw().getDegrees());
             }
         }
@@ -688,9 +677,6 @@ public class Drive extends BlitzSubsystem {
                 driveP,
                 driveI,
                 driveD);
-
-        //                noteAssistFilter.apply(new ChassisSpeeds());
-        //                noteAssistFilter.apply(new ChassisSpeeds());
     }
 
     public void initTelemetry() {

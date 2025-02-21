@@ -37,8 +37,6 @@ import frc.robot.subsystems.superstructure.elevator.ElevatorIOSpark;
 import frc.robot.subsystems.superstructure.wrist.Wrist;
 import frc.robot.subsystems.superstructure.wrist.WristIO;
 import frc.robot.subsystems.superstructure.wrist.WristIOSpark;
-import frc.robot.subsystems.vision.notes.NoteVisionIO;
-import frc.robot.subsystems.vision.notes.NoteVisionIOLimelight;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -107,8 +105,7 @@ public class RobotContainer {
                                     Constants.Drive.Mod2.CONSTANTS,
                                     Constants.Drive.Mod3.CONSTANTS,
                                     new GyroIOPigeon(),
-                                    new RangeSensorIOFusion(),
-                                    new NoteVisionIOLimelight("limelight-intake"));
+                                    new RangeSensorIOFusion());
 
                     case DevBot ->
                             new Drive(
@@ -121,8 +118,7 @@ public class RobotContainer {
                                     Constants.Drive.Mod2.CONSTANTS,
                                     Constants.Drive.Mod3.CONSTANTS,
                                     new GyroIOPigeon(),
-                                    new RangeSensorIO() {},
-                                    new NoteVisionIO() {});
+                                    new RangeSensorIO() {});
                     case SimBot ->
                             new Drive(
                                     new SwerveModule(
@@ -146,8 +142,7 @@ public class RobotContainer {
                                             new DriveMotorIOSim(),
                                             new EncoderIO() {}),
                                     new GyroIO() {},
-                                    new RangeSensorIO() {},
-                                    new NoteVisionIO() {});
+                                    new RangeSensorIO() {});
                 };
 
 //        elevator = new Elevator(new ElevatorIOSpark());
