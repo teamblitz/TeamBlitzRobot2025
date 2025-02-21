@@ -621,10 +621,8 @@ public class Drive extends BlitzSubsystem {
         }
         gyroIO.updateInputs(gyroInputs);
         rangeIO.updateInputs(rangeInputs);
-        noteVisionIO.updateInputs(noteVisionInputs);
         Logger.processInputs("gyro", gyroInputs);
         Logger.processInputs("drive/range", rangeInputs);
-        Logger.processInputs("vision/notes", noteVisionInputs);
 
         swerveOdometry.update(getYaw(), getModulePositions());
         poseEstimator.update(getYaw(), getModulePositions());
