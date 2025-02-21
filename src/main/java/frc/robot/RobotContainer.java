@@ -79,15 +79,15 @@ public class RobotContainer {
     }
 
     private void setDefaultCommands() {
-        drive.setDefaultCommand(
-                new TeleopSwerve(
-                                drive,
-                                OIConstants.Drive.X_TRANSLATION,
-                                OIConstants.Drive.Y_TRANSLATION,
-                                OIConstants.Drive.ROTATION_SPEED,
-                                () -> false,
-                                () -> Double.NaN)
-                        .withName("TeleopSwerve"));
+//        drive.setDefaultCommand(
+//                new TeleopSwerve(
+//                                drive,
+//                                OIConstants.Drive.X_TRANSLATION,
+//                                OIConstants.Drive.Y_TRANSLATION,
+//                                OIConstants.Drive.ROTATION_SPEED,
+//                                () -> false,
+//                                () -> Double.NaN)
+//                        .withName("TeleopSwerve"));
     }
 
     private void configureSubsystems() {

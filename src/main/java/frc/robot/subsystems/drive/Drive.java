@@ -399,7 +399,7 @@ public class Drive extends BlitzSubsystem {
                         : new ChassisSpeeds(translation.getX(), translation.getY(), rotation);
 
         drive(
-                velocityFilter != null ? velocityFilter.filterSpeeds(robotRel, false) : robotRel,
+                robotRel,
                 isOpenLoop);
     }
 
@@ -709,7 +709,7 @@ public class Drive extends BlitzSubsystem {
     }
 
     public void initTelemetry() {
-        tuningTab.add("KeepHeadingPid", keepHeadingPid);
+//        tuningTab.add("KeepHeadingPid", keepHeadingPid);
         // tuningTab.add("Tuning Command", new SwerveTuning(this));
     }
 

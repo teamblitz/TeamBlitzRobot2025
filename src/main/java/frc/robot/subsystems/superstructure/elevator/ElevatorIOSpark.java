@@ -110,22 +110,23 @@ public class ElevatorIOSpark implements ElevatorIO {
         leftEncoder.setPosition(0);
         rightEncoder.setPosition(0);
 
-        new Notifier(
-                () -> {
-                    Logger.recordOutput("elevator/elevatorIOSpark/leftP", left.configAccessor.closedLoop.getP());
-                    Logger.recordOutput("elevator/elevatorIOSpark/rightP", right.configAccessor.closedLoop.getP());
+//        new Notifier(
+//                () -> {
+//                    Logger.recordOutput("elevator/elevatorIOSpark/leftP", left.configAccessor.closedLoop.getP());
+//                    Logger.recordOutput("elevator/elevatorIOSpark/rightP", right.configAccessor.closedLoop.getP());
+//
 
-                    Logger.recordOutput("elevator/elevatorIOSpark/leftD", left.configAccessor.closedLoop.getP());
-                    Logger.recordOutput("elevator/elevatorIOSpark/rightD", right.configAccessor.closedLoop.getD());
-
-                    Logger.recordOutput("elevator/elevatorIOSpark/leftFollowerModeInverted", left.configAccessor.getFollowerModeInverted());
-                    Logger.recordOutput("elevator/elevatorIOSpark/rightFollowerModeInverted", right.configAccessor.getFollowerModeInverted());
-                }
-        ).startPeriodic(5);
+//
+//                    Logger.recordOutput("elevator/elevatorIOSpark/leftD", left.configAccessor.closedLoop.getD());
+//                    Logger.recordOutput("elevator/elevatorIOSpark/rightD", right.configAccessor.closedLoop.getD());
+//
+//                }
+//        ).startPeriodic(5);
     }
 
     @Override
     public void setPidLeft(double p, double i, double d) {
+        System.out.println("Updated left pid");
         left.configure(
                 new SparkMaxConfig().apply(new ClosedLoopConfig().pid(p, i, d)),
                 SparkBase.ResetMode.kNoResetSafeParameters,
@@ -134,6 +135,7 @@ public class ElevatorIOSpark implements ElevatorIO {
 
     @Override
     public void setPidRight(double p, double i, double d) {
+        System.out.println("Updated right pid");
         right.configure(
                 new SparkMaxConfig().apply(new ClosedLoopConfig().pid(p, i, d)),
                 SparkBase.ResetMode.kNoResetSafeParameters,

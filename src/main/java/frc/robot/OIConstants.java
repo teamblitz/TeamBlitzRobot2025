@@ -88,26 +88,26 @@ public class OIConstants {
     }
 
     public static final class Overrides {
-        private static final ShuffleboardTab TAB = Shuffleboard.getTab("Overrides");
+//        private static final ShuffleboardTab TAB = Shuffleboard.getTab("Overrides");
 
-        @SuppressWarnings("resource")
-        public static final BooleanSupplier INTAKE_OVERRIDE =
-                DashboardHelpers.genericEntrySupplier(
-                                TAB.add("Intake", false)
-                                        .withWidget(BuiltInWidgets.kBooleanBox)
-                                        .getEntry(),
-                                false,
-                                NetworkTableType.kBoolean)
-                        ::get;
-
-        public static final BooleanSupplier ARM_OVERRIDE =
-                DashboardHelpers.genericEntrySupplier(
-                                TAB.add("Arm", false)
-                                        .withWidget(BuiltInWidgets.kBooleanBox)
-                                        .getEntry(),
-                                false,
-                                NetworkTableType.kBoolean)
-                        ::get;
+//        @SuppressWarnings("resource")
+//        public static final BooleanSupplier INTAKE_OVERRIDE =
+//                DashboardHelpers.genericEntrySupplier(
+//                                TAB.add("Intake", false)
+//                                        .withWidget(BuiltInWidgets.kBooleanBox)
+//                                        .getEntry(),
+//                                false,
+//                                NetworkTableType.kBoolean)
+//                        ::get;
+//
+//        public static final BooleanSupplier ARM_OVERRIDE =
+//                DashboardHelpers.genericEntrySupplier(
+//                                TAB.add("Arm", false)
+//                                        .withWidget(BuiltInWidgets.kBooleanBox)
+//                                        .getEntry(),
+//                                false,
+//                                NetworkTableType.kBoolean)
+//                        ::get;
     }
 
     public static final class Intake {
