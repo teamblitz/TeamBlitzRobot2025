@@ -7,8 +7,10 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -133,8 +135,21 @@ public class Robot extends LoggedRobot {
                             logCommandFunction.accept(command, false);
                         });
 
+        Runtime runtime = Runtime.getRuntime();
+
+        // Start logging jvm and heep memeory
+//        Notifier ramLogger = new Notifier(
+//                () -> {
+//                    Logger.recordOutput("System/")
+//                }
+//        );
+
         robotContainer = new RobotContainer();
     }
+
+    public int loopCount = 0;
+    private double lastTimeStamp = Timer.getFPGATimestamp();
+    private final LinearFilter loopTimeFilter = LinearFilter.singlePoleIIR(0.1, 0.02);
 
     @Override
     public void robotPeriodic() {
@@ -143,6 +158,20 @@ public class Robot extends LoggedRobot {
         // and running subsystem periodic() methods.  This must be called from the robot's periodic
         // block in order for anything in the Command-based framework to work.
         CommandScheduler.getInstance().run();
+
+        double loopTime = Timer.getFPGATimestamp() - lastTimeStamp;
+        lastTimeStamp = Timer.getFPGATimestamp();
+
+        Logger.recordOutput("Loop time", loopTime);
+
+        if (loopCount == 500) {
+            loopCount = 0;
+            System.out.println("#####################Epochs:######################");
+            CommandScheduler.getInstance().printWatchdogEpochs();
+
+        } else {
+            loopCount++;
+        }
     }
 
     /* ***** --- Autonomous --- ***** */
