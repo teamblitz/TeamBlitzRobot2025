@@ -24,7 +24,7 @@ public class Wrist extends BlitzSubsystem {
     private final WristIOInputsAutoLogged inputs = new WristIOInputsAutoLogged();
 
     private TrapezoidProfile profile =
-            new TrapezoidProfile(new TrapezoidProfile.Constraints(Math.toRadians(30), Math.toRadians(60)));
+            new TrapezoidProfile(new TrapezoidProfile.Constraints(Math.toRadians(180), Math.toRadians(360)));
 
     private TrapezoidProfile.State goal;
     private TrapezoidProfile.State setpoint;
@@ -78,7 +78,7 @@ public class Wrist extends BlitzSubsystem {
                 withGoal(new TrapezoidProfile.State(Math.toRadians(45),0)).withName("wrist/test45"));
         characterizationTab.add(
                 "wrist/minus45",
-                withGoal(new TrapezoidProfile.State(Math.toRadians(-45),0)).withName("wrist/testminus45"));
+                withGoal(new TrapezoidProfile.State(Math.toRadians(-40),0)).withName("wrist/testminus45"));
     }
 
     @Override
