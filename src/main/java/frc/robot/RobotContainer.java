@@ -165,6 +165,9 @@ public class RobotContainer {
         OIConstants.Elevator.ELEVATOR_L3.onTrue(elevator.withGoal(new TrapezoidProfile.State(Constants.SuperstructureSetpoints.L3_PRIME.elevatorPosition(), 0)));
         OIConstants.Elevator.ELEVATOR_L4.onTrue(elevator.withGoal(new TrapezoidProfile.State(Constants.SuperstructureSetpoints.L4_PRIME.elevatorPosition(), 0)));
 
+        OIConstants.Wrist.WRIST_TEST1.onTrue(wrist.withGoal(new TrapezoidProfile.State(Math.toRadians(45), 0)));
+        OIConstants.Wrist.WRIST_TEST2.onTrue(wrist.withGoal(new TrapezoidProfile.State(Math.toRadians(-45), 0)));
+
         OIConstants.Elevator.MANUAL_UP.whileTrue(elevator.upManual());
         OIConstants.Elevator.MANUAL_DOWN.whileTrue(elevator.downManual());
 

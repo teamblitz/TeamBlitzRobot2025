@@ -119,6 +119,9 @@ public class OIConstants {
 
     public static final class Wrist {
         public static final DoubleSupplier WRIST_MANUAL = () -> -OPERATOR_CONTROLLER.getRightY();
+
+        public static final Trigger WRIST_TEST1 = OPERATOR_CONTROLLER.x();
+        public static final Trigger WRIST_TEST2 = OPERATOR_CONTROLLER.y();
     }
 
     public static final class Elevator {
