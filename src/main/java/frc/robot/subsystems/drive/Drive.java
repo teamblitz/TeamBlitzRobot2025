@@ -262,7 +262,7 @@ public class Drive extends BlitzSubsystem {
                                                 module.resetToAbs();
                                             }
                                         })
-                ).ignoringDisable(true)
+                ).ignoringDisable(true).withName("SWERVE FIX")
         );
 
         // Creates a SysIdRoutine
