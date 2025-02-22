@@ -262,8 +262,8 @@ public class Drive extends BlitzSubsystem {
                                                 module.resetToAbs();
                                             }
                                         })
-                ).repeatedly().ignoringDisable(true).withName("SWERVE FIX")
-                .unless(DriverStation::isEnabled).schedule();
+                ).repeatedly().withName("SWERVE FIX")
+                .until(DriverStation::isEnabled).ignoringDisable(true).schedule();
 
         // Creates a SysIdRoutine
         routine =
