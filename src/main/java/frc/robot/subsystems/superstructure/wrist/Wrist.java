@@ -161,6 +161,7 @@ public class Wrist extends BlitzSubsystem {
     public Command withGoal(TrapezoidProfile.State goal) {
         return runOnce(
                 () -> {
+                    System.out.println("HELLO");
                     this.goal = goal;
                 })
                 .until(() -> setpoint.equals(goal))
@@ -178,10 +179,9 @@ public class Wrist extends BlitzSubsystem {
                         () ->
                                 setpoint == null
                                         || !EqualsUtil.epsilonEquals(
-                                        setpoint.position, getPosition(), Math.toRadians(2)
-                                )
+                                        setpoint.position, getPosition(), Math.toRadians(2))
                                         || !EqualsUtil.epsilonEquals(
-                                        setpoint.velocity, getVelocity(), 4));
+                                        setpoint.velocity, getVelocity(), Math.toRadians(4)));
     }
 
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
