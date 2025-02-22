@@ -184,6 +184,8 @@ public class Elevator extends BlitzSubsystem {
                 () -> {
                     io.setSpeed(0);
                 }
+        ).beforeStarting(
+                () -> this.goal = null
         );
     }
 
