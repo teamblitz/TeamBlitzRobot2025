@@ -391,6 +391,27 @@ public final class Constants {
         }
     }
 
+    public static final class SuperstructureSetpoints {
+        public static final SuperstructureState STOW = new SuperstructureState(.02, 70);
+
+
+        public static final SuperstructureState L1_PRIME = new SuperstructureState(.28, 60);
+        public static final SuperstructureState L2_PRIME = new SuperstructureState(.28, 60);
+        public static final SuperstructureState L3_PRIME = new SuperstructureState(.663, 60);
+        public static final SuperstructureState L4_PRIME = new SuperstructureState(1.43, 45);
+
+
+        public static final SuperstructureState HANDOFF_PRIME = new SuperstructureState(0, 0);
+        public static final SuperstructureState HANDOFF = new SuperstructureState(0, 0);
+
+
+//        public static final class  {
+//            public static final SuperstructureState
+//        }
+
+        public record SuperstructureState(double elevatorPosition, double wristRotation) { }
+    }
+
     public static final class Intake {
         public static final int CAN_ID = 40;
         public static final boolean INVERTED = true;

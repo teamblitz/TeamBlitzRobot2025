@@ -128,7 +128,6 @@ public class OIConstants {
                 public static final Trigger ELEVATOR_L4 = OPERATOR_CONTROLLER.povRight();
 
         //        public static final Trigger ELEVATOR_DOWN = OPERATOR_CONTROLLER.a();
-
         public static final Trigger MANUAL_UP = OPERATOR_CONTROLLER.povUp();
         public static final Trigger MANUAL_DOWN = OPERATOR_CONTROLLER.povDown();
     }

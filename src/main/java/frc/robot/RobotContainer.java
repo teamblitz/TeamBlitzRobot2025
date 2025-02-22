@@ -160,12 +160,10 @@ public class RobotContainer {
         OIConstants.Drive.BRAKE.onTrue(Commands.runOnce(() -> drive.setBrakeMode(true)));
         OIConstants.Drive.COAST.onTrue(Commands.runOnce(() -> drive.setBrakeMode(false)));
 
-                OIConstants.Elevator.ELEVATOR_L4.onTrue(elevator.withGoal(new TrapezoidProfile.State(1.42, 0)));
-                OIConstants.Elevator.ELEVATOR_L3.onTrue(elevator.withGoal(new TrapezoidProfile.State(.66, 0)));
-                OIConstants.Elevator.ELEVATOR_L2.onTrue(elevator.withGoal(new TrapezoidProfile.State(.28, 0)));
-                OIConstants.Elevator.ELEVATOR_L1.onTrue(elevator.withGoal(new TrapezoidProfile.State(.69, 0)));
-
-        //        OIConstants.Elevator.ELEVATOR_DOWN.onTrue(elevator.down());
+        OIConstants.Elevator.ELEVATOR_L1.onTrue(elevator.withGoal(new TrapezoidProfile.State(Constants.SuperstructureSetpoints.L1_PRIME.elevatorPosition(), 0)));
+        OIConstants.Elevator.ELEVATOR_L2.onTrue(elevator.withGoal(new TrapezoidProfile.State(Constants.SuperstructureSetpoints.L2_PRIME.elevatorPosition(), 0)));
+        OIConstants.Elevator.ELEVATOR_L3.onTrue(elevator.withGoal(new TrapezoidProfile.State(Constants.SuperstructureSetpoints.L3_PRIME.elevatorPosition(), 0)));
+        OIConstants.Elevator.ELEVATOR_L4.onTrue(elevator.withGoal(new TrapezoidProfile.State(Constants.SuperstructureSetpoints.L4_PRIME.elevatorPosition(), 0)));
 
         OIConstants.Elevator.MANUAL_UP.whileTrue(elevator.upManual());
         OIConstants.Elevator.MANUAL_DOWN.whileTrue(elevator.downManual());
