@@ -2,6 +2,7 @@ package frc.robot.subsystems.superstructure.wrist;
 
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -101,6 +102,16 @@ public class Wrist extends BlitzSubsystem {
             Logger.recordOutput(logKey + "/profile/velocityGoal", goal.velocity);
         }
 
+        if (DriverStation.isDisabled()) {
+            // Reset profile when disabled
+            setpoint = new TrapezoidProfile.State(getPosition(), 0);
+            goal = null;
+
+            // Stop arm
+            io.stop();
+            return;
+        }
+
         io.updateInputs(inputs);
         Logger.processInputs(logKey, inputs);
 
@@ -149,23 +160,28 @@ public class Wrist extends BlitzSubsystem {
 
     public Command withGoal(TrapezoidProfile.State goal) {
         return runOnce(
-                        () -> {
-                            this.goal = goal;
-                        })
+                () -> {
+                    this.goal = goal;
+                })
                 .until(() -> setpoint.equals(goal))
                 .handleInterrupt(() -> this.goal = setpoint)
                 .beforeStarting(refreshCurrentState());
     }
 
+    /**
+     * Generates a command to reset the current internal setpoint to the actual state if they
+     * conflict
+     */
     private Command refreshCurrentState() {
         return runOnce(() -> setpoint = new TrapezoidProfile.State(getPosition(), getVelocity()))
                 .onlyIf(
                         () ->
                                 setpoint == null
                                         || !EqualsUtil.epsilonEquals(
-                                                setpoint.position, getPosition(), .02)
+                                        setpoint.position, getPosition(), Math.toRadians(2)
+                                )
                                         || !EqualsUtil.epsilonEquals(
-                                                setpoint.velocity, getVelocity(), 0.04));
+                                        setpoint.velocity, getVelocity(), 0.04));
     }
 
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
