@@ -146,8 +146,8 @@ public class RobotContainer {
         elevator = new Elevator(new ElevatorIOSpark());
 //        elevator = new Elevator(new ElevatorIO() {});
 
-//        wrist = new Wrist(new WristIOSpark());
-        wrist = new Wrist(new WristIO() {});
+        wrist = new Wrist(new WristIOSpark());
+//        wrist = new Wrist(new WristIO() {});
 
         intake = new Intake(new IntakeIOSpark());
 //        intake = new Intake(new IntakeIO() {});

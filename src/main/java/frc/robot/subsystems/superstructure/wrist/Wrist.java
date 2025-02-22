@@ -165,8 +165,8 @@ public class Wrist extends BlitzSubsystem {
                     this.goal = goal;
                 })
                 .until(() -> false)
-                .handleInterrupt(() -> this.goal = setpoint)
-                .beforeStarting(refreshCurrentState());
+                .handleInterrupt(() -> this.goal = setpoint);
+//                .beforeStarting(refreshCurrentState());
     }
 
     /**
