@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.List;
 import java.util.Optional;
 
-public class Leds extends SubsystemBase {
+public class Leds extends SubsystemBase implements AutoCloseable {
     private static Leds instance;
 
     public static Leds getInstance() {
@@ -305,5 +305,11 @@ public class Leds extends SubsystemBase {
 
     public Color toGRB(Color color) {
         return new Color(color.green, color.red, color.blue);
+    }
+
+    public void close() {
+        loadingNotifier.stop();
+        loadingNotifier.close();
+        leds.stop();
     }
 }
