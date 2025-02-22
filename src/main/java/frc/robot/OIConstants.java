@@ -45,16 +45,18 @@ public class OIConstants {
         private static final SlewRateLimiter DRIVE_MULTIPLIER_LIMITER =
                 new SlewRateLimiter(.25); // Todo, try without this?
 
-        //        private static final DoubleSupplier DRIVE_MULTIPLIER =
-        //                () ->
-        //                        NORMAL_SPEED
-        //                                + DRIVE_CONTROLLER.getLeftTriggerAxis()
-        //                                        * (SLOW_SPEED - NORMAL_SPEED)
-        //                                + DRIVE_CONTROLLER.getRightTriggerAxis()
-        //                                        * (FAST_SPEED - NORMAL_SPEED);
+//                private static final DoubleSupplier DRIVE_MULTIPLIER =
+//                        () ->
+//                                NORMAL_SPEED
+//                                        + DRIVE_CONTROLLER.getLeftTriggerAxis()
+//                                                * (SLOW_SPEED - NORMAL_SPEED)
+//                                        + DRIVE_CONTROLLER.getRightTriggerAxis()
+//                                                * (FAST_SPEED - NORMAL_SPEED);
 
         private static final DoubleSupplier DRIVE_MULTIPLIER =
-                () -> (DRIVE_CONTROLLER.getHID().getRawButton(1) ? FAST_SPEED : NORMAL_SPEED);
+                () -> DRIVE_CONTROLLER.getHID().getRightTriggerAxis() > 0.5 ? FAST_SPEED :
+                        DRIVE_CONTROLLER.getHID().getLeftTriggerAxis() > 0.5 ? SLOW_SPEED :
+                NORMAL_SPEED;
 
         public static final DoubleSupplier X_TRANSLATION =
                 () ->
@@ -117,16 +119,18 @@ public class OIConstants {
 
     public static final class Wrist {
         public static final DoubleSupplier WRIST_MANUAL = () -> -OPERATOR_CONTROLLER.getRightY();
+
+        public static final Trigger WRIST_TEST1 = OPERATOR_CONTROLLER.x();
+        public static final Trigger WRIST_TEST2 = OPERATOR_CONTROLLER.y();
     }
 
     public static final class Elevator {
-        //        public static final Trigger ELEVATOR_L1 = OPERATOR_CONTROLLER.povDown();
-        //        public static final Trigger ELEVATOR_L2 = OPERATOR_CONTROLLER.povLeft();
-        //        public static final Trigger ELEVATOR_L3 = OPERATOR_CONTROLLER.povRight();
-        //        public static final Trigger ELEVATOR_L4 = OPERATOR_CONTROLLER.povUp();
-        //
-        //        public static final Trigger ELEVATOR_DOWN = OPERATOR_CONTROLLER.a();
+                public static final Trigger ELEVATOR_L1 = OPERATOR_CONTROLLER.a();
+                public static final Trigger ELEVATOR_L2 = OPERATOR_CONTROLLER.x();
+                public static final Trigger ELEVATOR_L3 = OPERATOR_CONTROLLER.b();
+                public static final Trigger ELEVATOR_L4 = OPERATOR_CONTROLLER.y();
 
+        //        public static final Trigger ELEVATOR_DOWN = OPERATOR_CONTROLLER.a();
         public static final Trigger MANUAL_UP = OPERATOR_CONTROLLER.povUp();
         public static final Trigger MANUAL_DOWN = OPERATOR_CONTROLLER.povDown();
     }

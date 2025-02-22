@@ -2,6 +2,7 @@ package frc.robot.subsystems.superstructure.wrist;
 
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -23,7 +24,7 @@ public class Wrist extends BlitzSubsystem {
     private final WristIOInputsAutoLogged inputs = new WristIOInputsAutoLogged();
 
     private TrapezoidProfile profile =
-            new TrapezoidProfile(new TrapezoidProfile.Constraints(Math.toRadians(30), Math.toRadians(60)));
+            new TrapezoidProfile(new TrapezoidProfile.Constraints(Math.toRadians(180), Math.toRadians(360)));
 
     private TrapezoidProfile.State goal;
     private TrapezoidProfile.State setpoint;
@@ -77,22 +78,33 @@ public class Wrist extends BlitzSubsystem {
                 withGoal(new TrapezoidProfile.State(Math.toRadians(45),0)).withName("wrist/test45"));
         characterizationTab.add(
                 "wrist/minus45",
-                withGoal(new TrapezoidProfile.State(Math.toRadians(-45),0)).withName("wrist/testminus45"));
+                withGoal(new TrapezoidProfile.State(Math.toRadians(-40),0)).withName("wrist/testminus45"));
     }
 
     @Override
     public void periodic() {
         super.periodic();
 
+        
+
+        io.updateInputs(inputs);
+        Logger.processInputs(logKey, inputs);
+
         if (goal != null) {
+            System.out.println("HI PROFILE YAY");
             setpoint = profile.calculate(Constants.LOOP_PERIOD_SEC, setpoint, goal);
             TrapezoidProfile.State future_setpoint =
                     profile.calculate(Constants.LOOP_PERIOD_SEC, setpoint, goal);
+
+            System.out.println("SETPOINTS CALCULATED");
 
             io.setSetpoint(
                     setpoint.position,
                     setpoint.velocity,
                     future_setpoint.velocity);
+
+            System.out.println("SETPOINTS SET");
+
 
             Logger.recordOutput(logKey + "/profile/positionSetpoint", setpoint.position);
             Logger.recordOutput(logKey + "/profile/velocitySetpoint", setpoint.velocity);
@@ -101,8 +113,16 @@ public class Wrist extends BlitzSubsystem {
             Logger.recordOutput(logKey + "/profile/velocityGoal", goal.velocity);
         }
 
-        io.updateInputs(inputs);
-        Logger.processInputs(logKey, inputs);
+        if (DriverStation.isDisabled()) {
+            // Reset profile when disabled
+            setpoint = new TrapezoidProfile.State(getPosition(), 0);
+            goal = null;
+
+            // Stop arm
+            io.stop();
+            return;
+        }
+
 
         Logger.recordOutput(
                 logKey + "/absEncoderDegrees", Math.toRadians(inputs.absoluteEncoderPosition));
@@ -149,23 +169,28 @@ public class Wrist extends BlitzSubsystem {
 
     public Command withGoal(TrapezoidProfile.State goal) {
         return runOnce(
-                        () -> {
-                            this.goal = goal;
-                        })
-                .until(() -> setpoint.equals(goal))
+                () -> {
+                    System.out.println("HELLO");
+                    this.goal = goal;
+                })
+                .until(() -> false)
                 .handleInterrupt(() -> this.goal = setpoint)
                 .beforeStarting(refreshCurrentState());
     }
 
+    /**
+     * Generates a command to reset the current internal setpoint to the actual state if they
+     * conflict
+     */
     private Command refreshCurrentState() {
-        return runOnce(() -> setpoint = new TrapezoidProfile.State(getPosition(), getVelocity()))
-                .onlyIf(
-                        () ->
-                                setpoint == null
-                                        || !EqualsUtil.epsilonEquals(
-                                                setpoint.position, getPosition(), .02)
-                                        || !EqualsUtil.epsilonEquals(
-                                                setpoint.velocity, getVelocity(), 0.04));
+        return runOnce(() -> setpoint = new TrapezoidProfile.State(getPosition(),0));
+//                .onlyIf(
+//                        () ->
+//                                setpoint == null
+//                                        || !EqualsUtil.epsilonEquals(
+//                                        setpoint.position, getPosition(), Math.toRadians(2))
+//                                        || !EqualsUtil.epsilonEquals(
+//                                        setpoint.velocity, getVelocity(), Math.toRadians(4)));
     }
 
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {

@@ -81,6 +81,11 @@ public class WristIOSpark implements WristIO {
     }
 
     @Override
+    public void stop() {
+        motor.stopMotor();
+    }
+
+    @Override
     public void setVolts(double volts) {
         motor.setVoltage(volts);
     }

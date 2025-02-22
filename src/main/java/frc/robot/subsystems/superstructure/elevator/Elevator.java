@@ -101,9 +101,10 @@ public class Elevator extends BlitzSubsystem {
 
         characterizationTab.add(
                 "elevator/0.4m",
-                withGoal(new TrapezoidProfile.State(.5,0)).withName("elevator/0.5m test"));
+                withGoal(new TrapezoidProfile.State(.8,0)).withName("elevator/0.5m test"));
 
     }
+
 
     @Override
     public void periodic() {
@@ -144,10 +145,6 @@ public class Elevator extends BlitzSubsystem {
             return;
         }
 
-
-        io.updateInputs(inputs);
-        Logger.processInputs(logKey, inputs);
-
         LoggedTunableNumber.ifChanged(
                 hashCode(), pid -> io.setPidLeft(pid[0], pid[1], pid[2]), leftKP, leftKI, leftKD);
 
@@ -183,6 +180,8 @@ public class Elevator extends BlitzSubsystem {
                 () -> {
                     io.setSpeed(0);
                 }
+        ).beforeStarting(
+                () -> this.goal = null
         );
     }
 
@@ -191,11 +190,11 @@ public class Elevator extends BlitzSubsystem {
     }
 
     public Command upManual() {
-        return withSpeed(0.2).withName("Up Manual");
+        return withSpeed(0.6).withName("Up Manual");
     }
 
     public Command downManual() {
-        return withSpeed(-0.2).withName("downManual");
+        return withSpeed(-0.4).withName("downManual");
     }
 
     public Command withGoal(TrapezoidProfile.State goal) {

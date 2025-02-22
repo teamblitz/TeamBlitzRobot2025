@@ -161,12 +161,12 @@ public class ElevatorIOSpark implements ElevatorIO {
 
         left.configure(
                 brakeConfig,
-                SparkBase.ResetMode.kResetSafeParameters,
+                SparkBase.ResetMode.kNoResetSafeParameters,
                 SparkBase.PersistMode.kNoPersistParameters);
 
         right.configure(
                 brakeConfig,
-                SparkBase.ResetMode.kResetSafeParameters,
+                SparkBase.ResetMode.kNoResetSafeParameters,
                 SparkBase.PersistMode.kNoPersistParameters);
     }
 
