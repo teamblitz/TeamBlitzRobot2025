@@ -163,15 +163,15 @@ public class Robot extends LoggedRobot {
         lastTimeStamp = Timer.getFPGATimestamp();
 
         Logger.recordOutput("Loop time", loopTime);
-
-        if (loopCount == 500) {
-            loopCount = 0;
-            System.out.println("#####################Epochs:######################");
-            CommandScheduler.getInstance().printWatchdogEpochs();
-
-        } else {
-            loopCount++;
-        }
+//
+//        if (loopCount == 500) {
+//            loopCount = 0;
+//            System.out.println("#####################Epochs:######################");
+//            CommandScheduler.getInstance().printWatchdogEpochs();
+//
+//        } else {
+//            loopCount++;
+//        }
     }
 
     /* ***** --- Autonomous --- ***** */

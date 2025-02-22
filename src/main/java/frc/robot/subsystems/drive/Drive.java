@@ -614,48 +614,31 @@ public class Drive extends BlitzSubsystem {
         Logger.processInputs("drive/range", rangeInputs);
 
         swerveOdometry.update(getYaw(), getModulePositions());
-        poseEstimator.update(getYaw(), getModulePositions());
+//        poseEstimator.update(getYaw(), getModulePositions()); // TODO AHHHHH
+//        LimelightHelpers.PoseEstimate limelightMeasurement =
+//                LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
 
-        ///////////////////////////////////////////////////////////////
+//        if (limelightMeasurement != null) {
+//            if ((limelightMeasurement.tagCount >= 1)
+//                    && limelightMeasurement.timestampSeconds > lastVisionTimeStamp) {
+//                poseEstimator.setVisionMeasurementStdDevs(
+//                        VecBuilder.fill(
+//                                .7, .7,
+//                                9999999)); // Standard deviations, basically vision measurements
+//                // very up
+//                // to .7m, and just don't trust the vision angle at all (not how std devs work noah)
+//                poseEstimator.addVisionMeasurement(
+//                        limelightMeasurement.pose, limelightMeasurement.timestampSeconds);
+//            }
+//
+//            lastVisionTimeStamp = limelightMeasurement.timestampSeconds;
+//        }
 
-        // TODO: Whenever this PR gets merged, replace this with it
-        // https://github.com/wpilibsuite/allwpilib/pull/6426
-        //        Optional<Pose2d> poseTest =
-        //                ReflectionHell.samplePoseEstimator(poseEstimator, Timer.getFPGATimestamp()
-        // - 1);
-        //
-        //        poseTest.ifPresent(pose2d -> Logger.recordOutput(logKey + "/poseBufferTest",
-        // pose2d));
-        //        Logger.recordOutput(logKey + "/poseBufferTestGood", poseTest.isPresent());
-
-        ///////////////////////////////////////////////////////////////
-
-        /* Vision stuff no touchy*/
-
-        LimelightHelpers.PoseEstimate limelightMeasurement =
-                LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
-
-        if (limelightMeasurement != null) {
-            if ((limelightMeasurement.tagCount >= 1)
-                    && limelightMeasurement.timestampSeconds > lastVisionTimeStamp) {
-                poseEstimator.setVisionMeasurementStdDevs(
-                        VecBuilder.fill(
-                                .7, .7,
-                                9999999)); // Standard deviations, basically vision measurements
-                // very up
-                // to .7m, and just don't trust the vision angle at all (not how std devs work noah)
-                poseEstimator.addVisionMeasurement(
-                        limelightMeasurement.pose, limelightMeasurement.timestampSeconds);
-            }
-
-            lastVisionTimeStamp = limelightMeasurement.timestampSeconds;
-        }
-
-        Logger.recordOutput(logKey + "/vision/timestampSeconds", lastVisionTimeStamp);
+//        Logger.recordOutput(logKey + "/vision/timestampSeconds", lastVisionTimeStamp);
 
         Logger.recordOutput(logKey + "/Odometry", swerveOdometry.getPoseMeters());
-        Logger.recordOutput(logKey + "/Vision+Odometry", poseEstimator.getEstimatedPosition());
-        Logger.recordOutput(logKey + "/Vision", getLimelightPose());
+//        Logger.recordOutput(logKey + "/Vision+Odometry", poseEstimator.getEstimatedPosition());
+//        Logger.recordOutput(logKey + "/Vision", getLimelightPose());
         Logger.recordOutput(logKey + "/modules", getModuleStates());
 
         LoggedTunableNumber.ifChanged(

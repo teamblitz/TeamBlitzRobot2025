@@ -30,7 +30,6 @@ import frc.robot.subsystems.drive.swerveModule.encoder.EncoderIO;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOSpark;
-import frc.robot.subsystems.leds.Leds;
 import frc.robot.subsystems.superstructure.elevator.Elevator;
 import frc.robot.subsystems.superstructure.elevator.ElevatorIO;
 import frc.robot.subsystems.superstructure.elevator.ElevatorIOSpark;
@@ -59,8 +58,6 @@ public class RobotContainer {
     private final LoggedDashboardChooser<StartingPosition> startingPositionChooser;
 
     public RobotContainer() {
-        Leds.getInstance();
-
         configureSubsystems();
 
         configureButtonBindings();
@@ -145,14 +142,14 @@ public class RobotContainer {
                                     new RangeSensorIO() {});
                 };
 
-//        elevator = new Elevator(new ElevatorIOSpark());
-        elevator = new Elevator(new ElevatorIO() {});
+        elevator = new Elevator(new ElevatorIOSpark());
+//        elevator = new Elevator(new ElevatorIO() {});
 
-//        wrist = new Wrist(new WristIOSpark());
-        wrist = new Wrist(new WristIO() {});
+        wrist = new Wrist(new WristIOSpark());
+//        wrist = new Wrist(new WristIO() {});
 
-//        intake = new Intake(new IntakeIOSpark());
-        intake = new Intake(new IntakeIO() {});
+        intake = new Intake(new IntakeIOSpark());
+//        intake = new Intake(new IntakeIO() {});
     }
 
     private void configureButtonBindings() {
