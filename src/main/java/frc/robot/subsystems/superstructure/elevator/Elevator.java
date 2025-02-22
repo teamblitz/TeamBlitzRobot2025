@@ -104,7 +104,7 @@ public class Elevator extends BlitzSubsystem {
                 withGoal(new TrapezoidProfile.State(.8,0)).withName("elevator/0.5m test"));
 
     }
-    
+
 
     @Override
     public void periodic() {
@@ -144,10 +144,6 @@ public class Elevator extends BlitzSubsystem {
             io.stop();
             return;
         }
-
-
-        io.updateInputs(inputs);
-        Logger.processInputs(logKey, inputs);
 
         LoggedTunableNumber.ifChanged(
                 hashCode(), pid -> io.setPidLeft(pid[0], pid[1], pid[2]), leftKP, leftKI, leftKD);

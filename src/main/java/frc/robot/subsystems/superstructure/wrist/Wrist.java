@@ -85,6 +85,11 @@ public class Wrist extends BlitzSubsystem {
     public void periodic() {
         super.periodic();
 
+        
+
+        io.updateInputs(inputs);
+        Logger.processInputs(logKey, inputs);
+
         if (goal != null) {
             setpoint = profile.calculate(Constants.LOOP_PERIOD_SEC, setpoint, goal);
             TrapezoidProfile.State future_setpoint =
@@ -112,8 +117,6 @@ public class Wrist extends BlitzSubsystem {
             return;
         }
 
-        io.updateInputs(inputs);
-        Logger.processInputs(logKey, inputs);
 
         Logger.recordOutput(
                 logKey + "/absEncoderDegrees", Math.toRadians(inputs.absoluteEncoderPosition));
