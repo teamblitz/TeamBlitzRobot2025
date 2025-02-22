@@ -181,7 +181,7 @@ public class Wrist extends BlitzSubsystem {
                                         setpoint.position, getPosition(), Math.toRadians(2)
                                 )
                                         || !EqualsUtil.epsilonEquals(
-                                        setpoint.velocity, getVelocity(), 0.04));
+                                        setpoint.velocity, getVelocity(), 4));
     }
 
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
