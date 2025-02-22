@@ -253,7 +253,7 @@ public class Drive extends BlitzSubsystem {
                         })
                 .schedule();
 
-        new Trigger(DriverStation.isDisabled()).whileTrue(
+        new Trigger(DriverStation::isDisabled).whileTrue(
                 Commands.repeatingSequence(
                         Commands.waitSeconds(2),
                         Commands.runOnce(
@@ -262,8 +262,8 @@ public class Drive extends BlitzSubsystem {
                                                 module.resetToAbs();
                                             }
                                         })
-                ).ignoringDisable(true);
-        )
+                ).ignoringDisable(true)
+        );
 
         // Creates a SysIdRoutine
         routine =
