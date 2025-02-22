@@ -174,14 +174,14 @@ public class Wrist extends BlitzSubsystem {
      * conflict
      */
     private Command refreshCurrentState() {
-        return runOnce(() -> setpoint = new TrapezoidProfile.State(getPosition(), getVelocity()))
-                .onlyIf(
-                        () ->
-                                setpoint == null
-                                        || !EqualsUtil.epsilonEquals(
-                                        setpoint.position, getPosition(), Math.toRadians(2))
-                                        || !EqualsUtil.epsilonEquals(
-                                        setpoint.velocity, getVelocity(), Math.toRadians(4)));
+        return runOnce(() -> setpoint = new TrapezoidProfile.State(getPosition(), getVelocity()));
+//                .onlyIf(
+//                        () ->
+//                                setpoint == null
+//                                        || !EqualsUtil.epsilonEquals(
+//                                        setpoint.position, getPosition(), Math.toRadians(2))
+//                                        || !EqualsUtil.epsilonEquals(
+//                                        setpoint.velocity, getVelocity(), Math.toRadians(4)));
     }
 
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
