@@ -91,14 +91,20 @@ public class Wrist extends BlitzSubsystem {
         Logger.processInputs(logKey, inputs);
 
         if (goal != null) {
+            System.out.println("HI PROFILE YAY");
             setpoint = profile.calculate(Constants.LOOP_PERIOD_SEC, setpoint, goal);
             TrapezoidProfile.State future_setpoint =
                     profile.calculate(Constants.LOOP_PERIOD_SEC, setpoint, goal);
+
+            System.out.println("SETPOINTS CALCULATED");
 
             io.setSetpoint(
                     setpoint.position,
                     setpoint.velocity,
                     future_setpoint.velocity);
+
+            System.out.println("SETPOINTS SET");
+
 
             Logger.recordOutput(logKey + "/profile/positionSetpoint", setpoint.position);
             Logger.recordOutput(logKey + "/profile/velocitySetpoint", setpoint.velocity);
