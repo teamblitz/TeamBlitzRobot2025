@@ -165,8 +165,8 @@ public class Wrist extends BlitzSubsystem {
                     this.goal = goal;
                 })
                 .until(() -> false)
-                .handleInterrupt(() -> this.goal = setpoint);
-//                .beforeStarting(refreshCurrentState());
+                .handleInterrupt(() -> this.goal = setpoint)
+                .beforeStarting(refreshCurrentState());
     }
 
     /**
@@ -174,7 +174,7 @@ public class Wrist extends BlitzSubsystem {
      * conflict
      */
     private Command refreshCurrentState() {
-        return runOnce(() -> setpoint = new TrapezoidProfile.State(getPosition(), getVelocity()));
+        return runOnce(() -> setpoint = new TrapezoidProfile.State(getPosition(),0));
 //                .onlyIf(
 //                        () ->
 //                                setpoint == null
