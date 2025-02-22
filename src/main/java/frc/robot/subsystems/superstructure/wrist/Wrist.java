@@ -164,7 +164,7 @@ public class Wrist extends BlitzSubsystem {
                     System.out.println("HELLO");
                     this.goal = goal;
                 })
-                .until(() -> setpoint.equals(goal))
+                .until(() -> false)
                 .handleInterrupt(() -> this.goal = setpoint)
                 .beforeStarting(refreshCurrentState());
     }
