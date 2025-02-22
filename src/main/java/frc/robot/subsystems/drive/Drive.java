@@ -253,6 +253,18 @@ public class Drive extends BlitzSubsystem {
                         })
                 .schedule();
 
+        new Trigger(DriverStation.isDisabled()).whileTrue(
+                Commands.repeatingSequence(
+                        Commands.waitSeconds(2),
+                        Commands.runOnce(
+                                        () -> {
+                                            for (SwerveModule module : swerveModules) {
+                                                module.resetToAbs();
+                                            }
+                                        })
+                ).ignoringDisable(true);
+        )
+
         // Creates a SysIdRoutine
         routine =
                 new SysIdRoutine(
