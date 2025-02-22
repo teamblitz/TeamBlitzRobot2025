@@ -9,6 +9,7 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -159,11 +160,11 @@ public class RobotContainer {
         OIConstants.Drive.BRAKE.onTrue(Commands.runOnce(() -> drive.setBrakeMode(true)));
         OIConstants.Drive.COAST.onTrue(Commands.runOnce(() -> drive.setBrakeMode(false)));
 
-        //        OIConstants.Elevator.ELEVATOR_L4.onTrue(elevator.l4Extension());
-        //        OIConstants.Elevator.ELEVATOR_L3.onTrue(elevator.l3Extension());
-        //        OIConstants.Elevator.ELEVATOR_L2.onTrue(elevator.l2Extension());
-        //        OIConstants.Elevator.ELEVATOR_L1.onTrue(elevator.l1Extension());
-        //
+                OIConstants.Elevator.ELEVATOR_L4.onTrue(elevator.withGoal(new TrapezoidProfile.State(1.42, 0)));
+                OIConstants.Elevator.ELEVATOR_L3.onTrue(elevator.withGoal(new TrapezoidProfile.State(.66, 0)));
+                OIConstants.Elevator.ELEVATOR_L2.onTrue(elevator.withGoal(new TrapezoidProfile.State(.28, 0)));
+                OIConstants.Elevator.ELEVATOR_L1.onTrue(elevator.withGoal(new TrapezoidProfile.State(.69, 0)));
+
         //        OIConstants.Elevator.ELEVATOR_DOWN.onTrue(elevator.down());
 
         OIConstants.Elevator.MANUAL_UP.whileTrue(elevator.upManual());
