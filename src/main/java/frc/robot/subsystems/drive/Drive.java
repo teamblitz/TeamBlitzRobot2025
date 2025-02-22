@@ -253,7 +253,7 @@ public class Drive extends BlitzSubsystem {
                         })
                 .schedule();
 
-        new Trigger(DriverStation::isDisabled).whileTrue(
+        
                 Commands.sequence(
                         Commands.waitSeconds(2),
                         Commands.runOnce(
@@ -263,7 +263,7 @@ public class Drive extends BlitzSubsystem {
                                             }
                                         })
                 ).repeatedly().ignoringDisable(true).withName("SWERVE FIX")
-        );
+                .unless(DriverStation::isEnabled).schedule();
 
         // Creates a SysIdRoutine
         routine =
