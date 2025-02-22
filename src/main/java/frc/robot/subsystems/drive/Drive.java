@@ -226,7 +226,7 @@ public class Drive extends BlitzSubsystem {
         // Most critical 6 lines of the robot, don't delete, without these it doesn't completely
         // work
         // for some reason
-        Commands.waitSeconds(3)
+        Commands.waitSeconds(10)
                 .andThen(
                         Commands.runOnce(
                                         () -> {
