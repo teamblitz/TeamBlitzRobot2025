@@ -101,9 +101,10 @@ public class Elevator extends BlitzSubsystem {
 
         characterizationTab.add(
                 "elevator/0.4m",
-                withGoal(new TrapezoidProfile.State(.5,0)).withName("elevator/0.5m test"));
+                withGoal(new TrapezoidProfile.State(.8,0)).withName("elevator/0.5m test"));
 
     }
+    
 
     @Override
     public void periodic() {
