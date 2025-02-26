@@ -183,7 +183,7 @@ public class Wrist extends BlitzSubsystem {
      * conflict
      */
     private Command refreshCurrentState() {
-        return runOnce(() -> setpoint = new TrapezoidProfile.State(getPosition(),0));
+        return runOnce(() -> this.setpoint = new TrapezoidProfile.State(getPosition(),0));
 //                .onlyIf(
 //                        () ->
 //                                setpoint == null
