@@ -62,6 +62,7 @@ public class WristIOSpark implements WristIO {
                 SparkBase.ResetMode.kResetSafeParameters,
                 SparkBase.PersistMode.kNoPersistParameters);
 
+
         setPid(
                 PidGains.KP,
                 PidGains.KI,
@@ -92,12 +93,24 @@ public class WristIOSpark implements WristIO {
 
     @Override
     public void setSetpoint(double position, double velocity, double nextVelocity) {
-        pid.setReference(
+//        System.out.println("Wrist IO Spark setpoint request: " + position + " " + velocity + " " + nextVelocity);
+
+        // TODO: WPILIB BUG MEANS THAT VERY SMALL DIFFERENCES BETWEEN V(t) and V(t+1) can result in a infinite loop
+//        double arbFF = feedforward.calculateWithVelocities(position, velocity, nextVelocity);
+
+        double arbFF = feedforward.calculate(position, velocity);
+
+//        System.out.println("Wrist IO Spark setpoint feedforward: " + arbFF);
+
+        REVLibError errorCode = pid.setReference(
                 position,
                 SparkBase.ControlType.kPosition,
                 ClosedLoopSlot.kSlot0,
-                feedforward.calculateWithVelocities(position, velocity, nextVelocity),
+                arbFF,
                 SparkClosedLoopController.ArbFFUnits.kVoltage);
+
+        System.out.println("Wrist IO Spark setpoint error code: " + errorCode);
+
     }
 
     @Override
