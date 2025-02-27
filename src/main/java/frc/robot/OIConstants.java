@@ -2,6 +2,11 @@ package frc.robot;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import java.util.function.DoubleSupplier;
@@ -11,7 +16,7 @@ public class OIConstants {
 
     public static final double XBOX_STICK_DEADBAND = 0.06;
 
-    public static final CommandXboxController DRIVE_CONTROLLER = new CommandXboxController(0);
+    public static final CommandJoystick DRIVE_CONTROLLER = new CommandJoystick(0);
     public static final CommandXboxController OPERATOR_CONTROLLER = new CommandXboxController(1);
 
     public static final Trigger TELEOP = new Trigger(DriverStation::isTeleop);
@@ -49,27 +54,22 @@ public class OIConstants {
                 () -> (DRIVE_CONTROLLER.getHID().getRawButton(1) ? FAST_SPEED : NORMAL_SPEED);
 
         public static final DoubleSupplier X_TRANSLATION =
-                () ->
-                        INPUT_CURVE.apply(-DRIVE_CONTROLLER.getLeftY())
-                                * DRIVE_MULTIPLIER.getAsDouble();
+                () -> INPUT_CURVE.apply(-DRIVE_CONTROLLER.getY()) * DRIVE_MULTIPLIER.getAsDouble();
 
         public static final DoubleSupplier Y_TRANSLATION =
-                () ->
-                        INPUT_CURVE.apply(-DRIVE_CONTROLLER.getLeftX())
-                                * DRIVE_MULTIPLIER.getAsDouble();
+                () -> INPUT_CURVE.apply(-DRIVE_CONTROLLER.getX()) * DRIVE_MULTIPLIER.getAsDouble();
 
         public static final DoubleSupplier ROTATION_SPEED =
-                () -> SPIN_SPEED * SPIN_CURVE.apply(-DRIVE_CONTROLLER.getRightX());
+                () -> SPIN_SPEED * SPIN_CURVE.apply(-DRIVE_CONTROLLER.getTwist());
 
-        public static final DoubleSupplier HEADING_CONTROL =
-                () ->
-                        Math.hypot(DRIVE_CONTROLLER.getRightY(), DRIVE_CONTROLLER.getRightX()) > .5
-                                ? Math.toDegrees(
-                                                Math.atan2(
-                                                        -DRIVE_CONTROLLER.getLeftY(),
-                                                        -DRIVE_CONTROLLER.getLeftX()))
-                                        - 90
-                                : Double.NaN;
+        public static final DoubleSupplier HEADING_CONTROL = () -> Double.NaN;
+        //                        0 * Math.hypot(DRIVE_CONTROLLER.getLeftY(),
+        // DRIVE_CONTROLLER.getLeftX()) > .5
+        //                                ? Math.toDegrees(Math.atan2(
+        //                                                -DRIVE_CONTROLLER.getLeftY(),
+        //                                                -DRIVE_CONTROLLER.getLeftX()))
+        //                                        - 90
+        //                                : Double.NaN;
 
         // Drive on the fly modes
         public static final Trigger RESET_GYRO = DRIVE_CONTROLLER.button(5);
