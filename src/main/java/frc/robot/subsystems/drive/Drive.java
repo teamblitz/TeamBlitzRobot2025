@@ -404,11 +404,15 @@ public class Drive extends BlitzSubsystem {
     }
 
     public void drive(ChassisSpeeds speeds, boolean openLoop) {
-        SwerveModuleState[] swerveModuleStates = KINEMATICS.toSwerveModuleStates(speeds);
+        ChassisSpeeds discretizedSpeeds = ChassisSpeeds.discretize(speeds, Constants.LOOP_PERIOD_SEC);
+
+        SwerveModuleState[] swerveModuleStates = KINEMATICS.toSwerveModuleStates(discretizedSpeeds);
 
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, MAX_SPEED);
 
-//        Logger.recordOutput(logKey + "/drivespeeds", speeds);
+
+
+        //        Logger.recordOutput(logKey + "/drivespeeds", speeds);
 //        Logger.recordOutput(logKey + "/driveopen", openLoop);
 //        // Note: it is important to not discretize speeds before or after
 //        // using the setpoint generator, as it will discretize them for you
