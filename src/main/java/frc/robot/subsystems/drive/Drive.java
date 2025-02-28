@@ -404,7 +404,7 @@ public class Drive extends BlitzSubsystem {
     }
 
     public void drive(ChassisSpeeds speeds, boolean openLoop) {
-        ChassisSpeeds discretizedSpeeds = ChassisSpeeds.discretize(speeds, Constants.LOOP_PERIOD_SEC);
+        ChassisSpeeds discretizedSpeeds = ChassisSpeeds.discretize(speeds, Constants.LOOP_PERIOD_SEC * 20);
 
         SwerveModuleState[] swerveModuleStates = KINEMATICS.toSwerveModuleStates(discretizedSpeeds);
 
@@ -427,7 +427,7 @@ public class Drive extends BlitzSubsystem {
 //        Logger.recordOutput(logKey + "/setpoint/states", previousSetpoint.moduleStates());
 //        Logger.recordOutput(logKey + "/setpoint/ff", previousSetpoint.feedforwards());
 
-        setModuleStates(swerveModuleStates, openLoop, false, false);
+        setModuleStates(swerveModuleStates, false, false, false);
     }
 
     /* Used by SwerveControllerCommand in Auto */
