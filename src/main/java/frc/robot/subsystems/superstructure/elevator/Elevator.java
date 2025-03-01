@@ -13,10 +13,9 @@ import frc.lib.math.EqualsUtil;
 import frc.lib.util.LoggedTunableNumber;
 import frc.robot.Constants;
 import frc.robot.subsystems.leds.Leds;
+import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
-
-import java.util.function.DoubleSupplier;
 
 public class Elevator extends BlitzSubsystem {
     private final frc.robot.subsystems.superstructure.elevator.ElevatorIO io;
@@ -39,7 +38,6 @@ public class Elevator extends BlitzSubsystem {
     private final LoggedTunableNumber leftKD =
             new LoggedTunableNumber("elevator/leftKD", Constants.Elevator.LeftGains.KD);
 
-
     private final LoggedTunableNumber leftKS =
             new LoggedTunableNumber("elevator/leftKS", Constants.Elevator.LeftGains.KS);
     private final LoggedTunableNumber leftKV =
@@ -56,7 +54,6 @@ public class Elevator extends BlitzSubsystem {
             new LoggedTunableNumber("elevator/rightKI", Constants.Elevator.RightGains.KI);
     private final LoggedTunableNumber rightKD =
             new LoggedTunableNumber("elevator/rightKD", Constants.Elevator.RightGains.KD);
-
 
     private final LoggedTunableNumber rightKS =
             new LoggedTunableNumber("elevator/rightKS", Constants.Elevator.RightGains.KS);
@@ -75,7 +72,6 @@ public class Elevator extends BlitzSubsystem {
 
         setpoint = new TrapezoidProfile.State(getPosition(), 0.0);
         goal = null;
-
 
         routine =
                 new SysIdRoutine(
@@ -97,14 +93,12 @@ public class Elevator extends BlitzSubsystem {
 
         characterizationTab.add(
                 "elevator/0.1m",
-                withGoal(new TrapezoidProfile.State(.1,0)).withName("elevator/0.1m test"));
+                withGoal(new TrapezoidProfile.State(.1, 0)).withName("elevator/0.1m test"));
 
         characterizationTab.add(
                 "elevator/0.4m",
-                withGoal(new TrapezoidProfile.State(.8,0)).withName("elevator/0.5m test"));
-
+                withGoal(new TrapezoidProfile.State(.8, 0)).withName("elevator/0.5m test"));
     }
-
 
     @Override
     public void periodic() {
@@ -112,21 +106,15 @@ public class Elevator extends BlitzSubsystem {
         io.updateInputs(inputs);
         Logger.processInputs(logKey, inputs);
 
-
         Logger.recordOutput(logKey + "/rotLeftDeg", Math.toDegrees(inputs.positionLeft) % 360);
         Logger.recordOutput(logKey + "/rotRightDeg", Math.toDegrees(inputs.positionRight) % 360);
-
-
 
         if (goal != null) {
             setpoint = profile.calculate(Constants.LOOP_PERIOD_SEC, setpoint, goal);
             TrapezoidProfile.State future_setpoint =
                     profile.calculate(Constants.LOOP_PERIOD_SEC, setpoint, goal);
 
-            io.setSetpoint(
-                    setpoint.position,
-                    setpoint.velocity,
-                    future_setpoint.velocity);
+            io.setSetpoint(setpoint.position, setpoint.velocity, future_setpoint.velocity);
 
             Logger.recordOutput(logKey + "/profile/positionSetpoint", setpoint.position);
             Logger.recordOutput(logKey + "/profile/velocitySetpoint", setpoint.velocity);
@@ -157,7 +145,11 @@ public class Elevator extends BlitzSubsystem {
                 leftKA);
 
         LoggedTunableNumber.ifChanged(
-                hashCode(), pid -> io.setPidRight(pid[0], pid[1], pid[2]), rightKP, rightKI, rightKD);
+                hashCode(),
+                pid -> io.setPidRight(pid[0], pid[1], pid[2]),
+                rightKP,
+                rightKI,
+                rightKD);
 
         LoggedTunableNumber.ifChanged(
                 hashCode(),
@@ -170,19 +162,17 @@ public class Elevator extends BlitzSubsystem {
 
     public Command withSpeed(DoubleSupplier speed) {
         return runEnd(
-                () -> {
-                    io.setSpeed(MathUtil.clamp(
-                            speed.getAsDouble(),
-                            atBottomLimit() ? 0 : -1,
-                            atTopLimit() ? 0 : 1)
-                    );
-                },
-                () -> {
-                    io.setSpeed(0);
-                }
-        ).beforeStarting(
-                () -> this.goal = null
-        );
+                        () -> {
+                            io.setSpeed(
+                                    MathUtil.clamp(
+                                            speed.getAsDouble(),
+                                            atBottomLimit() ? 0 : -1,
+                                            atTopLimit() ? 0 : 1));
+                        },
+                        () -> {
+                            io.setSpeed(0);
+                        })
+                .beforeStarting(() -> this.goal = null);
     }
 
     public Command withSpeed(double speed) {
@@ -217,8 +207,7 @@ public class Elevator extends BlitzSubsystem {
                         () ->
                                 setpoint == null
                                         || !EqualsUtil.epsilonEquals(
-                                                setpoint.position, getPosition(), .005
-                                )
+                                                setpoint.position, getPosition(), .005)
                                         || !EqualsUtil.epsilonEquals(
                                                 setpoint.velocity, getVelocity(), 0.04));
     }

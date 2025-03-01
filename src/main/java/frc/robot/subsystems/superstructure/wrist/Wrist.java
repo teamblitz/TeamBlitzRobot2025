@@ -9,12 +9,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.BlitzSubsystem;
-import frc.lib.math.EqualsUtil;
 import frc.lib.util.LoggedTunableNumber;
 import frc.robot.Constants;
 import frc.robot.subsystems.leds.Leds;
 import java.util.function.DoubleSupplier;
-
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -24,7 +22,8 @@ public class Wrist extends BlitzSubsystem {
     private final WristIOInputsAutoLogged inputs = new WristIOInputsAutoLogged();
 
     private TrapezoidProfile profile =
-            new TrapezoidProfile(new TrapezoidProfile.Constraints(Math.toRadians(180), Math.toRadians(360)));
+            new TrapezoidProfile(
+                    new TrapezoidProfile.Constraints(Math.toRadians(180), Math.toRadians(360)));
 
     private TrapezoidProfile.State goal;
     private TrapezoidProfile.State setpoint;
@@ -59,7 +58,8 @@ public class Wrist extends BlitzSubsystem {
         routine =
                 new SysIdRoutine(
                         new SysIdRoutine.Config(null, Units.Volts.of(5), null),
-                        new SysIdRoutine.Mechanism((volts) -> io.setVolts(volts.in(Units.Volts)), null, this));
+                        new SysIdRoutine.Mechanism(
+                                (volts) -> io.setVolts(volts.in(Units.Volts)), null, this));
 
         characterizationTab.add(
                 sysIdQuasistatic(SysIdRoutine.Direction.kForward)
@@ -75,10 +75,12 @@ public class Wrist extends BlitzSubsystem {
 
         characterizationTab.add(
                 "wrist/45",
-                withGoal(new TrapezoidProfile.State(Math.toRadians(45),0)).withName("wrist/test45"));
+                withGoal(new TrapezoidProfile.State(Math.toRadians(45), 0))
+                        .withName("wrist/test45"));
         characterizationTab.add(
                 "wrist/minus45",
-                withGoal(new TrapezoidProfile.State(Math.toRadians(-40),0)).withName("wrist/testminus45"));
+                withGoal(new TrapezoidProfile.State(Math.toRadians(-40), 0))
+                        .withName("wrist/testminus45"));
     }
 
     @Override
@@ -93,10 +95,7 @@ public class Wrist extends BlitzSubsystem {
             TrapezoidProfile.State future_setpoint =
                     profile.calculate(Constants.LOOP_PERIOD_SEC, setpoint, goal);
 
-            io.setSetpoint(
-                    setpoint.position,
-                    setpoint.velocity,
-                    future_setpoint.velocity);
+            io.setSetpoint(setpoint.position, setpoint.velocity, future_setpoint.velocity);
 
             Logger.recordOutput(logKey + "/profile/positionSetpoint", setpoint.position);
             Logger.recordOutput(logKey + "/profile/velocitySetpoint", setpoint.velocity);
@@ -117,7 +116,7 @@ public class Wrist extends BlitzSubsystem {
 
         Logger.recordOutput(
                 logKey + "/absEncoderDegrees", Math.toRadians(inputs.absoluteEncoderPosition));
-        
+
         LoggedTunableNumber.ifChanged(
                 hashCode(), pid -> io.setPid(pid[0], pid[1], pid[2]), kP, kI, kD);
 
@@ -152,17 +151,15 @@ public class Wrist extends BlitzSubsystem {
                         () -> {
                             io.setPercent(0);
                         })
-                .beforeStarting(
-                        () -> this.goal = null
-                )
+                .beforeStarting(() -> this.goal = null)
                 .withName(logKey + "/speed");
     }
 
     public Command withGoal(TrapezoidProfile.State goal) {
         return runOnce(
-                () -> {
-                    this.goal = goal;
-                })
+                        () -> {
+                            this.goal = goal;
+                        })
                 .until(() -> this.goal.equals(this.setpoint))
                 .handleInterrupt(() -> this.goal = setpoint)
                 .beforeStarting(refreshCurrentState());
@@ -173,14 +170,16 @@ public class Wrist extends BlitzSubsystem {
      * conflict
      */
     private Command refreshCurrentState() {
-        return runOnce(() -> setpoint = new TrapezoidProfile.State(getPosition(),0));
-//                .onlyIf(
-//                        () ->
-//                                setpoint == null
-//                                        || !EqualsUtil.epsilonEquals(
-//                                        setpoint.position, getPosition(), Math.toRadians(2))
-//                                        || !EqualsUtil.epsilonEquals(
-//                                        setpoint.velocity, getVelocity(), Math.toRadians(4)));
+        return runOnce(() -> setpoint = new TrapezoidProfile.State(getPosition(), 0));
+        //                .onlyIf(
+        //                        () ->
+        //                                setpoint == null
+        //                                        || !EqualsUtil.epsilonEquals(
+        //                                        setpoint.position, getPosition(),
+        // Math.toRadians(2))
+        //                                        || !EqualsUtil.epsilonEquals(
+        //                                        setpoint.velocity, getVelocity(),
+        // Math.toRadians(4)));
     }
 
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {

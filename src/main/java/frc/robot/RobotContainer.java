@@ -29,14 +29,11 @@ import frc.robot.subsystems.drive.swerveModule.angle.AngleMotorIOSim;
 import frc.robot.subsystems.drive.swerveModule.drive.DriveMotorIOSim;
 import frc.robot.subsystems.drive.swerveModule.encoder.EncoderIO;
 import frc.robot.subsystems.intake.Intake;
-import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOSpark;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.superstructure.elevator.Elevator;
-import frc.robot.subsystems.superstructure.elevator.ElevatorIO;
 import frc.robot.subsystems.superstructure.elevator.ElevatorIOSpark;
 import frc.robot.subsystems.superstructure.wrist.Wrist;
-import frc.robot.subsystems.superstructure.wrist.WristIO;
 import frc.robot.subsystems.superstructure.wrist.WristIOSpark;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -83,7 +80,7 @@ public class RobotContainer {
         drive.setDefaultCommand(
                 new TeleopSwerve(
                                 drive,
-                                OIConstants .Drive.X_TRANSLATION,
+                                OIConstants.Drive.X_TRANSLATION,
                                 OIConstants.Drive.Y_TRANSLATION,
                                 OIConstants.Drive.ROTATION_SPEED,
                                 () -> false,
@@ -146,13 +143,13 @@ public class RobotContainer {
                 };
 
         elevator = new Elevator(new ElevatorIOSpark());
-//        elevator = new Elevator(new ElevatorIO() {});
+        //        elevator = new Elevator(new ElevatorIO() {});
 
         wrist = new Wrist(new WristIOSpark());
-//        wrist = new Wrist(new WristIO() {});
+        //        wrist = new Wrist(new WristIO() {});
 
         intake = new Intake(new IntakeIOSpark());
-//        intake = new Intake(new IntakeIO() {});
+        //        intake = new Intake(new IntakeIO() {});
 
         superstructure = new Superstructure(elevator, wrist);
     }
@@ -164,13 +161,27 @@ public class RobotContainer {
         OIConstants.Drive.BRAKE.onTrue(Commands.runOnce(() -> drive.setBrakeMode(true)));
         OIConstants.Drive.COAST.onTrue(Commands.runOnce(() -> drive.setBrakeMode(false)));
 
-        OIConstants.Elevator.ELEVATOR_L1.onTrue(elevator.withGoal(new TrapezoidProfile.State(Constants.SuperstructureSetpoints.L1_PRIME.elevatorPosition(), 0)));
-        OIConstants.Elevator.ELEVATOR_L2.onTrue(elevator.withGoal(new TrapezoidProfile.State(Constants.SuperstructureSetpoints.L2_PRIME.elevatorPosition(), 0)));
-        OIConstants.Elevator.ELEVATOR_L3.onTrue(elevator.withGoal(new TrapezoidProfile.State(Constants.SuperstructureSetpoints.L3_PRIME.elevatorPosition(), 0)));
-        OIConstants.Elevator.ELEVATOR_L4.onTrue(elevator.withGoal(new TrapezoidProfile.State(Constants.SuperstructureSetpoints.L4_PRIME.elevatorPosition(), 0)));
-//
-//        OIConstants.Wrist.WRIST_TEST1.whileTrue(wrist.withGoal(new TrapezoidProfile.State(Math.toRadians(45), 0)));
-//        OIConstants.Wrist.WRIST_TEST2.whileTrue(wrist.withGoal(new TrapezoidProfile.State(Math.toRadians(-45), 0)));
+        OIConstants.Elevator.ELEVATOR_L1.onTrue(
+                elevator.withGoal(
+                        new TrapezoidProfile.State(
+                                Constants.SuperstructureSetpoints.L1_PRIME.elevatorPosition(), 0)));
+        OIConstants.Elevator.ELEVATOR_L2.onTrue(
+                elevator.withGoal(
+                        new TrapezoidProfile.State(
+                                Constants.SuperstructureSetpoints.L2_PRIME.elevatorPosition(), 0)));
+        OIConstants.Elevator.ELEVATOR_L3.onTrue(
+                elevator.withGoal(
+                        new TrapezoidProfile.State(
+                                Constants.SuperstructureSetpoints.L3_PRIME.elevatorPosition(), 0)));
+        OIConstants.Elevator.ELEVATOR_L4.onTrue(
+                elevator.withGoal(
+                        new TrapezoidProfile.State(
+                                Constants.SuperstructureSetpoints.L4_PRIME.elevatorPosition(), 0)));
+        //
+        //        OIConstants.Wrist.WRIST_TEST1.whileTrue(wrist.withGoal(new
+        // TrapezoidProfile.State(Math.toRadians(45), 0)));
+        //        OIConstants.Wrist.WRIST_TEST2.whileTrue(wrist.withGoal(new
+        // TrapezoidProfile.State(Math.toRadians(-45), 0)));
 
         OIConstants.Elevator.MANUAL_UP.whileTrue(elevator.upManual());
         OIConstants.Elevator.MANUAL_DOWN.whileTrue(elevator.downManual());

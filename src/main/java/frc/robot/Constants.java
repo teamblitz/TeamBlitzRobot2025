@@ -347,8 +347,8 @@ public final class Constants {
             public static final double KV = 8.1174;
             public static final double KA = 1.13;
             public static final double KG = 0.24133;
-            public static final double KP = 20; //4.3951;
-            public static final double KD = 2; //952.83;
+            public static final double KP = 20; // 4.3951;
+            public static final double KD = 2; // 952.83;
             public static final double KI = 0;
         }
 
@@ -358,8 +358,8 @@ public final class Constants {
             public static final double KV = 8.259;
             public static final double KA = 1.0318;
             public static final double KG = 0.24188;
-            public static final double KP = 20;//4.2941;
-            public static final double KD = 2;//905.76;
+            public static final double KP = 20; // 4.2941;
+            public static final double KD = 2; // 905.76;
             public static final double KI = 0;
         }
     }
@@ -380,7 +380,7 @@ public final class Constants {
         public static final class PidGains {
             public static final double KP = 2;
             public static final double KI = 0;
-            public static final double KD = 0;// 524.32
+            public static final double KD = 0; // 524.32
         }
 
         public static final class WristGains {
@@ -392,14 +392,17 @@ public final class Constants {
     }
 
     public static final class SuperstructureSetpoints {
-        public static final SuperstructureState STOW = new SuperstructureState(.02, Math.toRadians(70));
+        public static final SuperstructureState STOW =
+                new SuperstructureState(.02, Math.toRadians(70));
 
-
-        public static final SuperstructureState L1_PRIME = new SuperstructureState(.28, Math.toRadians(60));
-        public static final SuperstructureState L2_PRIME = new SuperstructureState(.28, Math.toRadians(60));
-        public static final SuperstructureState L3_PRIME = new SuperstructureState(.663, Math.toRadians(60));
-        public static final SuperstructureState L4_PRIME = new SuperstructureState(1.43, Math.toRadians(45));
-
+        public static final SuperstructureState L1_PRIME =
+                new SuperstructureState(.28, Math.toRadians(60));
+        public static final SuperstructureState L2_PRIME =
+                new SuperstructureState(.28, Math.toRadians(60));
+        public static final SuperstructureState L3_PRIME =
+                new SuperstructureState(.663, Math.toRadians(60));
+        public static final SuperstructureState L4_PRIME =
+                new SuperstructureState(1.43, Math.toRadians(45));
 
         public static final SuperstructureState HANDOFF_PRIME = new SuperstructureState(.4, 0);
         public static final SuperstructureState HANDOFF = new SuperstructureState(0, 0);
@@ -409,11 +412,9 @@ public final class Constants {
         public static final double WRIST_HANDOFF_DANGER_ZONE = Units.degreesToRadians(-70);
         public static final double ELEVATOR_DOWN_WRIST_MIN = Units.degreesToRadians(10);
 
-
-
-//        public static final class  {
-//            public static final SuperstructureState
-//        }
+        //        public static final class  {
+        //            public static final SuperstructureState
+        //        }
 
         public record SuperstructureState(double elevatorPosition, double wristRotation) {
             public TrapezoidProfile.State getElevatorState(double velocity) {

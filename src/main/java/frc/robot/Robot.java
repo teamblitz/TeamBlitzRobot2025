@@ -10,7 +10,6 @@ package frc.robot;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
-import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -138,11 +137,11 @@ public class Robot extends LoggedRobot {
         Runtime runtime = Runtime.getRuntime();
 
         // Start logging jvm and heep memeory
-//        Notifier ramLogger = new Notifier(
-//                () -> {
-//                    Logger.recordOutput("System/")
-//                }
-//        );
+        //        Notifier ramLogger = new Notifier(
+        //                () -> {
+        //                    Logger.recordOutput("System/")
+        //                }
+        //        );
 
         robotContainer = new RobotContainer();
     }
@@ -163,15 +162,15 @@ public class Robot extends LoggedRobot {
         lastTimeStamp = Timer.getFPGATimestamp();
 
         Logger.recordOutput("Loop time", loopTime);
-//
-//        if (loopCount == 500) {
-//            loopCount = 0;
-//            System.out.println("#####################Epochs:######################");
-//            CommandScheduler.getInstance().printWatchdogEpochs();
-//
-//        } else {
-//            loopCount++;
-//        }
+        //
+        //        if (loopCount == 500) {
+        //            loopCount = 0;
+        //            System.out.println("#####################Epochs:######################");
+        //            CommandScheduler.getInstance().printWatchdogEpochs();
+        //
+        //        } else {
+        //            loopCount++;
+        //        }
     }
 
     /* ***** --- Autonomous --- ***** */

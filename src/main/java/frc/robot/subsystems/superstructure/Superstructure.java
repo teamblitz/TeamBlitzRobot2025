@@ -45,18 +45,20 @@ public class Superstructure extends BlitzSubsystem {
     }
 
     public Command stowCommand() {
-        return
-                Commands.sequence(
-                                elevator.withGoal(HANDOFF_PRIME.getElevatorState())
-                                        .onlyIf(() -> elevator.getPosition() < HANDOFF_PRIME.elevatorPosition() && wrist.getPosition() < WRIST_HANDOFF_DANGER_ZONE),
-
-                                Commands.parallel(
-                                        wrist.withGoal(STOW.getWristState()),
-                                        elevator.withGoal(STOW.getElevatorState()).beforeStarting(
-                                                Commands.waitUntil(() -> wrist.getPosition() > ELEVATOR_DOWN_WRIST_MIN)
-                                        )
-                                )
-                );
+        return Commands.sequence(
+                elevator.withGoal(HANDOFF_PRIME.getElevatorState())
+                        .onlyIf(
+                                () ->
+                                        elevator.getPosition() < HANDOFF_PRIME.elevatorPosition()
+                                                && wrist.getPosition() < WRIST_HANDOFF_DANGER_ZONE),
+                Commands.parallel(
+                        wrist.withGoal(STOW.getWristState()),
+                        elevator.withGoal(STOW.getElevatorState())
+                                .beforeStarting(
+                                        Commands.waitUntil(
+                                                () ->
+                                                        wrist.getPosition()
+                                                                > ELEVATOR_DOWN_WRIST_MIN))));
     }
 
     public Command primeHandoff() {

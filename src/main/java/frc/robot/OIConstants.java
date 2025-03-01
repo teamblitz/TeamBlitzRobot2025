@@ -1,23 +1,15 @@
 package frc.robot;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
-import edu.wpi.first.networktables.NetworkTableType;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.lib.util.DashboardHelpers;
-import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Function;
 
 public class OIConstants {
 
     public static final double XBOX_STICK_DEADBAND = 0.06;
-
 
     public static final CommandXboxController DRIVE_CONTROLLER = new CommandXboxController(0);
     public static final CommandXboxController OPERATOR_CONTROLLER = new CommandXboxController(1);
@@ -45,18 +37,21 @@ public class OIConstants {
         private static final SlewRateLimiter DRIVE_MULTIPLIER_LIMITER =
                 new SlewRateLimiter(.25); // Todo, try without this?
 
-//                private static final DoubleSupplier DRIVE_MULTIPLIER =
-//                        () ->
-//                                NORMAL_SPEED
-//                                        + DRIVE_CONTROLLER.getLeftTriggerAxis()
-//                                                * (SLOW_SPEED - NORMAL_SPEED)
-//                                        + DRIVE_CONTROLLER.getRightTriggerAxis()
-//                                                * (FAST_SPEED - NORMAL_SPEED);
+        //                private static final DoubleSupplier DRIVE_MULTIPLIER =
+        //                        () ->
+        //                                NORMAL_SPEED
+        //                                        + DRIVE_CONTROLLER.getLeftTriggerAxis()
+        //                                                * (SLOW_SPEED - NORMAL_SPEED)
+        //                                        + DRIVE_CONTROLLER.getRightTriggerAxis()
+        //                                                * (FAST_SPEED - NORMAL_SPEED);
 
         private static final DoubleSupplier DRIVE_MULTIPLIER =
-                () -> DRIVE_CONTROLLER.getHID().getRightTriggerAxis() > 0.5 ? FAST_SPEED :
-                        DRIVE_CONTROLLER.getHID().getLeftTriggerAxis() > 0.5 ? SLOW_SPEED :
-                NORMAL_SPEED;
+                () ->
+                        DRIVE_CONTROLLER.getHID().getRightTriggerAxis() > 0.5
+                                ? FAST_SPEED
+                                : DRIVE_CONTROLLER.getHID().getLeftTriggerAxis() > 0.5
+                                        ? SLOW_SPEED
+                                        : NORMAL_SPEED;
 
         public static final DoubleSupplier X_TRANSLATION =
                 () ->
@@ -90,26 +85,26 @@ public class OIConstants {
     }
 
     public static final class Overrides {
-//        private static final ShuffleboardTab TAB = Shuffleboard.getTab("Overrides");
+        //        private static final ShuffleboardTab TAB = Shuffleboard.getTab("Overrides");
 
-//        @SuppressWarnings("resource")
-//        public static final BooleanSupplier INTAKE_OVERRIDE =
-//                DashboardHelpers.genericEntrySupplier(
-//                                TAB.add("Intake", false)
-//                                        .withWidget(BuiltInWidgets.kBooleanBox)
-//                                        .getEntry(),
-//                                false,
-//                                NetworkTableType.kBoolean)
-//                        ::get;
-//
-//        public static final BooleanSupplier ARM_OVERRIDE =
-//                DashboardHelpers.genericEntrySupplier(
-//                                TAB.add("Arm", false)
-//                                        .withWidget(BuiltInWidgets.kBooleanBox)
-//                                        .getEntry(),
-//                                false,
-//                                NetworkTableType.kBoolean)
-//                        ::get;
+        //        @SuppressWarnings("resource")
+        //        public static final BooleanSupplier INTAKE_OVERRIDE =
+        //                DashboardHelpers.genericEntrySupplier(
+        //                                TAB.add("Intake", false)
+        //                                        .withWidget(BuiltInWidgets.kBooleanBox)
+        //                                        .getEntry(),
+        //                                false,
+        //                                NetworkTableType.kBoolean)
+        //                        ::get;
+        //
+        //        public static final BooleanSupplier ARM_OVERRIDE =
+        //                DashboardHelpers.genericEntrySupplier(
+        //                                TAB.add("Arm", false)
+        //                                        .withWidget(BuiltInWidgets.kBooleanBox)
+        //                                        .getEntry(),
+        //                                false,
+        //                                NetworkTableType.kBoolean)
+        //                        ::get;
     }
 
     public static final class Intake {
@@ -125,10 +120,10 @@ public class OIConstants {
     }
 
     public static final class Elevator {
-                public static final Trigger ELEVATOR_L1 = OPERATOR_CONTROLLER.a();
-                public static final Trigger ELEVATOR_L2 = OPERATOR_CONTROLLER.x();
-                public static final Trigger ELEVATOR_L3 = OPERATOR_CONTROLLER.b();
-                public static final Trigger ELEVATOR_L4 = OPERATOR_CONTROLLER.y();
+        public static final Trigger ELEVATOR_L1 = OPERATOR_CONTROLLER.a();
+        public static final Trigger ELEVATOR_L2 = OPERATOR_CONTROLLER.x();
+        public static final Trigger ELEVATOR_L3 = OPERATOR_CONTROLLER.b();
+        public static final Trigger ELEVATOR_L4 = OPERATOR_CONTROLLER.y();
 
         //        public static final Trigger ELEVATOR_DOWN = OPERATOR_CONTROLLER.a();
         public static final Trigger MANUAL_UP = OPERATOR_CONTROLLER.povUp();
@@ -138,7 +133,6 @@ public class OIConstants {
     public static final class SuperStructure {
 
         public static final Trigger STOW = OPERATOR_CONTROLLER.start();
-
     }
 
     //    public static final class TestMode {

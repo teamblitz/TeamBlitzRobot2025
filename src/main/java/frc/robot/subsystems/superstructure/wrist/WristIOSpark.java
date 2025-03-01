@@ -1,5 +1,7 @@
 package frc.robot.subsystems.superstructure.wrist;
 
+import static frc.robot.Constants.Wrist.*;
+
 import com.revrobotics.*;
 import com.revrobotics.spark.*;
 import com.revrobotics.spark.config.ClosedLoopConfig;
@@ -9,7 +11,6 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Commands;
-import static frc.robot.Constants.Wrist.*;
 
 public class WristIOSpark implements WristIO {
 
@@ -43,8 +44,7 @@ public class WristIOSpark implements WristIO {
 
         config.encoder
                 .positionConversionFactor((1 / GEAR_RATIO) * (2 * Math.PI))
-                .velocityConversionFactor(
-                        (1 / GEAR_RATIO) * (1.0 / 60.0) * (2 * Math.PI));
+                .velocityConversionFactor((1 / GEAR_RATIO) * (1.0 / 60.0) * (2 * Math.PI));
 
         config.absoluteEncoder
                 .zeroCentered(true)
@@ -62,18 +62,15 @@ public class WristIOSpark implements WristIO {
                 SparkBase.ResetMode.kResetSafeParameters,
                 SparkBase.PersistMode.kNoPersistParameters);
 
+        setPid(PidGains.KP, PidGains.KI, PidGains.KD);
 
-        setPid(
-                PidGains.KP,
-                PidGains.KI,
-                PidGains.KD
-        );
+        setFF(WristGains.KS, WristGains.KG, WristGains.KV, WristGains.KA);
 
-        setFF(
-                WristGains.KS, WristGains.KG, WristGains.KV, WristGains.KA
-        );
-
-        Commands.waitSeconds(.25).andThen(Commands.runOnce(() -> encoder.setPosition(absoluteEncoder.getPosition())).ignoringDisable(true)).schedule();
+        Commands.waitSeconds(.25)
+                .andThen(
+                        Commands.runOnce(() -> encoder.setPosition(absoluteEncoder.getPosition()))
+                                .ignoringDisable(true))
+                .schedule();
     }
 
     @Override
@@ -93,23 +90,27 @@ public class WristIOSpark implements WristIO {
 
     @Override
     public void setSetpoint(double position, double velocity, double nextVelocity) {
-//        System.out.println("Wrist IO Spark setpoint request: " + position + " " + velocity + " " + nextVelocity);
+        //        System.out.println("Wrist IO Spark setpoint request: " + position + " " + velocity
+        // + " " + nextVelocity);
 
-        // TODO: WPILIB BUG MEANS THAT VERY SMALL DIFFERENCES BETWEEN V(t) and V(t+1) can result in a infinite loop
-//        double arbFF = feedforward.calculateWithVelocities(position, velocity, nextVelocity);
+        // TODO: WPILIB BUG MEANS THAT VERY SMALL DIFFERENCES BETWEEN V(t) and V(t+1) can result in
+        // a infinite loop
+        //        double arbFF = feedforward.calculateWithVelocities(position, velocity,
+        // nextVelocity);
 
         double arbFF = feedforward.calculate(position, velocity);
 
-//        System.out.println("Wrist IO Spark setpoint feedforward: " + arbFF);
+        //        System.out.println("Wrist IO Spark setpoint feedforward: " + arbFF);
 
-        REVLibError errorCode = pid.setReference(
-                position,
-                SparkBase.ControlType.kPosition,
-                ClosedLoopSlot.kSlot0,
-                arbFF,
-                SparkClosedLoopController.ArbFFUnits.kVoltage);
+        REVLibError errorCode =
+                pid.setReference(
+                        position,
+                        SparkBase.ControlType.kPosition,
+                        ClosedLoopSlot.kSlot0,
+                        arbFF,
+                        SparkClosedLoopController.ArbFFUnits.kVoltage);
 
-//        System.out.println("Wrist IO Spark setpoint error code: " + errorCode);
+        //        System.out.println("Wrist IO Spark setpoint error code: " + errorCode);
 
     }
 
