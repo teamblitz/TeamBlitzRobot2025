@@ -126,7 +126,7 @@ public class ElevatorIOSpark implements ElevatorIO {
 
     @Override
     public void setPidLeft(double p, double i, double d) {
-        System.out.println("Updated left pid");
+      //  System.out.println("Updated left pid");
         left.configure(
                 new SparkMaxConfig().apply(new ClosedLoopConfig().pid(p, i, d)),
                 SparkBase.ResetMode.kNoResetSafeParameters,
@@ -135,7 +135,7 @@ public class ElevatorIOSpark implements ElevatorIO {
 
     @Override
     public void setPidRight(double p, double i, double d) {
-        System.out.println("Updated right pid");
+     //   System.out.println("Updated right pid");
         right.configure(
                 new SparkMaxConfig().apply(new ClosedLoopConfig().pid(p, i, d)),
                 SparkBase.ResetMode.kNoResetSafeParameters,
