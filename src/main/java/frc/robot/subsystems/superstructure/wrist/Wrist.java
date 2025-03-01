@@ -161,10 +161,9 @@ public class Wrist extends BlitzSubsystem {
     public Command withGoal(TrapezoidProfile.State goal) {
         return runOnce(
                 () -> {
-                    System.out.println("HELLO");
                     this.goal = goal;
                 })
-                .until(() -> false)
+                .until(() -> this.goal.equals(this.setpoint))
                 .handleInterrupt(() -> this.goal = setpoint)
                 .beforeStarting(refreshCurrentState());
     }

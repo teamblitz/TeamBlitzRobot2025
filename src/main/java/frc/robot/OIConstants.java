@@ -135,6 +135,12 @@ public class OIConstants {
         public static final Trigger MANUAL_DOWN = OPERATOR_CONTROLLER.povDown();
     }
 
+    public static final class SuperStructure {
+
+        public static final Trigger STOW = OPERATOR_CONTROLLER.start();
+
+    }
+
     //    public static final class TestMode {
     //        public static final Trigger ZERO_ABS_ENCODERS = UNBOUND;
     //

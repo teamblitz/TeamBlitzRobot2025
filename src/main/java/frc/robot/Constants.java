@@ -348,7 +348,7 @@ public final class Constants {
             public static final double KA = 1.13;
             public static final double KG = 0.24133;
             public static final double KP = 20; //4.3951;
-            public static final double KD = 0; //952.83;
+            public static final double KD = 2; //952.83;
             public static final double KI = 0;
         }
 
@@ -378,7 +378,7 @@ public final class Constants {
         public static final double ABS_ENCODER_ZERO = Math.toDegrees(214.64152 - 90);
 
         public static final class PidGains {
-            public static final double KP = 4.1249;
+            public static final double KP = 2;
             public static final double KI = 0;
             public static final double KD = 0;// 524.32
         }
@@ -392,24 +392,46 @@ public final class Constants {
     }
 
     public static final class SuperstructureSetpoints {
-        public static final SuperstructureState STOW = new SuperstructureState(.02, 70);
+        public static final SuperstructureState STOW = new SuperstructureState(.02, Math.toRadians(70));
 
 
-        public static final SuperstructureState L1_PRIME = new SuperstructureState(.28, 60);
-        public static final SuperstructureState L2_PRIME = new SuperstructureState(.28, 60);
-        public static final SuperstructureState L3_PRIME = new SuperstructureState(.663, 60);
-        public static final SuperstructureState L4_PRIME = new SuperstructureState(1.43, 45);
+        public static final SuperstructureState L1_PRIME = new SuperstructureState(.28, Math.toRadians(60));
+        public static final SuperstructureState L2_PRIME = new SuperstructureState(.28, Math.toRadians(60));
+        public static final SuperstructureState L3_PRIME = new SuperstructureState(.663, Math.toRadians(60));
+        public static final SuperstructureState L4_PRIME = new SuperstructureState(1.43, Math.toRadians(45));
 
 
-        public static final SuperstructureState HANDOFF_PRIME = new SuperstructureState(0, 0);
+        public static final SuperstructureState HANDOFF_PRIME = new SuperstructureState(.4, 0);
         public static final SuperstructureState HANDOFF = new SuperstructureState(0, 0);
+
+        // here
+
+        public static final double WRIST_HANDOFF_DANGER_ZONE = Units.degreesToRadians(-70);
+        public static final double ELEVATOR_DOWN_WRIST_MIN = Units.degreesToRadians(10);
+
 
 
 //        public static final class  {
 //            public static final SuperstructureState
 //        }
 
-        public record SuperstructureState(double elevatorPosition, double wristRotation) { }
+        public record SuperstructureState(double elevatorPosition, double wristRotation) {
+            public TrapezoidProfile.State getElevatorState(double velocity) {
+                return new TrapezoidProfile.State(elevatorPosition, velocity);
+            }
+
+            public TrapezoidProfile.State getElevatorState() {
+                return getElevatorState(0);
+            }
+
+            public TrapezoidProfile.State getWristState(double velocity) {
+                return new TrapezoidProfile.State(wristRotation, velocity);
+            }
+
+            public TrapezoidProfile.State getWristState() {
+                return getWristState(0);
+            }
+        }
     }
 
     public static final class Intake {

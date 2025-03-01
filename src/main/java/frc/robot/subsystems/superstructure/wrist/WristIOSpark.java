@@ -109,7 +109,7 @@ public class WristIOSpark implements WristIO {
                 arbFF,
                 SparkClosedLoopController.ArbFFUnits.kVoltage);
 
-        System.out.println("Wrist IO Spark setpoint error code: " + errorCode);
+//        System.out.println("Wrist IO Spark setpoint error code: " + errorCode);
 
     }
 

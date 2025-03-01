@@ -31,6 +31,7 @@ import frc.robot.subsystems.drive.swerveModule.encoder.EncoderIO;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOSpark;
+import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.superstructure.elevator.Elevator;
 import frc.robot.subsystems.superstructure.elevator.ElevatorIO;
 import frc.robot.subsystems.superstructure.elevator.ElevatorIOSpark;
@@ -52,6 +53,7 @@ public class RobotContainer {
     private Elevator elevator;
     private Wrist wrist;
     private Intake intake;
+    private Superstructure superstructure;
 
     /* ***** --- Autonomous --- ***** */
     private final LoggedDashboardChooser<Command> autoChooser;
@@ -151,6 +153,8 @@ public class RobotContainer {
 
         intake = new Intake(new IntakeIOSpark());
 //        intake = new Intake(new IntakeIO() {});
+
+        superstructure = new Superstructure(elevator, wrist);
     }
 
     private void configureButtonBindings() {
@@ -170,6 +174,8 @@ public class RobotContainer {
 
         OIConstants.Elevator.MANUAL_UP.whileTrue(elevator.upManual());
         OIConstants.Elevator.MANUAL_DOWN.whileTrue(elevator.downManual());
+
+        OIConstants.SuperStructure.STOW.whileTrue(superstructure.stowCommand());
 
         OIConstants.Intake.INTAKE.whileTrue(intake.intake());
         OIConstants.Intake.EJECT.whileTrue(intake.outtake());
