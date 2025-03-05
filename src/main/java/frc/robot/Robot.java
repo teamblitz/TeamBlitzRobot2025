@@ -7,7 +7,6 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Timer;
@@ -142,7 +141,6 @@ public class Robot extends LoggedRobot {
 
         robotContainer = new RobotContainer();
 
-
         printWatchdogEpochs();
     }
 
@@ -162,8 +160,6 @@ public class Robot extends LoggedRobot {
         Logger.recordOutput("cmd_scheduler_run_time_ms", (t1 - t0) * 1e-6);
 
         ResourceMonitor.getInstance().update();
-
-
     }
 
     /* ***** --- Autonomous --- ***** */

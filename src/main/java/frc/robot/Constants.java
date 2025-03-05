@@ -383,7 +383,6 @@ public final class Constants {
             public static final double KD = 0; // 524.32
         }
 
-        
         // bad cuz backlash
         public static final class WristGains {
             public static final double KS = 0.0080265;
@@ -397,21 +396,27 @@ public final class Constants {
         public static final SuperstructureState STOW =
                 new SuperstructureState(.02, Math.toRadians(70));
 
-        public static final SuperstructureState L1_PRIME =
+        public static final SuperstructureState L1 =
                 new SuperstructureState(.28, Math.toRadians(60));
-        public static final SuperstructureState L2_PRIME =
+        public static final SuperstructureState L2 =
                 new SuperstructureState(.28, Math.toRadians(60));
-        public static final SuperstructureState L3_PRIME =
+        public static final SuperstructureState L3 =
                 new SuperstructureState(.663, Math.toRadians(60));
-        public static final SuperstructureState L4_PRIME =
+        public static final SuperstructureState L4 =
                 new SuperstructureState(1.43, Math.toRadians(45));
 
-        public static final SuperstructureState HANDOFF_PRIME = new SuperstructureState(.4, 0);
+
+        public static final SuperstructureState KICK_LOW_ALGAE =
+                new SuperstructureState(0, Math.toRadians(45));
+        public static final SuperstructureState KICK_HIGH_ALGAE =
+                new SuperstructureState(0, Math.toRadians(45));
+
+
+
         public static final SuperstructureState HANDOFF = new SuperstructureState(0, 0);
 
         // here
 
-        public static final double WRIST_HANDOFF_DANGER_ZONE = Units.degreesToRadians(-70);
         public static final double ELEVATOR_DOWN_WRIST_MIN = Units.degreesToRadians(10);
 
         //        public static final class  {

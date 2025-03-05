@@ -110,9 +110,7 @@ public class Elevator extends BlitzSubsystem {
         Logger.recordOutput(logKey + "/rotRightDeg", Math.toDegrees(inputs.positionRight) % 360);
 
         if (goal != null) {
-            setpoint = profile.calculate(Constants.LOOP_PERIOD_SEC, setpoint, goal);
-            TrapezoidProfile.State future_setpoint =
-                    profile.calculate(Constants.LOOP_PERIOD_SEC, setpoint, goal);
+            TrapezoidProfile.State future_setpoint = profile.calculate(Constants.LOOP_PERIOD_SEC, setpoint, goal);
 
             io.setSetpoint(setpoint.position, setpoint.velocity, future_setpoint.velocity);
 
@@ -121,6 +119,8 @@ public class Elevator extends BlitzSubsystem {
 
             Logger.recordOutput(logKey + "/profile/positionGoal", goal.position);
             Logger.recordOutput(logKey + "/profile/velocityGoal", goal.velocity);
+
+            setpoint = future_setpoint;
         }
 
         if (DriverStation.isDisabled()) {

@@ -1,13 +1,18 @@
 package frc.robot.subsystems.superstructure;
 
 import static frc.robot.Constants.SuperstructureSetpoints.*;
+import static java.util.Map.entry;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.lib.BlitzSubsystem;
 import frc.lib.util.ScoringPositions;
+import frc.robot.Constants;
 import frc.robot.subsystems.superstructure.elevator.Elevator;
 import frc.robot.subsystems.superstructure.wrist.Wrist;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Welcome to the war room. (that's also what I called my college essay Google Drive but that's
@@ -32,48 +37,129 @@ public class Superstructure extends BlitzSubsystem {
         super("superstructure");
         this.elevator = elevator;
         this.wrist = wrist;
+
+
+        staticGoals = Map.ofEntries(
+                entry(Goal.L1, L1),
+                entry(Goal.L2, L2),
+                entry(Goal.L3, L3),
+                entry(Goal.L4, L4),
+                entry(Goal.KICK_LOW_ALGAE, KICK_LOW_ALGAE),
+                entry(Goal.KICK_HIGH_ALGAE, KICK_HIGH_ALGAE),
+
+                entry(Goal.HANDOFF, HANDOFF),
+                entry(Goal.STOW, STOW)
+        );
+
     }
 
+    private State state = State.UNKNOWN;
+    private Goal previousGoal = null;
+    private Goal currentGoal = Goal.STOW;
+
+    private final Map<Goal, SuperstructureState> staticGoals;
+
     // THIS REALLY SUCKS BUT WORKS AS A PLACEHOLDER IG
-    public enum States {
+    public enum Goal {
         STOW,
-        HANDOFF, // TODO: DEPRECATE ONCE DESIGN IS BETTER
+        HANDOFF,
         L1,
         L2,
         L3,
-        L4
+        L4,
+        L4_DUNK,
+        KICK_LOW_ALGAE,
+        KICK_HIGH_ALGAE,
+    }
+
+    public enum State {
+        // We are at a wanted goal, and not in between goals
+        // The system is either in a desired position or desired sequence
+        // A sequence (like l4 dunk) is considered at goal, not in transit
+        AT_GOAL,
+        // The system is in transit between two goals, IE stow and L4.
+        // When in transit state, it is the job of the superstructure safely get between goals.
+        IN_TRANSIT,
+        // The system is not in transit between 2 known goals or at a goal
+        // This is triggered whe either:
+        //  - Control is shifted to the superstructure after a manual override
+        //  - The robot is enabled and not in starting position
+        //  - A sensor fault occurred.
+        // While in this state it is the job of the superstructure to recover the mechanism to a known safe position
+        // Failing this, safely disengage
+        UNKNOWN,
+        // Either a manual override or safety interlock triggered
+        // superstructure control is disabled until robot is disabled and re-enabled, or manual re-enablement occurs
+        DISABLED
     }
 
     public Command stowCommand() {
+        return Commands.parallel(
+                Commands.idle(this),
+                wrist.withGoal(STOW.getWristState()),
+                elevator.withGoal(STOW.getElevatorState())
+                        .beforeStarting(
+                                Commands.waitUntil(
+                                        () -> wrist.getPosition() > ELEVATOR_DOWN_WRIST_MIN)))
+                .beforeStarting(
+                        () -> {
+                            currentGoal = Goal.STOW;
+                            state = State.IN_TRANSIT;
+                        }
+                ).finallyDo(
+                        (interrupted) -> state = interrupted ? State.UNKNOWN : State.AT_GOAL
+                );
+    }
+
+
+    private Command toGoalWristLast(Goal goal) {
         return Commands.sequence(
-                elevator.withGoal(HANDOFF_PRIME.getElevatorState())
-                        .onlyIf(
-                                () ->
-                                        elevator.getPosition() < HANDOFF_PRIME.elevatorPosition()
-                                                && wrist.getPosition() < WRIST_HANDOFF_DANGER_ZONE),
-                Commands.parallel(
-                        wrist.withGoal(STOW.getWristState()),
-                        elevator.withGoal(STOW.getElevatorState())
-                                .beforeStarting(
-                                        Commands.waitUntil(
-                                                () ->
-                                                        wrist.getPosition()
-                                                                > ELEVATOR_DOWN_WRIST_MIN))));
+            elevator.withGoal(
+                staticGoals.get(goal).getElevatorState()
+            ),
+            wrist.withGoal(
+                    staticGoals.get(goal).getWristState()
+            ),
+            Commands.idle(this)
+        );
     }
 
-    public Command primeHandoff() {
-        throw new UnsupportedOperationException();
+    private Command toGoalWristFirst(Goal goal) {
+        return Commands.sequence(
+                wrist.withGoal(
+                        staticGoals.get(goal).getWristState()
+                ),
+                elevator.withGoal(
+                        staticGoals.get(goal).getElevatorState()
+                ),
+                Commands.idle(this)
+        );
     }
 
-    public Command executeHandoff() {
-        throw new UnsupportedOperationException();
+    private Command toGoalWristSynchronous(Goal goal) {
+        return Commands.parallel(
+                elevator.withGoal(
+                        staticGoals.get(goal).getElevatorState()
+                ),
+                wrist.withGoal(
+                        staticGoals.get(goal).getWristState()
+                ),
+                Commands.idle(this)
+        );
     }
 
-    public Command primeScore(ScoringPositions.Level level) {
-        throw new UnsupportedOperationException();
-    }
-
-    public Command executeScore(ScoringPositions.Level level) {
-        throw new UnsupportedOperationException();
+    public Command toGoal(Goal goal) {
+        return toGoalWristLast(goal)
+                .beforeStarting(
+                        () -> {
+                    state = State.IN_TRANSIT;
+                    previousGoal = currentGoal;
+                    currentGoal = goal;
+                })
+                .finallyDo(
+                        (interrupted) -> {
+                            state = interrupted ? State.UNKNOWN : State.AT_GOAL;
+                        }
+                );
     }
 }

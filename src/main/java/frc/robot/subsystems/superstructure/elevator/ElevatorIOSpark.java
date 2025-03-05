@@ -60,9 +60,6 @@ public class ElevatorIOSpark implements ElevatorIO {
                                 * Constants.Elevator.SPROCKET_CIRCUMFERANCE
                                 * 2);
 
-        //        sharedConfig.closedLoop
-        //                .
-
         SparkMaxConfig leftConfig = new SparkMaxConfig();
 
         leftConfig.apply(sharedConfig).inverted(true);

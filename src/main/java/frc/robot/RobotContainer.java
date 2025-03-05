@@ -9,7 +9,6 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -86,6 +85,8 @@ public class RobotContainer {
                                 () -> false,
                                 () -> Double.NaN)
                         .withName("TeleopSwerve"));
+
+        superstructure.setDefaultCommand(superstructure.stowCommand());
     }
 
     private void configureSubsystems() {
@@ -161,23 +162,17 @@ public class RobotContainer {
         OIConstants.Drive.BRAKE.onTrue(Commands.runOnce(() -> drive.setBrakeMode(true)));
         OIConstants.Drive.COAST.onTrue(Commands.runOnce(() -> drive.setBrakeMode(false)));
 
-        OIConstants.Elevator.ELEVATOR_L1.onTrue(
-                elevator.withGoal(
-                        new TrapezoidProfile.State(
-                                Constants.SuperstructureSetpoints.L1_PRIME.elevatorPosition(), 0)));
-        OIConstants.Elevator.ELEVATOR_L2.onTrue(
-                elevator.withGoal(
-                        new TrapezoidProfile.State(
-                                Constants.SuperstructureSetpoints.L2_PRIME.elevatorPosition(), 0)));
-        OIConstants.Elevator.ELEVATOR_L3.onTrue(
-                elevator.withGoal(
-                        new TrapezoidProfile.State(
-                                Constants.SuperstructureSetpoints.L3_PRIME.elevatorPosition(), 0)));
-        OIConstants.Elevator.ELEVATOR_L4.onTrue(
-                elevator.withGoal(
-                        new TrapezoidProfile.State(
-                                Constants.SuperstructureSetpoints.L4_PRIME.elevatorPosition(), 0)));
-        //
+        OIConstants.SuperStructure.L1.whileTrue(superstructure.toGoal(Superstructure.Goal.L1));
+        OIConstants.SuperStructure.L2.whileTrue(superstructure.toGoal(Superstructure.Goal.L2));
+        OIConstants.SuperStructure.L3.whileTrue(superstructure.toGoal(Superstructure.Goal.L3));
+        OIConstants.SuperStructure.L4.whileTrue(superstructure.toGoal(Superstructure.Goal.L4));
+
+        OIConstants.SuperStructure.KICK_BOTTOM_ALGAE.whileTrue(superstructure.toGoal(Superstructure.Goal.KICK_LOW_ALGAE));
+        OIConstants.SuperStructure.KICK_TOP_ALGAE.whileTrue(superstructure.toGoal(Superstructure.Goal.KICK_HIGH_ALGAE));
+
+
+
+
         //        OIConstants.Wrist.WRIST_TEST1.whileTrue(wrist.withGoal(new
         // TrapezoidProfile.State(Math.toRadians(45), 0)));
         //        OIConstants.Wrist.WRIST_TEST2.whileTrue(wrist.withGoal(new

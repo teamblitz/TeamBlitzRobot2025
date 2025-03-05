@@ -115,19 +115,21 @@ public class OIConstants {
     }
 
     public static final class Elevator {
-        public static final Trigger ELEVATOR_L1 = OPERATOR_CONTROLLER.a();
-        public static final Trigger ELEVATOR_L2 = OPERATOR_CONTROLLER.x();
-        public static final Trigger ELEVATOR_L3 = OPERATOR_CONTROLLER.b();
-        public static final Trigger ELEVATOR_L4 = OPERATOR_CONTROLLER.y();
-
-        //        public static final Trigger ELEVATOR_DOWN = OPERATOR_CONTROLLER.a();
-        public static final Trigger MANUAL_UP = OPERATOR_CONTROLLER.povUp();
-        public static final Trigger MANUAL_DOWN = OPERATOR_CONTROLLER.povDown();
+        public static final Trigger MANUAL_UP = new Trigger(() -> OPERATOR_CONTROLLER.getLeftY() < .05);
+        public static final Trigger MANUAL_DOWN = new Trigger(() -> OPERATOR_CONTROLLER.getLeftY() > .05);
     }
 
     public static final class SuperStructure {
-
         public static final Trigger STOW = OPERATOR_CONTROLLER.start();
+        public static final Trigger L1 = OPERATOR_CONTROLLER.povDown();
+        public static final Trigger L2 = OPERATOR_CONTROLLER.povLeft();
+        public static final Trigger L3 = OPERATOR_CONTROLLER.povUp();
+        public static final Trigger L4 = OPERATOR_CONTROLLER.povRight();
+
+
+        public static final Trigger KICK_BOTTOM_ALGAE = OPERATOR_CONTROLLER.a();
+        public static final Trigger KICK_TOP_ALGAE = OPERATOR_CONTROLLER.b();
+
     }
 
     //    public static final class TestMode {
