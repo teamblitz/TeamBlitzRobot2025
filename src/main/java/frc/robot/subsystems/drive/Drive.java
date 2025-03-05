@@ -256,10 +256,12 @@ public class Drive extends BlitzSubsystem {
                                     for (SwerveModule module : swerveModules) {
                                         module.resetToAbs();
                                     }
-                                })
-                ).repeatedly().withName("SWERVE FIX")
-                .until(DriverStation::isEnabled).ignoringDisable(true).schedule();
-
+                                }))
+                .repeatedly()
+                .withName("SWERVE FIX")
+                .until(DriverStation::isEnabled)
+                .ignoringDisable(true)
+                .schedule();
 
         // Creates a SysIdRoutine
         routine =

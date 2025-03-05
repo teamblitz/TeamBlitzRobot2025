@@ -37,21 +37,16 @@ public class OIConstants {
         private static final SlewRateLimiter DRIVE_MULTIPLIER_LIMITER =
                 new SlewRateLimiter(.25); // Todo, try without this?
 
-        //                private static final DoubleSupplier DRIVE_MULTIPLIER =
-        //                        () ->
-        //                                NORMAL_SPEED
-        //                                        + DRIVE_CONTROLLER.getLeftTriggerAxis()
-        //                                                * (SLOW_SPEED - NORMAL_SPEED)
-        //                                        + DRIVE_CONTROLLER.getRightTriggerAxis()
-        //                                                * (FAST_SPEED - NORMAL_SPEED);
+        //        private static final DoubleSupplier DRIVE_MULTIPLIER =
+        //                () ->
+        //                        NORMAL_SPEED
+        //                                + DRIVE_CONTROLLER.getLeftTriggerAxis()
+        //                                        * (SLOW_SPEED - NORMAL_SPEED)
+        //                                + DRIVE_CONTROLLER.getRightTriggerAxis()
+        //                                        * (FAST_SPEED - NORMAL_SPEED);
 
         private static final DoubleSupplier DRIVE_MULTIPLIER =
-                () ->
-                        DRIVE_CONTROLLER.getHID().getRightTriggerAxis() > 0.5
-                                ? FAST_SPEED
-                                : DRIVE_CONTROLLER.getHID().getLeftTriggerAxis() > 0.5
-                                        ? SLOW_SPEED
-                                        : NORMAL_SPEED;
+                () -> (DRIVE_CONTROLLER.getHID().getRawButton(1) ? FAST_SPEED : NORMAL_SPEED);
 
         public static final DoubleSupplier X_TRANSLATION =
                 () ->

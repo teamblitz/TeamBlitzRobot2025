@@ -2,7 +2,6 @@ package frc.robot.subsystems.superstructure.wrist;
 
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.Units;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -79,7 +78,7 @@ public class Wrist extends BlitzSubsystem {
                         .withName("wrist/test45"));
         characterizationTab.add(
                 "wrist/minus45",
-                withGoal(new TrapezoidProfile.State(Math.toRadians(-40), 0))
+                withGoal(new TrapezoidProfile.State(Math.toRadians(-45), 0))
                         .withName("wrist/testminus45"));
     }
 
@@ -160,7 +159,7 @@ public class Wrist extends BlitzSubsystem {
                         () -> {
                             this.goal = goal;
                         })
-                .until(() -> this.goal.equals(this.setpoint))
+                .until(() -> setpoint.equals(goal))
                 .handleInterrupt(() -> this.goal = setpoint)
                 .beforeStarting(refreshCurrentState());
     }
