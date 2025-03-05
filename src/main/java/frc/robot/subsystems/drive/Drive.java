@@ -249,6 +249,18 @@ public class Drive extends BlitzSubsystem {
                         })
                 .schedule();
 
+        Commands.sequence(
+                        Commands.waitSeconds(2),
+                        Commands.runOnce(
+                                () -> {
+                                    for (SwerveModule module : swerveModules) {
+                                        module.resetToAbs();
+                                    }
+                                })
+                ).repeatedly().withName("SWERVE FIX")
+                .until(DriverStation::isEnabled).ignoringDisable(true).schedule();
+
+
         // Creates a SysIdRoutine
         routine =
                 new SysIdRoutine(
