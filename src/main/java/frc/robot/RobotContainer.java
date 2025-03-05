@@ -29,6 +29,7 @@ import frc.robot.subsystems.drive.swerveModule.angle.AngleMotorIOSim;
 import frc.robot.subsystems.drive.swerveModule.drive.DriveMotorIOSim;
 import frc.robot.subsystems.drive.swerveModule.encoder.EncoderIO;
 import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOSpark;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.superstructure.elevator.Elevator;

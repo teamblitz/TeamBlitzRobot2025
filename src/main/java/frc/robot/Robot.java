@@ -13,6 +13,8 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.lib.GCMonitor;
+import frc.lib.ResourceMonitor;
 import frc.robot.subsystems.leds.Leds;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -136,19 +138,13 @@ public class Robot extends LoggedRobot {
 
         Runtime runtime = Runtime.getRuntime();
 
-        // Start logging jvm and heep memeory
-        //        Notifier ramLogger = new Notifier(
-        //                () -> {
-        //                    Logger.recordOutput("System/")
-        //                }
-        //        );
+        GCMonitor.registerGCListener();
 
         robotContainer = new RobotContainer();
-    }
 
-    public int loopCount = 0;
-    private double lastTimeStamp = Timer.getFPGATimestamp();
-    private final LinearFilter loopTimeFilter = LinearFilter.singlePoleIIR(0.1, 0.02);
+
+        printWatchdogEpochs();
+    }
 
     @Override
     public void robotPeriodic() {
@@ -156,21 +152,18 @@ public class Robot extends LoggedRobot {
         // commands, running already-scheduled commands, removing finished or interrupted commands,
         // and running subsystem periodic() methods.  This must be called from the robot's periodic
         // block in order for anything in the Command-based framework to work.
+
+        long t0 = System.nanoTime();
+
         CommandScheduler.getInstance().run();
 
-        double loopTime = Timer.getFPGATimestamp() - lastTimeStamp;
-        lastTimeStamp = Timer.getFPGATimestamp();
+        long t1 = System.nanoTime();
 
-        Logger.recordOutput("Loop time", loopTime);
-        //
-        //        if (loopCount == 500) {
-        //            loopCount = 0;
-        //            System.out.println("#####################Epochs:######################");
-        //            CommandScheduler.getInstance().printWatchdogEpochs();
-        //
-        //        } else {
-        //            loopCount++;
-        //        }
+        Logger.recordOutput("cmd_scheduler_run_time_ms", (t1 - t0) * 1e-6);
+
+        ResourceMonitor.getInstance().update();
+
+
     }
 
     /* ***** --- Autonomous --- ***** */

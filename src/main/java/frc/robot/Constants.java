@@ -375,7 +375,7 @@ public final class Constants {
         public static final double FORWARD_SOFT_LIMIT = Units.degreesToRadians(85);
         public static final double REVERSE_SOFT_LIMIT = Units.degreesToRadians(-90);
 
-        public static final double ABS_ENCODER_ZERO = Math.toDegrees(214.64152 - 90);
+        public static final double ABS_ENCODER_ZERO = Math.toRadians(306.71 + 90);
 
         public static final class PidGains {
             public static final double KP = 2;
@@ -439,7 +439,7 @@ public final class Constants {
         public static final int CAN_ID = 40;
         public static final boolean INVERTED = true;
         public static final int CURRENT_LIMIT = 40;
-        public static final double INTAKE_SPEED = 1; // TODO CONFIG
-        public static final double OUTTAKE_SPEED = -1; // TODO CONFIG
+        public static final double INTAKE_SPEED = .3; // TODO CONFIG
+        public static final double OUTTAKE_SPEED = -.3; // TODO CONFIG
     }
 }
