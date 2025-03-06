@@ -3,16 +3,18 @@ package frc.robot.subsystems.superstructure;
 import static frc.robot.Constants.SuperstructureSetpoints.*;
 import static java.util.Map.entry;
 
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.lib.BlitzSubsystem;
-import frc.lib.util.ScoringPositions;
-import frc.robot.Constants;
 import frc.robot.subsystems.superstructure.elevator.Elevator;
 import frc.robot.subsystems.superstructure.wrist.Wrist;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Welcome to the war room. (that's also what I called my college essay Google Drive but that's
@@ -50,6 +52,20 @@ public class Superstructure extends BlitzSubsystem {
                 entry(Goal.HANDOFF, HANDOFF),
                 entry(Goal.STOW, STOW)
         );
+
+        ShuffleboardTab tab = Shuffleboard.getTab("SuperStructure");
+        GenericEntry elevatorTestEntry = tab.add("elevatorTest", 0).getEntry();
+        GenericEntry wristTestEntry = tab.add("wristTest", 45).getEntry();
+
+        tab.add("positionTest",
+                Commands.defer(
+                        () -> Commands.parallel(
+                                elevator.withGoal(new TrapezoidProfile.State(elevatorTestEntry.getDouble(0), 0)),
+                                wrist.withGoal(new TrapezoidProfile.State(Math.toRadians(wristTestEntry.getDouble(45)), 0))
+                        ).finallyDo(
+                                (interrupt) -> Commands.print("SuperClosedTestEnd, " + interrupt)
+                        ), Set.of(this)).withName("SuperStructure/closedTest")
+                );
 
     }
 
@@ -136,7 +152,7 @@ public class Superstructure extends BlitzSubsystem {
         );
     }
 
-    private Command toGoalWristSynchronous(Goal goal) {
+    private Command toGoalSynchronous(Goal goal) {
         return Commands.parallel(
                 elevator.withGoal(
                         staticGoals.get(goal).getElevatorState()

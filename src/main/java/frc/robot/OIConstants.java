@@ -115,8 +115,8 @@ public class OIConstants {
     }
 
     public static final class Elevator {
-        public static final Trigger MANUAL_UP = new Trigger(() -> OPERATOR_CONTROLLER.getLeftY() < .05);
-        public static final Trigger MANUAL_DOWN = new Trigger(() -> OPERATOR_CONTROLLER.getLeftY() > .05);
+        public static final Trigger MANUAL_UP = new Trigger(() -> OPERATOR_CONTROLLER.getLeftY() < .20);
+        public static final Trigger MANUAL_DOWN = new Trigger(() -> OPERATOR_CONTROLLER.getLeftY() > .20);
     }
 
     public static final class SuperStructure {
