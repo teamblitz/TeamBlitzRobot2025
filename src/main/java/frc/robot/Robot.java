@@ -30,6 +30,8 @@ import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import org.littletonrobotics.urcl.URCL;
 
+import com.pathplanner.lib.commands.FollowPathCommand;
+
 public class Robot extends LoggedRobot {
     private Command autonomousCommand;
     private RobotContainer robotContainer;
@@ -142,6 +144,8 @@ public class Robot extends LoggedRobot {
         robotContainer = new RobotContainer();
 
         printWatchdogEpochs();
+
+        FollowPathCommand.warmupCommand().schedule();  //Warms up the FollowPathCommand
     }
 
     @Override
