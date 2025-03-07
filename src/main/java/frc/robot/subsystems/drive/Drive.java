@@ -7,6 +7,7 @@ import static frc.robot.Constants.Drive.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.FollowPathCommand;
+import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.controllers.PPLTVController;
 import com.pathplanner.lib.path.PathPlannerPath;
@@ -56,6 +57,8 @@ import frc.robot.subsystems.drive.swerveModule.drive.DriveMotorIOKraken;
 import frc.robot.subsystems.drive.swerveModule.drive.DriveMotorIOSpark;
 import frc.robot.subsystems.drive.swerveModule.encoder.EncoderIOCanCoder;
 import frc.robot.subsystems.drive.swerveModule.encoder.EncoderIOHelium;
+
+import java.nio.file.Path;
 import java.util.Optional;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
@@ -687,30 +690,39 @@ public class Drive extends BlitzSubsystem {
 
     public Command followPathCommand() {
         //TODO add more parameters to this logic
-        try {
-                return new FollowPathCommand(
-                        this::getPose, // Robot pose supplier
-                        this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-                        this::drive, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds, AND feedforwards
-                        new PPLTVController(0.02), // PPLTVController is the built-in path following controller for differential drive trains
-                        Constants.robotConfig, // The robot configuration
-                        () -> {
-                            // Boolean supplier that controls when the path will be mirrored for the red alliance
-                            // This will flip the path being followed to the red side of the field.
-                            // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
-            
-                            var alliance = DriverStation.getAlliance();
-                            // Safely handle the Optional and check for red alliance
-                            return alliance.isPresent() && alliance.get() == DriverStation.Alliance.Red;
-                        },
-                        this // Reference to this subsystem to set requirements
-                );
-            } catch (Exception e) {
-                DriverStation.reportError("Big oops: " + e.getMessage(), e.getStackTrace());
-                return null; // Or handle the error accordingly (e.g., return a default value or throw another exception)
-            }
+        try{
+            PathPlannerPath path = PathPlannerPath.fromPathFile();
+    
+            return new FollowPathCommand(
+                    path,
+                    this::getPose, // Robot pose supplier
+                    this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+                    this::drive, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds, AND feedforwards
+                    new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic drive trains
+                            new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
+                            new PIDConstants(5.0, 0.0, 0.0) // Rotation PID constants
+                    ),
+                    Constants.robotConfig, // The robot configuration
+                    () -> {
+                      // Boolean supplier that controls when the path will be mirrored for the red alliance
+                      // This will flip the path being followed to the red side of the field.
+                      // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+    
+                      var alliance = DriverStation.getAlliance();
+                      if (alliance.isPresent()) {
+                        return alliance.get() == DriverStation.Alliance.Red;
+                      }
+                      return false;
+                    },
+                    this // Reference to this subsystem to set requirements
+            );
+        } catch (Exception e) {
+            DriverStation.reportError("Big oops: " + e.getMessage(), e.getStackTrace());
+            return Commands.none();
         }
-}
+      }
+        }
+
         
     
 
