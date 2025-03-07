@@ -34,6 +34,7 @@ import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.superstructure.elevator.Elevator;
 import frc.robot.subsystems.superstructure.elevator.ElevatorIOSpark;
 import frc.robot.subsystems.superstructure.wrist.Wrist;
+import frc.robot.subsystems.superstructure.wrist.WristIO;
 import frc.robot.subsystems.superstructure.wrist.WristIOSpark;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -147,7 +148,7 @@ public class RobotContainer {
         elevator = new Elevator(new ElevatorIOSpark());
         //        elevator = new Elevator(new ElevatorIO() {});
 
-        wrist = new Wrist(new WristIOSpark());
+        wrist = new Wrist(new WristIO() {});
         //        wrist = new Wrist(new WristIO() {});
 
         intake = new Intake(new IntakeIOSpark());

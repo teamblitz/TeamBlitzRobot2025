@@ -110,6 +110,13 @@ public class Elevator extends BlitzSubsystem {
         Logger.recordOutput(logKey + "/rotRightDeg", Math.toDegrees(inputs.positionRight) % 360);
 
         if (goal != null) {
+            // if setpoint.velocity > 0 and at top limit
+            // then setpoint = new state(current pos, 0)
+            // futuresetpoint = setpoint
+            // else if setpoint velocity < 0 and at bottom limit
+            // future setpoint = setpoint
+            // then setpoint = new state(current pos, 0)
+            // else
             TrapezoidProfile.State future_setpoint = profile.calculate(Constants.LOOP_PERIOD_SEC, setpoint, goal);
 
             io.setSetpoint(setpoint.position, setpoint.velocity, future_setpoint.velocity);

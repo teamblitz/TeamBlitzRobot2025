@@ -144,6 +144,8 @@ public class Robot extends LoggedRobot {
         printWatchdogEpochs();
     }
 
+    long robotPeriodicNano = System.nanoTime();
+
     @Override
     public void robotPeriodic() {
         // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
@@ -158,6 +160,11 @@ public class Robot extends LoggedRobot {
         long t1 = System.nanoTime();
 
         Logger.recordOutput("cmd_scheduler_run_time_ms", (t1 - t0) * 1e-6);
+
+
+
+        Logger.recordOutput("robot_periodic_delta_ms", (System.nanoTime() - robotPeriodicNano) * 1e-6);
+        robotPeriodicNano = System.nanoTime();
 
         ResourceMonitor.getInstance().update();
     }
