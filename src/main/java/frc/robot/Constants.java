@@ -391,25 +391,25 @@ public final class Constants {
             public static final double KG = 0.2288;
         }
     }
-
+    //Reset Elevator To Bottom before reset code
     public static final class SuperstructureSetpoints {
         public static final SuperstructureState STOW =
                 new SuperstructureState(.02, Math.toRadians(70));
 
         public static final SuperstructureState L1 =
-                new SuperstructureState(.28, Math.toRadians(60));
+                new SuperstructureState(.2, Math.toRadians(60));
         public static final SuperstructureState L2 =
-                new SuperstructureState(.28, Math.toRadians(60));
+                new SuperstructureState(.48, Math.toRadians(60));
         public static final SuperstructureState L3 =
-                new SuperstructureState(.663, Math.toRadians(60));
+                new SuperstructureState(.85, Math.toRadians(60));
         public static final SuperstructureState L4 =
-                new SuperstructureState(1.43, Math.toRadians(45));
+                new SuperstructureState(1.48, Math.toRadians(50)); //Value is not with Drop
 
 
         public static final SuperstructureState KICK_LOW_ALGAE =
-                new SuperstructureState(0, Math.toRadians(45));
+                new SuperstructureState(.48, Math.toRadians(42));
         public static final SuperstructureState KICK_HIGH_ALGAE =
-                new SuperstructureState(0, Math.toRadians(45));
+                new SuperstructureState(.88, Math.toRadians(40));
 
 
 
