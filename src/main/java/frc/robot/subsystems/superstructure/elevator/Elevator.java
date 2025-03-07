@@ -4,6 +4,7 @@ import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.Units;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -128,19 +129,27 @@ public class Elevator extends BlitzSubsystem {
 
         if (goal != null && DriverStation.isEnabled() && !Constants.compBot()) {
             setpoint = profile.calculate(loopTimer.get(), setpoint, goal);
-            TrapezoidProfile.State future_setpoint =
-                    profile.calculate(Constants.LOOP_PERIOD_SEC, setpoint, goal);
-
-            io.setSetpoint(setpoint.position, setpoint.velocity, future_setpoint.velocity);
-
-        }
-
+            TrapezoidProfile.State future_setpoint = profile.calculate(Constants.LOOP_PERIOD_SEC, setpoint, goal);
         if (goal != null) {
-            Logger.recordOutput(logKey + "/profile/positionSetpoint", setpoint.position);
-            Logger.recordOutput(logKey + "/profile/velocitySetpoint", setpoint.velocity);
+            if (atTopLimit() && setpoint.velocity > 0) {
+                setpoint = new TrapezoidProfile.State(inputs.torqueCurrentLeft, 0); // TODO WRONG
+            } else if (atBottomLimit() && setpoint.velocity < 0) {
+                setpoint = new TrapezoidProfile.State(inputs.torqueCurrentRight, 0);
+            } else {
+
+                TrapezoidProfile.State future_setpoint = profile.calculate(Constants.LOOP_PERIOD_SEC, setpoint, goal);
+
+                io.setSetpoint(setpoint.position, setpoint.velocity, future_setpoint.velocity);
+
+                Logger.recordOutput(logKey + "/profile/positionSetpoint", setpoint.position);
+                Logger.recordOutput(logKey + "/profile/velocitySetpoint", setpoint.velocity);
 
             Logger.recordOutput(logKey + "/profile/positionGoal", goal.position);
             Logger.recordOutput(logKey + "/profile/velocityGoal", goal.velocity);
+                Logger.recordOutput(logKey + "/profile/positionGoal", goal.position);
+                Logger.recordOutput(logKey + "/profile/velocityGoal", goal.velocity);
+                setpoint = future_setpoint;
+            }
         }
 
         if (DriverStation.isDisabled()) {
@@ -178,8 +187,6 @@ public class Elevator extends BlitzSubsystem {
                 rightKG,
                 rightKV,
                 rightKA);
-
-        loopTimer.reset();
     }
 
     public Command withSpeed(DoubleSupplier speed) {
