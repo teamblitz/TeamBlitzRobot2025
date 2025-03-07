@@ -118,6 +118,9 @@ public class Elevator extends BlitzSubsystem {
         loopTimer.restart();
     }
 
+    DigitalInput right = new DigitalInput(0);
+    DigitalInput left = new DigitalInput(1);
+
     @Override
     public void periodic() {
         super.periodic();
@@ -189,6 +192,7 @@ public class Elevator extends BlitzSubsystem {
                 rightKV,
                 rightKA);
     }
+
 
     public Command withSpeed(DoubleSupplier speed) {
         return runEnd(
