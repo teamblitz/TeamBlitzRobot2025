@@ -180,8 +180,8 @@ public class RobotContainer {
         //        OIConstants.Wrist.WRIST_TEST2.whileTrue(wrist.withGoal(new
         // TrapezoidProfile.State(Math.toRadians(-45), 0)));
 
-        OIConstants.Elevator.MANUAL_UP.whileTrue(elevator.upManual());
-        OIConstants.Elevator.MANUAL_DOWN.whileTrue(elevator.downManual());
+        OIConstants.Elevator.MANUAL_UP.whileTrue(elevator.upManual().alongWith(superstructure.idle()));
+        OIConstants.Elevator.MANUAL_DOWN.whileTrue(elevator.downManual().alongWith(superstructure.idle()));
 
         OIConstants.SuperStructure.STOW.whileTrue(superstructure.stowCommand());
 
@@ -189,7 +189,7 @@ public class RobotContainer {
         OIConstants.Intake.EJECT.whileTrue(intake.outtake());
 
         new Trigger(() -> Math.abs(OIConstants.Wrist.WRIST_MANUAL.getAsDouble()) > .07)
-                .whileTrue(wrist.setSpeed(OIConstants.Wrist.WRIST_MANUAL));
+                .whileTrue(wrist.setSpeed(OIConstants.Wrist.WRIST_MANUAL).alongWith(superstructure.idle()));
 
         new Trigger(RobotController::getUserButton)
                 .toggleOnTrue(Commands.parallel(wrist.coastCommand(), elevator.coastCommand()));

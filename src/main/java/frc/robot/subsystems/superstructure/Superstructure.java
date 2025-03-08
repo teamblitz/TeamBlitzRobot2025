@@ -36,6 +36,7 @@ public class Superstructure extends BlitzSubsystem {
     private final Wrist wrist;
 
     public Superstructure(Elevator elevator, Wrist wrist) {
+
         super("superstructure");
         this.elevator = elevator;
         this.wrist = wrist;
@@ -125,7 +126,9 @@ public class Superstructure extends BlitzSubsystem {
                 ).finallyDo(
                         (interrupted) -> state = interrupted ? State.UNKNOWN : State.AT_GOAL
                 ).withName("stow command");
+
     }
+
 
 
     private Command toGoalWristLast(Goal goal) {
@@ -177,5 +180,9 @@ public class Superstructure extends BlitzSubsystem {
                             state = interrupted ? State.UNKNOWN : State.AT_GOAL;
                         }
                 );
+    }
+
+    public Command idle() {
+        return Commands.idle(this);
     }
 }

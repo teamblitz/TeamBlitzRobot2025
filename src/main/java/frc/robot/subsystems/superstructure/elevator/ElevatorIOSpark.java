@@ -3,6 +3,7 @@ package frc.robot.subsystems.superstructure.elevator;
 import com.revrobotics.*;
 import com.revrobotics.spark.*;
 import com.revrobotics.spark.config.ClosedLoopConfig;
+import com.revrobotics.spark.config.MAXMotionConfig;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
@@ -60,8 +61,8 @@ public class ElevatorIOSpark implements ElevatorIO {
                                 * Constants.Elevator.SPROCKET_CIRCUMFERANCE
                                 * 2);
 
-        sharedConfig.closedLoop.maxOutput(.25);
-        sharedConfig.closedLoop.minOutput(-.25);
+        sharedConfig.closedLoop.maxOutput(.2);
+        sharedConfig.closedLoop.minOutput(-.2);
 
         SparkMaxConfig leftConfig = new SparkMaxConfig();
 
@@ -228,6 +229,7 @@ public class ElevatorIOSpark implements ElevatorIO {
 
 //    @Override
 //    public void setMotionMagic(double position, double velocity) {
+//
 //        leftPid.setReference(
 //                position,
 //                SparkBase.ControlType.kMAXMotionPositionControl,
@@ -241,5 +243,5 @@ public class ElevatorIOSpark implements ElevatorIO {
 //                ClosedLoopSlot.kSlot0,
 //                rightFeedforward.calculateWithVelocities(velocity, nextVelocity),
 //                SparkClosedLoopController.ArbFFUnits.kVoltage);
-//    }?
+//    }
 }

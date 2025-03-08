@@ -169,7 +169,7 @@ public class Elevator extends BlitzSubsystem {
         loopTimer.reset();
     }
 
-    public Command  withSpeed(DoubleSupplier speed) {
+    public Command withSpeed(DoubleSupplier speed) {
         return runEnd(
                         () -> {
                             io.setSpeed(
