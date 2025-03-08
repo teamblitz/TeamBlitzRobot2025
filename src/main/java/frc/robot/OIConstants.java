@@ -127,8 +127,12 @@ public class OIConstants {
         public static final Trigger L4 = OPERATOR_CONTROLLER.povRight();
 
 
+        public static final Trigger HANDOFF = OPERATOR_CONTROLLER.y();
+        public static final Trigger TEMP_L4_DUNK = OPERATOR_CONTROLLER.back();
+
         public static final Trigger KICK_BOTTOM_ALGAE = OPERATOR_CONTROLLER.a();
         public static final Trigger KICK_TOP_ALGAE = OPERATOR_CONTROLLER.b();
+
 
     }
 

@@ -173,6 +173,8 @@ public class RobotContainer {
         OIConstants.SuperStructure.KICK_TOP_ALGAE.whileTrue(superstructure.toGoal(Superstructure.Goal.KICK_HIGH_ALGAE));
 
 
+        OIConstants.SuperStructure.HANDOFF.whileTrue(superstructure.toGoal(Superstructure.Goal.HANDOFF));
+        OIConstants.SuperStructure.TEMP_L4_DUNK.whileTrue(superstructure.toGoal(Superstructure.Goal.L4_DUNK));
 
 
         //        OIConstants.Wrist.WRIST_TEST1.whileTrue(wrist.withGoal(new

@@ -347,7 +347,7 @@ public final class Constants {
             public static final double KV = 8.1174;
             public static final double KA = 1.13;
             public static final double KG = 0.24133;
-            public static final double KP = 10; // 4.3951;
+            public static final double KP = 5; // 4.3951;
             public static final double KD = 2; // 952.83;
             public static final double KI = 0;
         }
@@ -358,7 +358,7 @@ public final class Constants {
             public static final double KV = 8.259;
             public static final double KA = 1.0318;
             public static final double KG = 0.24188;
-            public static final double KP = 10; // 4.2941;
+            public static final double KP = 5; // 4.2941;
             public static final double KD = 2; // 905.76;
             public static final double KI = 0;
         }
@@ -406,22 +406,30 @@ public final class Constants {
                 new SuperstructureState(1.48, Math.toRadians(50)); //Value is not with Drop
 
 
+
         public static final SuperstructureState KICK_LOW_ALGAE =
                 new SuperstructureState(.48, Math.toRadians(42));
         public static final SuperstructureState KICK_HIGH_ALGAE =
                 new SuperstructureState(.88, Math.toRadians(40));
 
 
+        public static final List<SuperstructureState> L4_DUNK =
+                List.of(
+                        new SuperstructureState(L4.elevatorPosition, Math.toRadians(0)),
+                        new SuperstructureState(1.06, Math.toRadians(0)),
+                        new SuperstructureState(1.06, Math.toRadians(70))
+                );
 
-        public static final SuperstructureState HANDOFF = new SuperstructureState(0, 0);
 
-        // here
+        public static final SuperstructureState HANDOFF = new SuperstructureState(.02, Math.toRadians(90));
 
-        public static final double ELEVATOR_DOWN_WRIST_MIN = Units.degreesToRadians(10);
+        public static final double ELEVATOR_STOW_WRIST_MIN = Units.degreesToRadians(50);
 
-        //        public static final class  {
-        //            public static final SuperstructureState
-        //        }
+        public enum SetpointMode {
+            WRIST_FIRST, WRIST_LAST, WRIST_SYNC
+        }
+
+        public record StateWithMode(SuperstructureState state, SetpointMode mode) {}
 
         public record SuperstructureState(double elevatorPosition, double wristRotation) {
             public TrapezoidProfile.State getElevatorState(double velocity) {

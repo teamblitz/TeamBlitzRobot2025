@@ -9,10 +9,13 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.lib.BlitzSubsystem;
 import frc.robot.subsystems.superstructure.elevator.Elevator;
 import frc.robot.subsystems.superstructure.wrist.Wrist;
+import org.littletonrobotics.junction.Logger;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -52,6 +55,12 @@ public class Superstructure extends BlitzSubsystem {
 
                 entry(Goal.HANDOFF, HANDOFF),
                 entry(Goal.STOW, STOW)
+
+
+        );
+
+        dynamicGoals = Map.ofEntries(
+                entry(Goal.L4_DUNK, L4_DUNK)
         );
 
         ShuffleboardTab tab = Shuffleboard.getTab("SuperStructure");
@@ -70,11 +79,22 @@ public class Superstructure extends BlitzSubsystem {
 
     }
 
+    @Override
+    public void periodic() {
+        super.periodic();
+
+        Logger.recordOutput("superstructure/currentGoal", currentGoal);
+        Logger.recordOutput("superstructure/previousGoal", previousGoal);
+
+        Logger.recordOutput("superstructure/state", state);
+    }
+
     private State state = State.UNKNOWN;
     private Goal previousGoal = null;
     private Goal currentGoal = Goal.STOW;
 
     private final Map<Goal, SuperstructureState> staticGoals;
+    private final Map<Goal, List<SuperstructureState>> dynamicGoals;
 
     // THIS REALLY SUCKS BUT WORKS AS A PLACEHOLDER IG
     public enum Goal {
@@ -111,13 +131,9 @@ public class Superstructure extends BlitzSubsystem {
     }
 
     public Command stowCommand() {
-        return Commands.parallel(
-                Commands.idle(this),
+        return Commands.sequence(
                 wrist.withGoal(STOW.getWristState()),
                 elevator.withGoal(STOW.getElevatorState())
-                        .beforeStarting(
-                                Commands.waitUntil(
-                                        () -> wrist.getPosition() > ELEVATOR_DOWN_WRIST_MIN)))
                 .beforeStarting(
                         () -> {
                             currentGoal = Goal.STOW;
@@ -125,7 +141,8 @@ public class Superstructure extends BlitzSubsystem {
                         }
                 ).finallyDo(
                         (interrupted) -> state = interrupted ? State.UNKNOWN : State.AT_GOAL
-                ).withName("stow command");
+                )).alongWith(idle())
+                .withName("stow");
 
     }
 
@@ -168,18 +185,40 @@ public class Superstructure extends BlitzSubsystem {
     }
 
     public Command toGoal(Goal goal) {
+        if (goal == Goal.L4_DUNK) {
+            Command command = idle();
+
+            for (SuperstructureState state : dynamicGoals.get(goal)) {
+                command = command.andThen(
+                        Commands.parallel(
+                                elevator.withGoal(
+                                        state.getElevatorState()
+                                ),
+                                wrist.withGoal(
+                                        state.getWristState()
+                                ),
+                                Commands.idle(this)
+                        ));
+            }
+
+            return command.onlyIf(() -> currentGoal == Goal.L4);
+        }
+
+
         return toGoalWristLast(goal)
                 .beforeStarting(
                         () -> {
-                    state = State.IN_TRANSIT;
-                    previousGoal = currentGoal;
-                    currentGoal = goal;
-                })
+                            state = State.IN_TRANSIT;
+                            previousGoal = currentGoal;
+                            currentGoal = goal;
+                        })
                 .finallyDo(
                         (interrupted) -> {
                             state = interrupted ? State.UNKNOWN : State.AT_GOAL;
                         }
                 );
+
+
     }
 
     public Command idle() {
