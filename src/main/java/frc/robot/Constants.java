@@ -330,8 +330,8 @@ public final class Constants {
         public static final double L4_EXTENSION = 7; // TODO get exact value
 
         public static final double OPEN_LOOP_RAMP =
-                .25; // FIX AFTER SYSID PLEASE FOR THE LOVE OF GOD
-        public static final int CURRENT_LIMIT = 40;
+                .25;
+        public static final int CURRENT_LIMIT = 60;
         public static final double ELEVATOR_GEAR_RATIO = 20.0 / 1;
         public static final double SPROCKET_CIRCUMFERANCE = Units.inchesToMeters(.25) * 24;
 
@@ -347,7 +347,7 @@ public final class Constants {
             public static final double KV = 8.1174;
             public static final double KA = 1.13;
             public static final double KG = 0.24133;
-            public static final double KP = 20; // 4.3951;
+            public static final double KP = 10; // 4.3951;
             public static final double KD = 2; // 952.83;
             public static final double KI = 0;
         }
@@ -358,7 +358,7 @@ public final class Constants {
             public static final double KV = 8.259;
             public static final double KA = 1.0318;
             public static final double KG = 0.24188;
-            public static final double KP = 20; // 4.2941;
+            public static final double KP = 10; // 4.2941;
             public static final double KD = 2; // 905.76;
             public static final double KI = 0;
         }

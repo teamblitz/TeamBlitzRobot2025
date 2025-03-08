@@ -88,7 +88,7 @@ public class RobotContainer {
                                 () -> Double.NaN)
                         .withName("TeleopSwerve"));
 
-//        superstructure.setDefaultCommand(superstructure.stowCommand());
+        superstructure.setDefaultCommand(superstructure.stowCommand());
     }
 
     private void configureSubsystems() {
@@ -148,7 +148,7 @@ public class RobotContainer {
         elevator = new Elevator(new ElevatorIOSpark());
         //        elevator = new Elevator(new ElevatorIO() {});
 
-        wrist = new Wrist(new WristIO() {});
+        wrist = new Wrist(new WristIOSpark());
         //        wrist = new Wrist(new WristIO() {});
 
         intake = new Intake(new IntakeIOSpark());

@@ -124,7 +124,7 @@ public class Superstructure extends BlitzSubsystem {
                         }
                 ).finallyDo(
                         (interrupted) -> state = interrupted ? State.UNKNOWN : State.AT_GOAL
-                );
+                ).withName("stow command");
     }
 
 

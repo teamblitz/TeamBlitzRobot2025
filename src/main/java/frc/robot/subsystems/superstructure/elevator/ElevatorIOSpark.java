@@ -60,6 +60,9 @@ public class ElevatorIOSpark implements ElevatorIO {
                                 * Constants.Elevator.SPROCKET_CIRCUMFERANCE
                                 * 2);
 
+        sharedConfig.closedLoop.maxOutput(.25);
+        sharedConfig.closedLoop.minOutput(-.25);
+
         SparkMaxConfig leftConfig = new SparkMaxConfig();
 
         leftConfig.apply(sharedConfig).inverted(true);
@@ -217,5 +220,26 @@ public class ElevatorIOSpark implements ElevatorIO {
 
         inputs.topLimitSwitch = false;
         inputs.bottomLimitSwitch = false;
+
+        inputs.currentLeft = left.getOutputCurrent();
+        inputs.currentRight = right.getOutputCurrent();
     }
+
+
+//    @Override
+//    public void setMotionMagic(double position, double velocity) {
+//        leftPid.setReference(
+//                position,
+//                SparkBase.ControlType.kMAXMotionPositionControl,
+//                ClosedLoopSlot.kSlot0,
+//                leftFeedforward.calculateWithVelocities(velocity, nextVelocity),
+//                SparkClosedLoopController.ArbFFUnits.kVoltage);
+//
+//        rightPid.setReference(
+//                position,
+//                SparkBase.ControlType.kMAXMotionPositionControl,
+//                ClosedLoopSlot.kSlot0,
+//                rightFeedforward.calculateWithVelocities(velocity, nextVelocity),
+//                SparkClosedLoopController.ArbFFUnits.kVoltage);
+//    }?
 }

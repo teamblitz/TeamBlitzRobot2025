@@ -79,12 +79,7 @@ public class ElevatorIOKraken implements ElevatorIO {
     }
 
     @Override
-    public void setMotionMagicLeft(double extension) {
-        left.setControl(motionMagic.withPosition(extension));
-    }
-
-    @Override
-    public void setMotionMagicRight(double extension) {
+    public void setMotionMagic(double extension) {
         right.setControl(motionMagic.withPosition(extension));
     }
 }

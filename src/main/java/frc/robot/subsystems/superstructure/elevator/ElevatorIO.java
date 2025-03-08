@@ -24,6 +24,9 @@ public interface ElevatorIO {
 
         public boolean topLimitSwitch;
         public boolean bottomLimitSwitch;
+
+        public double currentLeft;
+        public double currentRight;
     }
 
     /** Updates the set of loggable inputs. */
@@ -37,11 +40,7 @@ public interface ElevatorIO {
 
     public default void setSetpoint(double position, double velocity, double nextVelocity) {}
 
-    @Deprecated
-    public default void setMotionMagicLeft(double extension) {}
-
-    @Deprecated
-    public default void setMotionMagicRight(double extension) {}
+    public default void setMotionMagic(double extension) {}
 
     public default void setPidLeft(double p, double i, double d) {}
 
