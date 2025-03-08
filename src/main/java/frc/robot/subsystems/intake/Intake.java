@@ -1,11 +1,10 @@
 package frc.robot.subsystems.intake;
 
-import static frc.robot.Constants.Intake.INTAKE_SPEED;
-import static frc.robot.Constants.Intake.OUTTAKE_SPEED;
-
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.BlitzSubsystem;
 import org.littletonrobotics.junction.Logger;
+
+import static frc.robot.Constants.Intake.*;
 
 public class Intake extends BlitzSubsystem {
     private final IntakeIO io;
@@ -25,11 +24,19 @@ public class Intake extends BlitzSubsystem {
         Logger.processInputs(logKey, inputs);
     }
 
-    public Command intake() {
-        return startEnd(() -> io.setSpeed(INTAKE_SPEED), () -> io.setSpeed(0));
+    public Command handoff() {
+        return startEnd(() -> io.setSpeed(HANDOFF_SPEED), () -> io.setSpeed(0));
     }
 
-    public Command outtake() {
-        return startEnd(() -> io.setSpeed(OUTTAKE_SPEED), () -> io.setSpeed(0));
+    public Command reverse() {
+        return startEnd(() -> io.setSpeed(REVERSE_SPEED), () -> io.setSpeed(0));
     }
+
+     public Command algae_eject () {
+        return startEnd(() -> io.setSpeed(ALGAE_REMOVAL), () -> io.setSpeed(0));
+     }
+
+     public Command shoot_coral () {
+        return startEnd(() -> io.setSpeed(SHOOT_CORAL), () -> io.setSpeed(0));
+     }
 }

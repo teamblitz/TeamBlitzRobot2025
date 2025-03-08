@@ -103,12 +103,15 @@ public class OIConstants {
     }
 
     public static final class Intake {
-        public static final Trigger INTAKE = OPERATOR_CONTROLLER.leftBumper();
-        public static final Trigger EJECT = OPERATOR_CONTROLLER.rightBumper();
+        public static final Trigger HANDOFF = OPERATOR_CONTROLLER.leftTrigger();
+        public static final Trigger ALGAE_REMOVAL = OPERATOR_CONTROLLER.rightTrigger();
+        public static final Trigger REVERSE = OPERATOR_CONTROLLER.rightBumper();
+        public static final Trigger SHOOT_CORAL= OPERATOR_CONTROLLER.leftBumper();
     }
 
     public static final class Wrist {
         public static final DoubleSupplier WRIST_MANUAL = () -> -OPERATOR_CONTROLLER.getRightY();
+
 
         public static final Trigger WRIST_TEST1 = OPERATOR_CONTROLLER.x();
         public static final Trigger WRIST_TEST2 = OPERATOR_CONTROLLER.y();
@@ -120,7 +123,9 @@ public class OIConstants {
     }
 
     public static final class SuperStructure {
-        public static final Trigger STOW = OPERATOR_CONTROLLER.start();
+        public static final Trigger SCORE = DRIVE_CONTROLLER.button(2);
+
+
         public static final Trigger L1 = OPERATOR_CONTROLLER.povDown();
         public static final Trigger L2 = OPERATOR_CONTROLLER.povLeft();
         public static final Trigger L3 = OPERATOR_CONTROLLER.povUp();
