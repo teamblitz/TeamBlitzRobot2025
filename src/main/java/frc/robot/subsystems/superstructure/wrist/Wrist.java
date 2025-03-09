@@ -92,7 +92,7 @@ public class Wrist extends BlitzSubsystem {
 
 
 
-        if (goal != null) {
+        if (goal != null && DriverStation.isEnabled()) {
             TrapezoidProfile.State future_setpoint = profile.calculate(Constants.LOOP_PERIOD_SEC, setpoint, goal);
 
             io.setSetpoint(setpoint.position, setpoint.velocity, future_setpoint.velocity);
@@ -162,7 +162,7 @@ public class Wrist extends BlitzSubsystem {
                         () -> {
                             this.goal = goal;
                         })
-                .until(() -> setpoint.equals(goal))
+                .andThen(Commands.waitUntil(() -> setpoint.equals(goal)))
                 .handleInterrupt(() -> this.goal = setpoint)
                 .beforeStarting(refreshCurrentState());
     }

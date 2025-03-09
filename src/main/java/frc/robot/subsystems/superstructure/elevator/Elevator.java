@@ -201,7 +201,7 @@ public class Elevator extends BlitzSubsystem {
                         () -> {
                             this.goal = goal;
                         })
-                .until(() -> setpoint.equals(goal))
+                .andThen(Commands.waitUntil(() -> setpoint.equals(goal)))
                 .handleInterrupt(() -> this.goal = setpoint)
                 .beforeStarting(refreshCurrentState());
     }

@@ -372,7 +372,7 @@ public final class Constants {
         public static final int CURRENT_LIMIT = 60;
         public static final boolean INVERTED = false;
 
-        public static final double FORWARD_SOFT_LIMIT = Units.degreesToRadians(85);
+        public static final double FORWARD_SOFT_LIMIT = Units.degreesToRadians(95);
         public static final double REVERSE_SOFT_LIMIT = Units.degreesToRadians(-90);
 
         public static final double ABS_ENCODER_ZERO = Math.toRadians(306.71 + 90);
@@ -394,7 +394,7 @@ public final class Constants {
     //Reset Elevator To Bottom before reset code
     public static final class SuperstructureSetpoints {
         public static final SuperstructureState STOW =
-                new SuperstructureState(.02, Math.toRadians(70));
+                new SuperstructureState(.005, Math.toRadians(70));
 
         public static final SuperstructureState L1 =
                 new SuperstructureState(.2, Math.toRadians(60));
@@ -421,7 +421,7 @@ public final class Constants {
                 );
 
 
-        public static final SuperstructureState HANDOFF = new SuperstructureState(.02, Math.toRadians(90));
+        public static final SuperstructureState HANDOFF = new SuperstructureState(.005, Math.toRadians(95));
 
         public static final double ELEVATOR_STOW_WRIST_MIN = Units.degreesToRadians(50);
 

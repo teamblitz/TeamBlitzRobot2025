@@ -173,13 +173,17 @@ public class RobotContainer {
         OIConstants.SuperStructure.KICK_TOP_ALGAE.whileTrue(superstructure.toGoal(Superstructure.Goal.KICK_HIGH_ALGAE).alongWith(intake.algae_eject()));
 
 
-        OIConstants.SuperStructure.HANDOFF.whileTrue(superstructure.toGoal(Superstructure.Goal.HANDOFF));
-        OIConstants.SuperStructure.TEMP_L4_DUNK.whileTrue(superstructure.toGoal(Superstructure.Goal.L4_DUNK));
+        OIConstants.SuperStructure.HANDOFF.whileTrue(superstructure.toGoal(Superstructure.Goal.HANDOFF).alongWith(intake.algae_eject()));
 
-        OIConstants.SuperStructure.SCORE.and(superstructure.triggerAtGoal(Superstructure.Goal.L1).whileTrue(intake.shoot_coral()));
-        OIConstants.SuperStructure.SCORE.and(superstructure.triggerAtGoal(Superstructure.Goal.L2).whileTrue(intake.shoot_coral()));
-        OIConstants.SuperStructure.SCORE.and(superstructure.triggerAtGoal(Superstructure.Goal.L3).whileTrue(intake.shoot_coral()));
-        OIConstants.SuperStructure.SCORE.and(superstructure.triggerAtGoal(Superstructure.Goal.L4).whileTrue(superstructure.toGoal(Superstructure.Goal.L4_DUNK)));
+        OIConstants.SuperStructure.SCORE.and(superstructure.triggerAtGoal(Superstructure.Goal.L1)).whileTrue(intake.shoot_coral());
+        OIConstants.SuperStructure.SCORE.and(superstructure.triggerAtGoal(Superstructure.Goal.L2)).whileTrue(intake.shoot_coral());
+        OIConstants.SuperStructure.SCORE.and(superstructure.triggerAtGoal(Superstructure.Goal.L3)).whileTrue(intake.shoot_coral());
+        OIConstants.SuperStructure.SCORE.and(superstructure.triggerAtGoal(Superstructure.Goal.L4)).onTrue(
+                superstructure.toGoal(Superstructure.Goal.L4_DUNK)
+                        .alongWith(
+                                Commands.waitUntil(() -> superstructure.dynamicStep() == 1)
+                                        .andThen(intake.algae_eject().withTimeout(2)))
+        );
 
 
         OIConstants.Intake.HANDOFF.whileTrue(intake.handoff());
