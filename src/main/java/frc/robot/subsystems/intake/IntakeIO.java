@@ -8,6 +8,8 @@ public interface IntakeIO {
     public class IntakeInputs {
         public double rpm;
         public double current;
+
+        public boolean breakBeam;
     }
 
     default void updateInputs(IntakeInputs inputs) {}
