@@ -452,7 +452,7 @@ public final class Constants {
         public static final int CAN_ID = 40;
         public static final boolean INVERTED = false;
         public static final int CURRENT_LIMIT = 40;
-        public static final double HANDOFF_SPEED = .5; // TODO CONFIG
+        public static final double HANDOFF_SPEED = .3; // TODO CONFIG
         public static final double REVERSE_SPEED = -.3; // TODO CONFIG
         public static final double ALGAE_REMOVAL = .5; // TODO CONFIG
         public static final double SHOOT_CORAL = .5; // TODO CONFIG
