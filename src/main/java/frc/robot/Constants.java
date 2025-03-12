@@ -371,7 +371,7 @@ public final class Constants {
         public static final int CURRENT_LIMIT = 60;
         public static final boolean INVERTED = false;
 
-        public static final double FORWARD_SOFT_LIMIT = Units.degreesToRadians(95);
+        public static final double FORWARD_SOFT_LIMIT = Units.degreesToRadians(90);
         public static final double REVERSE_SOFT_LIMIT = Units.degreesToRadians(-90);
 
         public static final double ABS_ENCODER_ZERO = Math.toRadians(306.71 + 90);
@@ -417,7 +417,7 @@ public final class Constants {
                         new SuperstructureState(1.06, Math.toRadians(70)));
 
         public static final SuperstructureState HANDOFF =
-                new SuperstructureState(.005, Math.toRadians(95));
+                new SuperstructureState(.005, Math.toRadians(90));
 
         public static final double ELEVATOR_STOW_WRIST_MIN = Units.degreesToRadians(50);
 
@@ -452,7 +452,7 @@ public final class Constants {
         public static final int CAN_ID = 40;
         public static final boolean INVERTED = false;
         public static final int CURRENT_LIMIT = 40;
-        public static final double HANDOFF_SPEED = .3; // TODO CONFIG
+        public static final double HANDOFF_SPEED = .5; // TODO CONFIG
         public static final double REVERSE_SPEED = -.3; // TODO CONFIG
         public static final double ALGAE_REMOVAL = .5; // TODO CONFIG
         public static final double SHOOT_CORAL = .5; // TODO CONFIG

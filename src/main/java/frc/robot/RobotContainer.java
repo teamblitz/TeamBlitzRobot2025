@@ -177,7 +177,7 @@ public class RobotContainer {
                         .alongWith(intake.algae_eject()));
 
         OIConstants.SuperStructure.HANDOFF.whileTrue(
-                superstructure.toGoal(Superstructure.Goal.HANDOFF).alongWith(intake.algae_eject()));
+                superstructure.toGoal(Superstructure.Goal.HANDOFF).alongWith(intake.handoff()));
 
         OIConstants.SuperStructure.SCORE
                 .and(superstructure.triggerAtGoal(Superstructure.Goal.L1))

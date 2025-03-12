@@ -30,6 +30,7 @@ public class Intake extends BlitzSubsystem {
     public void periodic() {
         super.periodic();
 
+
         io.updateInputs(inputs);
         Logger.processInputs(logKey, inputs);
     }
@@ -41,7 +42,7 @@ public class Intake extends BlitzSubsystem {
     }
 
     public Command handoff() {
-        return startEnd(() -> io.setSpeed(HANDOFF_SPEED), () -> io.setSpeed(0));
+        return startEnd(() -> io.setSpeed(HANDOFF_SPEED), () -> io.setSpeed(0)).until(this::intakeSensor).onlyIf(() -> !intakeSensor());
     }
 
     public Command reverse() {

@@ -41,8 +41,8 @@ public class ElevatorIOSpark implements ElevatorIO {
         rightPid = right.getClosedLoopController();
         leftPid = left.getClosedLoopController();
 
-        topLimitSwitch = new DigitalInput(2);
-        bottomLimitSwitch = new DigitalInput(1);
+        topLimitSwitch = new DigitalInput(1);
+        bottomLimitSwitch = new DigitalInput(0);
         sharedConfig
                 .idleMode(SparkBaseConfig.IdleMode.kBrake)
                 .openLoopRampRate(Elevator.OPEN_LOOP_RAMP)
