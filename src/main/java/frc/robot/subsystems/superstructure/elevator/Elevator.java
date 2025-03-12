@@ -129,7 +129,8 @@ public class Elevator extends BlitzSubsystem {
 
         if (goal != null && DriverStation.isEnabled() && !Constants.compBot()) {
             setpoint = profile.calculate(loopTimer.get(), setpoint, goal);
-            TrapezoidProfile.State future_setpoint = profile.calculate(Constants.LOOP_PERIOD_SEC, setpoint, goal);
+//            TrapezoidProfile.State future_setpoint = profile.calculate(Constants.LOOP_PERIOD_SEC, setpoint, goal);
+        }
         if (goal != null) {
             if (atTopLimit() && setpoint.velocity > 0) {
                 setpoint = new TrapezoidProfile.State(inputs.torqueCurrentLeft, 0); // TODO WRONG
