@@ -13,14 +13,18 @@ import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.BlitzSubsystem;
 import frc.lib.util.LoggedTunableNumber;
+import frc.lib.util.NanUtil;
 import frc.robot.Constants;
 import frc.robot.subsystems.leds.Leds;
+
+import java.util.Optional;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 import static frc.robot.Constants.Elevator.*;
+import static frc.lib.util.NanUtil.TRAPEZOID_NAN_STATE;
 
 public class Elevator extends BlitzSubsystem {
     private final frc.robot.subsystems.superstructure.elevator.ElevatorIO io;
@@ -29,7 +33,7 @@ public class Elevator extends BlitzSubsystem {
     private final TrapezoidProfile.Constraints constraints = new TrapezoidProfile.Constraints(2, 3);
     private final TrapezoidProfile profile = new TrapezoidProfile(constraints);
 
-    private TrapezoidProfile.State goal;
+    private Optional<TrapezoidProfile.State> goal;
     private TrapezoidProfile.State setpoint;
 
     private final SysIdRoutine routine;
@@ -79,7 +83,7 @@ public class Elevator extends BlitzSubsystem {
         ShuffleboardTab characterizationTab = Shuffleboard.getTab("Characterization");
 
         setpoint = new TrapezoidProfile.State(getPosition(), 0.0);
-        goal = null;
+        goal = Optional.empty();
 
         routine =
                 new SysIdRoutine(
@@ -130,41 +134,41 @@ public class Elevator extends BlitzSubsystem {
         Logger.recordOutput(logKey + "/rotLeftDeg", Math.toDegrees(inputs.positionLeft) % 360);
         Logger.recordOutput(logKey + "/rotRightDeg", Math.toDegrees(inputs.positionRight) % 360);
 
-        if (goal != null && DriverStation.isEnabled() && !Constants.compBot()) {
-            setpoint = profile.calculate(loopTimer.get(), setpoint, goal);
-//            TrapezoidProfile.State future_setpoint = profile.calculate(Constants.LOOP_PERIOD_SEC, setpoint, goal);
-        }
-        if (goal != null) {
-            if (atTopLimit() && setpoint.velocity > 0) {
-                setpoint = new TrapezoidProfile.State(inputs.torqueCurrentLeft, 0); // TODO WRONG
-            } else if (atBottomLimit() && setpoint.velocity < 0) {
+
+        if (goal.isPresent() && DriverStation.isEnabled()) {
+
+            TrapezoidProfile.State future_setpoint;
+
+            if (atTopLimit() && setpoint.velocity >= 0) {
+                setpoint = new TrapezoidProfile.State(inputs.torqueCurrentLeft, 0);
+                future_setpoint = setpoint;
+            } else if (atBottomLimit() && setpoint.velocity <= 0) {
                 setpoint = new TrapezoidProfile.State(inputs.torqueCurrentRight, 0);
+                future_setpoint = setpoint;
             } else {
-
-                TrapezoidProfile.State future_setpoint = profile.calculate(Constants.LOOP_PERIOD_SEC, setpoint, goal);
-
-                io.setSetpoint(setpoint.position, setpoint.velocity, future_setpoint.velocity);
-
-                Logger.recordOutput(logKey + "/profile/positionSetpoint", setpoint.position);
-                Logger.recordOutput(logKey + "/profile/velocitySetpoint", setpoint.velocity);
-
-            Logger.recordOutput(logKey + "/profile/positionGoal", goal.position);
-            Logger.recordOutput(logKey + "/profile/velocityGoal", goal.velocity);
-                Logger.recordOutput(logKey + "/profile/positionGoal", goal.position);
-                Logger.recordOutput(logKey + "/profile/velocityGoal", goal.velocity);
-                setpoint = future_setpoint;
+                setpoint = profile.calculate(loopTimer.get(), setpoint, goal.get());
+                future_setpoint = profile.calculate(Constants.LOOP_PERIOD_SEC, setpoint, goal.get());
             }
+
+            io.setSetpoint(setpoint.position, setpoint.velocity, future_setpoint.velocity);
         }
 
         if (DriverStation.isDisabled()) {
-            // Reset profile when disabled
+            // Reset profile while disabled
             setpoint = new TrapezoidProfile.State(getPosition(), 0);
-            goal = null;
+            goal = Optional.empty();
 
             // Stop arm
             io.stop();
-            return;
         }
+
+        Logger.recordOutput(logKey + "/profile/positionSetpoint", setpoint.position);
+        Logger.recordOutput(logKey + "/profile/velocitySetpoint", setpoint.velocity);
+
+
+        Logger.recordOutput(logKey + "/profile/goalPresent", goal.isPresent());
+        Logger.recordOutput(logKey + "/profile/positionGoal", goal.orElse(TRAPEZOID_NAN_STATE).position);
+        Logger.recordOutput(logKey + "/profile/velocityGoal", goal.orElse(TRAPEZOID_NAN_STATE).velocity);
 
         LoggedTunableNumber.ifChanged(
                 hashCode(), pid -> io.setPidLeft(pid[0], pid[1], pid[2]), leftKP, leftKI, leftKD);
@@ -206,7 +210,7 @@ public class Elevator extends BlitzSubsystem {
                         () -> {
                             io.setSpeed(0);
                         })
-                .beforeStarting(() -> this.goal = null);
+                .beforeStarting(() -> this.goal = Optional.empty());
     }
 
     public Command withSpeed(double speed) {
@@ -244,10 +248,10 @@ public class Elevator extends BlitzSubsystem {
 
         return runOnce(
                         () -> {
-                            this.goal = clampedGoal;
+                            this.goal = Optional.of(goal);
                         })
                 .andThen(Commands.waitUntil(() -> setpoint.equals(goal)))
-                .handleInterrupt(() -> this.goal = setpoint)
+                .handleInterrupt(() -> this.goal = Optional.of(setpoint))
                 .beforeStarting(refreshCurrentState());
     }
 
@@ -270,7 +274,6 @@ public class Elevator extends BlitzSubsystem {
         return (inputs.velocityLeft + inputs.velocityRight) / 2;
     }
 
-    // TODO: Implement limit switch override
     public boolean atBottomLimit() {
         return inputs.bottomLimitSwitch;
     }

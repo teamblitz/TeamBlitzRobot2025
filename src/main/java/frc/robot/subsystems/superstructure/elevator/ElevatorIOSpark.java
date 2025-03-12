@@ -224,11 +224,8 @@ public class ElevatorIOSpark implements ElevatorIO {
 
         // Our limit switches are wired nominally closed (nc), so a value of false means the switch
         // is active
-        inputs.bottomLimitSwitch = !bottomLimitSwitch.get();
         inputs.topLimitSwitch = !topLimitSwitch.get();
-
-        inputs.topLimitSwitch = false;
-        inputs.bottomLimitSwitch = false;
+        inputs.bottomLimitSwitch = !bottomLimitSwitch.get();
 
         inputs.currentLeft = left.getOutputCurrent();
         inputs.currentRight = right.getOutputCurrent();
