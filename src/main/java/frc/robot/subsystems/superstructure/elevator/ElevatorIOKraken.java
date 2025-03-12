@@ -2,6 +2,7 @@ package frc.robot.subsystems.superstructure.elevator;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.ParentDevice;
@@ -12,16 +13,18 @@ import frc.robot.Constants.Elevator;
 // TODO: With the current elevator design it is unlikely that we will want to be able to control
 // both sides separately
 public class ElevatorIOKraken implements ElevatorIO {
-    public final TalonFX left;
-    public final TalonFX right;
+    public final TalonFX leftMotor;
+    public final TalonFX rightMotor;
 
     public final PositionVoltage closedLoopPosition = new PositionVoltage(0);
     public final MotionMagicVoltage motionMagic =
             new MotionMagicVoltage(0).withSlot(0); // do we impliment the same way?
 
     public ElevatorIOKraken() {
-        left = new TalonFX(0); // TODO set val
-        right = new TalonFX(0); // TODO set val
+        leftMotor = new TalonFX(1); // TODO set val
+        rightMotor = new TalonFX(2); // TODO set val
+
+        leftMotor.setControl(new Follower(rightMotor.getDeviceID(), false));
 
         TalonFXConfiguration config = new TalonFXConfiguration();
 
@@ -36,50 +39,52 @@ public class ElevatorIOKraken implements ElevatorIO {
         config.Slot0.withKP(Elevator.P); // TODO configure
 
         config.MotorOutput.withInverted(Elevator.LEFT_INVERT); // TODO configure
-        left.getConfigurator().apply(config);
+        leftMotor.getConfigurator().apply(config);
 
         config.MotorOutput.withInverted(Elevator.RIGHT_INVERT); // TODO configure
-        right.getConfigurator().apply(config);
+        rightMotor.getConfigurator().apply(config);
 
-        left.setPosition(0);
-        right.setPosition(0);
+        TalonFXConfiguration shared_config = new TalonFXConfiguration();
 
-        ParentDevice.optimizeBusUtilizationForAll(left, right);
+        leftMotor.setPosition(0);
+        rightMotor.setPosition(0);
+
+        ParentDevice.optimizeBusUtilizationForAll(leftMotor, rightMotor);
 
         BaseStatusSignal.setUpdateFrequencyForAll(
                 100,
-                left.getPosition(),
-                left.getVelocity(),
-                left.getMotorVoltage(),
-                left.getTorqueCurrent(),
-                right.getPosition(),
-                right.getVelocity(),
-                right.getMotorVoltage(),
-                right.getTorqueCurrent());
+                leftMotor.getPosition(),
+                leftMotor.getVelocity(),
+                leftMotor.getMotorVoltage(),
+                leftMotor.getTorqueCurrent(),
+                rightMotor.getPosition(),
+                rightMotor.getVelocity(),
+                rightMotor.getMotorVoltage(),
+                rightMotor.getTorqueCurrent());
     }
 
     @Override
     public void updateInputs(ElevatorIOInputs inputs) {
-        inputs.positionLeft = left.getPosition().getValueAsDouble();
-        inputs.positionRight = right.getPosition().getValueAsDouble();
+        inputs.positionLeft = leftMotor.getPosition().getValueAsDouble();
+        inputs.positionRight = rightMotor.getPosition().getValueAsDouble();
 
-        inputs.velocityLeft = left.getVelocity().getValueAsDouble();
-        inputs.velocityRight = right.getVelocity().getValueAsDouble();
+        inputs.velocityLeft = leftMotor.getVelocity().getValueAsDouble();
+        inputs.velocityRight = rightMotor.getVelocity().getValueAsDouble();
 
-        inputs.voltsLeft = left.getMotorVoltage().getValueAsDouble();
-        inputs.voltsRight = right.getMotorVoltage().getValueAsDouble();
+        inputs.voltsLeft = leftMotor.getMotorVoltage().getValueAsDouble();
+        inputs.voltsRight = rightMotor.getMotorVoltage().getValueAsDouble();
 
-        inputs.torqueCurrentLeft = left.getTorqueCurrent().getValueAsDouble();
-        inputs.torqueCurrentRight = right.getTorqueCurrent().getValueAsDouble();
+        inputs.torqueCurrentLeft = leftMotor.getTorqueCurrent().getValueAsDouble();
+        inputs.torqueCurrentRight = rightMotor.getTorqueCurrent().getValueAsDouble();
     }
 
     @Override
     public void setSpeed(double speed) {
-        left.set(speed);
+        leftMotor.set(speed);
     }
 
     @Override
     public void setMotionMagic(double extension) {
-        right.setControl(motionMagic.withPosition(extension));
+        rightMotor.setControl(motionMagic.withPosition(extension));
     }
 }

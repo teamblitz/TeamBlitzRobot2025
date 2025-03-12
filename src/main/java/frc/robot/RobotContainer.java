@@ -12,7 +12,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -34,7 +33,6 @@ import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.superstructure.elevator.Elevator;
 import frc.robot.subsystems.superstructure.elevator.ElevatorIOSpark;
 import frc.robot.subsystems.superstructure.wrist.Wrist;
-import frc.robot.subsystems.superstructure.wrist.WristIO;
 import frc.robot.subsystems.superstructure.wrist.WristIOSpark;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -169,35 +167,50 @@ public class RobotContainer {
         OIConstants.SuperStructure.L3.whileTrue(superstructure.toGoal(Superstructure.Goal.L3));
         OIConstants.SuperStructure.L4.whileTrue(superstructure.toGoal(Superstructure.Goal.L4));
 
-        OIConstants.SuperStructure.KICK_BOTTOM_ALGAE.whileTrue(superstructure.toGoal(Superstructure.Goal.KICK_LOW_ALGAE).alongWith(intake.algae_eject()));
-        OIConstants.SuperStructure.KICK_TOP_ALGAE.whileTrue(superstructure.toGoal(Superstructure.Goal.KICK_HIGH_ALGAE).alongWith(intake.algae_eject()));
+        OIConstants.SuperStructure.KICK_BOTTOM_ALGAE.whileTrue(
+                superstructure
+                        .toGoal(Superstructure.Goal.KICK_LOW_ALGAE)
+                        .alongWith(intake.algae_eject()));
+        OIConstants.SuperStructure.KICK_TOP_ALGAE.whileTrue(
+                superstructure
+                        .toGoal(Superstructure.Goal.KICK_HIGH_ALGAE)
+                        .alongWith(intake.algae_eject()));
 
+        OIConstants.SuperStructure.HANDOFF.whileTrue(
+                superstructure.toGoal(Superstructure.Goal.HANDOFF).alongWith(intake.algae_eject()));
 
-        OIConstants.SuperStructure.HANDOFF.whileTrue(superstructure.toGoal(Superstructure.Goal.HANDOFF).alongWith(intake.algae_eject()));
-
-        OIConstants.SuperStructure.SCORE.and(superstructure.triggerAtGoal(Superstructure.Goal.L1)).whileTrue(intake.shoot_coral());
-        OIConstants.SuperStructure.SCORE.and(superstructure.triggerAtGoal(Superstructure.Goal.L2)).whileTrue(intake.shoot_coral());
-        OIConstants.SuperStructure.SCORE.and(superstructure.triggerAtGoal(Superstructure.Goal.L3)).whileTrue(intake.shoot_coral());
-        OIConstants.SuperStructure.SCORE.and(superstructure.triggerAtGoal(Superstructure.Goal.L4)).onTrue(
-                superstructure.toGoal(Superstructure.Goal.L4_DUNK)
-                        .alongWith(
-                                Commands.waitUntil(() -> superstructure.dynamicStep() == 1)
-                                        .andThen(intake.algae_eject().withTimeout(2)))
-        );
-
+        OIConstants.SuperStructure.SCORE
+                .and(superstructure.triggerAtGoal(Superstructure.Goal.L1))
+                .whileTrue(intake.shoot_coral());
+        OIConstants.SuperStructure.SCORE
+                .and(superstructure.triggerAtGoal(Superstructure.Goal.L2))
+                .whileTrue(intake.shoot_coral());
+        OIConstants.SuperStructure.SCORE
+                .and(superstructure.triggerAtGoal(Superstructure.Goal.L3))
+                .whileTrue(intake.shoot_coral());
+        OIConstants.SuperStructure.SCORE
+                .and(superstructure.triggerAtGoal(Superstructure.Goal.L4))
+                .onTrue(
+                        superstructure
+                                .toGoal(Superstructure.Goal.L4_DUNK)
+                                .alongWith(
+                                        Commands.waitUntil(() -> superstructure.dynamicStep() == 1)
+                                                .andThen(intake.algae_eject().withTimeout(2))));
 
         OIConstants.Intake.HANDOFF.whileTrue(intake.handoff());
         OIConstants.Intake.REVERSE.whileTrue(intake.reverse());
         OIConstants.Intake.ALGAE_REMOVAL.whileTrue(intake.algae_eject());
         OIConstants.Intake.SHOOT_CORAL.whileTrue(intake.shoot_coral());
 
-
-        OIConstants.Elevator.MANUAL_UP.whileTrue(elevator.upManual().alongWith(superstructure.idle()));
-        OIConstants.Elevator.MANUAL_DOWN.whileTrue(elevator.downManual().alongWith(superstructure.idle()));
-
+        OIConstants.Elevator.MANUAL_UP.whileTrue(
+                elevator.upManual().alongWith(superstructure.idle()));
+        OIConstants.Elevator.MANUAL_DOWN.whileTrue(
+                elevator.downManual().alongWith(superstructure.idle()));
 
         new Trigger(() -> Math.abs(OIConstants.Wrist.WRIST_MANUAL.getAsDouble()) > .07)
-                .whileTrue(wrist.setSpeed(OIConstants.Wrist.WRIST_MANUAL).alongWith(superstructure.idle()));
+                .whileTrue(
+                        wrist.setSpeed(OIConstants.Wrist.WRIST_MANUAL)
+                                .alongWith(superstructure.idle()));
 
         new Trigger(RobotController::getUserButton)
                 .toggleOnTrue(Commands.parallel(wrist.coastCommand(), elevator.coastCommand()));

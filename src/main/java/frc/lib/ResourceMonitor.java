@@ -36,7 +36,8 @@ public class ResourceMonitor {
         Logger.recordOutput(
                 "gc/memoryFreedMb",
                 (info.getGcInfo().getMemoryUsageBeforeGc().size()
-                        - info.getGcInfo().getMemoryUsageAfterGc().size()) * 1e-6);
+                                - info.getGcInfo().getMemoryUsageAfterGc().size())
+                        * 1e-6);
         Logger.recordOutput("gc/id", info.getGcInfo().getId());
         lastGcTimeNano = System.nanoTime();
         lastGcTime = Timer.getFPGATimestamp();

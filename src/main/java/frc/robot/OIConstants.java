@@ -2,10 +2,6 @@ package frc.robot;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -106,40 +102,36 @@ public class OIConstants {
         public static final Trigger HANDOFF = UNBOUND;
         public static final Trigger ALGAE_REMOVAL = UNBOUND;
         public static final Trigger REVERSE = OPERATOR_CONTROLLER.rightBumper();
-        public static final Trigger SHOOT_CORAL= UNBOUND
-                ;
+        public static final Trigger SHOOT_CORAL = UNBOUND;
     }
 
     public static final class Wrist {
         public static final DoubleSupplier WRIST_MANUAL = () -> -OPERATOR_CONTROLLER.getRightY();
-
 
         public static final Trigger WRIST_TEST1 = OPERATOR_CONTROLLER.x();
         public static final Trigger WRIST_TEST2 = OPERATOR_CONTROLLER.y();
     }
 
     public static final class Elevator {
-        public static final Trigger MANUAL_UP = new Trigger(() -> OPERATOR_CONTROLLER.getLeftY() < -.20);
-        public static final Trigger MANUAL_DOWN = new Trigger(() -> OPERATOR_CONTROLLER.getLeftY() > .20);
+        public static final Trigger MANUAL_UP =
+                new Trigger(() -> OPERATOR_CONTROLLER.getLeftY() < -.20);
+        public static final Trigger MANUAL_DOWN =
+                new Trigger(() -> OPERATOR_CONTROLLER.getLeftY() > .20);
     }
 
     public static final class SuperStructure {
         public static final Trigger SCORE = DRIVE_CONTROLLER.button(2);
-
 
         public static final Trigger L1 = OPERATOR_CONTROLLER.povDown();
         public static final Trigger L2 = OPERATOR_CONTROLLER.povLeft();
         public static final Trigger L3 = OPERATOR_CONTROLLER.povUp();
         public static final Trigger L4 = OPERATOR_CONTROLLER.povRight();
 
-
         public static final Trigger HANDOFF = OPERATOR_CONTROLLER.y();
         public static final Trigger TEMP_L4_DUNK = OPERATOR_CONTROLLER.back();
 
         public static final Trigger KICK_BOTTOM_ALGAE = OPERATOR_CONTROLLER.a();
         public static final Trigger KICK_TOP_ALGAE = OPERATOR_CONTROLLER.b();
-
-
     }
 
     //    public static final class TestMode {

@@ -160,20 +160,20 @@ public class Superstructure extends BlitzSubsystem {
 
     private Command toGoalWristLast(Goal goal) {
         return Commands.sequence(
-                        elevator.withGoal(staticGoals.get(goal).getElevatorState()),
-                        wrist.withGoal(staticGoals.get(goal).getWristState()));
+                elevator.withGoal(staticGoals.get(goal).getElevatorState()),
+                wrist.withGoal(staticGoals.get(goal).getWristState()));
     }
 
     private Command toGoalWristFirst(Goal goal) {
         return Commands.sequence(
-                        wrist.withGoal(staticGoals.get(goal).getWristState()),
-                        elevator.withGoal(staticGoals.get(goal).getElevatorState()));
+                wrist.withGoal(staticGoals.get(goal).getWristState()),
+                elevator.withGoal(staticGoals.get(goal).getElevatorState()));
     }
 
     private Command toGoalSynchronous(Goal goal) {
         return Commands.parallel(
-                        elevator.withGoal(staticGoals.get(goal).getElevatorState()),
-                        wrist.withGoal(staticGoals.get(goal).getWristState()));
+                elevator.withGoal(staticGoals.get(goal).getElevatorState()),
+                wrist.withGoal(staticGoals.get(goal).getWristState()));
     }
 
     private int dynamicStep = 0;
@@ -190,26 +190,28 @@ public class Superstructure extends BlitzSubsystem {
                 command =
                         command.andThen(
                                         Commands.parallel(
-                                                        elevator.withGoal(state.getElevatorState()),
-                                                        wrist.withGoal(state.getWristState())))
+                                                elevator.withGoal(state.getElevatorState()),
+                                                wrist.withGoal(state.getWristState())))
                                 .finallyDo(() -> dynamicStep++);
             }
 
-            command = command.beforeStarting(
-                            () -> {
-                                this.state = State.IN_TRANSIT;
-                                previousGoal = currentGoal;
-                                currentGoal = goal;
-                                dynamicStep = 0;
-                            })
-                    .finallyDo(
-                            (interrupted) -> {
-                                this.state =
-                                        interrupted ? State.UNKNOWN : State.AT_GOAL;
-                                dynamicStep = -1;
-                            }).deadlineFor(idle());
+            command =
+                    command.beforeStarting(
+                                    () -> {
+                                        this.state = State.IN_TRANSIT;
+                                        previousGoal = currentGoal;
+                                        currentGoal = goal;
+                                        dynamicStep = 0;
+                                    })
+                            .finallyDo(
+                                    (interrupted) -> {
+                                        this.state = interrupted ? State.UNKNOWN : State.AT_GOAL;
+                                        dynamicStep = -1;
+                                    })
+                            .deadlineFor(idle());
 
-            return command.onlyIf(() -> currentGoal == Goal.L4).withName("superstructure/dynamic_" + goal);
+            return command.onlyIf(() -> currentGoal == Goal.L4)
+                    .withName("superstructure/dynamic_" + goal);
         }
 
         return toGoalWristLast(goal)
@@ -223,7 +225,9 @@ public class Superstructure extends BlitzSubsystem {
                 .finallyDo(
                         (interrupted) -> {
                             state = interrupted ? State.UNKNOWN : State.AT_GOAL;
-                        }).withName("superstructure/static_" + goal).andThen(idle());
+                        })
+                .withName("superstructure/static_" + goal)
+                .andThen(idle());
     }
 
     public boolean atGoal(Goal goal) {

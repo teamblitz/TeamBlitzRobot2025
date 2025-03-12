@@ -329,8 +329,7 @@ public final class Constants {
         public static final double L3_EXTENSION = 6; // TODO get exact value
         public static final double L4_EXTENSION = 7; // TODO get exact value
 
-        public static final double OPEN_LOOP_RAMP =
-                .25;
+        public static final double OPEN_LOOP_RAMP = .25;
         public static final int CURRENT_LIMIT = 60;
         public static final double ELEVATOR_GEAR_RATIO = 20.0 / 1;
         public static final double SPROCKET_CIRCUMFERANCE = Units.inchesToMeters(.25) * 24;
@@ -391,7 +390,8 @@ public final class Constants {
             public static final double KG = 0.2288;
         }
     }
-    //Reset Elevator To Bottom before reset code
+
+    // Reset Elevator To Bottom before reset code
     public static final class SuperstructureSetpoints {
         public static final SuperstructureState STOW =
                 new SuperstructureState(.005, Math.toRadians(70));
@@ -403,30 +403,28 @@ public final class Constants {
         public static final SuperstructureState L3 =
                 new SuperstructureState(.85, Math.toRadians(60));
         public static final SuperstructureState L4 =
-                new SuperstructureState(1.48, Math.toRadians(50)); //Value is not with Drop
-
-
+                new SuperstructureState(1.48, Math.toRadians(50)); // Value is not with Drop
 
         public static final SuperstructureState KICK_LOW_ALGAE =
                 new SuperstructureState(.48, Math.toRadians(42));
         public static final SuperstructureState KICK_HIGH_ALGAE =
                 new SuperstructureState(.88, Math.toRadians(40));
 
-
         public static final List<SuperstructureState> L4_DUNK =
                 List.of(
                         new SuperstructureState(L4.elevatorPosition, Math.toRadians(0)),
                         new SuperstructureState(1.06, Math.toRadians(0)),
-                        new SuperstructureState(1.06, Math.toRadians(70))
-                );
+                        new SuperstructureState(1.06, Math.toRadians(70)));
 
-
-        public static final SuperstructureState HANDOFF = new SuperstructureState(.005, Math.toRadians(95));
+        public static final SuperstructureState HANDOFF =
+                new SuperstructureState(.005, Math.toRadians(95));
 
         public static final double ELEVATOR_STOW_WRIST_MIN = Units.degreesToRadians(50);
 
         public enum SetpointMode {
-            WRIST_FIRST, WRIST_LAST, WRIST_SYNC
+            WRIST_FIRST,
+            WRIST_LAST,
+            WRIST_SYNC
         }
 
         public record StateWithMode(SuperstructureState state, SetpointMode mode) {}
@@ -456,7 +454,7 @@ public final class Constants {
         public static final int CURRENT_LIMIT = 40;
         public static final double HANDOFF_SPEED = .3; // TODO CONFIG
         public static final double REVERSE_SPEED = -.3; // TODO CONFIG
-        public static final double ALGAE_REMOVAL = .5; //TODO CONFIG
-        public static final double SHOOT_CORAL = .5; //TODO CONFIG
+        public static final double ALGAE_REMOVAL = .5; // TODO CONFIG
+        public static final double SHOOT_CORAL = .5; // TODO CONFIG
     }
 }

@@ -90,10 +90,9 @@ public class Wrist extends BlitzSubsystem {
         io.updateInputs(inputs);
         Logger.processInputs(logKey, inputs);
 
-
-
         if (goal != null && DriverStation.isEnabled()) {
-            TrapezoidProfile.State future_setpoint = profile.calculate(Constants.LOOP_PERIOD_SEC, setpoint, goal);
+            TrapezoidProfile.State future_setpoint =
+                    profile.calculate(Constants.LOOP_PERIOD_SEC, setpoint, goal);
 
             io.setSetpoint(setpoint.position, setpoint.velocity, future_setpoint.velocity);
 

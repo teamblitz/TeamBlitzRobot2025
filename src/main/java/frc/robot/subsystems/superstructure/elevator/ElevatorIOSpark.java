@@ -3,7 +3,6 @@ package frc.robot.subsystems.superstructure.elevator;
 import com.revrobotics.*;
 import com.revrobotics.spark.*;
 import com.revrobotics.spark.config.ClosedLoopConfig;
-import com.revrobotics.spark.config.MAXMotionConfig;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
@@ -226,22 +225,21 @@ public class ElevatorIOSpark implements ElevatorIO {
         inputs.currentRight = right.getOutputCurrent();
     }
 
-
-//    @Override
-//    public void setMotionMagic(double position, double velocity) {
-//
-//        leftPid.setReference(
-//                position,
-//                SparkBase.ControlType.kMAXMotionPositionControl,
-//                ClosedLoopSlot.kSlot0,
-//                leftFeedforward.calculateWithVelocities(velocity, nextVelocity),
-//                SparkClosedLoopController.ArbFFUnits.kVoltage);
-//
-//        rightPid.setReference(
-//                position,
-//                SparkBase.ControlType.kMAXMotionPositionControl,
-//                ClosedLoopSlot.kSlot0,
-//                rightFeedforward.calculateWithVelocities(velocity, nextVelocity),
-//                SparkClosedLoopController.ArbFFUnits.kVoltage);
-//    }
+    //    @Override
+    //    public void setMotionMagic(double position, double velocity) {
+    //
+    //        leftPid.setReference(
+    //                position,
+    //                SparkBase.ControlType.kMAXMotionPositionControl,
+    //                ClosedLoopSlot.kSlot0,
+    //                leftFeedforward.calculateWithVelocities(velocity, nextVelocity),
+    //                SparkClosedLoopController.ArbFFUnits.kVoltage);
+    //
+    //        rightPid.setReference(
+    //                position,
+    //                SparkBase.ControlType.kMAXMotionPositionControl,
+    //                ClosedLoopSlot.kSlot0,
+    //                rightFeedforward.calculateWithVelocities(velocity, nextVelocity),
+    //                SparkClosedLoopController.ArbFFUnits.kVoltage);
+    //    }
 }

@@ -10,11 +10,9 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.BlitzSubsystem;
-import frc.lib.math.EqualsUtil;
 import frc.lib.util.LoggedTunableNumber;
 import frc.robot.Constants;
 import frc.robot.subsystems.leds.Leds;
-
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -23,8 +21,7 @@ public class Elevator extends BlitzSubsystem {
     private final frc.robot.subsystems.superstructure.elevator.ElevatorIO io;
     private final ElevatorIOInputsAutoLogged inputs = new ElevatorIOInputsAutoLogged();
 
-    private final TrapezoidProfile.Constraints constraints =
-            new TrapezoidProfile.Constraints(1, 2);
+    private final TrapezoidProfile.Constraints constraints = new TrapezoidProfile.Constraints(1, 2);
     private final TrapezoidProfile profile = new TrapezoidProfile(constraints);
 
     private TrapezoidProfile.State goal;
@@ -115,11 +112,10 @@ public class Elevator extends BlitzSubsystem {
         Logger.recordOutput(logKey + "/rotLeftDeg", Math.toDegrees(inputs.positionLeft) % 360);
         Logger.recordOutput(logKey + "/rotRightDeg", Math.toDegrees(inputs.positionRight) % 360);
 
-
-
         if (goal != null && DriverStation.isEnabled()) {
             setpoint = profile.calculate(loopTimer.get(), setpoint, goal);
-            TrapezoidProfile.State future_setpoint = profile.calculate(Constants.LOOP_PERIOD_SEC, setpoint, goal);
+            TrapezoidProfile.State future_setpoint =
+                    profile.calculate(Constants.LOOP_PERIOD_SEC, setpoint, goal);
 
             io.setSetpoint(setpoint.position, setpoint.velocity, future_setpoint.velocity);
 
@@ -212,9 +208,7 @@ public class Elevator extends BlitzSubsystem {
      */
     private Command refreshCurrentState() {
         return runOnce(() -> setpoint = new TrapezoidProfile.State(getPosition(), getVelocity()))
-                .onlyIf(
-                        () ->
-                                setpoint == null);
+                .onlyIf(() -> setpoint == null);
     }
 
     @AutoLogOutput(key = "elevator/position")
