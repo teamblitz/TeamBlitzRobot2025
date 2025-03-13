@@ -6,13 +6,10 @@ import com.revrobotics.spark.*;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.wpilibj.DigitalInput;
 
-
 public class IntakeIOSpark implements IntakeIO {
     private final SparkMax motor;
 
     private final DigitalInput breakBeam;
-
-    
 
     public IntakeIOSpark() {
         // TODO: Motor needs current limit.
@@ -25,7 +22,6 @@ public class IntakeIOSpark implements IntakeIO {
         config.inverted(INVERTED).smartCurrentLimit(CURRENT_LIMIT);
 
         motor = new SparkMax(CAN_ID, SparkLowLevel.MotorType.kBrushless);
-        
 
         motor.configure(
                 config,
