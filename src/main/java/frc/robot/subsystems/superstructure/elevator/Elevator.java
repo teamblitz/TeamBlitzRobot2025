@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.*;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.BlitzSubsystem;
 import frc.lib.util.LoggedTunableNumber;
@@ -122,8 +123,9 @@ public class Elevator extends BlitzSubsystem {
         loopTimer.restart();
     }
 
-    DigitalInput right = new DigitalInput(0);
-    DigitalInput left = new DigitalInput(1);
+        loopTimer.start();
+
+    }
 
     @Override
     public void periodic() {
@@ -138,17 +140,23 @@ public class Elevator extends BlitzSubsystem {
         if (goal.isPresent() && DriverStation.isEnabled()) {
 
             TrapezoidProfile.State future_setpoint;
+            setpoint = profile.calculate(loopTimer.get(), setpoint, goal.get());
+            future_setpoint = profile.calculate(Constants.LOOP_PERIOD_SEC, setpoint, goal.get());
 
-            if (atTopLimit() && setpoint.velocity >= 0) {
-                setpoint = new TrapezoidProfile.State(inputs.torqueCurrentLeft, 0);
-                future_setpoint = setpoint;
-            } else if (atBottomLimit() && setpoint.velocity <= 0) {
-                setpoint = new TrapezoidProfile.State(inputs.torqueCurrentRight, 0);
-                future_setpoint = setpoint;
-            } else {
-                setpoint = profile.calculate(loopTimer.get(), setpoint, goal.get());
-                future_setpoint = profile.calculate(Constants.LOOP_PERIOD_SEC, setpoint, goal.get());
-            }
+            //            if (atTopLimit()) {
+//                setpoint = new TrapezoidProfile.State(
+//                        Math.min(setpoint.position, topLimitState.position),
+//                        Math.min(setpoint.velocity, 0)
+//                );
+//                future_setpoint = setpoint;
+//            } else if (atBottomLimit()) {
+//                setpoint = new TrapezoidProfile.State(
+//                        Math.max(setpoint.position, bottomLimitState.position),
+//                        Math.max(setpoint.velocity, 0)
+//                );
+//                future_setpoint = setpoint;
+
+
 
             io.setSetpoint(setpoint.position, setpoint.velocity, future_setpoint.velocity);
         }
@@ -161,6 +169,8 @@ public class Elevator extends BlitzSubsystem {
             // Stop arm
             io.stop();
         }
+
+        loopTimer.reset();
 
         Logger.recordOutput(logKey + "/profile/positionSetpoint", setpoint.position);
         Logger.recordOutput(logKey + "/profile/velocitySetpoint", setpoint.velocity);
