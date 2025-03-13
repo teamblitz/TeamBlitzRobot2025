@@ -34,6 +34,7 @@ import frc.robot.subsystems.intake.IntakeIOSpark;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.superstructure.elevator.Elevator;
 import frc.robot.subsystems.superstructure.elevator.ElevatorIOSpark;
+import frc.robot.subsystems.superstructure.winch.Winch;
 import frc.robot.subsystems.superstructure.wrist.Wrist;
 import frc.robot.subsystems.superstructure.wrist.WristIOSpark;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -52,6 +53,7 @@ public class RobotContainer {
     private Wrist wrist;
     private Intake intake;
     private Superstructure superstructure;
+    private Winch winch;
 
     /* ***** --- Autonomous --- ***** */
     private final LoggedDashboardChooser<Command> autoChooser;
@@ -207,6 +209,9 @@ public class RobotContainer {
         OIConstants.Intake.REVERSE.whileTrue(intake.reverse());
         OIConstants.Intake.ALGAE_REMOVAL.whileTrue(intake.kick_algae());
         OIConstants.Intake.SHOOT_CORAL.whileTrue(intake.shoot_coral());
+
+        OIConstants.Winch.WINCH_DOWN.whileTrue(winch.funnal_Down());
+        OIConstants.Winch.WINCH_UP.whileTrue(winch.funnal_Up());
 
         OIConstants.Elevator.MANUAL_UP.whileTrue(
                 elevator.upManual().alongWith(superstructure.idle()).withName("elevator/manual_up"));
