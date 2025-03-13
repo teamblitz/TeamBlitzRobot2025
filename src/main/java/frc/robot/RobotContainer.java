@@ -34,9 +34,9 @@ import frc.robot.subsystems.intake.IntakeIOSpark;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.superstructure.elevator.Elevator;
 import frc.robot.subsystems.superstructure.elevator.ElevatorIOSpark;
-import frc.robot.subsystems.superstructure.winch.Winch;
 import frc.robot.subsystems.superstructure.wrist.Wrist;
 import frc.robot.subsystems.superstructure.wrist.WristIOSpark;
+import frc.robot.subsystems.winch.Winch;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -210,8 +210,8 @@ public class RobotContainer {
         OIConstants.Intake.ALGAE_REMOVAL.whileTrue(intake.kick_algae());
         OIConstants.Intake.SHOOT_CORAL.whileTrue(intake.shoot_coral());
 
-        OIConstants.Winch.WINCH_DOWN.whileTrue(winch.funnal_Down());
-        OIConstants.Winch.WINCH_UP.whileTrue(winch.funnal_Up());
+        OIConstants.Winch.WINCH_DOWN.whileTrue(winch.lowerFunnel());
+        OIConstants.Winch.WINCH_UP.whileTrue(winch.raiseFunnel());
 
         OIConstants.Elevator.MANUAL_UP.whileTrue(
                 elevator.upManual().alongWith(superstructure.idle()).withName("elevator/manual_up"));

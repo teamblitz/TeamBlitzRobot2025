@@ -464,8 +464,13 @@ public final class Constants {
     }
 
     public static final class Winch {
-        public static final int WINCH_ID = 0; //TODO CONFIG
-        public static final double FUNNAL_UP = 0.1; //TODO CONFIG
-        public static final double FUNNAL_DOWN = 0; //TODO CONFIG
+        public static final int ID = 0; // TODO CONFIG
+
+        public static final int CURRENT_LIMIT = 30;
+
+        public static final double REDUCTION = 1.0;
+
+        public static final double FUNNEL_UP_POSITION = 0.1; // TODO CONFIG
+        public static final double FUNNEL_DOWN_POSITION = 0; // TODO CONFIG
     }
 }
