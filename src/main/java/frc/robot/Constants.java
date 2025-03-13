@@ -457,4 +457,10 @@ public final class Constants {
         public static final double ALGAE_REMOVAL = .5; // TODO CONFIG
         public static final double SHOOT_CORAL = .5; // TODO CONFIG
     }
+
+    public static final class Winch {
+        public static final int WINCH_ID = 0; //TODO CONFIG
+        public static final double FUNNAL_UP = 0.1; //TODO CONFIG
+        public static final double FUNNAL_DOWN = 0; //TODO CONFIG
+    }
 }

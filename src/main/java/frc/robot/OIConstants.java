@@ -134,6 +134,11 @@ public class OIConstants {
         public static final Trigger KICK_TOP_ALGAE = OPERATOR_CONTROLLER.b();
     }
 
+    public static final class Winch {
+        public static final Trigger WINCH_UP = UNBOUND;
+        public static final Trigger WINCH_DOWN = UNBOUND;
+    }
+
     //    public static final class TestMode {
     //        public static final Trigger ZERO_ABS_ENCODERS = UNBOUND;
     //
