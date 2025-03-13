@@ -101,8 +101,8 @@ public class OIConstants {
     public static final class Intake {
         public static final Trigger HANDOFF = UNBOUND;
         public static final Trigger ALGAE_REMOVAL = UNBOUND;
-        public static final Trigger REVERSE = OPERATOR_CONTROLLER.rightBumper();
-        public static final Trigger SHOOT_CORAL = UNBOUND;
+        public static final Trigger REVERSE = OPERATOR_CONTROLLER.leftBumper();
+        public static final Trigger SHOOT_CORAL = OPERATOR_CONTROLLER.rightTrigger();
     }
 
     public static final class Wrist {

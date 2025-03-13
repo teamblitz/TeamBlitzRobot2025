@@ -34,7 +34,7 @@ public class Intake extends BlitzSubsystem {
     }
 
     public boolean hasCoral() {
-        return coralState == CoralState.Indexed || coralState == coralState.Unindexed;
+        return intakeSensor();
     }
 
     public Command handoff() {
@@ -44,27 +44,23 @@ public class Intake extends BlitzSubsystem {
     }
 
     public Command reverse() {
-        return startEnd(() -> io.setSpeed(REVERSE_SPEED), () -> io.setSpeed(0));
+        return setSpeed(REVERSE_SPEED);
     }
 
-    public Command algae_eject() {
-        return startEnd(() -> io.setSpeed(ALGAE_REMOVAL), () -> io.setSpeed(0));
+    public Command kick_algae() {
+        return setSpeed(ALGAE_REMOVAL);
     }
 
     public Command shoot_coral() {
-        return startEnd(() -> io.setSpeed(SHOOT_CORAL), () -> io.setSpeed(0));
-    }
-
-    private Command stop() {
-        return runOnce(() -> io.setSpeed(0));
+        return setSpeed(SHOOT_CORAL);
     }
 
     private boolean intakeSensor() {
         return inputs.breakBeam;
     }
 
-    private Command setSpeedCommand(double speed) {
-        return startEnd(() -> io.setSpeed(speed), this::stop);
+    private Command setSpeed(double speed) {
+        return startEnd(() -> io.setSpeed(speed), () -> io.setSpeed(0));
     }
 
     public enum CoralState {

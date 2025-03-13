@@ -24,9 +24,12 @@ public class Leds extends SubsystemBase {
 
     // Robot state tracking
     public int loopCycleCount = 0;
-    public boolean requestAmp = false;
-    public boolean intaking = false;
-    public boolean hasNote = false;
+    public boolean requestCoral = false;
+
+    public boolean stationIntake = false;
+    public boolean hasCoral = false;
+    public boolean hasAlgae = false; // I wish :sob:
+
     public double lastPickupTime = 0.0;
     public boolean indexing = false;
     public boolean autoPickupReady = false;
@@ -36,8 +39,10 @@ public class Leds extends SubsystemBase {
     public boolean climbing = false;
     public boolean endgameAlert = false;
     public boolean sameBattery = false;
-    public boolean armCoast = false;
-    public boolean armEstopped = false;
+    public boolean superstructureCoast = false;
+    public boolean superStructureManual = false;
+
+
     public boolean autoFinished = false;
     public double autoFinishedTime = 0.0;
     public boolean lowBatteryAlert = false;
@@ -133,7 +138,7 @@ public class Leds extends SubsystemBase {
         if (estopped) {
             solid(Color.kRed);
         } else if (DriverStation.isDisabled()) {
-            if (armCoast) {
+            if (superstructureCoast) {
                 // Arm coast alert
                 solid(Color.kWhite);
             } else if (lastEnabledAuto
@@ -185,9 +190,9 @@ public class Leds extends SubsystemBase {
                 solid((Timer.getFPGATimestamp() - autoFinishedTime) / fullTime, Color.kGreen);
             }
         } else { // Enabled
-            if (hasNote && lastPickupTime == -1.0) {
+            if (hasCoral && lastPickupTime == -1.0) {
                 lastPickupTime = Timer.getFPGATimestamp();
-            } else if (!hasNote) {
+            } else if (!hasCoral) {
                 lastPickupTime = -1.0;
             }
 
@@ -201,7 +206,7 @@ public class Leds extends SubsystemBase {
                 strobe(Color.kOrangeRed, strobeFastDuration);
             } else if (autoPickupReady) {
                 solid(Color.kOrangeRed);
-            } else if (hasNote) {
+            } else if (hasCoral) {
                 strobe(Color.kGreen, Color.kYellow, strobeSlowDuration);
             } else {
                 solid(Color.kGreen);
@@ -213,7 +218,7 @@ public class Leds extends SubsystemBase {
         }
 
         // Arm estop alert
-        if (armEstopped) {
+        if (superStructureManual) {
             solid(Color.kRed);
         }
 

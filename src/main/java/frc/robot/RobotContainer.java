@@ -11,11 +11,14 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.AutoConstants.StartingPosition;
+import frc.robot.commands.CommandFactory;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.gyro.GyroIO;
@@ -167,14 +170,15 @@ public class RobotContainer {
         OIConstants.SuperStructure.L3.whileTrue(superstructure.toGoal(Superstructure.Goal.L3));
         OIConstants.SuperStructure.L4.whileTrue(superstructure.toGoal(Superstructure.Goal.L4));
 
+
         OIConstants.SuperStructure.KICK_BOTTOM_ALGAE.whileTrue(
                 superstructure
                         .toGoal(Superstructure.Goal.KICK_LOW_ALGAE)
-                        .alongWith(intake.algae_eject()));
+                        .alongWith(intake.kick_algae()));
         OIConstants.SuperStructure.KICK_TOP_ALGAE.whileTrue(
                 superstructure
                         .toGoal(Superstructure.Goal.KICK_HIGH_ALGAE)
-                        .alongWith(intake.algae_eject()));
+                        .alongWith(intake.kick_algae()));
 
         OIConstants.SuperStructure.HANDOFF.whileTrue(
                 superstructure.toGoal(Superstructure.Goal.HANDOFF).alongWith(intake.handoff()));
@@ -190,16 +194,11 @@ public class RobotContainer {
                 .whileTrue(intake.shoot_coral());
         OIConstants.SuperStructure.SCORE
                 .and(superstructure.triggerAtGoal(Superstructure.Goal.L4))
-                .onTrue(
-                        superstructure
-                                .toGoal(Superstructure.Goal.L4_DUNK)
-                                .alongWith(
-                                        Commands.waitUntil(() -> superstructure.dynamicStep() == 1)
-                                                .andThen(intake.algae_eject().withTimeout(2))));
+                .onTrue(CommandFactory.l4Dunk(superstructure, intake));
 
         OIConstants.Intake.HANDOFF.whileTrue(intake.handoff());
         OIConstants.Intake.REVERSE.whileTrue(intake.reverse());
-        OIConstants.Intake.ALGAE_REMOVAL.whileTrue(intake.algae_eject());
+        OIConstants.Intake.ALGAE_REMOVAL.whileTrue(intake.kick_algae());
         OIConstants.Intake.SHOOT_CORAL.whileTrue(intake.shoot_coral());
 
         OIConstants.Elevator.MANUAL_UP.whileTrue(
@@ -213,7 +212,9 @@ public class RobotContainer {
                                 .alongWith(superstructure.idle()));
 
         new Trigger(RobotController::getUserButton)
-                .toggleOnTrue(Commands.parallel(wrist.coastCommand(), elevator.coastCommand()));
+                .toggleOnTrue(
+                        Commands.parallel(wrist.coastCommand(), elevator.coastCommand())
+                                .onlyWhile(RobotState::isDisabled));
     }
 
     private void configureAutoCommands() {}
