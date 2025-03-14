@@ -132,7 +132,7 @@ public class Wrist extends BlitzSubsystem {
 
     @AutoLogOutput(key = "wrist/position")
     public double getPosition() {
-        return inputs.positionRadians;
+        return inputs.absoluteEncoderPosition;
     }
 
     @AutoLogOutput(key = "wrist/velocity")

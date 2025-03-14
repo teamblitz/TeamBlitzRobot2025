@@ -96,7 +96,7 @@ public class RobotContainer {
                         superstructure.toGoal(Superstructure.Goal.HANDOFF)
                                 .until(intake::hasCoral),
                         intake::hasCoral
-                )
+                ).withName("superstructure/conditionalDefault")
         );
     }
 
@@ -189,7 +189,7 @@ public class RobotContainer {
                         .alongWith(intake.kick_algae()));
 
         OIConstants.SuperStructure.HANDOFF.whileTrue(
-                superstructure.toGoal(Superstructure.Goal.HANDOFF).alongWith(intake.handoff()));
+                superstructure.toGoal(Superstructure.Goal.HANDOFF).withDeadline(intake.handoff()).unless(intake::hasCoral).withName("handoff"));
 
         OIConstants.SuperStructure.SCORE
                 .and(superstructure.triggerAtGoal(Superstructure.Goal.L1))

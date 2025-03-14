@@ -7,6 +7,7 @@ import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import frc.robot.Constants;
 import frc.robot.Constants.Elevator;
 
@@ -139,12 +140,17 @@ public class ElevatorIOSpark implements ElevatorIO {
     @Override
     public void setFFLeft(double kS, double kG, double kV, double kA) {
         leftFeedforward = new ElevatorFeedforward(kS, kG, kV, kA);
+//        Shuffleboard.getTab("elevator").add("lelevatormaxspeed2", leftFeedforward.maxAchievableVelocity(12, 2));
+//        Shuffleboard.getTab("elevator").add("lelevatormaxspeed4", leftFeedforward.maxAchievableVelocity(12, 4));
     }
 
     @Override
     public void setFFRight(double kS, double kG, double kV, double kA) {
         rightFeedforward = new ElevatorFeedforward(kS, kG, kV, kA);
+//        Shuffleboard.getTab("elevator").add("relevatormaxspeed2", rightFeedforward.maxAchievableVelocity(12, 2));
+//        Shuffleboard.getTab("elevator").add("relevatormaxspeed4", rightFeedforward.maxAchievableVelocity(12, 4));
     }
+
 
     @Override
     public void setBrakeMode(boolean brakeMode) {
