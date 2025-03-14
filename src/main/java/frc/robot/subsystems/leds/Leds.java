@@ -42,7 +42,6 @@ public class Leds extends SubsystemBase {
     public boolean superstructureCoast = false;
     public boolean superStructureManual = false;
 
-
     public boolean autoFinished = false;
     public double autoFinishedTime = 0.0;
     public boolean lowBatteryAlert = false;

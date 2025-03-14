@@ -13,6 +13,4 @@ public class CommandFactory {
                         Commands.waitUntil(() -> superstructure.dynamicStep() == 1)
                                 .andThen(intake.kick_algae().withTimeout(2)));
     }
-
-
 }

@@ -15,7 +15,6 @@ import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.AutoConstants.StartingPosition;
 import frc.robot.commands.CommandFactory;
@@ -91,13 +90,9 @@ public class RobotContainer {
 
         superstructure.setDefaultCommand(
                 Commands.either(
-                        superstructure.toGoal(Superstructure.Goal.STOW)
-                                .onlyWhile(intake::hasCoral),
-                        superstructure.toGoal(Superstructure.Goal.HANDOFF)
-                                .until(intake::hasCoral),
-                        intake::hasCoral
-                )
-        );
+                        superstructure.toGoal(Superstructure.Goal.STOW).onlyWhile(intake::hasCoral),
+                        superstructure.toGoal(Superstructure.Goal.HANDOFF).until(intake::hasCoral),
+                        intake::hasCoral));
     }
 
     private void configureSubsystems() {
@@ -177,7 +172,6 @@ public class RobotContainer {
         OIConstants.SuperStructure.L2.whileTrue(superstructure.toGoal(Superstructure.Goal.L2));
         OIConstants.SuperStructure.L3.whileTrue(superstructure.toGoal(Superstructure.Goal.L3));
         OIConstants.SuperStructure.L4.whileTrue(superstructure.toGoal(Superstructure.Goal.L4));
-
 
         OIConstants.SuperStructure.KICK_BOTTOM_ALGAE.whileTrue(
                 superstructure
