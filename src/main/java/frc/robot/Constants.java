@@ -396,6 +396,9 @@ public final class Constants {
         public static final SuperstructureState STOW =
                 new SuperstructureState(.005, Math.toRadians(70));
 
+        public static final SuperstructureState WRIST_TRANSIT =
+                new SuperstructureState(0, Math.toRadians(90));
+
         public static final SuperstructureState L1 =
                 new SuperstructureState(.2, Math.toRadians(60));
         public static final SuperstructureState L2 =

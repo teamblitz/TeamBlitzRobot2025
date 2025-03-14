@@ -165,6 +165,13 @@ public class Superstructure extends BlitzSubsystem {
                 wrist.withGoal(staticGoals.get(goal).getWristState()));
     }
 
+    private Command toGoalThroughTransit(Goal goal) {
+        return Commands.sequence(
+                wrist.withGoal(WRIST_TRANSIT.getWristState()),
+                elevator.withGoal(staticGoals.get(goal).getElevatorState()),
+                wrist.withGoal(staticGoals.get(goal).getWristState()));
+    }
+
     private Command toGoalWristFirst(Goal goal) {
         return Commands.sequence(
                 wrist.withGoal(staticGoals.get(goal).getWristState()),
@@ -215,7 +222,7 @@ public class Superstructure extends BlitzSubsystem {
                     .withName("superstructure/dynamic_" + goal);
         }
 
-        return toGoalWristLast(goal)
+        return toGoalThroughTransit(goal)
                 .beforeStarting(
                         () -> {
                             state = State.IN_TRANSIT;
