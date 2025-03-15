@@ -342,21 +342,22 @@ public final class Constants {
 
         public static final double P = 180; // TODO config
 
+        // spark 20
         public static final class RightGains {
-            public static final double KS = 0.10768;
-            public static final double KV = 8.1174;
-            public static final double KA = 1.13;
-            public static final double KG = 0.24133;
+            public static final double KS = 0.26266;
+            public static final double KV = 4.4755;
+            public static final double KA = 0.69186;
+            public static final double KG = 0.38353;
             public static final double KP = 5; // 4.3951;
             public static final double KD = 2; // 952.83;
             public static final double KI = 0;
         }
 
-        // LEFT GAINS
+        // spark 21
         public static final class LeftGains {
-            public static final double KS = 0.10986;
-            public static final double KV = 8.259;
-            public static final double KA = 1.0318;
+            public static final double KS = 0.23462;
+            public static final double KV = 4.5305;
+            public static final double KA = 0.84246;
             public static final double KG = 0.24188;
             public static final double KP = 5; // 4.2941;
             public static final double KD = 2; // 905.76;
