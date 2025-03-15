@@ -44,7 +44,7 @@ public class Climber extends BlitzSubsystem {
                                 () -> EqualsUtil.epsilonEquals(inputs.position, CLIMB, 1e-3)));
     }
 
-    public Command climberRestow() {
+    public Command restowClimber() {
         // TODO restore
         return runOnce(() -> io.setMotionProfile(RESTOW_CLIMBER))
                 .andThen(
