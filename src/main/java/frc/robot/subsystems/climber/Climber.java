@@ -1,5 +1,6 @@
 package frc.robot.subsystems.climber;
 
+import static frc.robot.Constants.Climber.*;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -9,7 +10,7 @@ import org.littletonrobotics.junction.Logger;
 
 public class Climber extends BlitzSubsystem {
     private final ClimberIO io;
-    //TODO Make Auto Logs Work
+    // TODO Make Auto Logs Work
     private final ClimberInputsAutoLogged inputs = new ClimberInputsAutoLogged();
 
     public Climber(ClimberIO io) {
@@ -26,7 +27,7 @@ public class Climber extends BlitzSubsystem {
     }
 
     public Command deployClimber() {
-        //TODO FIX
+        // TODO FIX
         return runOnce(() -> io.setMotionProfile(CLIMBER_DEPLOY))
                 .andThen(
                         Commands.waitUntil(
@@ -36,24 +37,20 @@ public class Climber extends BlitzSubsystem {
     }
 
     public Command climb() {
-        //TODO repair
+        // TODO repair
         return runOnce(() -> io.setMotionProfile(CLIMB))
                 .andThen(
                         Commands.waitUntil(
-                                () ->
-                                        EqualsUtil.epsilonEquals(
-                                                inputs.position, CLIMB, 1e-3)));
+                                () -> EqualsUtil.epsilonEquals(inputs.position, CLIMB, 1e-3)));
     }
 
     public Command climberRestow() {
-        //TODO restore
-        return runOnce(() -> io.setMotionProfile(CLIMBER_RESTOW))
+        // TODO restore
+        return runOnce(() -> io.setMotionProfile(RESTOW_CLIMBER))
                 .andThen(
                         Commands.waitUntil(
                                 () ->
                                         EqualsUtil.epsilonEquals(
-                                                inputs.position, CLIMBER_RESTOW, 1e-3)));
+                                                inputs.position, RESTOW_CLIMBER, 1e-3)));
     }
-
 }
-
