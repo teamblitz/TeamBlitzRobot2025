@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.AutoConstants.StartingPosition;
 import frc.robot.commands.TeleopSwerve;
+import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.gyro.GyroIO;
 import frc.robot.subsystems.drive.gyro.GyroIOPigeon;
@@ -52,6 +53,7 @@ public class RobotContainer {
     private Intake intake;
     private Superstructure superstructure;
     private Winch winch;
+    private Climber climber;
 
     /* ***** --- Autonomous --- ***** */
     private final LoggedDashboardChooser<Command> autoChooser;
@@ -211,6 +213,10 @@ public class RobotContainer {
                 elevator.upManual().alongWith(superstructure.idle()));
         OIConstants.Elevator.MANUAL_DOWN.whileTrue(
                 elevator.downManual().alongWith(superstructure.idle()));
+
+        OIConstants.Climber.DEPLOY_CLIMBER.whileTrue(climber.deployClimber());
+        OIConstants.Climber.CLIMB.whileTrue(climber.climb());
+        OIConstants.Climber.RESTOW_CLIMBER.whileTrue(climber.restowClimber());
 
         new Trigger(() -> Math.abs(OIConstants.Wrist.WRIST_MANUAL.getAsDouble()) > .07)
                 .whileTrue(
