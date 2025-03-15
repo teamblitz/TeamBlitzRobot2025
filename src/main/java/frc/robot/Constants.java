@@ -418,8 +418,7 @@ public final class Constants {
                 List.of(
                         SetpointMode.WRIST_SYNC.withState(new SuperstructureState(L4.elevatorPosition, Math.toRadians(0))),
                         SetpointMode.WRIST_SYNC.withState(new SuperstructureState(1.31, Math.toRadians(0))),
-                        SetpointMode.WRIST_SYNC.withState(new SuperstructureState(1.0, Math.toRadians(70))),
-                        SetpointMode.WRIST_LAST.withState(KICK_HIGH_ALGAE)
+                        SetpointMode.WRIST_SYNC.withState(new SuperstructureState(1.0, Math.toRadians(70)))
                 );
 
         public static final SuperstructureState HANDOFF =
@@ -462,7 +461,7 @@ public final class Constants {
         public static final int CAN_ID = 40;
         public static final boolean INVERTED = false;
         public static final int CURRENT_LIMIT = 40;
-        public static final double HANDOFF_SPEED = .3; // TODO CONFIG
+        public static final double HANDOFF_SPEED = .5; // TODO CONFIG
         public static final double REVERSE_SPEED = -.3; // TODO CONFIG
         public static final double ALGAE_REMOVAL = .5; // TODO CONFIG
         public static final double SHOOT_CORAL = .5; // TODO CONFIG

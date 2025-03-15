@@ -208,9 +208,9 @@ public class RobotContainer {
         OIConstants.Intake.SHOOT_CORAL.whileTrue(intake.shoot_coral());
 
         OIConstants.Elevator.MANUAL_UP.whileTrue(
-                elevator.upManual().alongWith(superstructure.idle()));
+                elevator.upManual().alongWith(superstructure.idle()).withName("elevator/manual_up"));
         OIConstants.Elevator.MANUAL_DOWN.whileTrue(
-                elevator.downManual().alongWith(superstructure.idle()));
+                elevator.downManual().alongWith(superstructure.idle()).withName("elevator/manual_down"));
 
         new Trigger(() -> Math.abs(OIConstants.Wrist.WRIST_MANUAL.getAsDouble()) > .07)
                 .whileTrue(
