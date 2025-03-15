@@ -372,7 +372,7 @@ public final class Constants {
         public static final int CURRENT_LIMIT = 60;
         public static final boolean INVERTED = false;
 
-        public static final double FORWARD_SOFT_LIMIT = Units.degreesToRadians(95);
+        public static final double FORWARD_SOFT_LIMIT = Units.degreesToRadians(90);
         public static final double REVERSE_SOFT_LIMIT = Units.degreesToRadians(-90);
 
         public static final double ABS_ENCODER_ZERO = Math.toRadians(306.71 + 90);
@@ -421,7 +421,7 @@ public final class Constants {
                         new SuperstructureState(1.06, Math.toRadians(70)));
 
         public static final SuperstructureState HANDOFF =
-                new SuperstructureState(.005, Math.toRadians(95));
+                new SuperstructureState(.005, Math.toRadians(90));
 
         public static final double ELEVATOR_MAX_TO_SKIP_TRANSIT = .15;
 
