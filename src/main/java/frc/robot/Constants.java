@@ -414,11 +414,13 @@ public final class Constants {
         public static final SuperstructureState KICK_HIGH_ALGAE =
                 new SuperstructureState(.88, Math.toRadians(40));
 
-        public static final List<SuperstructureState> L4_DUNK =
+        public static final List<StateWithMode> L4_DUNK =
                 List.of(
-                        new SuperstructureState(L4.elevatorPosition, Math.toRadians(0)),
-                        new SuperstructureState(1.06, Math.toRadians(0)),
-                        new SuperstructureState(1.06, Math.toRadians(70)));
+                        SetpointMode.WRIST_SYNC.withState(new SuperstructureState(L4.elevatorPosition, Math.toRadians(0))),
+                        SetpointMode.WRIST_SYNC.withState(new SuperstructureState(1.31, Math.toRadians(0))),
+                        SetpointMode.WRIST_SYNC.withState(new SuperstructureState(1.0, Math.toRadians(70))),
+                        SetpointMode.WRIST_LAST.withState(KICK_HIGH_ALGAE)
+                );
 
         public static final SuperstructureState HANDOFF =
                 new SuperstructureState(.005, Math.toRadians(90));
@@ -428,7 +430,11 @@ public final class Constants {
         public enum SetpointMode {
             WRIST_FIRST,
             WRIST_LAST,
-            WRIST_SYNC
+            WRIST_SYNC;
+
+            public StateWithMode withState(SuperstructureState state) {
+                return new StateWithMode(state, this);
+            }
         }
 
         public record StateWithMode(SuperstructureState state, SetpointMode mode) {}

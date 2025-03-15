@@ -101,7 +101,7 @@ public class Superstructure extends BlitzSubsystem {
     private Goal currentGoal = Goal.STOW;
 
     private final Map<Goal, SuperstructureState> staticGoals;
-    private final Map<Goal, List<SuperstructureState>> dynamicGoals;
+    private final Map<Goal, List<StateWithMode>> dynamicGoals;
 
     // THIS REALLY SUCKS BUT WORKS AS A PLACEHOLDER IG
     public enum Goal {
@@ -158,21 +158,21 @@ public class Superstructure extends BlitzSubsystem {
                 .withName("stow");
     }
 
-    private Command toGoalWristLast(Goal goal) {
+    private Command toStateWristLast(SuperstructureState state) {
         return Commands.sequence(
-                elevator.withGoal(staticGoals.get(goal).getElevatorState()),
-                wrist.withGoal(staticGoals.get(goal).getWristState()));
+                wrist.withGoal(state.getElevatorState()),
+                elevator.withGoal(state.getWristState()));
     }
 
-    private Command toGoalThroughTransit(Goal goal) {
+    private Command toStateThroughTransit(SuperstructureState state) {
         return Commands.either(
-                toGoalSynchronous(goal),
+                toStateSynchronous(state),
                 Commands.sequence(
                         wrist.withGoal(WRIST_TRANSIT.getWristState()),
-                        elevator.withGoal(staticGoals.get(goal).getElevatorState()),
-                        wrist.withGoal(staticGoals.get(goal).getWristState())),
+                        elevator.withGoal(state.getElevatorState()),
+                        wrist.withGoal(state.getWristState())),
                 () -> {
-                    double elevatorGoal = staticGoals.get(goal).getElevatorState().position;
+                    double elevatorGoal = state.getElevatorState().position;
                     double elevatorInitial = elevator.getPosition();
 
                     return elevatorInitial < ELEVATOR_MAX_TO_SKIP_TRANSIT && elevatorGoal < ELEVATOR_MAX_TO_SKIP_TRANSIT;
@@ -180,16 +180,16 @@ public class Superstructure extends BlitzSubsystem {
         );
     }
 
-    private Command toGoalWristFirst(Goal goal) {
+    private Command toStateWristFirst(SuperstructureState state) {
         return Commands.sequence(
-                wrist.withGoal(staticGoals.get(goal).getWristState()),
-                elevator.withGoal(staticGoals.get(goal).getElevatorState()));
+                wrist.withGoal(state.getElevatorState()),
+                elevator.withGoal(state.getWristState()));
     }
 
-    private Command toGoalSynchronous(Goal goal) {
+    private Command toStateSynchronous(SuperstructureState state) {
         return Commands.parallel(
-                elevator.withGoal(staticGoals.get(goal).getElevatorState()),
-                wrist.withGoal(staticGoals.get(goal).getWristState()));
+                elevator.withGoal(state.getElevatorState()),
+                wrist.withGoal(state.getWristState()));
     }
 
     private int dynamicStep = 0;
@@ -202,13 +202,13 @@ public class Superstructure extends BlitzSubsystem {
         if (goal == Goal.L4_DUNK) {
             Command command = Commands.none();
 
-            for (SuperstructureState state : dynamicGoals.get(goal)) {
-                command =
-                        command.andThen(
-                                        Commands.parallel(
-                                                elevator.withGoal(state.getElevatorState()),
-                                                wrist.withGoal(state.getWristState())))
-                                .finallyDo(() -> dynamicStep++);
+            for (StateWithMode stateWithMode : dynamicGoals.get(goal)) {
+                command = command.andThen(
+                        switch (stateWithMode.mode()) {
+                            case WRIST_FIRST -> toStateWristFirst(stateWithMode.state());
+                             case WRIST_LAST -> toStateWristLast(stateWithMode.state());
+                            case WRIST_SYNC -> toStateSynchronous(stateWithMode.state());
+                        }).finallyDo(() -> dynamicStep++);
             }
 
             command =
@@ -230,7 +230,7 @@ public class Superstructure extends BlitzSubsystem {
                     .withName("superstructure/dynamic_" + goal);
         }
 
-        return toGoalThroughTransit(goal)
+        return toStateThroughTransit(staticGoals.get(goal))
                 .beforeStarting(
                         () -> {
                             state = State.IN_TRANSIT;
