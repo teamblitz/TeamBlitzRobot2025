@@ -88,15 +88,15 @@ public class RobotContainer {
                                 () -> Double.NaN)
                         .withName("TeleopSwerve"));
 
-        superstructure.setDefaultCommand(
-                Commands.either(
-                        superstructure.toGoal(Superstructure.Goal.STOW)
-                                .onlyWhile(intake::hasCoral),
-                        superstructure.toGoal(Superstructure.Goal.HANDOFF)
-                                .until(intake::hasCoral),
-                        intake::hasCoral
-                ).withName("superstructure/conditionalDefault")
-        );
+//        superstructure.setDefaultCommand(
+//                Commands.either(
+//                        superstructure.toGoal(Superstructure.Goal.STOW)
+//                                .onlyWhile(intake::hasCoral),
+//                        superstructure.toGoal(Superstructure.Goal.HANDOFF)
+//                                .until(intake::hasCoral),
+//                        intake::hasCoral
+//                ).withName("superstructure/conditionalDefault")
+//        );
     }
 
     private void configureSubsystems() {
@@ -153,16 +153,17 @@ public class RobotContainer {
                                     new RangeSensorIO() {});
                 };
 
-        elevator = new Elevator(new ElevatorIOSpark());
-        //        elevator = new Elevator(new ElevatorIO() {});
 
-        wrist = new Wrist(new WristIOSpark());
+
         //        wrist = new Wrist(new WristIO() {});
 
         intake = new Intake(new IntakeIOSpark());
         //        intake = new Intake(new IntakeIO() {});
 
-        superstructure = new Superstructure(elevator, wrist);
+        superstructure = new Superstructure();
+
+        elevator = superstructure.getElevator();
+        wrist = superstructure.getWrist();
     }
 
     private void configureButtonBindings() {

@@ -14,6 +14,9 @@ import frc.lib.util.LoggedTunableNumber;
 import frc.robot.Constants;
 import frc.robot.subsystems.leds.Leds;
 import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
+
+import frc.robot.subsystems.superstructure.Superstructure;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -28,6 +31,7 @@ public class Elevator extends BlitzSubsystem {
     private TrapezoidProfile.State setpoint;
 
     private final SysIdRoutine routine;
+    private final Supplier<Command> superstructureIdle;
 
     private final Timer loopTimer = new Timer();
 
@@ -65,9 +69,10 @@ public class Elevator extends BlitzSubsystem {
     private final LoggedTunableNumber rightKG =
             new LoggedTunableNumber("elevator/rightKG", Constants.Elevator.RightGains.KG);
 
-    public Elevator(ElevatorIO io) {
+    public Elevator(ElevatorIO io, Supplier<Command> superstructureIdle) {
         super("elevator");
         this.io = io;
+        this.superstructureIdle = superstructureIdle;
 
         ShuffleboardTab characterizationTab = Shuffleboard.getTab("Characterization");
 
@@ -231,11 +236,11 @@ public class Elevator extends BlitzSubsystem {
     }
 
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-        return routine.quasistatic(direction);
+        return routine.quasistatic(direction).deadlineFor(superstructureIdle.get());
     }
 
     public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-        return routine.dynamic(direction);
+        return routine.dynamic(direction).deadlineFor(superstructureIdle.get());
     }
 
     public Command coastCommand() {

@@ -12,10 +12,13 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.BlitzSubsystem;
 import frc.robot.subsystems.superstructure.elevator.Elevator;
+import frc.robot.subsystems.superstructure.elevator.ElevatorIOSpark;
 import frc.robot.subsystems.superstructure.wrist.Wrist;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import frc.robot.subsystems.superstructure.wrist.WristIOSpark;
 import org.littletonrobotics.junction.Logger;
 
 /**
@@ -37,11 +40,11 @@ public class Superstructure extends BlitzSubsystem {
     private final Elevator elevator;
     private final Wrist wrist;
 
-    public Superstructure(Elevator elevator, Wrist wrist) {
+    public Superstructure() {
 
         super("superstructure");
-        this.elevator = elevator;
-        this.wrist = wrist;
+        this.elevator = new Elevator(new ElevatorIOSpark(), this::idle);
+        this.wrist = new Wrist(new WristIOSpark());
 
         staticGoals =
                 Map.ofEntries(
@@ -137,6 +140,14 @@ public class Superstructure extends BlitzSubsystem {
         // superstructure control is disabled until robot is disabled and re-enabled, or manual
         // re-enablement occurs
         DISABLED
+    }
+
+    public Elevator getElevator() {
+        return elevator;
+    }
+
+    public Wrist getWrist() {
+        return wrist;
     }
 
     public Command stowCommand() {
