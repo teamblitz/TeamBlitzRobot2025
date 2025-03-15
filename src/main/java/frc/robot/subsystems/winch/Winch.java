@@ -10,7 +10,7 @@ import org.littletonrobotics.junction.Logger;
 
 public class Winch extends BlitzSubsystem {
     private final WinchIO io;
-    //TODO Make Auto Logs Work
+    // TODO Make Auto Logs Work
     private final WinchInputsAutoLogged inputs = new WinchInputsAutoLogged();
 
     public Winch(WinchIO io) {

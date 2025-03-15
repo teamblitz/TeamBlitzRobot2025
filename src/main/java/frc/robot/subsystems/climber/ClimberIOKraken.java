@@ -7,7 +7,6 @@ import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import frc.robot.Constants;
 
 public class ClimberIOKraken implements ClimberIO {
@@ -17,7 +16,7 @@ public class ClimberIOKraken implements ClimberIO {
     public final MotionMagicVoltage motionMagic = new MotionMagicVoltage(0).withSlot(0);
 
     public ClimberIOKraken() {
-        Climber = new TalonFX(0); //TODO Put Correct Value
+        Climber = new TalonFX(0); // TODO Put Correct Value
 
         TalonFXConfiguration config = new TalonFXConfiguration();
 
@@ -26,7 +25,7 @@ public class ClimberIOKraken implements ClimberIO {
         config.CurrentLimits.withStatorCurrentLimit(Constants.Intake.CURRENT_LIMIT);
 
         config.MotionMagic.withMotionMagicCruiseVelocity(.5).withMotionMagicAcceleration(1);
-        //TODO SET ABOVE VALUES
+        // TODO SET ABOVE VALUES
 
         Climber.setPosition(0);
 
@@ -41,5 +40,7 @@ public class ClimberIOKraken implements ClimberIO {
     }
 
     @Override
-    public void setSpeed(double speed) {Climber.set(speed);}
+    public void setSpeed(double speed) {
+        Climber.set(speed);
+    }
 }

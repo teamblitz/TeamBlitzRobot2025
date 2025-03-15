@@ -58,6 +58,10 @@ public class Intake extends BlitzSubsystem {
         return setSpeed(L1);
     }
 
+    private Command stop() {
+        return runOnce(() -> io.setSpeed(0));
+    }
+
     private boolean intakeSensor() {
         return inputs.breakBeam;
     }

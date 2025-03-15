@@ -475,7 +475,7 @@ public final class Constants {
     }
 
     public static final class Climber {
-        public static final double CLIMBER_DEPLOY = 0; //TODO CONFIG
+        public static final double CLIMBER_DEPLOY = 0; // TODO CONFIG
         public static final double CLIMB = 0;
         public static final double RESTOW_CLIMBER = 0;
     }
