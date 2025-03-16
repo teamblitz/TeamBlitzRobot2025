@@ -10,7 +10,6 @@ package frc.robot;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.RobotConfig;
-import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -325,20 +324,15 @@ public final class Constants {
         public static final int RIGHT_ID = 20;
         public static final int LEFT_ID = 21;
 
-        public static final double L1_EXTENSION = 4; // TODO get exact value
-        public static final double L2_EXTENSION = 5; // TODO get exact value
-        public static final double L3_EXTENSION = 6; // TODO get exact value
-        public static final double L4_EXTENSION = 7; // TODO get exact value
-
-        public static final double OPEN_LOOP_RAMP = 0;
+        public static final double OPEN_LOOP_RAMP = .25;
         public static final int CURRENT_LIMIT = 60;
         public static final double ELEVATOR_GEAR_RATIO = 12.0 / 1.0;
-        public static final double SPROCKET_CIRCUMFERANCE = Units.inchesToMeters(.25) * 24;
+        public static final double SPROCKET_CIRCUMFERENCE = Units.inchesToMeters(.25) * 24;
 
         public static final InvertedValue LEFT_INVERT =
-                InvertedValue.Clockwise_Positive; // TODO ensure that this is correct
+                InvertedValue.Clockwise_Positive;
         public static final InvertedValue RIGHT_INVERT =
-                InvertedValue.CounterClockwise_Positive; // TODO ensure that this is correct
+                InvertedValue.CounterClockwise_Positive;
 
         public static final double P = 180; // TODO config
 
