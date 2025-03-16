@@ -88,15 +88,15 @@ public class RobotContainer {
                                 () -> Double.NaN)
                         .withName("TeleopSwerve"));
 
-//        superstructure.setDefaultCommand(
-//                Commands.either(
-//                        superstructure.toGoal(Superstructure.Goal.STOW)
-//                                .onlyWhile(intake::hasCoral),
-//                        superstructure.toGoal(Superstructure.Goal.HANDOFF)
-//                                .until(intake::hasCoral),
-//                        intake::hasCoral
-//                ).withName("superstructure/conditionalDefault")
-//        );
+        superstructure.setDefaultCommand(
+                Commands.either(
+                        superstructure.toGoal(Superstructure.Goal.STOW)
+                                .onlyWhile(intake::hasCoral),
+                        superstructure.toGoal(Superstructure.Goal.HANDOFF)
+                                .until(intake::hasCoral),
+                        intake::hasCoral
+                ).withName("superstructure/conditionalDefault")
+        );
     }
 
     private void configureSubsystems() {
