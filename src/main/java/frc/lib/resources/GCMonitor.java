@@ -1,4 +1,4 @@
-package frc.lib;
+package frc.lib.resources;
 
 import com.sun.management.GarbageCollectionNotificationInfo;
 import java.lang.management.GarbageCollectorMXBean;

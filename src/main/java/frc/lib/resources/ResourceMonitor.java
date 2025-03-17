@@ -1,4 +1,4 @@
-package frc.lib;
+package frc.lib.resources;
 
 import com.sun.management.GarbageCollectionNotificationInfo;
 import edu.wpi.first.wpilibj.Timer;
