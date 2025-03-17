@@ -393,7 +393,7 @@ public final class Constants {
                 new SuperstructureState(.005, Math.toRadians(70));
 
         public static final SuperstructureState WRIST_TRANSIT =
-                new SuperstructureState(0, Math.toRadians(70));
+                new SuperstructureState(0, Math.toRadians(62.5));
 
         public static final SuperstructureState L1 =
                 new SuperstructureState(.2, Math.toRadians(60));
@@ -402,7 +402,7 @@ public final class Constants {
         public static final SuperstructureState L3 =
                 new SuperstructureState(.85, Math.toRadians(60));
         public static final SuperstructureState L4 =
-                new SuperstructureState(1.48, Math.toRadians(50)); // Value is not with Drop
+                new SuperstructureState(1.48, Math.toRadians(60)); // Value is not with Drop
 
         public static final SuperstructureState KICK_LOW_ALGAE =
                 new SuperstructureState(.48, Math.toRadians(42));
@@ -459,6 +459,7 @@ public final class Constants {
         public static final double HANDOFF_SPEED = .5; // TODO CONFIG
         public static final double REVERSE_SPEED = -.3; // TODO CONFIG
         public static final double ALGAE_REMOVAL = .5; // TODO CONFIG
-        public static final double SHOOT_CORAL = .5; // TODO CONFIG
+        public static final double SHOOT_CORAL = .5;
+        public static final double L1 = .3;
     }
 }

@@ -192,7 +192,7 @@ public class RobotContainer {
 
         OIConstants.SuperStructure.SCORE
                 .and(superstructure.triggerAtGoal(Superstructure.Goal.L1))
-                .whileTrue(intake.shoot_coral());
+                .whileTrue(intake.coral_l1());
         OIConstants.SuperStructure.SCORE
                 .and(superstructure.triggerAtGoal(Superstructure.Goal.L2))
                 .whileTrue(intake.shoot_coral());
