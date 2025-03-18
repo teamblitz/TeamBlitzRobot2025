@@ -20,6 +20,7 @@ import frc.robot.Constants.AutoConstants.StartingPosition;
 import frc.robot.commands.CommandFactory;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.subsystems.climber.Climber;
+import frc.robot.subsystems.climber.ClimberIOKraken;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.gyro.GyroIO;
 import frc.robot.subsystems.drive.gyro.GyroIOPigeon;
@@ -35,8 +36,13 @@ import frc.robot.subsystems.intake.IntakeIOKraken;
 import frc.robot.subsystems.intake.IntakeIOSpark;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.superstructure.elevator.Elevator;
+import frc.robot.subsystems.superstructure.elevator.ElevatorIOKraken;
+import frc.robot.subsystems.superstructure.elevator.ElevatorIOSpark;
 import frc.robot.subsystems.superstructure.wrist.Wrist;
+import frc.robot.subsystems.superstructure.wrist.WristIOKraken;
+import frc.robot.subsystems.superstructure.wrist.WristIOSpark;
 import frc.robot.subsystems.winch.Winch;
+import frc.robot.subsystems.winch.WinchIOSpark;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -91,16 +97,16 @@ public class RobotContainer {
                                 () -> Double.NaN)
                         .withName("TeleopSwerve"));
 
-        superstructure.setDefaultCommand(
-                Commands.either(
-                                superstructure
-                                        .toGoal(Superstructure.Goal.STOW)
-                                        .onlyWhile(intake::hasCoral),
-                                superstructure
-                                        .toGoal(Superstructure.Goal.HANDOFF)
-                                        .until(intake::hasCoral),
-                                intake::hasCoral)
-                        .withName("superstructure/conditionalDefault"));
+//        superstructure.setDefaultCommand(
+//                Commands.either(
+//                                superstructure
+//                                        .toGoal(Superstructure.Goal.STOW)
+//                                        .onlyWhile(intake::hasCoral),
+//                                superstructure
+//                                        .toGoal(Superstructure.Goal.HANDOFF)
+//                                        .until(intake::hasCoral),
+//                                intake::hasCoral)
+//                        .withName("superstructure/conditionalDefault"));
     }
 
     private void configureSubsystems() {
@@ -110,7 +116,7 @@ public class RobotContainer {
                             new Drive(
                                     new SwerveModuleConfiguration(
                                             SwerveModuleConfiguration.MotorType.KRAKEN,
-                                            SwerveModuleConfiguration.MotorType.NEO,
+                                            SwerveModuleConfiguration.MotorType.KRAKEN,
                                             SwerveModuleConfiguration.EncoderType.CANCODER),
                                     Constants.Drive.Mod0.CONSTANTS,
                                     Constants.Drive.Mod1.CONSTANTS,
@@ -157,15 +163,15 @@ public class RobotContainer {
                                     new RangeSensorIO() {});
                 };
 
-        //        wrist = new Wrist(new WristIO() {});
 
         intake = new Intake(Constants.compBot() ? new IntakeIOKraken() : new IntakeIOSpark());
-        //        intake = new intake(new IntakeIO() {});
 
-        superstructure = new Superstructure();
-
+        superstructure = new Superstructure(Constants.compBot() ? new ElevatorIOKraken() : new ElevatorIOSpark(), Constants.compBot() ? new WristIOKraken() : new WristIOSpark());
         elevator = superstructure.getElevator();
         wrist = superstructure.getWrist();
+
+        climber = new Climber(new ClimberIOKraken());
+        winch = new Winch(new WinchIOSpark());
     }
 
     private void configureButtonBindings() {

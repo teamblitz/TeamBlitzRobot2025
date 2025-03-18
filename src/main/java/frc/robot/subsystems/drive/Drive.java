@@ -48,6 +48,7 @@ import frc.robot.subsystems.drive.range.RangeSensorIOFusion;
 import frc.robot.subsystems.drive.range.RangeSensorIOInputsAutoLogged;
 import frc.robot.subsystems.drive.swerveModule.SwerveModule;
 import frc.robot.subsystems.drive.swerveModule.SwerveModuleConfiguration;
+import frc.robot.subsystems.drive.swerveModule.angle.AngleMotorIOKraken;
 import frc.robot.subsystems.drive.swerveModule.angle.AngleMotorIOSpark;
 import frc.robot.subsystems.drive.swerveModule.drive.DriveMotorIOKraken;
 import frc.robot.subsystems.drive.swerveModule.drive.DriveMotorIOSpark;
@@ -143,7 +144,9 @@ public class Drive extends BlitzSubsystem {
         this(
                 new SwerveModule(
                         FL,
-                        new AngleMotorIOSpark(flConstants),
+                        configuration.angle == SwerveModuleConfiguration.MotorType.KRAKEN
+                                ? new AngleMotorIOKraken(flConstants)
+                                : new AngleMotorIOSpark(flConstants),
                         configuration.drive == SwerveModuleConfiguration.MotorType.KRAKEN
                                 ? new DriveMotorIOKraken(flConstants)
                                 : new DriveMotorIOSpark(flConstants),
@@ -152,7 +155,9 @@ public class Drive extends BlitzSubsystem {
                                 : new EncoderIOHelium(flConstants.cancoderID, CAN_CODER_INVERT)),
                 new SwerveModule(
                         FR,
-                        new AngleMotorIOSpark(frConstants),
+                        configuration.angle == SwerveModuleConfiguration.MotorType.KRAKEN
+                                ? new AngleMotorIOKraken(frConstants)
+                                : new AngleMotorIOSpark(frConstants),
                         configuration.drive == SwerveModuleConfiguration.MotorType.KRAKEN
                                 ? new DriveMotorIOKraken(frConstants)
                                 : new DriveMotorIOSpark(frConstants),
@@ -161,7 +166,9 @@ public class Drive extends BlitzSubsystem {
                                 : new EncoderIOHelium(frConstants.cancoderID, CAN_CODER_INVERT)),
                 new SwerveModule(
                         BL,
-                        new AngleMotorIOSpark(blConstants),
+                        configuration.angle == SwerveModuleConfiguration.MotorType.KRAKEN
+                                ? new AngleMotorIOKraken(blConstants)
+                                : new AngleMotorIOSpark(blConstants),
                         configuration.drive == SwerveModuleConfiguration.MotorType.KRAKEN
                                 ? new DriveMotorIOKraken(blConstants)
                                 : new DriveMotorIOSpark(blConstants),
@@ -170,7 +177,9 @@ public class Drive extends BlitzSubsystem {
                                 : new EncoderIOHelium(blConstants.cancoderID, CAN_CODER_INVERT)),
                 new SwerveModule(
                         BR,
-                        new AngleMotorIOSpark(brConstants),
+                        configuration.angle == SwerveModuleConfiguration.MotorType.KRAKEN
+                                ? new AngleMotorIOKraken(brConstants)
+                                : new AngleMotorIOSpark(brConstants),
                         configuration.drive == SwerveModuleConfiguration.MotorType.KRAKEN
                                 ? new DriveMotorIOKraken(brConstants)
                                 : new DriveMotorIOSpark(brConstants),

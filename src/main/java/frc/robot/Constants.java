@@ -332,9 +332,6 @@ public final class Constants {
         public static final InvertedValue LEFT_INVERT = InvertedValue.Clockwise_Positive;
         public static final InvertedValue RIGHT_INVERT = InvertedValue.CounterClockwise_Positive;
 
-        public static final double P = 180; // TODO config
-
-        // spark 20
         public static final class RightGains {
             public static final double KS = 0.26266;
             public static final double KV = 4.4755;
@@ -345,7 +342,6 @@ public final class Constants {
             public static final double KI = 0;
         }
 
-        // spark 21
         public static final class LeftGains {
             public static final double KS = 0.23462;
             public static final double KV = 4.5305;
