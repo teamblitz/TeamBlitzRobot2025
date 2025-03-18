@@ -21,7 +21,7 @@ public class DriveMotorIOKraken implements DriveMotorIO {
     public DriveMotorIOKraken(SwerveModuleConstants moduleConstants) {
 
         /* Drive motor */
-        motor = new TalonFX(moduleConstants.driveMotorID);
+        motor = new TalonFX(moduleConstants.driveMotorID, "drive");
         configDriveMotor();
     }
 

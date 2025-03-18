@@ -30,7 +30,7 @@ public class AngleMotorIOKraken implements AngleMotorIO {
         this.angleOffset = moduleConstants.angleOffset;
 
         /* Angle motor */
-        motor = new TalonFX(moduleConstants.driveMotorID);
+        motor = new TalonFX(moduleConstants.angleMotorID, "drive");
         configAngleMotor();
     }
 
@@ -77,11 +77,6 @@ public class AngleMotorIOKraken implements AngleMotorIO {
 
         motor.getConfigurator().apply(config);
 
-//        motor.optimizeBusUtilization();
-//
-//        BaseStatusSignal.setUpdateFrequencyForAll(
-//                100, motor.getVelocity(), motor.getPosition(), motor.getMotorVoltage());
-//
         configurePID(Constants.Drive.ANGLE_KP, Constants.Drive.ANGLE_KI, Constants.Drive.ANGLE_KD);
     }
 }
