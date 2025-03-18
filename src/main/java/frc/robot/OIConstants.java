@@ -81,7 +81,7 @@ public class OIConstants {
         //        @SuppressWarnings("resource")
         //        public static final BooleanSupplier INTAKE_OVERRIDE =
         //                DashboardHelpers.genericEntrySupplier(
-        //                                TAB.add("Intake", false)
+        //                                TAB.add("intake", false)
         //                                        .withWidget(BuiltInWidgets.kBooleanBox)
         //                                        .getEntry(),
         //                                false,

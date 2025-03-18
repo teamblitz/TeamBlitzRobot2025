@@ -31,6 +31,7 @@ import frc.robot.subsystems.drive.swerveModule.angle.AngleMotorIOSim;
 import frc.robot.subsystems.drive.swerveModule.drive.DriveMotorIOSim;
 import frc.robot.subsystems.drive.swerveModule.encoder.EncoderIO;
 import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeIOKraken;
 import frc.robot.subsystems.intake.IntakeIOSpark;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.superstructure.elevator.Elevator;
@@ -158,8 +159,8 @@ public class RobotContainer {
 
         //        wrist = new Wrist(new WristIO() {});
 
-        intake = new Intake(new IntakeIOSpark());
-        //        intake = new Intake(new IntakeIO() {});
+        intake = new Intake(Constants.compBot() ? new IntakeIOKraken() : new IntakeIOSpark());
+        //        intake = new intake(new IntakeIO() {});
 
         superstructure = new Superstructure();
 
