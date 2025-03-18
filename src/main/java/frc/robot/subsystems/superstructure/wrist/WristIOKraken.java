@@ -27,6 +27,8 @@ public class WristIOKraken implements WristIO {
 
         config.CurrentLimits.withStatorCurrentLimit(CURRENT_LIMIT);
 
+        config.Feedback.withSensorToMechanismRatio(WRIST_GEAR_RATIO / (2 * Math.PI));
+
 
         config.MotionMagic.withMotionMagicCruiseVelocity(.5).withMotionMagicAcceleration(1);
 

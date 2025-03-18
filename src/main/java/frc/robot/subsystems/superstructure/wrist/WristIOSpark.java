@@ -43,8 +43,8 @@ public class WristIOSpark implements WristIO {
                 .reverseSoftLimit(REVERSE_SOFT_LIMIT);
 
         config.encoder
-                .positionConversionFactor((1 / GEAR_RATIO) * (2 * Math.PI))
-                .velocityConversionFactor((1 / GEAR_RATIO) * (1.0 / 60.0) * (2 * Math.PI));
+                .positionConversionFactor((1 / WRIST_GEAR_RATIO) * (2 * Math.PI))
+                .velocityConversionFactor((1 / WRIST_GEAR_RATIO) * (1.0 / 60.0) * (2 * Math.PI));
 
         config.absoluteEncoder
                 .zeroCentered(true)
