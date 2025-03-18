@@ -54,6 +54,7 @@ public class Intake extends BlitzSubsystem {
     public Command shoot_coral() {
         return setSpeed(SHOOT_CORAL);
     }
+
     public Command coral_l1() {
         return setSpeed(L1);
     }
@@ -64,6 +65,10 @@ public class Intake extends BlitzSubsystem {
 
     private boolean intakeSensor() {
         return inputs.breakBeam;
+    }
+
+    private Command stop() {
+        return runOnce(() -> io.setSpeed(0));
     }
 
     private Command setSpeed(double speed) {
