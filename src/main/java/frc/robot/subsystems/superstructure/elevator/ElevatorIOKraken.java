@@ -1,5 +1,6 @@
 package frc.robot.subsystems.superstructure.elevator;
 
+import com.ctre.phoenix.motorcontrol.can.BaseTalonConfiguration;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
@@ -8,21 +9,21 @@ import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import frc.robot.Constants.Elevator;
+import static frc.robot.Constants.Elevator.*;
 
 // TODO: With the current elevator design it is unlikely that we will want to be able to control
 // both sides separately
 public class ElevatorIOKraken implements ElevatorIO {
     public final TalonFX leftMotor;
     public final TalonFX rightMotor;
+    public TalonFX leader;
 
-    public final PositionVoltage closedLoopPosition = new PositionVoltage(0);
     public final MotionMagicVoltage motionMagic =
-            new MotionMagicVoltage(0).withSlot(0); // do we impliment the same way?
+            new MotionMagicVoltage(0).withSlot(0);
 
     public ElevatorIOKraken() {
-        leftMotor = new TalonFX(1); // TODO set val
-        rightMotor = new TalonFX(2); // TODO set val
+        leftMotor = new TalonFX(LEFT_ID); // TODO set val
+        rightMotor = new TalonFX(RIGHT_ID); // TODO set val
 
         leftMotor.setControl(new Follower(rightMotor.getDeviceID(), false));
 
@@ -30,37 +31,39 @@ public class ElevatorIOKraken implements ElevatorIO {
 
         config.MotorOutput.withNeutralMode(NeutralModeValue.Brake);
 
-        config.CurrentLimits.withStatorCurrentLimit(Elevator.CURRENT_LIMIT); // TODO Configure
-
-        // TODO get gear ratio figured out with mech
+        config.CurrentLimits.withStatorCurrentLimit(120);
 
         config.MotionMagic.withMotionMagicCruiseVelocity(.5).withMotionMagicAcceleration(1);
 
-        config.Slot0.withKP(Elevator.P); // TODO configure
 
-        config.MotorOutput.withInverted(Elevator.LEFT_INVERT); // TODO configure
+
+
+        config.MotorOutput.withInverted(LEFT_INVERT);
         leftMotor.getConfigurator().apply(config);
 
-        config.MotorOutput.withInverted(Elevator.RIGHT_INVERT); // TODO configure
+        config.MotorOutput.withInverted(RIGHT_INVERT);
         rightMotor.getConfigurator().apply(config);
 
-        TalonFXConfiguration shared_config = new TalonFXConfiguration();
+
 
         leftMotor.setPosition(0);
         rightMotor.setPosition(0);
 
-        ParentDevice.optimizeBusUtilizationForAll(leftMotor, rightMotor);
+        leftMotor.setControl(new Follower(rightMotor.getDeviceID(), true));
 
-        BaseStatusSignal.setUpdateFrequencyForAll(
-                100,
-                leftMotor.getPosition(),
-                leftMotor.getVelocity(),
-                leftMotor.getMotorVoltage(),
-                leftMotor.getTorqueCurrent(),
-                rightMotor.getPosition(),
-                rightMotor.getVelocity(),
-                rightMotor.getMotorVoltage(),
-                rightMotor.getTorqueCurrent());
+        leader = rightMotor;
+//        ParentDevice.optimizeBusUtilizationForAll(leftMotor, rightMotor);
+//
+//        BaseStatusSignal.setUpdateFrequencyForAll(
+//                100,
+//                leftMotor.getPosition(),
+//                leftMotor.getVelocity(),
+//                leftMotor.getMotorVoltage(),
+//                leftMotor.getTorqueCurrent(),
+//                rightMotor.getPosition(),
+//                rightMotor.getVelocity(),
+//                rightMotor.getMotorVoltage(),
+//                rightMotor.getTorqueCurrent());
     }
 
     @Override
@@ -80,11 +83,11 @@ public class ElevatorIOKraken implements ElevatorIO {
 
     @Override
     public void setSpeed(double speed) {
-        leftMotor.set(speed);
+        leader.set(speed);
     }
 
     @Override
     public void setMotionMagic(double extension) {
-        rightMotor.setControl(motionMagic.withPosition(extension));
+        leader.setControl(motionMagic.withPosition(extension));
     }
 }
