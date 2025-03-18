@@ -10,6 +10,7 @@ import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import static frc.robot.Constants.Wrist.*;
 
 public class WristIOKraken implements WristIO {
     public TalonFX wristMotor;
@@ -18,15 +19,14 @@ public class WristIOKraken implements WristIO {
     public final MotionMagicVoltage motionMagic = new MotionMagicVoltage(0).withSlot(0);
 
     public WristIOKraken() {
-        wristMotor = new TalonFX(0); // TODO SET VAL
+        wristMotor = new TalonFX(CAN_ID);
 
         TalonFXConfiguration config = new TalonFXConfiguration();
 
         config.MotorOutput.withNeutralMode(NeutralModeValue.Brake);
 
-        config.CurrentLimits.withStatorCurrentLimit(CURRENT_LIMIT); // TODO CONFIGURE
+        config.CurrentLimits.withStatorCurrentLimit(CURRENT_LIMIT);
 
-        // TODO GET GEAR RATIO FIGURED OUT WITH MECH
 
         config.MotionMagic.withMotionMagicCruiseVelocity(.5).withMotionMagicAcceleration(1);
 

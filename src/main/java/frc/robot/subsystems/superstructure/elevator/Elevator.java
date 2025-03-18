@@ -188,11 +188,11 @@ public class Elevator extends BlitzSubsystem {
     }
 
     public Command upManual() {
-        return withSpeed(0.6).withName("Up Manual");
+        return withSpeed(0.1).withName("Up Manual");
     }
 
     public Command downManual() {
-        return withSpeed(-0.4).withName("downManual");
+        return withSpeed(-0.1).withName("downManual");
     }
 
     public Command withGoal(TrapezoidProfile.State goal) {
