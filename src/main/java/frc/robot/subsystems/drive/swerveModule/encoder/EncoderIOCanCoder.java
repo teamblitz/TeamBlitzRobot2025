@@ -9,7 +9,7 @@ public class EncoderIOCanCoder implements EncoderIO {
     private final CANcoder encoder;
 
     public EncoderIOCanCoder(int id, boolean invert) {
-        encoder = new CANcoder(id);
+        encoder = new CANcoder(id, "drive");
 
         encoder.getConfigurator()
                 .apply(
