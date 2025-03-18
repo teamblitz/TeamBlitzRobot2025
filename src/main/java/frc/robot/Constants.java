@@ -329,10 +329,8 @@ public final class Constants {
         public static final double ELEVATOR_GEAR_RATIO = 12.0 / 1.0;
         public static final double SPROCKET_CIRCUMFERENCE = Units.inchesToMeters(.25) * 24;
 
-        public static final InvertedValue LEFT_INVERT =
-                InvertedValue.Clockwise_Positive;
-        public static final InvertedValue RIGHT_INVERT =
-                InvertedValue.CounterClockwise_Positive;
+        public static final InvertedValue LEFT_INVERT = InvertedValue.Clockwise_Positive;
+        public static final InvertedValue RIGHT_INVERT = InvertedValue.CounterClockwise_Positive;
 
         public static final double P = 180; // TODO config
 
@@ -411,10 +409,12 @@ public final class Constants {
 
         public static final List<StateWithMode> L4_DUNK =
                 List.of(
-                        SetpointMode.WRIST_SYNC.withState(new SuperstructureState(L4.elevatorPosition, Math.toRadians(0))),
-                        SetpointMode.WRIST_SYNC.withState(new SuperstructureState(1.31, Math.toRadians(0))),
-                        SetpointMode.WRIST_SYNC.withState(new SuperstructureState(1.0, Math.toRadians(70)))
-                );
+                        SetpointMode.WRIST_SYNC.withState(
+                                new SuperstructureState(L4.elevatorPosition, Math.toRadians(0))),
+                        SetpointMode.WRIST_SYNC.withState(
+                                new SuperstructureState(1.31, Math.toRadians(0))),
+                        SetpointMode.WRIST_SYNC.withState(
+                                new SuperstructureState(1.0, Math.toRadians(70))));
 
         public static final SuperstructureState HANDOFF =
                 new SuperstructureState(.005, Math.toRadians(90));
@@ -461,23 +461,6 @@ public final class Constants {
         public static final double ALGAE_REMOVAL = .5; // TODO CONFIG
         public static final double SHOOT_CORAL = .5;
         public static final double L1 = .3;
-    }
-
-    public static final class Winch {
-        public static final int ID = 0; // TODO CONFIG
-
-        public static final int CURRENT_LIMIT = 30;
-
-        public static final double REDUCTION = 1.0;
-
-        public static final double FUNNEL_UP_POSITION = 0.1; // TODO CONFIG
-        public static final double FUNNEL_DOWN_POSITION = 0; // TODO CONFIG
-    }
-
-    public static final class Climber {
-        public static final double CLIMBER_DEPLOY = 0; // TODO CONFIG
-        public static final double CLIMB = 0;
-        public static final double RESTOW_CLIMBER = 0;
     }
 
     public static final class Winch {

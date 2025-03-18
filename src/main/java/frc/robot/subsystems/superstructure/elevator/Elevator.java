@@ -15,8 +15,6 @@ import frc.robot.Constants;
 import frc.robot.subsystems.leds.Leds;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
-
-import frc.robot.subsystems.superstructure.Superstructure;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 

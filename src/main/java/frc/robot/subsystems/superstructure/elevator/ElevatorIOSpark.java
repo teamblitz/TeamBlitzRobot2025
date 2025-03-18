@@ -140,17 +140,20 @@ public class ElevatorIOSpark implements ElevatorIO {
     @Override
     public void setFFLeft(double kS, double kG, double kV, double kA) {
         leftFeedforward = new ElevatorFeedforward(kS, kG, kV, kA);
-        SmartDashboard.putNumber("lelevatormaxspeed4", leftFeedforward.maxAchievableVelocity(12, 3));
-        SmartDashboard.putNumber("lelevatormaxspeed6", leftFeedforward.maxAchievableVelocity(12, 4));
+        SmartDashboard.putNumber(
+                "lelevatormaxspeed4", leftFeedforward.maxAchievableVelocity(12, 3));
+        SmartDashboard.putNumber(
+                "lelevatormaxspeed6", leftFeedforward.maxAchievableVelocity(12, 4));
     }
 
     @Override
     public void setFFRight(double kS, double kG, double kV, double kA) {
         rightFeedforward = new ElevatorFeedforward(kS, kG, kV, kA);
-         SmartDashboard.putNumber("relevatormaxspeed4", rightFeedforward.maxAchievableVelocity(12, 3));
-         SmartDashboard.putNumber("relevatormaxspeed6", rightFeedforward.maxAchievableVelocity(12, 4));
+        SmartDashboard.putNumber(
+                "relevatormaxspeed4", rightFeedforward.maxAchievableVelocity(12, 3));
+        SmartDashboard.putNumber(
+                "relevatormaxspeed6", rightFeedforward.maxAchievableVelocity(12, 4));
     }
-
 
     @Override
     public void setBrakeMode(boolean brakeMode) {

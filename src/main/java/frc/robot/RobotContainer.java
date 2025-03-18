@@ -34,9 +34,7 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIOSpark;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.superstructure.elevator.Elevator;
-import frc.robot.subsystems.superstructure.elevator.ElevatorIOSpark;
 import frc.robot.subsystems.superstructure.wrist.Wrist;
-import frc.robot.subsystems.superstructure.wrist.WristIOSpark;
 import frc.robot.subsystems.winch.Winch;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -94,13 +92,14 @@ public class RobotContainer {
 
         superstructure.setDefaultCommand(
                 Commands.either(
-                        superstructure.toGoal(Superstructure.Goal.STOW)
-                                .onlyWhile(intake::hasCoral),
-                        superstructure.toGoal(Superstructure.Goal.HANDOFF)
-                                .until(intake::hasCoral),
-                        intake::hasCoral
-                ).withName("superstructure/conditionalDefault")
-        );
+                                superstructure
+                                        .toGoal(Superstructure.Goal.STOW)
+                                        .onlyWhile(intake::hasCoral),
+                                superstructure
+                                        .toGoal(Superstructure.Goal.HANDOFF)
+                                        .until(intake::hasCoral),
+                                intake::hasCoral)
+                        .withName("superstructure/conditionalDefault"));
     }
 
     private void configureSubsystems() {
@@ -157,8 +156,6 @@ public class RobotContainer {
                                     new RangeSensorIO() {});
                 };
 
-
-
         //        wrist = new Wrist(new WristIO() {});
 
         intake = new Intake(new IntakeIOSpark());
@@ -192,7 +189,11 @@ public class RobotContainer {
                         .alongWith(intake.kick_algae()));
 
         OIConstants.SuperStructure.HANDOFF.whileTrue(
-                superstructure.toGoal(Superstructure.Goal.HANDOFF).withDeadline(intake.handoff()).unless(intake::hasCoral).withName("handoff"));
+                superstructure
+                        .toGoal(Superstructure.Goal.HANDOFF)
+                        .withDeadline(intake.handoff())
+                        .unless(intake::hasCoral)
+                        .withName("handoff"));
 
         OIConstants.SuperStructure.SCORE
                 .and(superstructure.triggerAtGoal(Superstructure.Goal.L1))
@@ -216,9 +217,13 @@ public class RobotContainer {
         OIConstants.Winch.WINCH_UP.whileTrue(winch.raiseFunnel());
 
         OIConstants.Elevator.MANUAL_UP.whileTrue(
-                elevator.upManual().alongWith(superstructure.idle()).withName("elevator/manual_up"));
+                elevator.upManual()
+                        .alongWith(superstructure.idle())
+                        .withName("elevator/manual_up"));
         OIConstants.Elevator.MANUAL_DOWN.whileTrue(
-                elevator.downManual().alongWith(superstructure.idle()).withName("elevator/manual_down"));
+                elevator.downManual()
+                        .alongWith(superstructure.idle())
+                        .withName("elevator/manual_down"));
 
         OIConstants.Climber.DEPLOY_CLIMBER.whileTrue(climber.deployClimber());
         OIConstants.Climber.CLIMB.whileTrue(climber.climb());
