@@ -19,6 +19,8 @@ public class WinchIOSpark implements WinchIO {
 
         config.smartCurrentLimit(CURRENT_LIMIT);
 
+        config.encoder.positionConversionFactor(1 / WINCH_GEAR_RATIO);
+
         // TODO: SET POSITION AND VELOCITY CONVERSION FACTOR, LETS DO THIS IN UNITS OF PULLEY
         // ROTATIONS.
         winchEncoder = winchMotor.getEncoder();

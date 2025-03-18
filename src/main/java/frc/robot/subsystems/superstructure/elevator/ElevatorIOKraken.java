@@ -31,6 +31,8 @@ public class ElevatorIOKraken implements ElevatorIO {
 
         config.MotorOutput.withNeutralMode(NeutralModeValue.Brake);
 
+        config.Feedback.withSensorToMechanismRatio(ELEVATOR_GEAR_RATIO / SPROCKET_CIRCUMFERENCE);
+
         config.CurrentLimits.withStatorCurrentLimit(120);
 
         config.MotionMagic.withMotionMagicCruiseVelocity(.5).withMotionMagicAcceleration(1);
