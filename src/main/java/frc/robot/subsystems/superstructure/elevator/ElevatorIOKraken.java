@@ -22,8 +22,8 @@ public class ElevatorIOKraken implements ElevatorIO {
             new MotionMagicVoltage(0).withSlot(0);
 
     public ElevatorIOKraken() {
-        leftMotor = new TalonFX(LEFT_ID); // TODO set val
-        rightMotor = new TalonFX(RIGHT_ID); // TODO set val
+        leftMotor = new TalonFX(LEFT_ID);
+        rightMotor = new TalonFX(RIGHT_ID);
 
         leftMotor.setControl(new Follower(rightMotor.getDeviceID(), false));
 
@@ -35,16 +35,11 @@ public class ElevatorIOKraken implements ElevatorIO {
 
         config.MotionMagic.withMotionMagicCruiseVelocity(.5).withMotionMagicAcceleration(1);
 
-
-
-
         config.MotorOutput.withInverted(LEFT_INVERT);
         leftMotor.getConfigurator().apply(config);
 
         config.MotorOutput.withInverted(RIGHT_INVERT);
         rightMotor.getConfigurator().apply(config);
-
-
 
         leftMotor.setPosition(0);
         rightMotor.setPosition(0);
@@ -52,18 +47,6 @@ public class ElevatorIOKraken implements ElevatorIO {
         leftMotor.setControl(new Follower(rightMotor.getDeviceID(), true));
 
         leader = rightMotor;
-//        ParentDevice.optimizeBusUtilizationForAll(leftMotor, rightMotor);
-//
-//        BaseStatusSignal.setUpdateFrequencyForAll(
-//                100,
-//                leftMotor.getPosition(),
-//                leftMotor.getVelocity(),
-//                leftMotor.getMotorVoltage(),
-//                leftMotor.getTorqueCurrent(),
-//                rightMotor.getPosition(),
-//                rightMotor.getVelocity(),
-//                rightMotor.getMotorVoltage(),
-//                rightMotor.getTorqueCurrent());
     }
 
     @Override

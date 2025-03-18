@@ -54,7 +54,7 @@ public final class Constants {
         SimBot
     }
 
-    public static final Robot ROBOT = Robot.DevBot;
+    public static final Robot ROBOT = Robot.CompBot;
 
     public static boolean compBot() {
         return ROBOT == Robot.CompBot;
@@ -475,6 +475,9 @@ public final class Constants {
     }
 
     public static final class Climber {
+        public static final int RIGHT_ID = 60;
+        public static final int LEFT_ID = 61;
+
         public static final double CLIMBER_DEPLOY = 0; // TODO CONFIG
         public static final double CLIMB = 0;
         public static final double RESTOW_CLIMBER = 0;

@@ -142,7 +142,10 @@ public class OIConstants {
     public static final class Climber {
         public static final Trigger DEPLOY_CLIMBER = UNBOUND; // TODO BIND
         public static final Trigger CLIMB = UNBOUND; // TODO BIND
-        public static final Trigger RESTOW_CLIMBER = UNBOUND; // TODO BIND
+        public static final Trigger RESTOW_CLIMBER = UNBOUND;
+
+        public static final Trigger CLIMBER_UP = OPERATOR_CONTROLLER.leftTrigger();
+        public static final Trigger CLIMBER_DOWN = OPERATOR_CONTROLLER.rightTrigger();
     }
 
     //    public static final class TestMode {

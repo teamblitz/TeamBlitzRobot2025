@@ -53,4 +53,11 @@ public class Climber extends BlitzSubsystem {
                                         EqualsUtil.epsilonEquals(
                                                 inputs.position, RESTOW_CLIMBER, 1e-3)));
     }
+
+    public Command setSpeed(double speed) {
+        return runEnd(
+                () -> io.setSpeed(speed),
+                () -> io.setSpeed(0)
+        );
+    }
 }

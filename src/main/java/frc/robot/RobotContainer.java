@@ -225,13 +225,12 @@ public class RobotContainer {
                         .alongWith(superstructure.idle())
                         .withName("elevator/manual_down"));
 
-        OIConstants.Climber.DEPLOY_CLIMBER.whileTrue(climber.deployClimber());
-        OIConstants.Climber.CLIMB.whileTrue(climber.climb());
-        OIConstants.Climber.RESTOW_CLIMBER.whileTrue(climber.restowClimber());
+//        OIConstants.Climber.DEPLOY_CLIMBER.whileTrue(climber.deployClimber());
+//        OIConstants.Climber.CLIMB.whileTrue(climber.climb());
+//        OIConstants.Climber.RESTOW_CLIMBER.whileTrue(climber.restowClimber());
 
-        OIConstants.Climber.DEPLOY_CLIMBER.whileTrue(climber.deployClimber());
-        OIConstants.Climber.CLIMB.whileTrue(climber.climb());
-        OIConstants.Climber.RESTOW_CLIMBER.whileTrue(climber.restowClimber());
+        OIConstants.Climber.CLIMBER_UP.whileTrue(climber.setSpeed(.2));
+        OIConstants.Climber.CLIMBER_DOWN.whileTrue(climber.setSpeed(-.2));
 
         new Trigger(() -> Math.abs(OIConstants.Wrist.WRIST_MANUAL.getAsDouble()) > .07)
                 .whileTrue(
