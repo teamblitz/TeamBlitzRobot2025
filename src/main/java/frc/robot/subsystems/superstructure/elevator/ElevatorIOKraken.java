@@ -75,4 +75,10 @@ public class ElevatorIOKraken implements ElevatorIO {
     public void setMotionMagic(double extension) {
         leader.setControl(motionMagic.withPosition(extension));
     }
+
+    @Override
+    public void setBrakeMode(boolean brakeMode) {
+        leftMotor.setNeutralMode(brakeMode ? NeutralModeValue.Brake : NeutralModeValue.Coast);
+        rightMotor.setNeutralMode(brakeMode ? NeutralModeValue.Brake : NeutralModeValue.Coast);
+    }
 }

@@ -10,11 +10,10 @@ import org.littletonrobotics.junction.Logger;
 
 public class Climber extends BlitzSubsystem {
     private final ClimberIO io;
-    // TODO Make Auto Logs Work
     private final ClimberInputsAutoLogged inputs = new ClimberInputsAutoLogged();
 
     public Climber(ClimberIO io) {
-        super("Climber");
+        super("climber");
         this.io = io;
     }
 

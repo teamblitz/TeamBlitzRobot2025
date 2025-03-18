@@ -236,8 +236,8 @@ public class RobotContainer {
 //        OIConstants.Climber.CLIMB.whileTrue(climber.climb());
 //        OIConstants.Climber.RESTOW_CLIMBER.whileTrue(climber.restowClimber());
 
-        OIConstants.Climber.CLIMBER_UP.whileTrue(climber.setSpeed(.2));
-        OIConstants.Climber.CLIMBER_DOWN.whileTrue(climber.setSpeed(-.2));
+        OIConstants.Climber.CLIMBER_UP.whileTrue(climber.setSpeed(.8));
+        OIConstants.Climber.CLIMBER_DOWN.whileTrue(climber.setSpeed(-.8));
 
         new Trigger(() -> Math.abs(OIConstants.Wrist.WRIST_MANUAL.getAsDouble()) > .07)
                 .whileTrue(

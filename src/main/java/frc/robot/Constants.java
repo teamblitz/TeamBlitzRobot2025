@@ -153,7 +153,7 @@ public final class Constants {
         public static final double CLOSED_LOOP_RAMP = 0.0;
 
         /* Angle Motor PID Values */
-        public static final double ANGLE_KP = compBot() ? .004 : 0.0035;
+        public static final double ANGLE_KP = compBot() ? .10 : 0.0035;
         public static final double ANGLE_KI = 0.0;
         public static final double ANGLE_KD = 0.0;
         public static final double ANGLE_KF = 0.0; // For now, should remain zero
@@ -326,7 +326,7 @@ public final class Constants {
 
         public static final double OPEN_LOOP_RAMP = .25;
         public static final int CURRENT_LIMIT = 60;
-        public static final double ELEVATOR_GEAR_RATIO = 12.0 / 1.0;
+        public static final double ELEVATOR_GEAR_RATIO = compBot() ? 9 : 12;
         public static final double SPROCKET_CIRCUMFERENCE = Units.inchesToMeters(.25) * 24;
 
         public static final InvertedValue LEFT_INVERT = InvertedValue.Clockwise_Positive;

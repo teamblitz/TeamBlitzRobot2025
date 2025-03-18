@@ -40,4 +40,9 @@ public class ClimberIOKraken implements ClimberIO {
     public void setSpeed(double speed) {
         leader.set(speed);
     }
+
+    public void updateInputs(ClimberInputs inputs) {
+        inputs.position = leader.getPosition().getValueAsDouble();
+        inputs.rpm = leader.getVelocity().getValueAsDouble();
+    }
 }

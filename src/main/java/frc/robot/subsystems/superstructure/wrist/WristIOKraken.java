@@ -75,4 +75,9 @@ public class WristIOKraken implements WristIO {
         throw new UnsupportedOperationException("Not supported yet.");
         //            wristMotor.setControl(motionMagic.withPosition(extension));
     }
+
+    @Override
+    public void setBrakeMode(boolean brakeMode) {
+        wristMotor.setNeutralMode(brakeMode ? NeutralModeValue.Brake : NeutralModeValue.Coast);
+    }
 }
