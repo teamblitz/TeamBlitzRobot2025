@@ -528,6 +528,10 @@ public class Drive extends BlitzSubsystem {
         swerveOdometry.resetPosition(new Rotation2d(), getModulePositions(), pose);
     }
 
+    public void addVisionMeasurement(Pose2d pose, double timestamp) {
+        
+    }
+
     public void zeroGyro() {
         setGyro(0);
     }

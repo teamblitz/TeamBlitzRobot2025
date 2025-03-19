@@ -47,6 +47,8 @@ import frc.robot.subsystems.superstructure.wrist.WristIOSpark;
 import frc.robot.subsystems.winch.Winch;
 import frc.robot.subsystems.winch.WinchIOSpark;
 import org.littletonrobotics.junction.Logger;
+import frc.robot.subsystems.vision.DriveToTagCommand;
+
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -264,6 +266,8 @@ public class RobotContainer {
                                         elevator.coastCommand(),
                                         climber.coastCommand())
                                 .onlyWhile(RobotState::isDisabled));
+        
+        OIConstants.Drive.DRIVE_TO_TAG.whileTrue(DriveToTagCommand);
     }
 
     private void configureAutoCommands() {
