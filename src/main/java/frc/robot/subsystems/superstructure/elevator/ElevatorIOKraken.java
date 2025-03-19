@@ -36,26 +36,23 @@ public class ElevatorIOKraken implements ElevatorIO {
 
         config.MotorOutput.withNeutralMode(NeutralModeValue.Brake);
 
-        ///  DO NOT UNCOMMENT OR ELSE
-        config.Feedback.withSensorToMechanismRatio(ELEVATOR_GEAR_RATIO / SPROCKET_CIRCUMFERENCE);
+        config.Feedback.withSensorToMechanismRatio(ELEVATOR_GEAR_RATIO / (SPROCKET_CIRCUMFERENCE * 2));
         config.CurrentLimits.withStatorCurrentLimit(120);
 
-        config.MotionMagic.withMotionMagicCruiseVelocity(.1)
-                .withMotionMagicAcceleration(.1);
+        config.MotionMagic.withMotionMagicCruiseVelocity(6)
+                .withMotionMagicAcceleration(12);
 
-//        config.Slot0.withGravityType(GravityTypeValue.Elevator_Static)
-//                .withKS(metersToRotations(KrakenGains.kS))
-//                .withKV(metersToRotations(KrakenGains.kV))
-//                .withKA(metersToRotations(KrakenGains.kA))
-//                .withKG(metersToRotations(KrakenGains.kG))
-//                .withKP(metersToRotations(KrakenGains.kP));
+
 
         config.Slot0.withGravityType(GravityTypeValue.Elevator_Static)
-                .withKS(metersToRotations(KrakenGains.kS))
+                .withKS(KrakenGains.kS)
+                // Originaly in terms of rotations. But because it is a reciprical
+                // do the other one
+                // ONLY CONVERT KV AND KA, the rest are constant.
                 .withKV(metersToRotations(KrakenGains.kV))
                 .withKA(metersToRotations(KrakenGains.kA))
-                .withKG(metersToRotations(KrakenGains.kG))
-                .withKP(metersToRotations(KrakenGains.kP));
+                .withKG(KrakenGains.kG)
+                .withKP(KrakenGains.kP);
 
 //        config.SoftwareLimitSwitch
 //                        .withForwardSoftLimitEnable(true)
@@ -129,10 +126,10 @@ public class ElevatorIOKraken implements ElevatorIO {
     }
 
     private double metersToRotations(double meters) {
-        return meters * ELEVATOR_GEAR_RATIO / SPROCKET_CIRCUMFERENCE;
+        return meters * ELEVATOR_GEAR_RATIO / (SPROCKET_CIRCUMFERENCE * 2);
     }
 
     private double rotationsToMeters(double rotations) {
-        return rotations * SPROCKET_CIRCUMFERENCE / ELEVATOR_GEAR_RATIO;
+        return rotations * (SPROCKET_CIRCUMFERENCE * 2) / ELEVATOR_GEAR_RATIO;
     }
 }

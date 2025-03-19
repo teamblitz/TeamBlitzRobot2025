@@ -362,7 +362,7 @@ public final class Constants {
             public static final double kV = 0.12729;
             public static final double kA = 0.0055511;
             public static final double kG = 0.26856;
-            public static final double kP = 0; //75.313;
+            public static final double kP = 4 * 12; //75.313;
             public static final double kD = 0; //0.84699;
         }
     }
