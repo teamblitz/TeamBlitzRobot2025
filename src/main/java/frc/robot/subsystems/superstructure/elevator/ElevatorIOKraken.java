@@ -2,10 +2,12 @@ package frc.robot.subsystems.superstructure.elevator;
 
 import com.ctre.phoenix.motorcontrol.can.BaseTalonConfiguration;
 import com.ctre.phoenix6.BaseStatusSignal;
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -18,8 +20,13 @@ public class ElevatorIOKraken implements ElevatorIO {
     public final TalonFX rightMotor;
     public TalonFX leader;
 
-    public final MotionMagicVoltage motionMagic =
+    private final MotionMagicVoltage motionMagic =
             new MotionMagicVoltage(0).withSlot(0);
+
+//    private final MotionMagicConfigs motionMagicConfigs = new MotionMagicConfigs()
+//            .withMotionMagicExpo_kV();
+
+    private final VoltageOut voltageOut = new VoltageOut(0).withEnableFOC(true);
 
     public ElevatorIOKraken() {
         leftMotor = new TalonFX(LEFT_ID);
@@ -43,6 +50,18 @@ public class ElevatorIOKraken implements ElevatorIO {
         config.MotorOutput.withInverted(RIGHT_INVERT);
         rightMotor.getConfigurator().apply(config);
 
+        BaseStatusSignal.setUpdateFrequencyForAll(
+                100,
+                leftMotor.getMotorVoltage(),
+                leftMotor.getRotorPosition(),
+                leftMotor.getRotorVelocity(),
+                rightMotor.getMotorVoltage(),
+                rightMotor.getRotorPosition(),
+                rightMotor.getRotorVelocity()
+        );
+
+        /* FOR SYSID */
+
         leftMotor.setPosition(0);
         rightMotor.setPosition(0);
 
@@ -64,6 +83,14 @@ public class ElevatorIOKraken implements ElevatorIO {
 
         inputs.torqueCurrentLeft = leftMotor.getTorqueCurrent().getValueAsDouble();
         inputs.torqueCurrentRight = rightMotor.getTorqueCurrent().getValueAsDouble();
+
+
+        /* FOR SYSID */
+        leftMotor.getRotorPosition().getValueAsDouble();
+        rightMotor.getRotorPosition().getValueAsDouble();
+
+        leftMotor.getRotorVelocity().getValueAsDouble();
+        rightMotor.getRotorVelocity().getValueAsDouble();
     }
 
     @Override
@@ -72,8 +99,15 @@ public class ElevatorIOKraken implements ElevatorIO {
     }
 
     @Override
+    public void setVolts(double voltage) {
+        leader.setControl(voltageOut.withOutput(voltage));
+    }
+
+    @Override
     public void setMotionMagic(double extension) {
-        leader.setControl(motionMagic.withPosition(extension));
+        leader.setControl(
+                motionMagic.withPosition(extension)
+        );
     }
 
     @Override

@@ -45,7 +45,7 @@ public class Superstructure extends BlitzSubsystem {
 
         super("superstructure");
         this.elevator = new Elevator(elevatorIO, this::idle);
-        this.wrist = new Wrist(wristIO);
+        this.wrist = new Wrist(wristIO, this::idle);
 
         staticGoals =
                 Map.ofEntries(

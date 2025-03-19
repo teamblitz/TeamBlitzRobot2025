@@ -16,6 +16,10 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.AngularVelocityUnit;
+import edu.wpi.first.units.VoltageUnit;
+import edu.wpi.first.units.measure.Per;
+import edu.wpi.first.units.measure.Voltage;
 import frc.lib.util.COTSSwerveConstants;
 import frc.lib.util.SwerveModuleConstants;
 import java.util.Arrays;
@@ -59,6 +63,10 @@ public final class Constants {
     public static boolean compBot() {
         return ROBOT == Robot.CompBot;
     }
+
+//    public static H compDev<H>(H comp, H dev) {
+//        return ROBOT == Robot.CompBot ? comp : dev;
+//    }
 
     public static final double LOOP_PERIOD_SEC = frc.robot.Robot.defaultPeriodSecs;
 
@@ -326,11 +334,11 @@ public final class Constants {
 
         public static final double OPEN_LOOP_RAMP = .25;
         public static final int CURRENT_LIMIT = 60;
-        public static final double ELEVATOR_GEAR_RATIO = compBot() ? 9 : 12;
-        public static final double SPROCKET_CIRCUMFERENCE = Units.inchesToMeters(.25) * 24;
+        public static final double ELEVATOR_GEAR_RATIO = compBot() ? 5 : 12;
+        public static final double SPROCKET_CIRCUMFERENCE = Units.inchesToMeters(.25) * (compBot() ? 22 : 24);
 
-        public static final InvertedValue LEFT_INVERT = InvertedValue.Clockwise_Positive;
-        public static final InvertedValue RIGHT_INVERT = InvertedValue.CounterClockwise_Positive;
+        public static final InvertedValue LEFT_INVERT = InvertedValue.CounterClockwise_Positive;
+        public static final InvertedValue RIGHT_INVERT = InvertedValue.Clockwise_Positive;
 
         public static final class RightGains {
             public static final double KS = 0.26266;
@@ -351,10 +359,15 @@ public final class Constants {
             public static final double KD = 2; // 905.76;
             public static final double KI = 0;
         }
+
+//        public static final class KrakenGains {
+//            public static final Per<VoltageUnit, AngularVelocityUnit> foo = Voltage
+//        }
     }
 
     public static final class Wrist {
         public static final int CAN_ID = 30;
+        public static final int ABS_ENCODER_ID = 31;
         public static final double WRIST_GEAR_RATIO = (9.0) * (5.0) * (54.0 / 16.0);
 
         public static final double OPEN_LOOP_RAMP = .25;
@@ -460,16 +473,15 @@ public final class Constants {
     }
 
     public static final class Winch {
-        public static final int ID = 0; // TODO CONFIG
+        public static final int ID = 50; // TODO CONFIG
 
-        public static final int CURRENT_LIMIT = 30;
+        public static final int CURRENT_LIMIT = 25;
 
-        public static final double REDUCTION = 1.0;
 
         public static final double FUNNEL_UP_POSITION = 0.1; // TODO CONFIG
         public static final double FUNNEL_DOWN_POSITION = 0; // TODO CONFIG
 
-        public static final double WINCH_GEAR_RATIO = 0; //TODO CONFIG NOW FOR COMP
+        public static final double WINCH_GEAR_RATIO = 25; //TODO CONFIG NOW FOR COMP
    }
 
     public static final class Climber {
@@ -480,6 +492,6 @@ public final class Constants {
         public static final double CLIMB = 0;
         public static final double RESTOW_CLIMBER = 0;
 
-        public static final double CLIMBER_GEAR_RATIO = 0; //TODO CONFIG NOW FOR COMP
+        public static final double CLIMBER_GEAR_RATIO = (9 * 5 * 3) * (24.0 / 12.0);
     }
 }

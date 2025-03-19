@@ -1,5 +1,6 @@
 package frc.robot.subsystems.superstructure.elevator;
 
+import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.Units;
@@ -79,7 +80,15 @@ public class Elevator extends BlitzSubsystem {
 
         routine =
                 new SysIdRoutine(
-                        new SysIdRoutine.Config(null, Units.Volts.of(5), null),
+                        new SysIdRoutine.Config(
+                                Units.Volts.per(Units.Seconds).of(.5),
+                                Units.Volts.of(4),
+                                null,
+                                Constants.compBot()
+                                        ? (state) ->
+                                                SignalLogger.writeString(
+                                                        "sysid-elevator-state", state.toString())
+                                        : null),
                         new SysIdRoutine.Mechanism(
                                 (volts) -> io.setVolts(volts.in(Units.Volts)), null, this));
 

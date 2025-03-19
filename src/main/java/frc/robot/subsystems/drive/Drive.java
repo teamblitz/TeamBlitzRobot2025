@@ -240,37 +240,41 @@ public class Drive extends BlitzSubsystem {
                                             }
                                         })
                                 .ignoringDisable(true))
-                .andThen(
-                        () -> {
-                            // Initialize the previous setpoint to the robot's current speeds &
-                            // module states
-                            ChassisSpeeds currentSpeeds =
-                                    getChassisSpeeds(); // Method to get current robot-relative
-                            // chassis speeds
-                            SwerveModuleState[] currentStates =
-                                    getModuleStates(); // Method to get the current swerve module
-                            // states
-                            previousSetpoint =
-                                    new SwerveSetpoint(
-                                            currentSpeeds,
-                                            currentStates,
-                                            DriveFeedforwards.zeros(PHYSICAL_CONSTANTS.numModules));
-                        })
+//                .andThen(
+//                        () -> {
+//                            // Initialize the previous setpoint to the robot's current speeds &
+//                            // module states
+//                            ChassisSpeeds currentSpeeds =
+//                                    getChassisSpeeds(); // Method to get current robot-relative
+//                            // chassis speeds
+//                            SwerveModuleState[] currentStates =
+//                                    getModuleStates(); // Method to get the current swerve module
+//                            // states
+//                            previousSetpoint =
+//                                    new SwerveSetpoint(
+//                                            currentSpeeds,
+//                                            currentStates,
+//                                            DriveFeedforwards.zeros(PHYSICAL_CONSTANTS.numModules));
+//                        })
                 .schedule();
 
-        Commands.sequence(
-                        Commands.waitSeconds(2),
-                        Commands.runOnce(
-                                () -> {
-                                    for (SwerveModule module : swerveModules) {
-                                        module.resetToAbs();
-                                    }
-                                }))
-                .repeatedly()
-                .withName("SWERVE FIX")
-                .until(DriverStation::isEnabled)
-                .ignoringDisable(true)
-                .schedule();
+//        if (!Constants.compBot()) {
+//            Commands.sequence(
+//                            Commands.waitSeconds(2),
+//                            Commands.runOnce(
+//                                    () -> {
+//                                        for (SwerveModule module : swerveModules) {
+//                                            module.resetToAbs();
+//                                        }
+//                                    }))
+//                    .repeatedly()
+//                    .withName("SWERVE FIX")
+//                    .until(DriverStation::isEnabled)
+//                    .onlyIf(() -> !Constants.compBot())
+//                    .ignoringDisable(true)
+//                    .schedule();
+//        }
+
 
         // Creates a SysIdRoutine
         routine =

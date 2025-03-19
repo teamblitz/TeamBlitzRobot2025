@@ -7,6 +7,7 @@
 
 package frc.robot;
 
+import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Timer;
@@ -141,7 +142,8 @@ public class Robot extends LoggedRobot {
 
         robotContainer = new RobotContainer();
 
-        printWatchdogEpochs();
+
+        SignalLogger.setPath("/media/sda1/");
     }
 
     long robotPeriodicNano = System.nanoTime();
@@ -212,6 +214,15 @@ public class Robot extends LoggedRobot {
     public void testInit() {
         // Cancels all running commands at the start of test mode.
         CommandScheduler.getInstance().cancelAll();
+
+        System.out.println("STARTING SIGNAL LOGGER");
+        SignalLogger.start();
+    }
+
+    @Override
+    public void testExit() {
+        System.out.println("STOPPING SIGNAL LOGGER");
+        SignalLogger.stop();
     }
 
     /* ***** --- Simulation --- ***** */

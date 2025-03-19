@@ -1,5 +1,6 @@
 package frc.robot.subsystems.superstructure.wrist;
 
+import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -13,8 +14,11 @@ import frc.lib.util.LoggedTunableNumber;
 import frc.robot.Constants;
 import frc.robot.subsystems.leds.Leds;
 import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
+
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
+import static edu.wpi.first.units.Units.*;
 
 public class Wrist extends BlitzSubsystem {
     public final WristIO io;
@@ -46,9 +50,12 @@ public class Wrist extends BlitzSubsystem {
     private final LoggedTunableNumber kG =
             new LoggedTunableNumber("wrist/kG", Constants.Wrist.WristGains.KG);
 
-    public Wrist(WristIO io) {
+    Supplier<Command> superstructureIdleCommand;
+
+    public Wrist(WristIO io, Supplier<Command> superstructureIdleCommand) {
         super("wrist");
         this.io = io;
+        this.superstructureIdleCommand = superstructureIdleCommand;
 
         setpoint = new TrapezoidProfile.State(getPosition(), 0.0);
         goal = null;
@@ -57,7 +64,11 @@ public class Wrist extends BlitzSubsystem {
 
         routine =
                 new SysIdRoutine(
-                        new SysIdRoutine.Config(null, Units.Volts.of(5), null),
+                        new SysIdRoutine.Config(Volts.per(Second).of(.5), Units.Volts.of(4), null, Constants.compBot()
+                                ? (state) ->
+                                SignalLogger.writeString(
+                                        "sysid-wrist-state", state.toString())
+                                : null),
                         new SysIdRoutine.Mechanism(
                                 (volts) -> io.setVolts(volts.in(Units.Volts)), null, this));
 
@@ -184,11 +195,11 @@ public class Wrist extends BlitzSubsystem {
     }
 
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-        return routine.quasistatic(direction);
+        return routine.quasistatic(direction).alongWith(superstructureIdleCommand.get());
     }
 
     public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-        return routine.dynamic(direction);
+        return routine.dynamic(direction).alongWith(superstructureIdleCommand.get());
     }
 
     public Command coastCommand() {

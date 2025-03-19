@@ -135,8 +135,8 @@ public class OIConstants {
     }
 
     public static final class Winch {
-        public static final Trigger WINCH_UP = UNBOUND;
-        public static final Trigger WINCH_DOWN = UNBOUND;
+        public static final Trigger WINCH_UP = DRIVE_CONTROLLER.button(7);
+        public static final Trigger WINCH_DOWN = DRIVE_CONTROLLER.button(8);
     }
 
     public static final class Climber {
