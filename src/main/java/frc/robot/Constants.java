@@ -394,6 +394,17 @@ public final class Constants {
             public static final double KA = 0.66332;
             public static final double KG = 0.2288;
         }
+
+        public static final class KrakenGains {
+                public static final double KS = 0.3576;
+            public static final double KV = 2.5726;
+            public static final double KA = 0.059493;
+            public static final double KG = 0.16157;
+            public static final double KP = 23.918; 
+            public static final double KD = 0; //0.70647
+        }
+
+
     }
 
     // Reset Elevator To Bottom before reset code
