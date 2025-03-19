@@ -360,9 +360,14 @@ public final class Constants {
             public static final double KI = 0;
         }
 
-//        public static final class KrakenGains {
-//            public static final Per<VoltageUnit, AngularVelocityUnit> foo = Voltage
-//        }
+       public static final class KrakenGains {
+           public static final double kS = 0.11757;
+           public static final double kV = 0.12729;
+           public static final double kA = 0.0055511;
+           public static final double kG = 0.26856;
+           public static final double kP = 75.313;
+           public static final double kD = 0.84699;
+       }
     }
 
     public static final class Wrist {
