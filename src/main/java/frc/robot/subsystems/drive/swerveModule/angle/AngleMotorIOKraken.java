@@ -1,23 +1,14 @@
 package frc.robot.subsystems.drive.swerveModule.angle;
 
-import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.PositionVoltage;
-import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.revrobotics.spark.SparkBase;
-import com.revrobotics.spark.SparkLowLevel;
-import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.SparkBaseConfig;
-import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.lib.util.SwerveModuleConstants;
 import frc.robot.Constants;
-import frc.robot.subsystems.drive.swerveModule.angle.AngleMotorIO;
 
 public class AngleMotorIOKraken implements AngleMotorIO {
     private final TalonFX motor;
@@ -72,8 +63,7 @@ public class AngleMotorIOKraken implements AngleMotorIO {
         config.CurrentLimits.withStatorCurrentLimitEnable(true)
                 .withStatorCurrentLimit(Constants.Drive.CurrentLimits.Kraken.DRIVE_STATOR);
 
-        config.Feedback.withSensorToMechanismRatio(
-                Constants.Drive.ANGLE_GEAR_RATIO / 360.0);
+        config.Feedback.withSensorToMechanismRatio(Constants.Drive.ANGLE_GEAR_RATIO / 360.0);
 
         motor.getConfigurator().apply(config);
 

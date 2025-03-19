@@ -7,15 +7,12 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
-import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.reduxrobotics.sensors.canandmag.Canandmag;
 import com.reduxrobotics.sensors.canandmag.CanandmagSettings;
 import edu.wpi.first.wpilibj2.command.Commands;
-
-import static frc.robot.Constants.Wrist.*;
 
 public class WristIOKraken implements WristIO {
     private final TalonFX wristMotor;
@@ -48,24 +45,25 @@ public class WristIOKraken implements WristIO {
                         : InvertedValue.CounterClockwise_Positive);
         wristMotor.getConfigurator().apply(config);
 
-
         Commands.sequence(
-            Commands.waitSeconds(2),
-                Commands.runOnce(
-                        () -> {
-                            if (absoluteEncoder.isConnected()) wristMotor.setPosition(absoluteEncoder.getAbsPosition() * Math.PI * 2);
-                            else wristMotor.setPosition(Math.toRadians(90));
-                        })).ignoringDisable(true).schedule();
+                        Commands.waitSeconds(2),
+                        Commands.runOnce(
+                                () -> {
+                                    if (absoluteEncoder.isConnected())
+                                        wristMotor.setPosition(
+                                                absoluteEncoder.getAbsPosition() * Math.PI * 2);
+                                    else wristMotor.setPosition(Math.toRadians(90));
+                                }))
+                .ignoringDisable(true)
+                .schedule();
 
-//        ParentDevice.optimizeBusUtilizationForAll(wristMotor);
-//
+        //        ParentDevice.optimizeBusUtilizationForAll(wristMotor);
+        //
         BaseStatusSignal.setUpdateFrequencyForAll(
                 100,
                 wristMotor.getRotorPosition(),
                 wristMotor.getRotorVelocity(),
                 wristMotor.getMotorVoltage());
-
-
     }
 
     @Override

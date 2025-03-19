@@ -142,7 +142,6 @@ public class Robot extends LoggedRobot {
 
         robotContainer = new RobotContainer();
 
-
         SignalLogger.setPath("/media/sda1/");
     }
 

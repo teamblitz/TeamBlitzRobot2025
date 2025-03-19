@@ -16,10 +16,6 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.AngularVelocityUnit;
-import edu.wpi.first.units.VoltageUnit;
-import edu.wpi.first.units.measure.Per;
-import edu.wpi.first.units.measure.Voltage;
 import frc.lib.util.COTSSwerveConstants;
 import frc.lib.util.SwerveModuleConstants;
 import java.util.Arrays;
@@ -64,9 +60,9 @@ public final class Constants {
         return ROBOT == Robot.CompBot;
     }
 
-//    public static H compDev<H>(H comp, H dev) {
-//        return ROBOT == Robot.CompBot ? comp : dev;
-//    }
+    //    public static H compDev<H>(H comp, H dev) {
+    //        return ROBOT == Robot.CompBot ? comp : dev;
+    //    }
 
     public static final double LOOP_PERIOD_SEC = frc.robot.Robot.defaultPeriodSecs;
 
@@ -335,7 +331,8 @@ public final class Constants {
         public static final double OPEN_LOOP_RAMP = .25;
         public static final int CURRENT_LIMIT = 60;
         public static final double ELEVATOR_GEAR_RATIO = compBot() ? 5 : 12;
-        public static final double SPROCKET_CIRCUMFERENCE = Units.inchesToMeters(.25) * (compBot() ? 22 : 24);
+        public static final double SPROCKET_CIRCUMFERENCE =
+                Units.inchesToMeters(.25) * (compBot() ? 22 : 24);
 
         public static final InvertedValue LEFT_INVERT = InvertedValue.CounterClockwise_Positive;
         public static final InvertedValue RIGHT_INVERT = InvertedValue.Clockwise_Positive;
@@ -360,14 +357,14 @@ public final class Constants {
             public static final double KI = 0;
         }
 
-       public static final class KrakenGains {
-           public static final double kS = 0.11757;
-           public static final double kV = 0.12729;
-           public static final double kA = 0.0055511;
-           public static final double kG = 0.26856;
-           public static final double kP = 75.313;
-           public static final double kD = 0.84699;
-       }
+        public static final class KrakenGains {
+            public static final double kS = 0.11757;
+            public static final double kV = 0.12729;
+            public static final double kA = 0.0055511;
+            public static final double kG = 0.26856;
+            public static final double kP = 0; //75.313;
+            public static final double kD = 0; //0.84699;
+        }
     }
 
     public static final class Wrist {
@@ -482,12 +479,11 @@ public final class Constants {
 
         public static final int CURRENT_LIMIT = 25;
 
-
         public static final double FUNNEL_UP_POSITION = 0.1; // TODO CONFIG
         public static final double FUNNEL_DOWN_POSITION = 0; // TODO CONFIG
 
-        public static final double WINCH_GEAR_RATIO = 25; //TODO CONFIG NOW FOR COMP
-   }
+        public static final double WINCH_GEAR_RATIO = 25; // TODO CONFIG NOW FOR COMP
+    }
 
     public static final class Climber {
         public static final int RIGHT_ID = 60;

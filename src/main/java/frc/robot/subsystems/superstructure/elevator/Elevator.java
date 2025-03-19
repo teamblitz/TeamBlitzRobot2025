@@ -106,11 +106,11 @@ public class Elevator extends BlitzSubsystem {
 
         characterizationTab.add(
                 "elevator/0.1m",
-                withGoal(new TrapezoidProfile.State(.1, 0)).withName("elevator/0.1m test"));
+                withGoal(new TrapezoidProfile.State(.1, 0)).alongWith(superstructureIdle.get()).withName("elevator/0.1m test"));
 
         characterizationTab.add(
                 "elevator/0.4m",
-                withGoal(new TrapezoidProfile.State(.8, 0)).withName("elevator/0.5m test"));
+                withGoal(new TrapezoidProfile.State(.8, 0)).alongWith(superstructureIdle.get()).withName("elevator/0.5m test"));
 
         loopTimer.restart();
     }
@@ -124,13 +124,16 @@ public class Elevator extends BlitzSubsystem {
         Logger.recordOutput(logKey + "/rotLeftDeg", Math.toDegrees(inputs.positionLeft) % 360);
         Logger.recordOutput(logKey + "/rotRightDeg", Math.toDegrees(inputs.positionRight) % 360);
 
-        if (goal != null && DriverStation.isEnabled()) {
+        if (goal != null && DriverStation.isEnabled() && !Constants.compBot()) {
             setpoint = profile.calculate(loopTimer.get(), setpoint, goal);
             TrapezoidProfile.State future_setpoint =
                     profile.calculate(Constants.LOOP_PERIOD_SEC, setpoint, goal);
 
             io.setSetpoint(setpoint.position, setpoint.velocity, future_setpoint.velocity);
 
+        }
+
+        if (goal != null) {
             Logger.recordOutput(logKey + "/profile/positionSetpoint", setpoint.position);
             Logger.recordOutput(logKey + "/profile/velocitySetpoint", setpoint.velocity);
 
@@ -205,6 +208,15 @@ public class Elevator extends BlitzSubsystem {
     }
 
     public Command withGoal(TrapezoidProfile.State goal) {
+        if (Constants.compBot()) {
+            return runOnce(() -> io.setMotionMagic(goal.position))
+                    .andThen(
+                            Commands.waitUntil(
+                                    () -> MathUtil.isNear(goal.position, getPosition(), 1e-2)))
+                    .handleInterrupt(() -> io.setMotionMagic(getPosition()))
+                    .beforeStarting(refreshCurrentState());
+        }
+
         return runOnce(
                         () -> {
                             this.goal = goal;

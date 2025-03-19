@@ -1,14 +1,12 @@
 package frc.robot.subsystems.climber;
 
-import com.ctre.phoenix6.BaseStatusSignal;
+import static frc.robot.Constants.Climber.*;
+
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
-import com.ctre.phoenix6.controls.PositionVoltage;
-import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import static frc.robot.Constants.Climber.*;
 
 public class ClimberIOKraken implements ClimberIO {
     public final TalonFX leftMotor;
@@ -33,7 +31,6 @@ public class ClimberIOKraken implements ClimberIO {
         leftMotor.setControl(new Follower(rightMotor.getDeviceID(), true));
 
         leader = rightMotor;
-
     }
 
     @Override

@@ -1,13 +1,13 @@
 package frc.robot.subsystems.intake;
 
+import static frc.robot.Constants.Intake.*;
+
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import static frc.robot.Constants.Intake.*;
 
 public class IntakeIOKraken implements IntakeIO {
     public final TalonFX intake;
-
 
     public IntakeIOKraken() {
         intake = new TalonFX(CAN_ID); // TODO SET VALUE

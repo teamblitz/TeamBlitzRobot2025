@@ -1,5 +1,7 @@
 package frc.robot.subsystems.superstructure.wrist;
 
+import static edu.wpi.first.units.Units.*;
+
 import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.Units;
@@ -15,10 +17,8 @@ import frc.robot.Constants;
 import frc.robot.subsystems.leds.Leds;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
-
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
-import static edu.wpi.first.units.Units.*;
 
 public class Wrist extends BlitzSubsystem {
     public final WristIO io;
@@ -64,11 +64,15 @@ public class Wrist extends BlitzSubsystem {
 
         routine =
                 new SysIdRoutine(
-                        new SysIdRoutine.Config(Volts.per(Second).of(.5), Units.Volts.of(4), null, Constants.compBot()
-                                ? (state) ->
-                                SignalLogger.writeString(
-                                        "sysid-wrist-state", state.toString())
-                                : null),
+                        new SysIdRoutine.Config(
+                                Volts.per(Second).of(.5),
+                                Units.Volts.of(4),
+                                null,
+                                Constants.compBot()
+                                        ? (state) ->
+                                                SignalLogger.writeString(
+                                                        "sysid-wrist-state", state.toString())
+                                        : null),
                         new SysIdRoutine.Mechanism(
                                 (volts) -> io.setVolts(volts.in(Units.Volts)), null, this));
 

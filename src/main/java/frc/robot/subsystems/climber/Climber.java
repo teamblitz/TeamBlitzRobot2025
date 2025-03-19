@@ -54,9 +54,6 @@ public class Climber extends BlitzSubsystem {
     }
 
     public Command setSpeed(double speed) {
-        return runEnd(
-                () -> io.setSpeed(speed),
-                () -> io.setSpeed(0)
-        );
+        return runEnd(() -> io.setSpeed(speed), () -> io.setSpeed(0));
     }
 }

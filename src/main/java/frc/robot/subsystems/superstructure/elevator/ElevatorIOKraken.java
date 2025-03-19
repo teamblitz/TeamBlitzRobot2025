@@ -1,17 +1,15 @@
 package frc.robot.subsystems.superstructure.elevator;
 
-import com.ctre.phoenix.motorcontrol.can.BaseTalonConfiguration;
+import static frc.robot.Constants.Elevator.*;
+
 import com.ctre.phoenix6.BaseStatusSignal;
-import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
-import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
-import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import static frc.robot.Constants.Elevator.*;
 
 // TODO: With the current elevator design it is unlikely that we will want to be able to control
 // both sides separately
@@ -21,10 +19,10 @@ public class ElevatorIOKraken implements ElevatorIO {
     public TalonFX leader;
 
     private final MotionMagicVoltage motionMagic =
-            new MotionMagicVoltage(0).withSlot(0);
+            new MotionMagicVoltage(0).withSlot(0).withEnableFOC(true);
 
-//    private final MotionMagicConfigs motionMagicConfigs = new MotionMagicConfigs()
-//            .withMotionMagicExpo_kV();
+    //    private final MotionMagicConfigs motionMagicConfigs = new MotionMagicConfigs()
+    //            .withMotionMagicExpo_kV();
 
     private final VoltageOut voltageOut = new VoltageOut(0).withEnableFOC(true);
 
@@ -38,11 +36,31 @@ public class ElevatorIOKraken implements ElevatorIO {
 
         config.MotorOutput.withNeutralMode(NeutralModeValue.Brake);
 
+        ///  DO NOT UNCOMMENT OR ELSE
         config.Feedback.withSensorToMechanismRatio(ELEVATOR_GEAR_RATIO / SPROCKET_CIRCUMFERENCE);
-
         config.CurrentLimits.withStatorCurrentLimit(120);
 
-        config.MotionMagic.withMotionMagicCruiseVelocity(.5).withMotionMagicAcceleration(1);
+        config.MotionMagic.withMotionMagicCruiseVelocity(.1)
+                .withMotionMagicAcceleration(.1);
+
+//        config.Slot0.withGravityType(GravityTypeValue.Elevator_Static)
+//                .withKS(metersToRotations(KrakenGains.kS))
+//                .withKV(metersToRotations(KrakenGains.kV))
+//                .withKA(metersToRotations(KrakenGains.kA))
+//                .withKG(metersToRotations(KrakenGains.kG))
+//                .withKP(metersToRotations(KrakenGains.kP));
+
+        config.Slot0.withGravityType(GravityTypeValue.Elevator_Static)
+                .withKS(metersToRotations(KrakenGains.kS))
+                .withKV(metersToRotations(KrakenGains.kV))
+                .withKA(metersToRotations(KrakenGains.kA))
+                .withKG(metersToRotations(KrakenGains.kG))
+                .withKP(metersToRotations(KrakenGains.kP));
+
+//        config.SoftwareLimitSwitch
+//                        .withForwardSoftLimitEnable(true)
+//                                .withReverseSoftLimitEnable(true)
+//                .withForwardSoftLimitThreshold();
 
         config.MotorOutput.withInverted(LEFT_INVERT);
         leftMotor.getConfigurator().apply(config);
@@ -57,8 +75,7 @@ public class ElevatorIOKraken implements ElevatorIO {
                 leftMotor.getRotorVelocity(),
                 rightMotor.getMotorVoltage(),
                 rightMotor.getRotorPosition(),
-                rightMotor.getRotorVelocity()
-        );
+                rightMotor.getRotorVelocity());
 
         /* FOR SYSID */
 
@@ -83,14 +100,6 @@ public class ElevatorIOKraken implements ElevatorIO {
 
         inputs.torqueCurrentLeft = leftMotor.getTorqueCurrent().getValueAsDouble();
         inputs.torqueCurrentRight = rightMotor.getTorqueCurrent().getValueAsDouble();
-
-
-        /* FOR SYSID */
-        leftMotor.getRotorPosition().getValueAsDouble();
-        rightMotor.getRotorPosition().getValueAsDouble();
-
-        leftMotor.getRotorVelocity().getValueAsDouble();
-        rightMotor.getRotorVelocity().getValueAsDouble();
     }
 
     @Override
@@ -105,14 +114,25 @@ public class ElevatorIOKraken implements ElevatorIO {
 
     @Override
     public void setMotionMagic(double extension) {
-        leader.setControl(
-                motionMagic.withPosition(extension)
-        );
+        leader.setControl(motionMagic.withPosition(extension));
+    }
+
+    @Override
+    public void stop() {
+        leader.stopMotor();
     }
 
     @Override
     public void setBrakeMode(boolean brakeMode) {
         leftMotor.setNeutralMode(brakeMode ? NeutralModeValue.Brake : NeutralModeValue.Coast);
         rightMotor.setNeutralMode(brakeMode ? NeutralModeValue.Brake : NeutralModeValue.Coast);
+    }
+
+    private double metersToRotations(double meters) {
+        return meters * ELEVATOR_GEAR_RATIO / SPROCKET_CIRCUMFERENCE;
+    }
+
+    private double rotationsToMeters(double rotations) {
+        return rotations * SPROCKET_CIRCUMFERENCE / ELEVATOR_GEAR_RATIO;
     }
 }
