@@ -5,6 +5,7 @@ package frc.robot.subsystems.drive;
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.Constants.Drive.*;
 
+import com.ctre.phoenix6.SignalLogger;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.util.DriveFeedforwards;
@@ -286,26 +287,18 @@ public class Drive extends BlitzSubsystem {
                                 null,
                                 null,
                                 Seconds.of(5),
-                                (state) -> Logger.recordOutput("SysIdTestState", state.toString())),
+                                Constants.compBot()
+                                        ? (state) ->
+                                        SignalLogger.writeString(
+                                                "sysid-drive-linear-state", state.toString())
+                                        : (state) -> Logger.recordOutput("SysIdTestState", state.toString())),
                         new SysIdRoutine.Mechanism(
                                 (volts) -> {
                                     drive(
-                                            new Translation2d(volts.in(Volts) / 12.0, 0)
-                                                    .times(Constants.Drive.MAX_SPEED),
-                                            0,
-                                            false,
-                                            true,
-                                            true);
+                                           new ChassisSpeeds(volts.in(Volts) / 12.0, 0, 0).times(MAX_SPEED),
+                                           true);
                                 },
-                                log -> {
-                                    log.motor("drive")
-                                            .voltage(Volts.of(swerveModules[0].getVoltsDrive()))
-                                            .linearVelocity(
-                                                    MetersPerSecond.of(
-                                                            swerveModules[0].getVelocity()))
-                                            .linearPosition(
-                                                    Meters.of(swerveModules[0].getPositionDrive()));
-                                },
+                                null,
                                 this));
 
         AutoBuilder.configure(
@@ -343,6 +336,19 @@ public class Drive extends BlitzSubsystem {
                         currentSpeeds,
                         currentStates,
                         DriveFeedforwards.zeros(PHYSICAL_CONSTANTS.numModules));
+
+        tuningTab.add(
+                sysIdQuasistatic(SysIdRoutine.Direction.kForward)
+                        .withName("Drive Quasistic Forward"));
+        tuningTab.add(
+                sysIdQuasistatic(SysIdRoutine.Direction.kReverse)
+                        .withName("Drive Quasistic Reverse"));
+
+        tuningTab.add(
+                sysIdDynamic(SysIdRoutine.Direction.kForward).withName("Drive Dynamic Forward"));
+        tuningTab.add(
+                sysIdDynamic(SysIdRoutine.Direction.kReverse).withName("Drive Dynamic Reverse"));
+
     }
 
     public void drive(
@@ -611,7 +617,6 @@ public class Drive extends BlitzSubsystem {
                 .withName(logKey + "/zeroAbsEncoders");
     }
 
-    // Something something super class???
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
         return routine.quasistatic(direction)
                 .withName(

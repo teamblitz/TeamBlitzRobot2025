@@ -12,9 +12,6 @@ public class IntakeIOSpark implements IntakeIO {
     private final DigitalInput breakBeam;
 
     public IntakeIOSpark() {
-        // TODO: Motor needs current limit.
-        // https://docs.revrobotics.com/brushless/faq#generally-we-recommend-20a-40a
-
         SparkMaxConfig config = new SparkMaxConfig();
 
         breakBeam = new DigitalInput(2);

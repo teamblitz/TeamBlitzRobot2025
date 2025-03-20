@@ -4,28 +4,34 @@ import static frc.robot.Constants.Winch.*;
 
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase;
+import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.ClosedLoopConfig;
+import com.revrobotics.spark.config.MAXMotionConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 public class WinchIOSpark implements WinchIO {
-    private final SparkMax winchMotor;
-    private final RelativeEncoder winchEncoder;
+    private final SparkMax motor;
+    private final SparkClosedLoopController pid;
+    private final RelativeEncoder encoder;
 
     public WinchIOSpark() {
-        winchMotor = new SparkMax(ID, SparkLowLevel.MotorType.kBrushless);
+        motor = new SparkMax(ID, SparkLowLevel.MotorType.kBrushless);
 
         SparkMaxConfig config = new SparkMaxConfig();
 
         config.smartCurrentLimit(CURRENT_LIMIT);
 
         config.encoder.positionConversionFactor(1 / WINCH_GEAR_RATIO);
+        config.encoder.velocityConversionFactor(1 / WINCH_GEAR_RATIO * 60);
 
-        // TODO: SET POSITION AND VELOCITY CONVERSION FACTOR, LETS DO THIS IN UNITS OF PULLEY
-        // ROTATIONS.
-        winchEncoder = winchMotor.getEncoder();
+//        config.closedLoop.
 
-        winchMotor.configure(
+        encoder = motor.getEncoder();
+        pid = motor.getClosedLoopController();
+
+        motor.configure(
                 config,
                 SparkBase.ResetMode.kResetSafeParameters,
                 SparkBase.PersistMode.kNoPersistParameters);
@@ -33,19 +39,37 @@ public class WinchIOSpark implements WinchIO {
 
     @Override
     public void setSpeed(double speed) {
-        winchMotor.set(speed);
+        motor.set(speed);
     }
 
-    // TODO: Implement this, we want to use max motion on the spark
-    // https://docs.revrobotics.com/revlib/spark/closed-loop/maxmotion-position-control
     @Override
     public void setMotionProfile(double position) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        pid.setReference(
+                position,
+                SparkBase.ControlType.kMAXMotionPositionControl);
     }
 
     @Override
     public void updateInputs(WinchIO.WinchInputs inputs) {
-        inputs.rpm = winchMotor.getEncoder().getVelocity();
-        inputs.current = winchMotor.getOutputCurrent();
+        inputs.velocity = encoder.getVelocity();
+        inputs.position = encoder.getPosition();
+        inputs.current = motor.getOutputCurrent();
+    }
+
+    @Override
+    public void setPid(double p, double i, double d) {
+        motor.configure(
+                new SparkMaxConfig().apply(new ClosedLoopConfig().pid(p, i, d)),
+                SparkBase.ResetMode.kNoResetSafeParameters,
+                SparkBase.PersistMode.kNoPersistParameters);
+    }
+
+    @Override
+    public void setMotionProfilePrams(double maxVel, double maxAccel) {
+        motor.configure(
+                new SparkMaxConfig().apply(new ClosedLoopConfig().apply(new MAXMotionConfig().maxVelocity(maxVel).maxAcceleration(maxAccel))),
+                SparkBase.ResetMode.kNoResetSafeParameters,
+                SparkBase.PersistMode.kNoPersistParameters
+        );
     }
 }

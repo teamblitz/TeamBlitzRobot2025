@@ -36,9 +36,11 @@ import frc.robot.subsystems.intake.IntakeIOKraken;
 import frc.robot.subsystems.intake.IntakeIOSpark;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.superstructure.elevator.Elevator;
+import frc.robot.subsystems.superstructure.elevator.ElevatorIO;
 import frc.robot.subsystems.superstructure.elevator.ElevatorIOKraken;
 import frc.robot.subsystems.superstructure.elevator.ElevatorIOSpark;
 import frc.robot.subsystems.superstructure.wrist.Wrist;
+import frc.robot.subsystems.superstructure.wrist.WristIO;
 import frc.robot.subsystems.superstructure.wrist.WristIOKraken;
 import frc.robot.subsystems.superstructure.wrist.WristIOSpark;
 import frc.robot.subsystems.winch.Winch;
@@ -111,7 +113,7 @@ public class RobotContainer {
 
     private void configureSubsystems() {
         drive =
-                switch (Constants.ROBOT) {
+                switch (Constants.Robot.SimBot) {
                     case CompBot ->
                             new Drive(
                                     new SwerveModuleConfiguration(
@@ -167,8 +169,8 @@ public class RobotContainer {
 
         superstructure =
                 new Superstructure(
-                        Constants.compBot() ? new ElevatorIOKraken() : new ElevatorIOSpark(),
-                        Constants.compBot() ? new WristIOKraken() : new WristIOSpark());
+                        Constants.compBot() ? new ElevatorIO() {} : new ElevatorIOSpark(),
+                        Constants.compBot() ? new WristIO() {} : new WristIOSpark());
         elevator = superstructure.getElevator();
         wrist = superstructure.getWrist();
 
@@ -222,8 +224,8 @@ public class RobotContainer {
         OIConstants.Intake.ALGAE_REMOVAL.whileTrue(intake.kick_algae());
         OIConstants.Intake.SHOOT_CORAL.whileTrue(intake.shoot_coral());
 
-        OIConstants.Winch.WINCH_DOWN.whileTrue(winch.lowerFunnel());
-        OIConstants.Winch.WINCH_UP.whileTrue(winch.raiseFunnel());
+        OIConstants.Winch.WINCH_MAN_UP.whileTrue(winch.manualUp());
+        OIConstants.Winch.WINCH_MAN_DOWN.whileTrue(winch.manualDown());
 
         OIConstants.Elevator.MANUAL_UP.whileTrue(
                 elevator.upManual()

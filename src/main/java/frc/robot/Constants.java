@@ -496,10 +496,18 @@ public final class Constants {
 
         public static final int CURRENT_LIMIT = 25;
 
-        public static final double FUNNEL_UP_POSITION = 0.1; // TODO CONFIG
-        public static final double FUNNEL_DOWN_POSITION = 0; // TODO CONFIG
+        public static final double MATCH_FUNNEL_UP = 0.1; // TODO CONFIG
+        public static final double MATCH_FUNNEL_DOWN = 0; // TODO CONFIG
+        public static final double PIT_FUNNEL_STOW = 0;
+        public static final double EPSILON = 0.05;
 
-        public static final double WINCH_GEAR_RATIO = 25; // TODO CONFIG NOW FOR COMP
+        public static final double WINCH_GEAR_RATIO = 25;
+
+
+        public static final double KP = .25;
+        public static final double MAX_VELOCITY = 1;
+        public static final double MAX_ACCEL = 2;
+
     }
 
     public static final class Climber {
