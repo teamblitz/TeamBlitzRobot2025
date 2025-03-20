@@ -143,9 +143,8 @@ public class OIConstants {
     }
 
     public static final class Climber {
-        public static final Trigger DEPLOY_CLIMBER = UNBOUND; // TODO BIND
-        public static final Trigger CLIMB = UNBOUND; // TODO BIND
-        public static final Trigger RESTOW_CLIMBER = UNBOUND;
+        public static final Trigger DEPLOY_CLIMBER = DRIVE_CONTROLLER.button(4); // TODO BIND
+        public static final Trigger RESTOW_CLIMBER = DRIVE_CONTROLLER.button(6);
 
         public static final Trigger CLIMBER_UP_MAN = DRIVE_CONTROLLER.button(9);
         public static final Trigger CLIMBER_DOWN_MAN = DRIVE_CONTROLLER.button(10);

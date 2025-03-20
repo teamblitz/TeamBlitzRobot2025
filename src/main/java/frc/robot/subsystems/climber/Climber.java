@@ -17,6 +17,7 @@ import frc.lib.util.LoggedTunableNumber;
 import frc.lib.util.SupplierUtils;
 import frc.lib.util.UnitDashboardNumber;
 import frc.robot.Constants;
+import lombok.Getter;
 import org.littletonrobotics.junction.Logger;
 
 import java.util.function.DoubleSupplier;
@@ -34,6 +35,17 @@ public class Climber extends BlitzSubsystem {
 //    private final LoggedTunableNumber unloadedMaxVel = new LoggedTunableNumber("climber/unloaded_max_vel", MAX);
 
     private final SysIdRoutine routine;
+
+    public enum State {
+        DEPLOYED,
+        CLIMB,
+        RESTOWED,
+        STOWED
+    }
+
+    @Getter
+    private State state = State.STOWED;
+
 
     public Climber(ClimberIO io) {
         super("climber");
@@ -79,6 +91,8 @@ public class Climber extends BlitzSubsystem {
 
         io.updateInputs(inputs);
         Logger.processInputs(logKey, inputs);
+
+        Logger.recordOutput(logKey + "/state", state.toString());
     }
 
     private Command goToPosition(DoubleSupplier position) {
@@ -94,15 +108,18 @@ public class Climber extends BlitzSubsystem {
     }
 
     public Command deployClimber() {
-        return goToPosition(SupplierUtils.toRadians(deployPosition)).withName(logKey + "/deployClimber");
+        return goToPosition(SupplierUtils.toRadians(deployPosition)).withName(logKey + "/deployClimber")
+                .andThen(() -> state = State.DEPLOYED);
     }
 
     public Command climb() {
-        return goToPosition(SupplierUtils.toRadians(climbPosition)).withName(logKey + "/climb");
+        return goToPosition(SupplierUtils.toRadians(climbPosition)).withName(logKey + "/climb")
+                .andThen(() -> state = State.CLIMB);
     }
 
     public Command restowClimber() {
-        return goToPosition(SupplierUtils.toRadians(restowPosition)).withName(logKey + "/restowClimber");
+        return goToPosition(SupplierUtils.toRadians(restowPosition)).withName(logKey + "/restowClimber")
+                .andThen(() -> state = State.RESTOWED);
    }
 
     public Command setSpeed(double speed) {
