@@ -33,4 +33,12 @@ public class CommandFactory {
         return winch.raiseFunnel().andThen(climber.restowClimber()).andThen(winch.lowerFunnel());
     }
 
+    public static Command handoff(Superstructure superstructure, Intake intake) {
+        return superstructure
+                .toGoalThenIdle(Superstructure.Goal.HANDOFF)
+                .withDeadline(intake.handoff())
+                .unless(intake::hasCoral)
+                .withName("handoff");
+    }
+
 }

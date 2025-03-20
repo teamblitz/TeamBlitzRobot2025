@@ -201,11 +201,7 @@ public class RobotContainer {
                         .alongWith(intake.kick_algae()));
 
         OIConstants.SuperStructure.HANDOFF.whileTrue(
-                superstructure
-                        .toGoalThenIdle(Superstructure.Goal.HANDOFF)
-                        .withDeadline(intake.handoff())
-                        .unless(intake::hasCoral)
-                        .withName("handoff"));
+                CommandFactory.handoff(superstructure, intake));
 
         OIConstants.SuperStructure.SCORE
                 .and(superstructure.triggerAtGoal(Superstructure.Goal.L1))
@@ -237,10 +233,6 @@ public class RobotContainer {
                         .alongWith(superstructure.idle())
                         .withName("elevator/manual_down"));
 
-        //        OIConstants.Climber.DEPLOY_CLIMBER.whileTrue(climber.deployClimber());
-        //        OIConstants.Climber.CLIMB.whileTrue(climber.climb());
-        //        OIConstants.Climber.RESTOW_CLIMBER.whileTrue(climber.restowClimber());
-
         OIConstants.Climber.CLIMBER_UP_MAN.whileTrue(climber.setSpeed(.8));
         OIConstants.Climber.CLIMBER_DOWN_MAN.whileTrue(climber.setSpeed(-.8));
 
@@ -269,6 +261,8 @@ public class RobotContainer {
         new EventTrigger("score_l4").onTrue(
                 CommandFactory.l4Plop(superstructure, intake)
         );
+
+        new EventTrigger("handoff").onTrue(CommandFactory.handoff(superstructure, intake));
     }
 
     public Command getAutonomousCommand() {
