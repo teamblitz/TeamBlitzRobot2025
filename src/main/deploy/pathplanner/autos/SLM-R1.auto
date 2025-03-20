@@ -11,9 +11,9 @@
           }
         },
         {
-          "type": "named",
+          "type": "wait",
           "data": {
-            "name": "l3_Score"
+            "waitTime": 1.0
           }
         }
       ]
