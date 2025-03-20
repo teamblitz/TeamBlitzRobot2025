@@ -511,7 +511,7 @@ public final class Constants {
 
         public static final int CURRENT_LIMIT = 25;
 
-        public static final double MATCH_FUNNEL_UP = 1.8;
+        public static final double MATCH_FUNNEL_UP = 2.1;
         public static final double MATCH_FUNNEL_DOWN = 0;
         public static final double PIT_FUNNEL_STOW = 0.5;
         public static final double EPSILON = 0.05;
