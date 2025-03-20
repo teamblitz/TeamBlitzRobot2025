@@ -13,6 +13,7 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.reduxrobotics.sensors.canandmag.Canandmag;
 import com.reduxrobotics.sensors.canandmag.CanandmagSettings;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants;
@@ -68,7 +69,7 @@ public class WristIOKraken implements WristIO {
                         Commands.runOnce(
                                 () -> {
                                     if (absoluteEncoder.isConnected())
-                                        wristMotor.setPosition(getAbsPosition());
+                                        wristMotor.setPosition(getAbsPosition() / (2 * Math.PI));
                                     else wristMotor.setPosition(Units.degreesToRotations(90));
                                 }))
                 .ignoringDisable(true)
@@ -87,7 +88,7 @@ public class WristIOKraken implements WristIO {
         inputs.velocityRadiansPerSecond = 2 * Math.PI *  wristMotor.getVelocity().getValueAsDouble();
         inputs.volts = wristMotor.getMotorVoltage().getValueAsDouble();
 
-        inputs.absoluteEncoderPosition = 2 * Math.PI * absoluteEncoder.getAbsPosition();
+        inputs.absoluteEncoderPosition = getAbsPosition();
     }
 
     @Override
@@ -117,8 +118,6 @@ public class WristIOKraken implements WristIO {
     }
 
     private double getAbsPosition() {
-        if (absoluteEncoder.isConnected())
-            return (2 * Math.PI) * absoluteEncoder.getAbsPosition() + Math.toRadians(90);
-        return -1;
+        return MathUtil.angleModulus((2 * Math.PI) * absoluteEncoder.getAbsPosition() + Math.toRadians(90));
     }
 }
