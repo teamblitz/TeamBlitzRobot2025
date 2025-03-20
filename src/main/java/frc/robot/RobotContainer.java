@@ -8,6 +8,7 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.events.EventTrigger;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -259,16 +260,34 @@ public class RobotContainer {
                                 .onlyWhile(RobotState::isDisabled));
     }
 
-    private void configureAutoCommands() {}
+    private void configureAutoCommands() {
+        new EventTrigger("score_l3").onTrue(
+                superstructure.toGoal(Superstructure.Goal.L3)
+                        .andThen(intake.shoot_coral().withTimeout(1))
+        );
 
-    public Command getAutonomousCommand() { // Autonomous code goes here
-        return Commands.runOnce(() -> drive.setGyro(startingPositionChooser.get().angle))
-                .andThen(winch.lowerFunnel())
-                .andThen(
-                        Commands.run(
-                                () -> drive.drive(new ChassisSpeeds(-.2, 0, 0), true)).withTimeout(1)
-                ).andThen(
-                        Commands.runOnce(() -> drive.drive(new ChassisSpeeds(0,0,0), true))
-                );
+        new EventTrigger("score_l4").onTrue(
+                CommandFactory.l4Plop(superstructure, intake)
+        );
+    }
+
+    public Command getAutonomousCommand() {
+        return Commands.sequence(
+                Commands.runOnce(() -> drive.setGyro(startingPositionChooser.get().angle)),
+                Commands.parallel(
+                        winch.lowerFunnel(),
+                        autoChooser.get()
+                )
+        );
+
+//        // Autonomous code goes here
+//        return Commands.runOnce(() -> drive.setGyro(startingPositionChooser.get().angle))
+//                .andThen(winch.lowerFunnel())
+//                .andThen(
+//                        Commands.run(
+//                                () -> drive.drive(new ChassisSpeeds(-.2, 0, 0), true)).withTimeout(1)
+//                ).andThen(
+//                        Commands.runOnce(() -> drive.drive(new ChassisSpeeds(0,0,0), true))
+//                );
     }
 }
