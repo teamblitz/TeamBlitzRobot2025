@@ -268,7 +268,7 @@ public class RobotContainer {
 
     public Command getAutonomousCommand() {
         return Commands.sequence(
-                Commands.runOnce(() -> drive.setGyro(startingPositionChooser.get().angle)),
+                Commands.runOnce(() -> drive.setGyro(180)),
                 Commands.parallel(
                         winch.lowerFunnel(),
                         autoChooser.get()
