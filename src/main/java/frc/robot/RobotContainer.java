@@ -36,11 +36,9 @@ import frc.robot.subsystems.intake.IntakeIOKraken;
 import frc.robot.subsystems.intake.IntakeIOSpark;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.superstructure.elevator.Elevator;
-import frc.robot.subsystems.superstructure.elevator.ElevatorIO;
 import frc.robot.subsystems.superstructure.elevator.ElevatorIOKraken;
 import frc.robot.subsystems.superstructure.elevator.ElevatorIOSpark;
 import frc.robot.subsystems.superstructure.wrist.Wrist;
-import frc.robot.subsystems.superstructure.wrist.WristIO;
 import frc.robot.subsystems.superstructure.wrist.WristIOKraken;
 import frc.robot.subsystems.superstructure.wrist.WristIOSpark;
 import frc.robot.subsystems.winch.Winch;
@@ -102,10 +100,10 @@ public class RobotContainer {
                 superstructure.setDefaultCommand(
                         Commands.either(
                                         superstructure
-                                                .toGoal(Superstructure.Goal.STOW)
+                                                .toGoalThenIdle(Superstructure.Goal.STOW)
                                                 .onlyWhile(intake::hasCoral),
                                         superstructure
-                                                .toGoal(Superstructure.Goal.HANDOFF)
+                                                .toGoalThenIdle(Superstructure.Goal.HANDOFF)
                                                 .until(intake::hasCoral),
                                         intake::hasCoral)
                                 .withName("superstructure/conditionalDefault"));
@@ -185,23 +183,23 @@ public class RobotContainer {
         OIConstants.Drive.BRAKE.onTrue(Commands.runOnce(() -> drive.setBrakeMode(true)));
         OIConstants.Drive.COAST.onTrue(Commands.runOnce(() -> drive.setBrakeMode(false)));
 
-        OIConstants.SuperStructure.L1.whileTrue(superstructure.toGoal(Superstructure.Goal.L1));
-        OIConstants.SuperStructure.L2.whileTrue(superstructure.toGoal(Superstructure.Goal.L2));
-        OIConstants.SuperStructure.L3.whileTrue(superstructure.toGoal(Superstructure.Goal.L3));
-        OIConstants.SuperStructure.L4.whileTrue(superstructure.toGoal(Superstructure.Goal.L4));
+        OIConstants.SuperStructure.L1.whileTrue(superstructure.toGoalThenIdle(Superstructure.Goal.L1));
+        OIConstants.SuperStructure.L2.whileTrue(superstructure.toGoalThenIdle(Superstructure.Goal.L2));
+        OIConstants.SuperStructure.L3.whileTrue(superstructure.toGoalThenIdle(Superstructure.Goal.L3));
+        OIConstants.SuperStructure.L4.whileTrue(superstructure.toGoalThenIdle(Superstructure.Goal.L4));
 
         OIConstants.SuperStructure.KICK_BOTTOM_ALGAE.whileTrue(
                 superstructure
-                        .toGoal(Superstructure.Goal.KICK_LOW_ALGAE)
+                        .toGoalThenIdle(Superstructure.Goal.KICK_LOW_ALGAE)
                         .alongWith(intake.kick_algae()));
         OIConstants.SuperStructure.KICK_TOP_ALGAE.whileTrue(
                 superstructure
-                        .toGoal(Superstructure.Goal.KICK_HIGH_ALGAE)
+                        .toGoalThenIdle(Superstructure.Goal.KICK_HIGH_ALGAE)
                         .alongWith(intake.kick_algae()));
 
         OIConstants.SuperStructure.HANDOFF.whileTrue(
                 superstructure
-                        .toGoal(Superstructure.Goal.HANDOFF)
+                        .toGoalThenIdle(Superstructure.Goal.HANDOFF)
                         .withDeadline(intake.handoff())
                         .unless(intake::hasCoral)
                         .withName("handoff"));
@@ -217,7 +215,7 @@ public class RobotContainer {
                 .whileTrue(intake.shoot_coral());
         OIConstants.SuperStructure.SCORE
                 .and(superstructure.triggerAtGoal(Superstructure.Goal.L4))
-                .onTrue(CommandFactory.l4Dunk(superstructure, intake));
+                .onTrue(CommandFactory.l4Plop(superstructure, intake));
 
         OIConstants.Intake.HANDOFF.whileTrue(intake.handoff());
         OIConstants.Intake.REVERSE.whileTrue(intake.reverse());

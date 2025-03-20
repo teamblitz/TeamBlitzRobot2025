@@ -435,6 +435,9 @@ public final class Constants {
         public static final SuperstructureState KICK_HIGH_ALGAE =
                 new SuperstructureState(.88, Math.toRadians(40));
 
+        public static final SuperstructureState L4_PLOP = new SuperstructureState(L4.elevatorPosition, Math.toRadians(35));
+
+
         public static final List<StateWithMode> L4_DUNK =
                 List.of(
                         SetpointMode.WRIST_SYNC.withState(
@@ -444,17 +447,17 @@ public final class Constants {
                         SetpointMode.WRIST_SYNC.withState(
                                 new SuperstructureState(1.0, Math.toRadians(70))));
 
-        public static final List<StateWithMode> L4_PLOP =
-                List.of(
-                        SetpointMode.WRIST_SYNC.withState(
-                                new SuperstructureState(L4.elevatorPosition, Math.toRadians(40))),
-                        SetpointMode.WRIST_SYNC.withState(
-                                new SuperstructureState(L4.elevatorPosition, L4.wristRotation)));
+//        public static final List<StateWithMode> L4_PLOP =
+//                List.of(
+//                        SetpointMode.WRIST_SYNC.withState(
+//                                new SuperstructureState(L4.elevatorPosition, Math.toRadians(35))),
+//                        SetpointMode.WRIST_SYNC.withState(
+//                                new SuperstructureState(L4.elevatorPosition, L4.wristRotation)));
 
 
 
         public static final SuperstructureState HANDOFF =
-                new SuperstructureState(.005, Math.toRadians(97.5));
+                new SuperstructureState(.005, Math.toRadians(92.5));
 
         public static final double ELEVATOR_MAX_TO_SKIP_TRANSIT = .15;
 

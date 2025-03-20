@@ -51,14 +51,15 @@ public class Superstructure extends BlitzSubsystem {
                         entry(Goal.L2, L2),
                         entry(Goal.L3, L3),
                         entry(Goal.L4, L4),
+                        entry(Goal.L4_PLOP, L4_PLOP),
                         entry(Goal.KICK_LOW_ALGAE, KICK_LOW_ALGAE),
                         entry(Goal.KICK_HIGH_ALGAE, KICK_HIGH_ALGAE),
                         entry(Goal.HANDOFF, HANDOFF),
                         entry(Goal.STOW, STOW));
 
         dynamicGoals = Map.ofEntries(
-                entry(Goal.L4_DUNK, L4_DUNK),
-                entry(Goal.L4_PLOP, L4_PLOP)
+                entry(Goal.L4_DUNK, L4_DUNK)
+//                entry(Goal.L4_PLOP, L4_PLOP)
         );
 
         ShuffleboardTab tab = Shuffleboard.getTab("SuperStructure");
@@ -209,6 +210,10 @@ public class Superstructure extends BlitzSubsystem {
         return dynamicStep;
     }
 
+    public Command toGoalThenIdle(Goal goal) {
+        return toGoal(goal).andThen(idle());
+    }
+
     public Command toGoal(Goal goal) {
         if (goal == Goal.L4_DUNK) {
             Command command = Commands.none();
@@ -259,7 +264,7 @@ public class Superstructure extends BlitzSubsystem {
                             state = interrupted ? State.UNKNOWN : State.AT_GOAL;
                         })
                 .withName("superstructure/static_" + goal)
-                .andThen(idle());
+                .deadlineFor(idle());
     }
 
     public boolean atGoal(Goal goal) {
