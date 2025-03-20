@@ -457,7 +457,7 @@ public final class Constants {
 
 
         public static final SuperstructureState HANDOFF =
-                new SuperstructureState(.005, Math.toRadians(92.5));
+                new SuperstructureState(.001, Math.toRadians(94));
 
         public static final double ELEVATOR_MAX_TO_SKIP_TRANSIT = .15;
 
@@ -496,7 +496,7 @@ public final class Constants {
         public static final int CAN_ID = 40;
         public static final boolean INVERTED = compBot() ? true : false;
         public static final int CURRENT_LIMIT = 40;
-        public static final double HANDOFF_SPEED = compBot() ? .6 : .5; // TODO CONFIG
+        public static final double HANDOFF_SPEED = compBot() ? .4 : .5; // TODO CONFIG
         public static final double REVERSE_SPEED = -.3; // TODO CONFIG
         public static final double ALGAE_REMOVAL = .5; // TODO CONFIG
         public static final double SHOOT_CORAL = .5;
@@ -531,10 +531,10 @@ public final class Constants {
 
         public static final double DEPLOY_POSITION = Math.toRadians(90); // TODO CONFIG
         public static final double CLIMB_POSITION = Math.toRadians(180);
-        public static final double RESTOW_POSITION = Math.toRadians(250);
+        public static final double RESTOW_POSITION = Math.toRadians(260);
 
         public static final double STARTING_POSITION =
-                Math.toRadians(90);
+                Math.toRadians(270);
 
         public static final double EPSILON = Math.toRadians(2.5);
 
@@ -546,6 +546,7 @@ public final class Constants {
             public static final double KA = 0.064502;
 
             public static final double KP = 24; //65.595;
+
         }
 
         public static final class LoadedGains {
@@ -556,8 +557,8 @@ public final class Constants {
             public static final double KP = 100; //65.595;
         }
 
-        public static final double MAX_VEL_UNLOADED = .5;
-        public static final double MAX_ACCEL_UNLOADED = 1;
+        public static final double MAX_VEL_UNLOADED = Units.degreesToRadians(180);
+        public static final double MAX_ACCEL_UNLOADED = Units.degreesToRadians(360);
 
         public static final double MAX_VEL_LOADED = .5;
         public static final double MAX_ACCEL_LOADED = 1;

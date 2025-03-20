@@ -14,6 +14,8 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.BlitzSubsystem;
 import frc.lib.math.EqualsUtil;
 import frc.lib.util.LoggedTunableNumber;
+import frc.lib.util.SupplierUtils;
+import frc.lib.util.UnitDashboardNumber;
 import frc.robot.Constants;
 import org.littletonrobotics.junction.Logger;
 
@@ -23,9 +25,13 @@ public class Climber extends BlitzSubsystem {
     private final ClimberIO io;
     private final ClimberInputsAutoLogged inputs = new ClimberInputsAutoLogged();
 
-    private final LoggedTunableNumber deployPosition = new LoggedTunableNumber("climber/deployPosition", DEPLOY_POSITION);
-    private final LoggedTunableNumber climbPosition = new LoggedTunableNumber("climber/climbPosition", CLIMB_POSITION);
-    private final LoggedTunableNumber restowPosition = new LoggedTunableNumber("climber/restowPosition", RESTOW_POSITION);
+    private final LoggedTunableNumber deployPosition = new LoggedTunableNumber("climber/deployPosition", Math.toDegrees(DEPLOY_POSITION));
+    private final LoggedTunableNumber climbPosition = new LoggedTunableNumber("climber/climbPosition", Math.toDegrees(CLIMB_POSITION));
+    private final LoggedTunableNumber restowPosition = new LoggedTunableNumber("climber/restowPosition", Math.toDegrees(RESTOW_POSITION));
+
+
+    private final LoggedTunableNumber kP = new LoggedTunableNumber("climber/unloaded_kP", UnloadedGains.KP);
+//    private final LoggedTunableNumber unloadedMaxVel = new LoggedTunableNumber("climber/unloaded_max_vel", MAX);
 
     private final SysIdRoutine routine;
 
@@ -61,6 +67,10 @@ public class Climber extends BlitzSubsystem {
         characterizationTab.add(
                 sysIdDynamic(SysIdRoutine.Direction.kReverse).withName("Climber Dynamic Reverse"));
 
+        ShuffleboardTab climbTab = Shuffleboard.getTab("climber");
+        climbTab.add(deployClimber());
+        climbTab.add(restowClimber());
+        climbTab.add(climb());
     }
 
     @Override
@@ -84,15 +94,15 @@ public class Climber extends BlitzSubsystem {
     }
 
     public Command deployClimber() {
-        return goToPosition(deployPosition).withName(logKey + "/deployClimber");
+        return goToPosition(SupplierUtils.toRadians(deployPosition)).withName(logKey + "/deployClimber");
     }
 
     public Command climb() {
-        return goToPosition(climbPosition).withName(logKey + "/climb");
+        return goToPosition(SupplierUtils.toRadians(climbPosition)).withName(logKey + "/climb");
     }
 
     public Command restowClimber() {
-        return goToPosition(restowPosition).withName(logKey + "/restowClimber");
+        return goToPosition(SupplierUtils.toRadians(restowPosition)).withName(logKey + "/restowClimber");
    }
 
     public Command setSpeed(double speed) {
