@@ -524,5 +524,21 @@ public final class Constants {
         public static final double EPSILON = Math.toRadians(2.5);
 
         public static final double CLIMBER_GEAR_RATIO = (9 * 5 * 3) * (24.0 / 12.0);
+
+        public static final class UnloadedGains {
+            public static final double KS = 0.17029;
+            public static final double KV = 5.1394;
+            public static final double KA = 0.064502;
+
+            public static final double KP = 24; //65.595;
+        }
+
+        public static final class LoadedGains {
+            public static final double KS = 0.17029;
+            public static final double KV = 5.1394;
+            public static final double KA = 0.064502;
+
+            public static final double KP = 100; //65.595;
+        }
     }
 }
