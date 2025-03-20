@@ -8,6 +8,7 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.events.EventTrigger;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -253,10 +254,10 @@ public class RobotContainer {
     }
 
     private void configureAutoCommands() {
-        new EventTrigger("score_l3").onTrue(
-                superstructure.toGoal(Superstructure.Goal.L3)
-                        .andThen(intake.shoot_coral().withTimeout(1))
-        );
+        NamedCommands.registerCommand(
+                "score_l3", superstructure.toGoal(Superstructure.Goal.L3)
+                        .andThen(intake.shoot_coral().withTimeout(1)
+        ));
 
         new EventTrigger("score_l4").onTrue(
                 CommandFactory.l4Plop(superstructure, intake)
