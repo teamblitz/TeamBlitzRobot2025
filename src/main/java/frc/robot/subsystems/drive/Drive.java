@@ -305,7 +305,7 @@ public class Drive extends BlitzSubsystem {
                 this::getPose,
                 this::resetOdometry,
                 () -> KINEMATICS.toChassisSpeeds(getModuleStates()),
-                (speeds, feedforwards) -> drive(speeds, false),
+                (speeds, feedforwards) -> drive(speeds, true),
                 new PPHolonomicDriveController(
                         AutoConstants.TRANSLATION_PID, AutoConstants.ROTATION_PID),
                 PHYSICAL_CONSTANTS,

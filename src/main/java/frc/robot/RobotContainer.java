@@ -46,6 +46,7 @@ import frc.robot.subsystems.superstructure.wrist.WristIOKraken;
 import frc.robot.subsystems.superstructure.wrist.WristIOSpark;
 import frc.robot.subsystems.winch.Winch;
 import frc.robot.subsystems.winch.WinchIOSpark;
+import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -267,6 +268,7 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
+        Logger.recordOutput("selectedAuto", autoChooser.get().getName());
         return Commands.sequence(
                 Commands.runOnce(() -> drive.setGyro(180)),
                 Commands.parallel(
