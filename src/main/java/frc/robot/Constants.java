@@ -519,7 +519,7 @@ public final class Constants {
         public static final double RESTOW_POSITION = Math.toRadians(250);
 
         public static final double STARTING_POSITION =
-                Math.toRadians(270);
+                Math.toRadians(90);
 
         public static final double EPSILON = Math.toRadians(2.5);
 

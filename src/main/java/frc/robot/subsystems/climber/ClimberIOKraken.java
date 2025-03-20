@@ -24,8 +24,10 @@ public class ClimberIOKraken implements ClimberIO {
         TalonFXConfiguration config = new TalonFXConfiguration();
 
         config.MotorOutput.withNeutralMode((NeutralModeValue.Brake));
-
         config.CurrentLimits.withStatorCurrentLimit(120);
+        config.Feedback.withSensorToMechanismRatio(
+                CLIMBER_GEAR_RATIO / (2 * Math.PI)
+        );
 
         leftMotor.getConfigurator().apply(config);
         rightMotor.getConfigurator().apply(config);
@@ -33,6 +35,8 @@ public class ClimberIOKraken implements ClimberIO {
         leftMotor.setControl(new Follower(rightMotor.getDeviceID(), true));
 
         leader = rightMotor;
+
+        leader.setPosition(STARTING_POSITION);
     }
 
     @Override
