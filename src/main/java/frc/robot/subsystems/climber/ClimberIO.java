@@ -10,9 +10,12 @@ public interface ClimberIO {
         public double current;
     }
 
+
     default void updateInputs(ClimberIO.ClimberInputs inputs) {}
 
     default void setSpeed(double speed) {}
+
+    default void setVolts(double volts) {}
 
     default void setMotionProfile(double position) {}
 }

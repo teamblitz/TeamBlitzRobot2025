@@ -502,7 +502,7 @@ public final class Constants {
         public static final double EPSILON = 0.05;
 
         public static final double WINCH_GEAR_RATIO = 25;
-        
+
         public static final double KP = 2;
         public static final double MAX_OUT = .6;
     }
@@ -511,9 +511,17 @@ public final class Constants {
         public static final int RIGHT_ID = 60;
         public static final int LEFT_ID = 61;
 
-        public static final double CLIMBER_DEPLOY = 0; // TODO CONFIG
-        public static final double CLIMB = 0;
-        public static final double RESTOW_CLIMBER = 0;
+        public static final double MAX_POS = Math.toRadians(270);
+        public static final double MIN_POS = Math.toRadians(0);
+
+        public static final double DEPLOY_POSITION = Math.toRadians(90); // TODO CONFIG
+        public static final double CLIMB_POSITION = Math.toRadians(180);
+        public static final double RESTOW_POSITION = Math.toRadians(250);
+
+        public static final double STARTING_POSITION =
+                Math.toRadians(270);
+
+        public static final double EPSILON = Math.toRadians(2.5);
 
         public static final double CLIMBER_GEAR_RATIO = (9 * 5 * 3) * (24.0 / 12.0);
     }

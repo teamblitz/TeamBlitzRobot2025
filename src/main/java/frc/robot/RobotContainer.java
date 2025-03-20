@@ -37,11 +37,9 @@ import frc.robot.subsystems.intake.IntakeIOSpark;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.superstructure.elevator.Elevator;
 import frc.robot.subsystems.superstructure.elevator.ElevatorIO;
-import frc.robot.subsystems.superstructure.elevator.ElevatorIOKraken;
 import frc.robot.subsystems.superstructure.elevator.ElevatorIOSpark;
 import frc.robot.subsystems.superstructure.wrist.Wrist;
 import frc.robot.subsystems.superstructure.wrist.WristIO;
-import frc.robot.subsystems.superstructure.wrist.WristIOKraken;
 import frc.robot.subsystems.superstructure.wrist.WristIOSpark;
 import frc.robot.subsystems.winch.Winch;
 import frc.robot.subsystems.winch.WinchIOSpark;
@@ -240,8 +238,8 @@ public class RobotContainer {
         //        OIConstants.Climber.CLIMB.whileTrue(climber.climb());
         //        OIConstants.Climber.RESTOW_CLIMBER.whileTrue(climber.restowClimber());
 
-        OIConstants.Climber.CLIMBER_UP.whileTrue(climber.setSpeed(.8));
-        OIConstants.Climber.CLIMBER_DOWN.whileTrue(climber.setSpeed(-.8));
+        OIConstants.Climber.CLIMBER_UP_MAN.whileTrue(climber.setSpeed(.8));
+        OIConstants.Climber.CLIMBER_DOWN_MAN.whileTrue(climber.setSpeed(-.8));
 
         new Trigger(() -> Math.abs(OIConstants.Wrist.WRIST_MANUAL.getAsDouble()) > .07)
                 .whileTrue(
