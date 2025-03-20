@@ -10,6 +10,7 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.ClosedLoopConfig;
 import com.revrobotics.spark.config.MAXMotionConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import org.littletonrobotics.junction.Logger;
 
 public class WinchIOSpark implements WinchIO {
     private final SparkMax motor;
@@ -26,15 +27,23 @@ public class WinchIOSpark implements WinchIO {
         config.encoder.positionConversionFactor(1 / WINCH_GEAR_RATIO);
         config.encoder.velocityConversionFactor(1 / WINCH_GEAR_RATIO * 60);
 
-//        config.closedLoop.
+        config.closedLoop.maxMotion.positionMode(MAXMotionConfig.MAXMotionPositionMode.kMAXMotionTrapezoidal);
+
+        config.closedLoop.maxOutput(.2);
+        config.closedLoop.minOutput(-.2);
 
         encoder = motor.getEncoder();
         pid = motor.getClosedLoopController();
+
+        encoder.setPosition(PIT_FUNNEL_STOW);
 
         motor.configure(
                 config,
                 SparkBase.ResetMode.kResetSafeParameters,
                 SparkBase.PersistMode.kNoPersistParameters);
+
+        setPid(KP, 0, 0);
+        setMaxOutput(MAX_OUT);
     }
 
     @Override
@@ -44,9 +53,10 @@ public class WinchIOSpark implements WinchIO {
 
     @Override
     public void setMotionProfile(double position) {
+        Logger.recordOutput("winch/motionProfileGoal", position);
         pid.setReference(
                 position,
-                SparkBase.ControlType.kMAXMotionPositionControl);
+                SparkBase.ControlType.kPosition);
     }
 
     @Override
@@ -65,11 +75,16 @@ public class WinchIOSpark implements WinchIO {
     }
 
     @Override
-    public void setMotionProfilePrams(double maxVel, double maxAccel) {
+    public void setMaxOutput(double maxOut) {
         motor.configure(
-                new SparkMaxConfig().apply(new ClosedLoopConfig().apply(new MAXMotionConfig().maxVelocity(maxVel).maxAcceleration(maxAccel))),
+                new SparkMaxConfig().apply(new ClosedLoopConfig().maxOutput(maxOut).minOutput(-maxOut)),
                 SparkBase.ResetMode.kNoResetSafeParameters,
                 SparkBase.PersistMode.kNoPersistParameters
         );
+    }
+
+    @Override
+    public void setPosition(double position) {
+        encoder.setPosition(position);
     }
 }

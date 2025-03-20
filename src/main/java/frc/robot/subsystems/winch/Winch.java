@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import frc.lib.BlitzSubsystem;
 import frc.lib.util.LoggedTunableNumber;
 import frc.robot.Constants;
@@ -18,10 +19,8 @@ public class Winch extends BlitzSubsystem {
     private final WinchIO io;
     private final WinchInputsAutoLogged inputs = new WinchInputsAutoLogged();
 
-    private final LoggedTunableNumber maxVelocity =
-            new LoggedTunableNumber("winch/maxVelocity", MAX_VELOCITY);
-    private final LoggedTunableNumber maxAccel =
-            new LoggedTunableNumber("winch/maxAccel", MAX_ACCEL);
+    private final LoggedTunableNumber maxOut =
+            new LoggedTunableNumber("winch/maxOut", MAX_OUT);
     private final LoggedTunableNumber kP =
             new LoggedTunableNumber("winch/kP", KP);
 
@@ -56,8 +55,7 @@ public class Winch extends BlitzSubsystem {
                 hashCode(), p -> io.setPid(p[0], 0, 0), kP);
 
         LoggedTunableNumber.ifChanged(
-                hashCode(), VA -> io.setMotionProfilePrams(VA[0], VA[1]), maxVelocity, maxAccel
-        );
+                hashCode(), OUT -> io.setMaxOutput(OUT[0]), maxOut);
 
     }
 
@@ -70,12 +68,13 @@ public class Winch extends BlitzSubsystem {
     }
 
     private Command goToPosition(DoubleSupplier position) {
-        return runEnd(() -> io.setMotionProfile(position.getAsDouble()), () -> io.setSpeed(0))
-                .andThen(
-                        Commands.waitUntil(
-                                () ->
-                                        MathUtil.isNear(
-                                                position.getAsDouble(), inputs.position, EPSILON)));
+        return new FunctionalCommand(
+                () -> io.setMotionProfile(position.getAsDouble()),
+                () -> {},
+                (interrupted) -> io.setSpeed(0),
+                () -> MathUtil.isNear(position.getAsDouble(), inputs.position, EPSILON),
+                this
+        );
     }
 
     // Designed for match use
@@ -89,7 +88,7 @@ public class Winch extends BlitzSubsystem {
     }
 
     public Command pitFunnelReady() {
-        return Commands.runOnce(() -> io.setPosition(0)).andThen(
-                goToPosition(pitFunnelStow).withName(logKey + "/pitFunnelReady"));
+        return runOnce(() -> io.setPosition(0)).andThen(
+                goToPosition(pitFunnelStow)).withName(logKey + "/pitFunnelReady");
     }
 }

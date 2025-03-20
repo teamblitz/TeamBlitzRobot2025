@@ -5,8 +5,6 @@ import org.littletonrobotics.junction.AutoLog;
 public interface WinchIO {
     void setPid(double p, double i, double d);
 
-    void setMotionProfilePrams(double maxVel, double maxAccel);
-
     @AutoLog
     public class WinchInputs {
         public double velocity;
@@ -17,6 +15,8 @@ public interface WinchIO {
     default void updateInputs(WinchIO.WinchInputs inputs) {}
 
     default void setSpeed(double speed) {}
+
+    default void setMaxOutput(double maxOut) {};
 
     default void setPosition(double position) {}
 
