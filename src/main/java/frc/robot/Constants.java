@@ -435,7 +435,7 @@ public final class Constants {
         public static final SuperstructureState KICK_HIGH_ALGAE =
                 new SuperstructureState(.88, Math.toRadians(40));
 
-        public static final SuperstructureState L4_PLOP = new SuperstructureState(L4.elevatorPosition, Math.toRadians(35));
+        public static final SuperstructureState L4_PLOP = new SuperstructureState(L4.elevatorPosition, Math.toRadians(15));
 
 
         public static final List<StateWithMode> L4_DUNK =
@@ -555,5 +555,11 @@ public final class Constants {
 
             public static final double KP = 100; //65.595;
         }
+
+        public static final double MAX_VEL_UNLOADED = .5;
+        public static final double MAX_ACCEL_UNLOADED = 1;
+
+        public static final double MAX_VEL_LOADED = .5;
+        public static final double MAX_ACCEL_LOADED = 1;
     }
 }

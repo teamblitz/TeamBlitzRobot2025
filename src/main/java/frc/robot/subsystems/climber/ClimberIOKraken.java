@@ -24,10 +24,24 @@ public class ClimberIOKraken implements ClimberIO {
         TalonFXConfiguration config = new TalonFXConfiguration();
 
         config.MotorOutput.withNeutralMode((NeutralModeValue.Brake));
-        config.CurrentLimits.withStatorCurrentLimit(120);
-        config.Feedback.withSensorToMechanismRatio(
-                CLIMBER_GEAR_RATIO / (2 * Math.PI)
-        );
+        config.CurrentLimits.withStatorCurrentLimit(95);
+        config.Feedback.withSensorToMechanismRatio(CLIMBER_GEAR_RATIO / (2 * Math.PI));
+
+        config.Slot0
+                .withKS(UnloadedGains.KS)
+                .withKV(UnloadedGains.KV)
+                .withKA(UnloadedGains.KA)
+                .withKP(UnloadedGains.KP);
+
+        config.MotionMagic
+                .withMotionMagicCruiseVelocity(MAX_VEL_UNLOADED)
+                .withMotionMagicAcceleration(MAX_ACCEL_UNLOADED);
+
+        config.Slot1
+                .withKS(LoadedGains.KS)
+                .withKV(LoadedGains.KV)
+                .withKA(LoadedGains.KA)
+                .withKP(LoadedGains.KP);
 
         leftMotor.getConfigurator().apply(config);
         rightMotor.getConfigurator().apply(config);
