@@ -157,7 +157,7 @@ public final class Constants {
         public static final double CLOSED_LOOP_RAMP = 0.0;
 
         /* Angle Motor PID Values */
-        public static final double ANGLE_KP = compBot() ? .10 : 0.0035;
+        public static final double ANGLE_KP = compBot() ? .05 : 0.0035;
         public static final double ANGLE_KI = 0.0;
         public static final double ANGLE_KD = 0.0;
         public static final double ANGLE_KF = 0.0; // For now, should remain zero
@@ -328,6 +328,9 @@ public final class Constants {
         public static final int RIGHT_ID = 20;
         public static final int LEFT_ID = 21;
 
+        public static final double MIN_POS = 0;
+        public static final double MAX_POS = 1.489501953125;
+
         public static final double OPEN_LOOP_RAMP = .25;
         public static final int CURRENT_LIMIT = 60;
         public static final double ELEVATOR_GEAR_RATIO = compBot() ? 5 : 12;
@@ -381,6 +384,9 @@ public final class Constants {
 
         public static final double ABS_ENCODER_ZERO = Math.toRadians(306.71 + 90);
 
+        public static final double MAX_VELOCITY = Constants.compBot() ? Units.rotationsToRadians(2) : Units.degreesToRadians(180);
+        public static final double MAX_ACCEL = Constants.compBot() ? Units.rotationsToRadians(4) : Units.degreesToRadians(360);
+
         public static final class PidGains {
             public static final double KP = 2;
             public static final double KI = 0;
@@ -396,11 +402,11 @@ public final class Constants {
         }
 
         public static final class KrakenGains {
-                public static final double KS = 0.3576;
-            public static final double KV = 2.5726;
-            public static final double KA = 0.059493;
+            public static final double KS = 0.3576;
+            public static final double KV = 2.5726 * (2 * Math.PI);
+            public static final double KA = 0.059493 * (2 * Math.PI);
             public static final double KG = 0.16157;
-            public static final double KP = 23.918; 
+            public static final double KP = 4 * 12 * (2 * Math.PI);
             public static final double KD = 0; //0.70647
         }
 
@@ -476,9 +482,9 @@ public final class Constants {
 
     public static final class Intake {
         public static final int CAN_ID = 40;
-        public static final boolean INVERTED = false;
+        public static final boolean INVERTED = compBot() ? true : false;
         public static final int CURRENT_LIMIT = 40;
-        public static final double HANDOFF_SPEED = .5; // TODO CONFIG
+        public static final double HANDOFF_SPEED = compBot() ? .8 : .5; // TODO CONFIG
         public static final double REVERSE_SPEED = -.3; // TODO CONFIG
         public static final double ALGAE_REMOVAL = .5; // TODO CONFIG
         public static final double SHOOT_CORAL = .5;

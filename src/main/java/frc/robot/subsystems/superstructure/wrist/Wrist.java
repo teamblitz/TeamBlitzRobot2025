@@ -1,6 +1,7 @@
 package frc.robot.subsystems.superstructure.wrist;
 
 import static edu.wpi.first.units.Units.*;
+import static frc.robot.Constants.Wrist.*;
 
 import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -26,8 +27,7 @@ public class Wrist extends BlitzSubsystem {
     private final WristIOInputsAutoLogged inputs = new WristIOInputsAutoLogged();
 
     private TrapezoidProfile profile =
-            new TrapezoidProfile(
-                    new TrapezoidProfile.Constraints(Math.toRadians(180), Math.toRadians(360)));
+            new TrapezoidProfile(new TrapezoidProfile.Constraints(MAX_VELOCITY, MAX_ACCEL));
 
     private TrapezoidProfile.State goal;
     private TrapezoidProfile.State setpoint;
@@ -109,15 +109,19 @@ public class Wrist extends BlitzSubsystem {
             TrapezoidProfile.State future_setpoint =
                     profile.calculate(Constants.LOOP_PERIOD_SEC, setpoint, goal);
 
-            io.setSetpoint(setpoint.position, setpoint.velocity, future_setpoint.velocity);
+            if (!Constants.compBot()) {
+                io.setSetpoint(setpoint.position, setpoint.velocity, future_setpoint.velocity);
+            }
 
+            setpoint = future_setpoint;
+        }
+
+        if (goal != null) {
             Logger.recordOutput(logKey + "/profile/positionSetpoint", setpoint.position);
             Logger.recordOutput(logKey + "/profile/velocitySetpoint", setpoint.velocity);
 
             Logger.recordOutput(logKey + "/profile/positionGoal", goal.position);
             Logger.recordOutput(logKey + "/profile/velocityGoal", goal.velocity);
-
-            setpoint = future_setpoint;
         }
 
         if (DriverStation.isDisabled()) {
@@ -172,12 +176,36 @@ public class Wrist extends BlitzSubsystem {
     }
 
     public Command withGoal(TrapezoidProfile.State goal) {
+        //        if (Constants.compBot()) {
+        //            return runOnce(
+        //                    () -> {
+        //                        io.setMotionMagic(goal.position);
+        //                        this.goal = goal;
+        //                    })
+        //                    .andThen(
+        //                            Commands.waitUntil(
+        //                                    () -> MathUtil.isNear(goal.position, getPosition(),
+        // Math.toRadians(3))))
+        //                    .handleInterrupt(() -> io.setMotionMagic(getPosition()))
+        //                    .beforeStarting(refreshCurrentState());
+        //        }
+
         return runOnce(
                         () -> {
+                            if (Constants.compBot()) {
+                                io.setMotionMagic(goal.position);
+                            }
                             this.goal = goal;
                         })
                 .andThen(Commands.waitUntil(() -> setpoint.equals(goal)))
-                .handleInterrupt(() -> this.goal = setpoint)
+                .handleInterrupt(
+                        () -> {
+                            this.goal = setpoint;
+
+                            if (Constants.compBot()) {
+                                io.setMotionMagic(getPosition());
+                            }
+                        })
                 .beforeStarting(refreshCurrentState());
     }
 

@@ -8,17 +8,20 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.reduxrobotics.sensors.canandmag.Canandmag;
 import com.reduxrobotics.sensors.canandmag.CanandmagSettings;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.Constants;
+import static frc.robot.Constants.Wrist.*;
 
 public class WristIOKraken implements WristIO {
     private final TalonFX wristMotor;
 
-    private final PositionVoltage closedLoopPosition = new PositionVoltage(0);
-    private final MotionMagicVoltage motionMagic = new MotionMagicVoltage(0).withSlot(0);
+    private final MotionMagicVoltage motionMagic = new MotionMagicVoltage(0).withSlot(0).withEnableFOC(true);
     private final VoltageOut voltageOut = new VoltageOut(0).withEnableFOC(true);
 
     private final Canandmag absoluteEncoder;
@@ -35,9 +38,23 @@ public class WristIOKraken implements WristIO {
         TalonFXConfiguration config = new TalonFXConfiguration();
 
         config.MotorOutput.withNeutralMode(NeutralModeValue.Brake);
-        config.CurrentLimits.withStatorCurrentLimit(CURRENT_LIMIT);
-        config.Feedback.withSensorToMechanismRatio(WRIST_GEAR_RATIO / (2 * Math.PI));
-        config.MotionMagic.withMotionMagicCruiseVelocity(.5).withMotionMagicAcceleration(1);
+        config.CurrentLimits.withStatorCurrentLimit(80);
+        config.Feedback.withSensorToMechanismRatio(WRIST_GEAR_RATIO);
+
+        config.MotionMagic.withMotionMagicCruiseVelocity(Units.radiansToRotations(MAX_VELOCITY))
+                .withMotionMagicAcceleration(Units.radiansToRotations(MAX_ACCEL));
+
+
+
+        config.Slot0.withGravityType(GravityTypeValue.Arm_Cosine)
+                .withKS(KrakenGains.KS)
+                .withKV(KrakenGains.KV)
+                .withKA(KrakenGains.KA)
+                .withKG(KrakenGains.KG)
+                .withKP(KrakenGains.KP);
+
+
+
 
         config.MotorOutput.withInverted(
                 INVERTED
@@ -45,20 +62,19 @@ public class WristIOKraken implements WristIO {
                         : InvertedValue.CounterClockwise_Positive);
         wristMotor.getConfigurator().apply(config);
 
+
         Commands.sequence(
                         Commands.waitSeconds(2),
                         Commands.runOnce(
                                 () -> {
                                     if (absoluteEncoder.isConnected())
                                         wristMotor.setPosition(
-                                                absoluteEncoder.getAbsPosition() * Math.PI * 2);
-                                    else wristMotor.setPosition(Math.toRadians(90));
+                                                absoluteEncoder.getAbsPosition());
+                                    else wristMotor.setPosition(Units.degreesToRotations(90));
                                 }))
                 .ignoringDisable(true)
                 .schedule();
 
-        //        ParentDevice.optimizeBusUtilizationForAll(wristMotor);
-        //
         BaseStatusSignal.setUpdateFrequencyForAll(
                 100,
                 wristMotor.getRotorPosition(),
@@ -68,15 +84,11 @@ public class WristIOKraken implements WristIO {
 
     @Override
     public void updateInputs(WristIOInputs inputs) {
-        inputs.positionRadians = wristMotor.getPosition().getValueAsDouble();
-        inputs.velocityRadiansPerSecond = wristMotor.getVelocity().getValueAsDouble();
+        inputs.positionRadians = 2 * Math.PI * wristMotor.getPosition().getValueAsDouble();
+        inputs.velocityRadiansPerSecond = 2 * Math.PI *  wristMotor.getVelocity().getValueAsDouble();
         inputs.volts = wristMotor.getMotorVoltage().getValueAsDouble();
-        inputs.torqueCurrent = wristMotor.getTorqueCurrent().getValueAsDouble();
 
         inputs.absoluteEncoderPosition = 2 * Math.PI * absoluteEncoder.getAbsPosition();
-
-        wristMotor.getRotorPosition().getValueAsDouble();
-        wristMotor.getRotorVelocity().getValueAsDouble();
     }
 
     @Override
@@ -84,10 +96,15 @@ public class WristIOKraken implements WristIO {
         wristMotor.set(percent);
     }
 
+//    @Override
+//    public void setSetpoint(double position, double velocity, double acceleration) {
+//        throw new UnsupportedOperationException("Not supported yet.");
+//        //            wristMotor.setControl(motionMagic.withPosition(extension));
+//    }
+
     @Override
-    public void setSetpoint(double position, double velocity, double acceleration) {
-        throw new UnsupportedOperationException("Not supported yet.");
-        //            wristMotor.setControl(motionMagic.withPosition(extension));
+    public void setMotionMagic(double position) {
+        wristMotor.setControl(motionMagic.withPosition(position / (2 * Math.PI)));
     }
 
     @Override

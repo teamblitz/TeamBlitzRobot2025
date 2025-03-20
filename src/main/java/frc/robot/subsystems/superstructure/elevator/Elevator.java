@@ -19,6 +19,8 @@ import java.util.function.Supplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
+import static frc.robot.Constants.Elevator.*;
+
 public class Elevator extends BlitzSubsystem {
     private final frc.robot.subsystems.superstructure.elevator.ElevatorIO io;
     private final ElevatorIOInputsAutoLogged inputs = new ElevatorIOInputsAutoLogged();
@@ -208,18 +210,29 @@ public class Elevator extends BlitzSubsystem {
     }
 
     public Command withGoal(TrapezoidProfile.State goal) {
+        TrapezoidProfile.State clampedGoal = new TrapezoidProfile.State(
+                MathUtil.clamp(
+                        goal.position, MIN_POS, MAX_POS
+                ), goal.velocity
+        );
+
+
         if (Constants.compBot()) {
-            return runOnce(() -> io.setMotionMagic(goal.position))
+            return runOnce(() -> {
+                io.setMotionMagic(clampedGoal.position);
+                this.goal = clampedGoal;
+            }
+            )
                     .andThen(
                             Commands.waitUntil(
-                                    () -> MathUtil.isNear(goal.position, getPosition(), 1e-2)))
+                                    () -> MathUtil.isNear(clampedGoal.position, getPosition(), 1e-2)))
                     .handleInterrupt(() -> io.setMotionMagic(getPosition()))
                     .beforeStarting(refreshCurrentState());
         }
 
         return runOnce(
                         () -> {
-                            this.goal = goal;
+                            this.goal = clampedGoal;
                         })
                 .andThen(Commands.waitUntil(() -> setpoint.equals(goal)))
                 .handleInterrupt(() -> this.goal = setpoint)

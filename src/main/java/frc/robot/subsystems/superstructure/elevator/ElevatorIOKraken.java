@@ -54,10 +54,11 @@ public class ElevatorIOKraken implements ElevatorIO {
                 .withKG(KrakenGains.kG)
                 .withKP(KrakenGains.kP);
 
-//        config.SoftwareLimitSwitch
-//                        .withForwardSoftLimitEnable(true)
-//                                .withReverseSoftLimitEnable(true)
-//                .withForwardSoftLimitThreshold();
+        config.SoftwareLimitSwitch
+                .withForwardSoftLimitEnable(true)
+                .withReverseSoftLimitEnable(true)
+                .withForwardSoftLimitThreshold(MAX_POS)
+                .withReverseSoftLimitThreshold(MIN_POS);
 
         config.MotorOutput.withInverted(LEFT_INVERT);
         leftMotor.getConfigurator().apply(config);
