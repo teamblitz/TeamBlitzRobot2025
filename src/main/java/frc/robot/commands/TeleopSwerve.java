@@ -18,6 +18,7 @@ public class TeleopSwerve extends Command {
     private final DoubleSupplier rotationSup;
     private final BooleanSupplier robotCentricSup;
     private final DoubleSupplier headingSup;
+    private final BooleanSupplier maintainHeading;
 
     public TeleopSwerve(
             Drive s_Swerve,
@@ -25,7 +26,8 @@ public class TeleopSwerve extends Command {
             DoubleSupplier strafeSup,
             DoubleSupplier rotationSup,
             BooleanSupplier robotCentricSup,
-            DoubleSupplier headingSup) {
+            DoubleSupplier headingSup,
+            BooleanSupplier maintainHeading) {
         this.drive = s_Swerve;
         addRequirements(s_Swerve);
 
@@ -34,6 +36,7 @@ public class TeleopSwerve extends Command {
         this.rotationSup = rotationSup;
         this.robotCentricSup = robotCentricSup;
         this.headingSup = headingSup;
+        this.maintainHeading = maintainHeading;
     }
 
     @Override
@@ -59,7 +62,7 @@ public class TeleopSwerve extends Command {
                     headingSup.getAsDouble(),
                     !robotCentricSup.getAsBoolean(),
                     true,
-                    true,
+                    maintainHeading.getAsBoolean(),
                     !Double.isNaN(headingSup.getAsDouble()));
         }
     }

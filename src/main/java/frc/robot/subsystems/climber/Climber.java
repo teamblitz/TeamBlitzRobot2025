@@ -79,10 +79,10 @@ public class Climber extends BlitzSubsystem {
         characterizationTab.add(
                 sysIdDynamic(SysIdRoutine.Direction.kReverse).withName("Climber Dynamic Reverse"));
 
-        ShuffleboardTab climbTab = Shuffleboard.getTab("climber");
-        climbTab.add(deployClimber());
-        climbTab.add(restowClimber());
-        climbTab.add(climb());
+//        ShuffleboardTab climbTab = Shuffleboard.getTab("climber");
+//        climbTab.add(deployClimber());
+//        climbTab.add(restowClimber());
+//        climbTab.add(climb());
     }
 
     @Override
@@ -108,18 +108,18 @@ public class Climber extends BlitzSubsystem {
     }
 
     public Command deployClimber() {
-        return goToPosition(SupplierUtils.toRadians(deployPosition)).withName(logKey + "/deployClimber")
-                .andThen(() -> state = State.DEPLOYED);
+        return goToPosition(SupplierUtils.toRadians(deployPosition))
+                .andThen(() -> state = State.DEPLOYED).withName(logKey + "/deployClimber");
     }
 
     public Command climb() {
-        return goToPosition(SupplierUtils.toRadians(climbPosition)).withName(logKey + "/climb")
-                .andThen(() -> state = State.CLIMB);
+        return goToPosition(SupplierUtils.toRadians(climbPosition))
+                .andThen(() -> state = State.CLIMB).withName(logKey + "/climb");
     }
 
     public Command restowClimber() {
-        return goToPosition(SupplierUtils.toRadians(restowPosition)).withName(logKey + "/restowClimber")
-                .andThen(() -> state = State.RESTOWED);
+        return goToPosition(SupplierUtils.toRadians(restowPosition))
+                .andThen(() -> state = State.RESTOWED).withName(logKey + "/restowClimber");
    }
 
     public Command setSpeed(double speed) {

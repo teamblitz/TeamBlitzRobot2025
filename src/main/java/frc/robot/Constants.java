@@ -497,7 +497,7 @@ public final class Constants {
         public static final boolean INVERTED = compBot() ? true : false;
         public static final int CURRENT_LIMIT = 40;
         public static final double HANDOFF_SPEED = compBot() ? .4 : .5; // TODO CONFIG
-        public static final double REVERSE_SPEED = -.3; // TODO CONFIG
+        public static final double REVERSE_SPEED = -.15; // TODO CONFIG
         public static final double ALGAE_REMOVAL = .5; // TODO CONFIG
         public static final double SHOOT_CORAL = .5;
         public static final double L1 = .3;
@@ -511,7 +511,7 @@ public final class Constants {
 
         public static final int CURRENT_LIMIT = 25;
 
-        public static final double MATCH_FUNNEL_UP = 1.5;
+        public static final double MATCH_FUNNEL_UP = 1.8;
         public static final double MATCH_FUNNEL_DOWN = 0;
         public static final double PIT_FUNNEL_STOW = 0.5;
         public static final double EPSILON = 0.05;
@@ -530,7 +530,7 @@ public final class Constants {
         public static final double MIN_POS = Math.toRadians(0);
 
         public static final double DEPLOY_POSITION = Math.toRadians(90); // TODO CONFIG
-        public static final double CLIMB_POSITION = Math.toRadians(180);
+        public static final double CLIMB_POSITION = Math.toRadians(210);
         public static final double RESTOW_POSITION = Math.toRadians(260);
 
         public static final double STARTING_POSITION =

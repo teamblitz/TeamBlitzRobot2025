@@ -9,6 +9,7 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.RobotState;
@@ -94,7 +95,8 @@ public class RobotContainer {
                                 OIConstants.Drive.Y_TRANSLATION,
                                 OIConstants.Drive.ROTATION_SPEED,
                                 () -> false,
-                                () -> Double.NaN)
+                                () -> Double.NaN,
+                        () -> climber.getState() != Climber.State.CLIMB)
                         .withName("TeleopSwerve"));
 
                 superstructure.setDefaultCommand(
@@ -242,7 +244,7 @@ public class RobotContainer {
         OIConstants.Climber.CLIMBER_DOWN_MAN.whileTrue(climber.setSpeed(-.8));
 
         OIConstants.Climber.DEPLOY_CLIMBER.onTrue(CommandFactory.readyClimb(climber, winch));
-        OIConstants.Climber.RESTOW_CLIMBER.onTrue(CommandFactory.restoreClimber(climber, winch));
+        OIConstants.Climber.RESTOW_CLIMBER.onTrue(CommandFactory.restoreClimber(climber, winch).unless(() -> climber.getState() == Climber.State.CLIMB));
 
         OIConstants.SuperStructure.SCORE.and(() -> climber.getState() == Climber.State.DEPLOYED).whileTrue(climber.climb());
 
@@ -261,6 +263,12 @@ public class RobotContainer {
 
     public Command getAutonomousCommand() { // Autonomous code goes here
         return Commands.runOnce(() -> drive.setGyro(startingPositionChooser.get().angle))
-                .andThen(autoChooser.get().asProxy());
+                .andThen(winch.lowerFunnel())
+                .andThen(
+                        Commands.run(
+                                () -> drive.drive(new ChassisSpeeds(-.2, 0, 0), true)).withTimeout(1)
+                ).andThen(
+                        Commands.runOnce(() -> drive.drive(new ChassisSpeeds(0,0,0), true))
+                );
     }
 }
