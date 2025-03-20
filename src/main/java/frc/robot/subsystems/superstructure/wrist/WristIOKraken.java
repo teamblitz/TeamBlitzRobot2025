@@ -68,8 +68,7 @@ public class WristIOKraken implements WristIO {
                         Commands.runOnce(
                                 () -> {
                                     if (absoluteEncoder.isConnected())
-                                        wristMotor.setPosition(
-                                                absoluteEncoder.getAbsPosition());
+                                        wristMotor.setPosition(getAbsPosition());
                                     else wristMotor.setPosition(Units.degreesToRotations(90));
                                 }))
                 .ignoringDisable(true)
@@ -115,5 +114,11 @@ public class WristIOKraken implements WristIO {
     @Override
     public void setBrakeMode(boolean brakeMode) {
         wristMotor.setNeutralMode(brakeMode ? NeutralModeValue.Brake : NeutralModeValue.Coast);
+    }
+
+    private double getAbsPosition() {
+        if (absoluteEncoder.isConnected())
+            return (2 * Math.PI) * absoluteEncoder.getAbsPosition() + Math.toRadians(90);
+        return -1;
     }
 }

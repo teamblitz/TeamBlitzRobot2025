@@ -67,7 +67,7 @@ public class Intake extends BlitzSubsystem {
         return inputs.breakBeam;
     }
 
-    private Command setSpeed(double speed) {
+    public Command setSpeed(double speed) {
         return startEnd(() -> io.setSpeed(speed), () -> io.setSpeed(0));
     }
 

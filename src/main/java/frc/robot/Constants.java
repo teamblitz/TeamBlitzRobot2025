@@ -444,6 +444,15 @@ public final class Constants {
                         SetpointMode.WRIST_SYNC.withState(
                                 new SuperstructureState(1.0, Math.toRadians(70))));
 
+        public static final List<StateWithMode> L4_PLOP =
+                List.of(
+                        SetpointMode.WRIST_SYNC.withState(
+                                new SuperstructureState(L4.elevatorPosition, Math.toRadians(40))),
+                        SetpointMode.WRIST_SYNC.withState(
+                                new SuperstructureState(L4.elevatorPosition, L4.wristRotation)));
+
+
+
         public static final SuperstructureState HANDOFF =
                 new SuperstructureState(.005, Math.toRadians(97.5));
 
@@ -489,6 +498,9 @@ public final class Constants {
         public static final double ALGAE_REMOVAL = .5; // TODO CONFIG
         public static final double SHOOT_CORAL = .5;
         public static final double L1 = .3;
+
+
+        public static final double L4_PLOP = .2;
     }
 
     public static final class Winch {

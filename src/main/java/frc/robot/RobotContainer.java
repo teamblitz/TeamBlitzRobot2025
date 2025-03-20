@@ -37,9 +37,11 @@ import frc.robot.subsystems.intake.IntakeIOSpark;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.superstructure.elevator.Elevator;
 import frc.robot.subsystems.superstructure.elevator.ElevatorIO;
+import frc.robot.subsystems.superstructure.elevator.ElevatorIOKraken;
 import frc.robot.subsystems.superstructure.elevator.ElevatorIOSpark;
 import frc.robot.subsystems.superstructure.wrist.Wrist;
 import frc.robot.subsystems.superstructure.wrist.WristIO;
+import frc.robot.subsystems.superstructure.wrist.WristIOKraken;
 import frc.robot.subsystems.superstructure.wrist.WristIOSpark;
 import frc.robot.subsystems.winch.Winch;
 import frc.robot.subsystems.winch.WinchIOSpark;
@@ -111,7 +113,7 @@ public class RobotContainer {
 
     private void configureSubsystems() {
         drive =
-                switch (Constants.Robot.SimBot) {
+                switch (Constants.ROBOT) {
                     case CompBot ->
                             new Drive(
                                     new SwerveModuleConfiguration(
@@ -167,8 +169,8 @@ public class RobotContainer {
 
         superstructure =
                 new Superstructure(
-                        Constants.compBot() ? new ElevatorIO() {} : new ElevatorIOSpark(),
-                        Constants.compBot() ? new WristIO() {} : new WristIOSpark());
+                        Constants.compBot() ? new ElevatorIOKraken() : new ElevatorIOSpark(),
+                        Constants.compBot() ? new WristIOKraken() : new WristIOSpark());
         elevator = superstructure.getElevator();
         wrist = superstructure.getWrist();
 
