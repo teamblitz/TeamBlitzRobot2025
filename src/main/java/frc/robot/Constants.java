@@ -445,7 +445,7 @@ public final class Constants {
                                 new SuperstructureState(1.0, Math.toRadians(70))));
 
         public static final SuperstructureState HANDOFF =
-                new SuperstructureState(.005, Math.toRadians(90));
+                new SuperstructureState(.005, Math.toRadians(97.5));
 
         public static final double ELEVATOR_MAX_TO_SKIP_TRANSIT = .15;
 
@@ -484,7 +484,7 @@ public final class Constants {
         public static final int CAN_ID = 40;
         public static final boolean INVERTED = compBot() ? true : false;
         public static final int CURRENT_LIMIT = 40;
-        public static final double HANDOFF_SPEED = compBot() ? .8 : .5; // TODO CONFIG
+        public static final double HANDOFF_SPEED = compBot() ? .6 : .5; // TODO CONFIG
         public static final double REVERSE_SPEED = -.3; // TODO CONFIG
         public static final double ALGAE_REMOVAL = .5; // TODO CONFIG
         public static final double SHOOT_CORAL = .5;

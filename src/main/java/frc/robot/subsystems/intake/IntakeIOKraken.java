@@ -19,7 +19,7 @@ public class IntakeIOKraken implements IntakeIO {
 
         TalonFXConfiguration config = new TalonFXConfiguration();
 
-        config.MotorOutput.withNeutralMode((NeutralModeValue.Brake))
+        config.MotorOutput.withNeutralMode((NeutralModeValue.Coast))
                 .withInverted(INVERTED ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive);
         breakBeam = new DigitalInput(0);
 
