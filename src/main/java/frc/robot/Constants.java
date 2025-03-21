@@ -54,7 +54,7 @@ public final class Constants {
         SimBot
     }
 
-    public static final Robot ROBOT = Robot.CompBot;
+    public static final Robot ROBOT = Robot.SimBot;
 
     public static boolean compBot() {
         return ROBOT == Robot.CompBot;
@@ -252,15 +252,15 @@ public final class Constants {
                             DRIVE_MOTOR_ID, ANGLE_MOTOR_ID, CAN_CODER_ID, ANGLE_OFFSET);
         }
 
-        public static final double MASS = Units.lbsToKilograms(150);
+        public static final double MASS = Units.lbsToKilograms(115+20);
         public static final double MOI =
-                1
-                        / 12.
+                (1
+                        / 12.0)
                         * MASS
                         * (WHEEL_BASE * WHEEL_BASE
                                 + TRACK_WIDTH * TRACK_WIDTH); // TODO: EMPIRICALLY MEASURE MOI
         public static final double MAX_MODULE_ANGULAR_VELOCITY =
-                Units.rotationsToRadians(10.0); // CONFIG
+                Units.rotationsToRadians(10.0);// CONFIG
 
         public static final RobotConfig PHYSICAL_CONSTANTS =
                 new RobotConfig(
@@ -269,10 +269,9 @@ public final class Constants {
                         new ModuleConfig(
                                 WHEEL_CIRCUMFERENCE / (2 * Math.PI),
                                 MAX_SPEED,
-                                1.0, // TODO, MEASURE WHEEL COEFICENT OF FRICTION,
-                                false ? DCMotor.getKrakenX60Foc(1) : DCMotor.getNEO(1),
-                                40, // TODO, WRONG PROBABLY, might be SUPPLY
-                                // limit, which we don't actualy set.,
+                                1.2, // TODO, MEASURE WHEEL COEFICENT OF FRICTION,
+                                DCMotor.getKrakenX60Foc(1).withReduction(DRIVE_GEAR_RATIO),
+                                60,
                                 1),
                         CENTER_TO_MODULE.get(FL),
                         CENTER_TO_MODULE.get(FR),

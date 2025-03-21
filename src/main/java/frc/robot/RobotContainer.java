@@ -9,6 +9,7 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.events.EventTrigger;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -18,6 +19,7 @@ import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.WrapperCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.AutoConstants.StartingPosition;
 import frc.robot.commands.CommandFactory;
@@ -256,15 +258,13 @@ public class RobotContainer {
 
     private void configureAutoCommands() {
         NamedCommands.registerCommand(
-                "score_l3", superstructure.toGoal(Superstructure.Goal.L3)
-                        .andThen(intake.shoot_coral().withTimeout(1)
+                "score_l3",
+                superstructure.toGoal(Superstructure.Goal.L3)
+                        .andThen(intake.shoot_coral().withTimeout(1).asProxy()
         ));
 
-        new EventTrigger("score_l4").onTrue(
-                CommandFactory.l4Plop(superstructure, intake)
-        );
-
-        new EventTrigger("handoff").onTrue(CommandFactory.handoff(superstructure, intake));
+//        new EventTrigger("score_l4").onTrue(
+//       Trigger("handoff").onTrue(CommandFactory.handoff(superstructure, intake));
     }
 
     public Command getAutonomousCommand() {
@@ -273,18 +273,8 @@ public class RobotContainer {
                 Commands.runOnce(() -> drive.setGyro(180)),
                 Commands.parallel(
                         winch.lowerFunnel(),
-                        autoChooser.get()
+                        autoChooser.get().asProxy()
                 )
-        );
-
-//        // Autonomous code goes here
-//        return Commands.runOnce(() -> drive.setGyro(startingPositionChooser.get().angle))
-//                .andThen(winch.lowerFunnel())
-//                .andThen(
-//                        Commands.run(
-//                                () -> drive.drive(new ChassisSpeeds(-.2, 0, 0), true)).withTimeout(1)
-//                ).andThen(
-//                        Commands.runOnce(() -> drive.drive(new ChassisSpeeds(0,0,0), true))
-//                );
+        ).withName("autonomousCommand");
     }
 }
