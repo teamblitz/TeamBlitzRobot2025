@@ -305,8 +305,8 @@ public class Drive extends BlitzSubsystem {
         RobotConfig config;
 
         try {
-            config = RobotConfig.fromGUISettings();
-//            config = PHYSICAL_CONSTANTS;
+//            config = RobotConfig.fromGUISettings();
+            config = PHYSICAL_CONSTANTS;
         } catch(Exception e){
             config = PHYSICAL_CONSTANTS;
             DriverStation.reportError("Failed to load PathPlanner config and configure AutoBuilder", e.getStackTrace());
