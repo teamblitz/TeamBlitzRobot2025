@@ -46,16 +46,14 @@ public class Winch extends BlitzSubsystem {
         winchTab.add(raiseFunnel());
         winchTab.add(lowerFunnel());
         winchTab.add(pitFunnelReady());
-
-        new Trigger(DriverStation::isDSAttached).onTrue(
+        
+        Shuffleboard.getTab("winch").add("FIX ENCODER",
                 runOnce(
                         () -> {
-                            if (!ahh) {
+
                                 io.setPosition(PIT_FUNNEL_STOW);
-                                ahh = true;
-                            }
-                        }
-                )
+                }
+                ) .withName("RESET ENCODER")
         );
     }
 
