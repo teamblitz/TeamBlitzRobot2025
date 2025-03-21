@@ -265,8 +265,11 @@ public class RobotContainer {
 
         NamedCommands.registerCommand(
                 "score_l4",
-                CommandFactory.l4Plop(superstructure, intake));
+                CommandFactory.l4Plop(superstructure, intake).asProxy());
 
+        new EventTrigger("ready_l4").onTrue(
+                superstructure.toGoalThenIdle(Superstructure.Goal.L4)
+        );
 //        new EventTrigger("score_l4").onTrue(
 //       Trigger("handoff").onTrue(CommandFactory.handoff(superstructure, intake));
     }
