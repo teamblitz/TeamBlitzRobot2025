@@ -11,6 +11,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.events.EventTrigger;
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -74,6 +75,7 @@ public class RobotContainer {
     private final LoggedDashboardChooser<StartingPosition> startingPositionChooser;
 
     public RobotContainer() {
+        CameraServer.startAutomaticCapture();
         configureSubsystems();
 
         configureButtonBindings();
