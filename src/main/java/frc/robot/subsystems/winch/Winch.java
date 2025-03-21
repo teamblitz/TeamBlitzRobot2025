@@ -1,11 +1,13 @@
 package frc.robot.subsystems.winch;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.BlitzSubsystem;
 import frc.lib.util.LoggedTunableNumber;
 import frc.robot.Constants;
@@ -34,6 +36,8 @@ public class Winch extends BlitzSubsystem {
             new LoggedTunableNumber("winch/pitFunnelStow", PIT_FUNNEL_STOW);
 
 
+    public boolean ahh = false;
+
     public Winch(WinchIO io) {
         super("winch");
         this.io = io;
@@ -42,6 +46,17 @@ public class Winch extends BlitzSubsystem {
         winchTab.add(raiseFunnel());
         winchTab.add(lowerFunnel());
         winchTab.add(pitFunnelReady());
+
+        new Trigger(DriverStation::isDSAttached).onTrue(
+                runOnce(
+                        () -> {
+                            if (!ahh) {
+                                io.setPosition(PIT_FUNNEL_STOW);
+                                ahh = true;
+                            }
+                        }
+                )
+        );
     }
 
     @Override
