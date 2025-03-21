@@ -257,11 +257,11 @@ public class RobotContainer {
     }
 
     private void configureAutoCommands() {
-        NamedCommands.registerCommand(
-                "score_l3",
-                superstructure.toGoal(Superstructure.Goal.L3)
-                        .andThen(intake.shoot_coral().withTimeout(1).asProxy()
-        ));
+//        NamedCommands.registerCommand(
+//                "score_l3",
+//                superstructure.toGoal(Superstructure.Goal.L3)
+//                        .andThen(intake.shoot_coral().withTimeout(1).asProxy()
+//        ));
 
 //        new EventTrigger("score_l4").onTrue(
 //       Trigger("handoff").onTrue(CommandFactory.handoff(superstructure, intake));
@@ -273,7 +273,7 @@ public class RobotContainer {
                 Commands.runOnce(() -> drive.setGyro(180)),
                 Commands.parallel(
                         winch.lowerFunnel(),
-                        autoChooser.get().asProxy()
+                        autoChooser.get()
                 )
         ).withName("autonomousCommand");
     }
