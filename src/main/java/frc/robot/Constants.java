@@ -529,8 +529,8 @@ public final class Constants {
         public static final double MIN_POS = Math.toRadians(0);
 
         public static final double DEPLOY_POSITION = Math.toRadians(110); // TODO CONFIG
-        public static final double CLIMB_POSITION = Math.toRadians(230);
-        public static final double RESTOW_POSITION = Math.toRadians(260);
+        public static final double CLIMB_POSITION = Math.toRadians(210);
+        public static final double RESTOW_POSITION = Math.toRadians(270);
 
         public static final double STARTING_POSITION =
                 Math.toRadians(270);
