@@ -46,14 +46,14 @@ public class Winch extends BlitzSubsystem {
         winchTab.add(raiseFunnel());
         winchTab.add(lowerFunnel());
         winchTab.add(pitFunnelReady());
-        
+
         Shuffleboard.getTab("winch").add("FIX ENCODER",
                 runOnce(
                         () -> {
 
                                 io.setPosition(PIT_FUNNEL_STOW);
                 }
-                ) .withName("RESET ENCODER")
+                ).ignoringDisable(true).withName("RESET ENCODER")
         );
     }
 
