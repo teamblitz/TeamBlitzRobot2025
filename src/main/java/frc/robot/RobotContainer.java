@@ -263,6 +263,10 @@ public class RobotContainer {
                         .andThen(intake.shoot_coral().withTimeout(1).asProxy()
         ));
 
+        NamedCommands.registerCommand(
+                "score_l4",
+                CommandFactory.l4Plop(superstructure, intake));
+
 //        new EventTrigger("score_l4").onTrue(
 //       Trigger("handoff").onTrue(CommandFactory.handoff(superstructure, intake));
     }
