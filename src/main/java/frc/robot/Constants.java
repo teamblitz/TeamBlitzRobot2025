@@ -415,7 +415,7 @@ public final class Constants {
     // Reset Elevator To Bottom before reset code
     public static final class SuperstructureSetpoints {
         public static final SuperstructureState STOW =
-                new SuperstructureState(.005, Math.toRadians(70));
+                new SuperstructureState(.001, Math.toRadians(70));
 
         public static final SuperstructureState WRIST_TRANSIT =
                 new SuperstructureState(0, Math.toRadians(62.5));
@@ -502,7 +502,7 @@ public final class Constants {
         public static final double L1 = .3;
 
 
-        public static final double L4_PLOP = .2;
+        public static final double L4_PLOP = .4;
     }
 
     public static final class Winch {
@@ -510,7 +510,7 @@ public final class Constants {
 
         public static final int CURRENT_LIMIT = 25;
 
-        public static final double MATCH_FUNNEL_UP = 2.1;
+        public static final double MATCH_FUNNEL_UP = 2.2;
         public static final double MATCH_FUNNEL_DOWN = 0;
         public static final double PIT_FUNNEL_STOW = 0.5;
         public static final double EPSILON = 0.05;
