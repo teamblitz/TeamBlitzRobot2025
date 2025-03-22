@@ -556,8 +556,8 @@ public final class Constants {
             public static final double KP = 100; //65.595;
         }
 
-        public static final double MAX_VEL_UNLOADED = Units.degreesToRadians(180);
-        public static final double MAX_ACCEL_UNLOADED = Units.degreesToRadians(360);
+        public static final double MAX_VEL_UNLOADED = Units.degreesToRadians(180 * .6);
+        public static final double MAX_ACCEL_UNLOADED = Units.degreesToRadians(360 * .6);
 
         public static final double MAX_VEL_LOADED = .5;
         public static final double MAX_ACCEL_LOADED = 1;
