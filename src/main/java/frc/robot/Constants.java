@@ -510,7 +510,7 @@ public final class Constants {
 
         public static final int CURRENT_LIMIT = 25;
 
-        public static final double MATCH_FUNNEL_UP = 2.2;
+        public static final double MATCH_FUNNEL_UP = 2.3;
         public static final double MATCH_FUNNEL_DOWN = 0;
         public static final double PIT_FUNNEL_STOW = 0.5;
         public static final double EPSILON = 0.05;
@@ -529,7 +529,7 @@ public final class Constants {
         public static final double MIN_POS = Math.toRadians(0);
 
         public static final double DEPLOY_POSITION = Math.toRadians(105); // TODO CONFIG
-        public static final double CLIMB_POSITION = Math.toRadians(215);
+        public static final double CLIMB_POSITION = Math.toRadians(230);
         public static final double RESTOW_POSITION = Math.toRadians(270);
 
         public static final double STARTING_POSITION =
