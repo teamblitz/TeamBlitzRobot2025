@@ -7,6 +7,7 @@ import static frc.robot.Constants.Drive.*;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.util.DriveFeedforwards;
 import com.pathplanner.lib.util.swerve.SwerveSetpoint;
@@ -301,14 +302,28 @@ public class Drive extends BlitzSubsystem {
                                 null,
                                 this));
 
+        RobotConfig config;
+
+        try {
+//            config = RobotConfig.fromGUISettings();
+            config = PHYSICAL_CONSTANTS;
+        } catch(Exception e){
+            config = PHYSICAL_CONSTANTS;
+            DriverStation.reportError("Failed to load PathPlanner config and configure AutoBuilder", e.getStackTrace());
+        }
+
         AutoBuilder.configure(
                 this::getPose,
                 this::resetOdometry,
                 () -> KINEMATICS.toChassisSpeeds(getModuleStates()),
-                (speeds, feedforwards) -> drive(speeds, false),
+                (speeds, feedforwards) ->
+                {
+                    drive(speeds, true);
+                    Logger.recordOutput("drive/auto/speeds", speeds);
+                },
                 new PPHolonomicDriveController(
                         AutoConstants.TRANSLATION_PID, AutoConstants.ROTATION_PID),
-                PHYSICAL_CONSTANTS,
+                config,
                 () ->
                         DriverStation.getAlliance().isPresent()
                                 && DriverStation.getAlliance()

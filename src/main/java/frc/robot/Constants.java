@@ -252,15 +252,15 @@ public final class Constants {
                             DRIVE_MOTOR_ID, ANGLE_MOTOR_ID, CAN_CODER_ID, ANGLE_OFFSET);
         }
 
-        public static final double MASS = Units.lbsToKilograms(150);
+        public static final double MASS = Units.lbsToKilograms(115+20);
         public static final double MOI =
-                1
-                        / 12.
+                (1
+                        / 12.0)
                         * MASS
                         * (WHEEL_BASE * WHEEL_BASE
                                 + TRACK_WIDTH * TRACK_WIDTH); // TODO: EMPIRICALLY MEASURE MOI
         public static final double MAX_MODULE_ANGULAR_VELOCITY =
-                Units.rotationsToRadians(10.0); // CONFIG
+                Units.rotationsToRadians(10.0);// CONFIG
 
         public static final RobotConfig PHYSICAL_CONSTANTS =
                 new RobotConfig(
@@ -269,10 +269,9 @@ public final class Constants {
                         new ModuleConfig(
                                 WHEEL_CIRCUMFERENCE / (2 * Math.PI),
                                 MAX_SPEED,
-                                1.0, // TODO, MEASURE WHEEL COEFICENT OF FRICTION,
-                                false ? DCMotor.getKrakenX60Foc(1) : DCMotor.getNEO(1),
-                                40, // TODO, WRONG PROBABLY, might be SUPPLY
-                                // limit, which we don't actualy set.,
+                                1.2, // TODO, MEASURE WHEEL COEFICENT OF FRICTION,
+                                DCMotor.getKrakenX60Foc(1).withReduction(DRIVE_GEAR_RATIO),
+                                60,
                                 1),
                         CENTER_TO_MODULE.get(FL),
                         CENTER_TO_MODULE.get(FR),
@@ -416,7 +415,7 @@ public final class Constants {
     // Reset Elevator To Bottom before reset code
     public static final class SuperstructureSetpoints {
         public static final SuperstructureState STOW =
-                new SuperstructureState(.005, Math.toRadians(70));
+                new SuperstructureState(.001, Math.toRadians(70));
 
         public static final SuperstructureState WRIST_TRANSIT =
                 new SuperstructureState(0, Math.toRadians(62.5));
@@ -503,7 +502,7 @@ public final class Constants {
         public static final double L1 = .3;
 
 
-        public static final double L4_PLOP = .2;
+        public static final double L4_PLOP = .4;
     }
 
     public static final class Winch {
@@ -511,7 +510,7 @@ public final class Constants {
 
         public static final int CURRENT_LIMIT = 25;
 
-        public static final double MATCH_FUNNEL_UP = 1.8;
+        public static final double MATCH_FUNNEL_UP = 2.3;
         public static final double MATCH_FUNNEL_DOWN = 0;
         public static final double PIT_FUNNEL_STOW = 0.5;
         public static final double EPSILON = 0.05;
@@ -529,9 +528,9 @@ public final class Constants {
         public static final double MAX_POS = Math.toRadians(270);
         public static final double MIN_POS = Math.toRadians(0);
 
-        public static final double DEPLOY_POSITION = Math.toRadians(90); // TODO CONFIG
-        public static final double CLIMB_POSITION = Math.toRadians(210);
-        public static final double RESTOW_POSITION = Math.toRadians(260);
+        public static final double DEPLOY_POSITION = Math.toRadians(105); // TODO CONFIG
+        public static final double CLIMB_POSITION = Math.toRadians(230);
+        public static final double RESTOW_POSITION = Math.toRadians(270);
 
         public static final double STARTING_POSITION =
                 Math.toRadians(270);
@@ -557,8 +556,8 @@ public final class Constants {
             public static final double KP = 100; //65.595;
         }
 
-        public static final double MAX_VEL_UNLOADED = Units.degreesToRadians(180);
-        public static final double MAX_ACCEL_UNLOADED = Units.degreesToRadians(360);
+        public static final double MAX_VEL_UNLOADED = Units.degreesToRadians(180 * .6);
+        public static final double MAX_ACCEL_UNLOADED = Units.degreesToRadians(360 * .6);
 
         public static final double MAX_VEL_LOADED = .5;
         public static final double MAX_ACCEL_LOADED = 1;

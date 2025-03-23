@@ -7,19 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "SLM-R1"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "score_l4"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.25
+            "pathName": "SLR-Out"
           }
         }
       ]
