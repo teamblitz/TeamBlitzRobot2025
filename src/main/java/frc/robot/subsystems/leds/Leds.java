@@ -29,6 +29,7 @@ public class Leds extends SubsystemBase {
     public boolean stationIntake = false;
     public boolean hasCoral = false;
     public boolean hasAlgae = false; // I wish :sob:
+    public boolean intakeCoral = false;
 
     public double lastPickupTime = 0.0;
     public boolean indexing = false;
@@ -37,6 +38,7 @@ public class Leds extends SubsystemBase {
     public boolean autoShoot = false;
     public boolean autoDrive = false;
     public boolean climbing = false;
+    public boolean deployClimber = false;
     public boolean endgameAlert = false;
     public boolean sameBattery = false;
     public boolean superstructureCoast = false;
@@ -207,8 +209,13 @@ public class Leds extends SubsystemBase {
                 solid(Color.kOrangeRed);
             } else if (hasCoral) {
                 strobe(Color.kGreen, Color.kYellow, strobeSlowDuration);
+            } else if (intakeCoral) {
+                strobe(Color.kGreen,Color.kYellow,strobeFastDuration);
+            } else if (deployClimber) {
+                
             } else {
                 solid(Color.kGreen);
+
             }
 
             if (endgameAlert) {

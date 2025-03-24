@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.WrapperCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.AutoConstants.StartingPosition;
@@ -40,6 +41,7 @@ import frc.robot.subsystems.drive.swerveModule.encoder.EncoderIO;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIOKraken;
 import frc.robot.subsystems.intake.IntakeIOSpark;
+import frc.robot.subsystems.leds.Leds;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.superstructure.elevator.Elevator;
 import frc.robot.subsystems.superstructure.elevator.ElevatorIOKraken;
@@ -222,7 +224,9 @@ public class RobotContainer {
                 .and(superstructure.triggerAtGoal(Superstructure.Goal.L4))
                 .onTrue(CommandFactory.l4Plop(superstructure, intake));
 
-        OIConstants.Intake.HANDOFF.whileTrue(intake.handoff());
+        OIConstants.Intake.HANDOFF.whileTrue(intake.handoff()
+                .beforeStarting(() -> Leds.getInstance().intakeCoral = true)
+                .finallyDo(() -> Leds.getInstance().intakeCoral = false));
         OIConstants.Intake.REVERSE.whileTrue(intake.reverse());
         OIConstants.Intake.ALGAE_REMOVAL.whileTrue(intake.kick_algae());
         OIConstants.Intake.SHOOT_CORAL.whileTrue(intake.shoot_coral());
@@ -242,10 +246,14 @@ public class RobotContainer {
         OIConstants.Climber.CLIMBER_UP_MAN.whileTrue(climber.setSpeed(.8));
         OIConstants.Climber.CLIMBER_DOWN_MAN.whileTrue(climber.setSpeed(-.8));
 
-        OIConstants.Climber.DEPLOY_CLIMBER.onTrue(CommandFactory.readyClimb(climber, winch));
+        OIConstants.Climber.DEPLOY_CLIMBER.whileTrue(CommandFactory.readyClimb(climber, winch));
+
         OIConstants.Climber.RESTOW_CLIMBER.onTrue(CommandFactory.restoreClimber(climber, winch).unless(() -> climber.getState() == Climber.State.CLIMB));
 
-        OIConstants.SuperStructure.SCORE.and(() -> climber.getState() == Climber.State.DEPLOYED).whileTrue(climber.climb());
+        OIConstants.SuperStructure.SCORE.and(() -> climber.getState() == Climber.State.DEPLOYED).whileTrue(
+                climber.climb()
+                        .beforeStarting(() -> Leds.getInstance().climbing = true)
+                        .finallyDo(() -> Leds.getInstance().climbing = false));
 
         new Trigger(() -> Math.abs(OIConstants.Wrist.WRIST_MANUAL.getAsDouble()) > .07)
                 .whileTrue(
@@ -256,7 +264,14 @@ public class RobotContainer {
                 .toggleOnTrue(
                         Commands.parallel(wrist.coastCommand(), elevator.coastCommand())
                                 .onlyWhile(RobotState::isDisabled));
-    }
+
+
+        if (intake.hasCoral()) {
+            Leds.getInstance().hasCoral = true;
+        } else {
+            Leds.getInstance().hasCoral = false;
+    }}
+
 
     private void configureAutoCommands() {
         NamedCommands.registerCommand(

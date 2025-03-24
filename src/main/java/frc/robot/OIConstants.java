@@ -105,6 +105,7 @@ public class OIConstants {
         public static final Trigger ALGAE_REMOVAL = UNBOUND;
         public static final Trigger REVERSE = OPERATOR_CONTROLLER.leftBumper();
         public static final Trigger SHOOT_CORAL = OPERATOR_CONTROLLER.rightTrigger();
+        public static final Trigger HAS_CORAL = UNBOUND;
     }
 
     public static final class Wrist {
