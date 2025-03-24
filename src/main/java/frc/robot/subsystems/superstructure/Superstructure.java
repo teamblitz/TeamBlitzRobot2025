@@ -57,10 +57,11 @@ public class Superstructure extends BlitzSubsystem {
                         entry(Goal.HANDOFF, HANDOFF),
                         entry(Goal.STOW, STOW));
 
-        dynamicGoals = Map.ofEntries(
-                entry(Goal.L4_DUNK, L4_DUNK)
-//                entry(Goal.L4_PLOP, L4_PLOP)
-        );
+        dynamicGoals =
+                Map.ofEntries(
+                        entry(Goal.L4_DUNK, L4_DUNK)
+                        //                entry(Goal.L4_PLOP, L4_PLOP)
+                        );
 
         ShuffleboardTab tab = Shuffleboard.getTab("SuperStructure");
         GenericEntry elevatorTestEntry = tab.add("elevatorTest", 0).getEntry();

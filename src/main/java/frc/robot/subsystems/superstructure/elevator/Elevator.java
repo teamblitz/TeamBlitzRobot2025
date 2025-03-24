@@ -1,5 +1,7 @@
 package frc.robot.subsystems.superstructure.elevator;
 
+import static frc.robot.Constants.Elevator.*;
+
 import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -18,8 +20,6 @@ import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
-
-import static frc.robot.Constants.Elevator.*;
 
 public class Elevator extends BlitzSubsystem {
     private final frc.robot.subsystems.superstructure.elevator.ElevatorIO io;
@@ -108,11 +108,15 @@ public class Elevator extends BlitzSubsystem {
 
         characterizationTab.add(
                 "elevator/0.1m",
-                withGoal(new TrapezoidProfile.State(.1, 0)).alongWith(superstructureIdle.get()).withName("elevator/0.1m test"));
+                withGoal(new TrapezoidProfile.State(.1, 0))
+                        .alongWith(superstructureIdle.get())
+                        .withName("elevator/0.1m test"));
 
         characterizationTab.add(
                 "elevator/0.4m",
-                withGoal(new TrapezoidProfile.State(.8, 0)).alongWith(superstructureIdle.get()).withName("elevator/0.5m test"));
+                withGoal(new TrapezoidProfile.State(.8, 0))
+                        .alongWith(superstructureIdle.get())
+                        .withName("elevator/0.5m test"));
 
         loopTimer.restart();
     }
@@ -132,7 +136,6 @@ public class Elevator extends BlitzSubsystem {
                     profile.calculate(Constants.LOOP_PERIOD_SEC, setpoint, goal);
 
             io.setSetpoint(setpoint.position, setpoint.velocity, future_setpoint.velocity);
-
         }
 
         if (goal != null) {
@@ -210,22 +213,21 @@ public class Elevator extends BlitzSubsystem {
     }
 
     public Command withGoal(TrapezoidProfile.State goal) {
-        TrapezoidProfile.State clampedGoal = new TrapezoidProfile.State(
-                MathUtil.clamp(
-                        goal.position, MIN_POS, MAX_POS
-                ), goal.velocity
-        );
-
+        TrapezoidProfile.State clampedGoal =
+                new TrapezoidProfile.State(
+                        MathUtil.clamp(goal.position, MIN_POS, MAX_POS), goal.velocity);
 
         if (Constants.compBot()) {
-            return runOnce(() -> {
-                io.setMotionMagic(clampedGoal.position);
-                this.goal = clampedGoal;
-            }
-            )
+            return runOnce(
+                            () -> {
+                                io.setMotionMagic(clampedGoal.position);
+                                this.goal = clampedGoal;
+                            })
                     .andThen(
                             Commands.waitUntil(
-                                    () -> MathUtil.isNear(clampedGoal.position, getPosition(), 1e-2)))
+                                    () ->
+                                            MathUtil.isNear(
+                                                    clampedGoal.position, getPosition(), 1e-2)))
                     .handleInterrupt(() -> io.setMotionMagic(getPosition()))
                     .beforeStarting(refreshCurrentState());
         }

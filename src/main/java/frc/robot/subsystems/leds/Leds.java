@@ -211,7 +211,7 @@ public class Leds extends SubsystemBase {
             } else if (hasCoral) {
                 strobe(Color.kGreen, Color.kYellow, strobeSlowDuration);
             } else if (intakeCoral) {
-                strobe(Color.kGreen,Color.kYellow,strobeFastDuration);
+                strobe(Color.kGreen, Color.kYellow, strobeFastDuration);
             } else if (deployClimber) {
                 breath(Color.kGreen, Color.kYellow, strobeFastDuration);
             } else if (restowClimber) {

@@ -13,16 +13,17 @@ public class IntakeIOKraken implements IntakeIO {
 
     private final DigitalInput breakBeam;
 
-
     public IntakeIOKraken() {
         intake = new TalonFX(CAN_ID); // TODO SET VALUE
 
         TalonFXConfiguration config = new TalonFXConfiguration();
 
         config.MotorOutput.withNeutralMode((NeutralModeValue.Coast))
-                .withInverted(INVERTED ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive);
+                .withInverted(
+                        INVERTED
+                                ? InvertedValue.Clockwise_Positive
+                                : InvertedValue.CounterClockwise_Positive);
         breakBeam = new DigitalInput(0);
-
 
         intake.getConfigurator().apply(config);
     }
