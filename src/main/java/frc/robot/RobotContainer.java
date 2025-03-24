@@ -51,6 +51,8 @@ import frc.robot.subsystems.winch.Winch;
 import frc.robot.subsystems.winch.WinchIOSpark;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+import frc.robot.commands.AutoCommands;
+import frc.robot.Constants; 
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -68,6 +70,7 @@ public class RobotContainer {
     private Superstructure superstructure;
     private Winch winch;
     private Climber climber;
+    private AutoCommands autoCommands;
 
     /* ***** --- Autonomous --- ***** */
     private final LoggedDashboardChooser<Command> autoChooser;
@@ -92,6 +95,10 @@ public class RobotContainer {
         startingPositionChooser.addDefaultOption("Center", StartingPosition.CENTER);
         startingPositionChooser.addOption("Left", StartingPosition.LEFT);
         startingPositionChooser.addOption("Right", StartingPosition.RIGHT);
+
+        autoCommands = new AutoCommands(drive, Constants.Drive.KINEMATICS);
+
+        autoChooser.addDefaultOption("null", autoCommands.defaultDriveAuto());
     }
 
     private void setDefaultCommands() {
