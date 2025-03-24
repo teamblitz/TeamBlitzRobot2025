@@ -246,9 +246,17 @@ public class RobotContainer {
         OIConstants.Climber.CLIMBER_UP_MAN.whileTrue(climber.setSpeed(.8));
         OIConstants.Climber.CLIMBER_DOWN_MAN.whileTrue(climber.setSpeed(-.8));
 
-        OIConstants.Climber.DEPLOY_CLIMBER.whileTrue(CommandFactory.readyClimb(climber, winch));
+        OIConstants.Climber.DEPLOY_CLIMBER.whileTrue(
+                //   CommandFactory.readyClimb(climber, winch)
+                climber.deployClimber()
+                        .beforeStarting(() -> Leds.getInstance().deployClimber = true)
+                        .finallyDo(() -> Leds.getInstance().deployClimber = false));
 
-        OIConstants.Climber.RESTOW_CLIMBER.onTrue(CommandFactory.restoreClimber(climber, winch).unless(() -> climber.getState() == Climber.State.CLIMB));
+        OIConstants.Climber.RESTOW_CLIMBER.whileTrue(
+                //CommandFactory.restoreClimber(climber, winch).unless(() -> climber.getState() == Climber.State.CLIMB));
+                climber.restowClimber()
+                                .beforeStarting(() -> Leds.getInstance().restowClimber = true)
+                                        .finallyDo(() -> Leds.getInstance().restowClimber = false));
 
         OIConstants.SuperStructure.SCORE.and(() -> climber.getState() == Climber.State.DEPLOYED).whileTrue(
                 climber.climb()

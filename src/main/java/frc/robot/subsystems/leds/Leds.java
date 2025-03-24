@@ -39,6 +39,7 @@ public class Leds extends SubsystemBase {
     public boolean autoDrive = false;
     public boolean climbing = false;
     public boolean deployClimber = false;
+    public boolean restowClimber = false;
     public boolean endgameAlert = false;
     public boolean sameBattery = false;
     public boolean superstructureCoast = false;
@@ -212,10 +213,11 @@ public class Leds extends SubsystemBase {
             } else if (intakeCoral) {
                 strobe(Color.kGreen,Color.kYellow,strobeFastDuration);
             } else if (deployClimber) {
-                
+                breath(Color.kGreen, Color.kYellow, strobeFastDuration);
+            } else if (restowClimber) {
+                breath(Color.kGreen, Color.kYellow, strobeSlowDuration);
             } else {
                 solid(Color.kGreen);
-
             }
 
             if (endgameAlert) {
