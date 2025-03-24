@@ -18,4 +18,6 @@ public interface ClimberIO {
     default void setVolts(double volts) {}
 
     default void setMotionProfile(double position) {}
+
+    default void setBrakeMode(boolean brakeMode) {}
 }

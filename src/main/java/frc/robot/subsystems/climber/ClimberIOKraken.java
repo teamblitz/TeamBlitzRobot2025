@@ -72,4 +72,10 @@ public class ClimberIOKraken implements ClimberIO {
         inputs.position = leader.getPosition().getValueAsDouble();
         inputs.rpm = leader.getVelocity().getValueAsDouble();
     }
+
+    @Override
+    public void setBrakeMode(boolean brake) {
+        leftMotor.setNeutralMode(brake ? NeutralModeValue.Brake : NeutralModeValue.Coast);
+        rightMotor.setNeutralMode(brake ? NeutralModeValue.Brake : NeutralModeValue.Coast);
+    }
 }

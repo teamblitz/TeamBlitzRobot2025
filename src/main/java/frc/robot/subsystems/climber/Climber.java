@@ -17,6 +17,7 @@ import frc.lib.util.LoggedTunableNumber;
 import frc.lib.util.SupplierUtils;
 import frc.lib.util.UnitDashboardNumber;
 import frc.robot.Constants;
+import frc.robot.subsystems.leds.Leds;
 import lombok.Getter;
 import org.littletonrobotics.junction.Logger;
 
@@ -132,5 +133,14 @@ public class Climber extends BlitzSubsystem {
 
     public Command sysIdDynamic(SysIdRoutine.Direction direction) {
         return routine.dynamic(direction);
+    }
+
+
+    public Command coastCommand() {
+        return Commands.startEnd(() -> io.setBrakeMode(false), () -> io.setBrakeMode(true))
+                .beforeStarting(() -> Leds.getInstance().superstructureCoast = true)
+                .finallyDo(() -> Leds.getInstance().superstructureCoast = false)
+                .ignoringDisable(true)
+                .withName(logKey + "/coast");
     }
 }

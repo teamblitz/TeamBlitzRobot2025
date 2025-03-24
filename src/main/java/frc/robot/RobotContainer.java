@@ -9,18 +9,15 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.events.EventTrigger;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.WrapperCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.AutoConstants.StartingPosition;
 import frc.robot.commands.CommandFactory;
@@ -103,19 +100,19 @@ public class RobotContainer {
                                 OIConstants.Drive.ROTATION_SPEED,
                                 () -> false,
                                 () -> Double.NaN,
-                        () -> climber.getState() != Climber.State.CLIMB)
+                                () -> climber.getState() != Climber.State.CLIMB)
                         .withName("TeleopSwerve"));
 
-                superstructure.setDefaultCommand(
-                        Commands.either(
-                                        superstructure
-                                                .toGoalThenIdle(Superstructure.Goal.STOW)
-                                                .onlyWhile(intake::hasCoral),
-                                        superstructure
-                                                .toGoalThenIdle(Superstructure.Goal.HANDOFF)
-                                                .until(intake::hasCoral),
-                                        intake::hasCoral)
-                                .withName("superstructure/conditionalDefault"));
+        superstructure.setDefaultCommand(
+                Commands.either(
+                                superstructure
+                                        .toGoalThenIdle(Superstructure.Goal.STOW)
+                                        .onlyWhile(intake::hasCoral),
+                                superstructure
+                                        .toGoalThenIdle(Superstructure.Goal.HANDOFF)
+                                        .until(intake::hasCoral),
+                                intake::hasCoral)
+                        .withName("superstructure/conditionalDefault"));
     }
 
     private void configureSubsystems() {
@@ -192,10 +189,14 @@ public class RobotContainer {
         OIConstants.Drive.BRAKE.onTrue(Commands.runOnce(() -> drive.setBrakeMode(true)));
         OIConstants.Drive.COAST.onTrue(Commands.runOnce(() -> drive.setBrakeMode(false)));
 
-        OIConstants.SuperStructure.L1.whileTrue(superstructure.toGoalThenIdle(Superstructure.Goal.L1));
-        OIConstants.SuperStructure.L2.whileTrue(superstructure.toGoalThenIdle(Superstructure.Goal.L2));
-        OIConstants.SuperStructure.L3.whileTrue(superstructure.toGoalThenIdle(Superstructure.Goal.L3));
-        OIConstants.SuperStructure.L4.whileTrue(superstructure.toGoalThenIdle(Superstructure.Goal.L4));
+        OIConstants.SuperStructure.L1.whileTrue(
+                superstructure.toGoalThenIdle(Superstructure.Goal.L1));
+        OIConstants.SuperStructure.L2.whileTrue(
+                superstructure.toGoalThenIdle(Superstructure.Goal.L2));
+        OIConstants.SuperStructure.L3.whileTrue(
+                superstructure.toGoalThenIdle(Superstructure.Goal.L3));
+        OIConstants.SuperStructure.L4.whileTrue(
+                superstructure.toGoalThenIdle(Superstructure.Goal.L4));
 
         OIConstants.SuperStructure.KICK_BOTTOM_ALGAE.whileTrue(
                 superstructure
@@ -243,9 +244,13 @@ public class RobotContainer {
         OIConstants.Climber.CLIMBER_DOWN_MAN.whileTrue(climber.setSpeed(-.8));
 
         OIConstants.Climber.DEPLOY_CLIMBER.onTrue(CommandFactory.readyClimb(climber, winch));
-        OIConstants.Climber.RESTOW_CLIMBER.onTrue(CommandFactory.restoreClimber(climber, winch).unless(() -> climber.getState() == Climber.State.CLIMB));
+        OIConstants.Climber.RESTOW_CLIMBER.onTrue(
+                CommandFactory.restoreClimber(climber, winch)
+                        .unless(() -> climber.getState() == Climber.State.CLIMB));
 
-        OIConstants.SuperStructure.SCORE.and(() -> climber.getState() == Climber.State.DEPLOYED).whileTrue(climber.climb());
+        OIConstants.SuperStructure.SCORE
+                .and(() -> climber.getState() == Climber.State.DEPLOYED)
+                .whileTrue(climber.climb());
 
         new Trigger(() -> Math.abs(OIConstants.Wrist.WRIST_MANUAL.getAsDouble()) > .07)
                 .whileTrue(
@@ -254,36 +259,33 @@ public class RobotContainer {
 
         new Trigger(RobotController::getUserButton)
                 .toggleOnTrue(
-                        Commands.parallel(wrist.coastCommand(), elevator.coastCommand())
+                        Commands.parallel(
+                                        wrist.coastCommand(),
+                                        elevator.coastCommand(),
+                                        climber.coastCommand())
                                 .onlyWhile(RobotState::isDisabled));
     }
 
     private void configureAutoCommands() {
         NamedCommands.registerCommand(
                 "score_l3",
-                superstructure.toGoal(Superstructure.Goal.L3)
-                        .andThen(intake.shoot_coral().withTimeout(1).asProxy()
-        ));
+                superstructure
+                        .toGoal(Superstructure.Goal.L3)
+                        .andThen(intake.shoot_coral().withTimeout(1).asProxy()));
 
         NamedCommands.registerCommand(
-                "score_l4",
-                CommandFactory.l4Plop(superstructure, intake).asProxy());
+                "score_l4", CommandFactory.l4Plop(superstructure, intake).asProxy());
 
-        new EventTrigger("ready_l4").onTrue(
-                superstructure.toGoalThenIdle(Superstructure.Goal.L4)
-        );
-//        new EventTrigger("score_l4").onTrue(
-//       Trigger("handoff").onTrue(CommandFactory.handoff(superstructure, intake));
+        new EventTrigger("ready_l4").onTrue(superstructure.toGoalThenIdle(Superstructure.Goal.L4));
+        //        new EventTrigger("score_l4").onTrue(
+        //       Trigger("handoff").onTrue(CommandFactory.handoff(superstructure, intake));
     }
 
     public Command getAutonomousCommand() {
         Logger.recordOutput("selectedAuto", autoChooser.get().getName());
         return Commands.sequence(
-                Commands.runOnce(() -> drive.setGyro(180)),
-                Commands.parallel(
-                        winch.lowerFunnel(),
-                        autoChooser.get().asProxy()
-                )
-        ).withName("autonomousCommand");
+                        Commands.runOnce(() -> drive.setGyro(180)),
+                        Commands.parallel(winch.lowerFunnel(), autoChooser.get().asProxy()))
+                .withName("autonomousCommand");
     }
 }
