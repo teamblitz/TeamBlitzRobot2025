@@ -16,7 +16,8 @@ public interface WinchIO {
 
     default void setSpeed(double speed) {}
 
-    default void setMaxOutput(double maxOut) {};
+    default void setMaxOutput(double maxOut) {}
+    ;
 
     default void setPosition(double position) {}
 

@@ -21,9 +21,6 @@ public class ElevatorIOKraken implements ElevatorIO {
     private final MotionMagicVoltage motionMagic =
             new MotionMagicVoltage(0).withSlot(0).withEnableFOC(true);
 
-    //    private final MotionMagicConfigs motionMagicConfigs = new MotionMagicConfigs()
-    //            .withMotionMagicExpo_kV();
-
     private final VoltageOut voltageOut = new VoltageOut(0).withEnableFOC(true);
 
     public ElevatorIOKraken() {
@@ -36,13 +33,11 @@ public class ElevatorIOKraken implements ElevatorIO {
 
         config.MotorOutput.withNeutralMode(NeutralModeValue.Brake);
 
-        config.Feedback.withSensorToMechanismRatio(ELEVATOR_GEAR_RATIO / (SPROCKET_CIRCUMFERENCE * 2));
+        config.Feedback.withSensorToMechanismRatio(
+                ELEVATOR_GEAR_RATIO / (SPROCKET_CIRCUMFERENCE * 2));
         config.CurrentLimits.withStatorCurrentLimit(120);
 
-        config.MotionMagic.withMotionMagicCruiseVelocity(6)
-                .withMotionMagicAcceleration(12);
-
-
+        config.MotionMagic.withMotionMagicCruiseVelocity(6).withMotionMagicAcceleration(12);
 
         config.Slot0.withGravityType(GravityTypeValue.Elevator_Static)
                 .withKS(KrakenGains.kS)
@@ -54,8 +49,7 @@ public class ElevatorIOKraken implements ElevatorIO {
                 .withKG(KrakenGains.kG)
                 .withKP(KrakenGains.kP);
 
-        config.SoftwareLimitSwitch
-                .withForwardSoftLimitEnable(true)
+        config.SoftwareLimitSwitch.withForwardSoftLimitEnable(true)
                 .withReverseSoftLimitEnable(true)
                 .withForwardSoftLimitThreshold(MAX_POS)
                 .withReverseSoftLimitThreshold(MIN_POS);

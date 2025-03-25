@@ -290,14 +290,18 @@ public class Drive extends BlitzSubsystem {
                                 Seconds.of(5),
                                 Constants.compBot()
                                         ? (state) ->
-                                        SignalLogger.writeString(
-                                                "sysid-drive-linear-state", state.toString())
-                                        : (state) -> Logger.recordOutput("SysIdTestState", state.toString())),
+                                                SignalLogger.writeString(
+                                                        "sysid-drive-linear-state",
+                                                        state.toString())
+                                        : (state) ->
+                                                Logger.recordOutput(
+                                                        "SysIdTestState", state.toString())),
                         new SysIdRoutine.Mechanism(
                                 (volts) -> {
                                     drive(
-                                           new ChassisSpeeds(volts.in(Volts) / 12.0, 0, 0).times(MAX_SPEED),
-                                           true);
+                                            new ChassisSpeeds(volts.in(Volts) / 12.0, 0, 0)
+                                                    .times(MAX_SPEED),
+                                            true);
                                 },
                                 null,
                                 this));
@@ -305,19 +309,20 @@ public class Drive extends BlitzSubsystem {
         RobotConfig config;
 
         try {
-//            config = RobotConfig.fromGUISettings();
+            //            config = RobotConfig.fromGUISettings();
             config = PHYSICAL_CONSTANTS;
-        } catch(Exception e){
+        } catch (Exception e) {
             config = PHYSICAL_CONSTANTS;
-            DriverStation.reportError("Failed to load PathPlanner config and configure AutoBuilder", e.getStackTrace());
+            DriverStation.reportError(
+                    "Failed to load PathPlanner config and configure AutoBuilder",
+                    e.getStackTrace());
         }
 
         AutoBuilder.configure(
                 this::getPose,
                 this::resetOdometry,
                 () -> KINEMATICS.toChassisSpeeds(getModuleStates()),
-                (speeds, feedforwards) ->
-                {
+                (speeds, feedforwards) -> {
                     drive(speeds, true);
                     Logger.recordOutput("drive/auto/speeds", speeds);
                 },
@@ -363,7 +368,6 @@ public class Drive extends BlitzSubsystem {
                 sysIdDynamic(SysIdRoutine.Direction.kForward).withName("Drive Dynamic Forward"));
         tuningTab.add(
                 sysIdDynamic(SysIdRoutine.Direction.kReverse).withName("Drive Dynamic Reverse"));
-
     }
 
     public void drive(
