@@ -4,28 +4,22 @@ import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.Units;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.*;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.BlitzSubsystem;
 import frc.lib.util.LoggedTunableNumber;
-import frc.lib.util.NanUtil;
 import frc.robot.Constants;
 import frc.robot.subsystems.leds.Leds;
-
-import java.util.Optional;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 import static frc.robot.Constants.Elevator.*;
-import static frc.lib.util.NanUtil.TRAPEZOID_NAN_STATE;
 
 public class Elevator extends BlitzSubsystem {
     private final frc.robot.subsystems.superstructure.elevator.ElevatorIO io;
@@ -34,7 +28,7 @@ public class Elevator extends BlitzSubsystem {
     private final TrapezoidProfile.Constraints constraints = new TrapezoidProfile.Constraints(2, 3);
     private final TrapezoidProfile profile = new TrapezoidProfile(constraints);
 
-    private Optional<TrapezoidProfile.State> goal;
+    private TrapezoidProfile.State goal;
     private TrapezoidProfile.State setpoint;
 
     private final SysIdRoutine routine;
@@ -84,7 +78,7 @@ public class Elevator extends BlitzSubsystem {
         ShuffleboardTab characterizationTab = Shuffleboard.getTab("Characterization");
 
         setpoint = new TrapezoidProfile.State(getPosition(), 0.0);
-        goal = Optional.empty();
+        goal = null;
 
         routine =
                 new SysIdRoutine(
@@ -132,34 +126,32 @@ public class Elevator extends BlitzSubsystem {
         Logger.recordOutput(logKey + "/rotLeftDeg", Math.toDegrees(inputs.positionLeft) % 360);
         Logger.recordOutput(logKey + "/rotRightDeg", Math.toDegrees(inputs.positionRight) % 360);
 
-
-        if (goal.isPresent() && DriverStation.isEnabled() && !Constants.compBot()) {
-
-            TrapezoidProfile.State future_setpoint;
-            setpoint = profile.calculate(loopTimer.get(), setpoint, goal.get());
-            future_setpoint = profile.calculate(Constants.LOOP_PERIOD_SEC, setpoint, goal.get());
+        if (goal != null && DriverStation.isEnabled() && !Constants.compBot()) {
+            setpoint = profile.calculate(loopTimer.get(), setpoint, goal);
+            TrapezoidProfile.State future_setpoint =
+                    profile.calculate(Constants.LOOP_PERIOD_SEC, setpoint, goal);
 
             io.setSetpoint(setpoint.position, setpoint.velocity, future_setpoint.velocity);
+
+        }
+
+        if (goal != null) {
+            Logger.recordOutput(logKey + "/profile/positionSetpoint", setpoint.position);
+            Logger.recordOutput(logKey + "/profile/velocitySetpoint", setpoint.velocity);
+
+            Logger.recordOutput(logKey + "/profile/positionGoal", goal.position);
+            Logger.recordOutput(logKey + "/profile/velocityGoal", goal.velocity);
         }
 
         if (DriverStation.isDisabled()) {
-            // Reset profile while disabled
+            // Reset profile when disabled
             setpoint = new TrapezoidProfile.State(getPosition(), 0);
-            goal = Optional.empty();
+            goal = null;
 
             // Stop arm
             io.stop();
+            return;
         }
-
-        loopTimer.reset();
-
-        Logger.recordOutput(logKey + "/profile/positionSetpoint", setpoint.position);
-        Logger.recordOutput(logKey + "/profile/velocitySetpoint", setpoint.velocity);
-
-        
-        Logger.recordOutput(logKey + "/profile/goalPresent", goal.isPresent());
-        Logger.recordOutput(logKey + "/profile/positionGoal", goal.orElse(TRAPEZOID_NAN_STATE).position);
-        Logger.recordOutput(logKey + "/profile/velocityGoal", goal.orElse(TRAPEZOID_NAN_STATE).velocity);
 
         LoggedTunableNumber.ifChanged(
                 hashCode(), pid -> io.setPidLeft(pid[0], pid[1], pid[2]), leftKP, leftKI, leftKD);
@@ -186,8 +178,9 @@ public class Elevator extends BlitzSubsystem {
                 rightKG,
                 rightKV,
                 rightKA);
-    }
 
+        loopTimer.reset();
+    }
 
     public Command withSpeed(DoubleSupplier speed) {
         return runEnd(
@@ -201,7 +194,7 @@ public class Elevator extends BlitzSubsystem {
                         () -> {
                             io.setSpeed(0);
                         })
-                .beforeStarting(() -> this.goal = Optional.empty());
+                .beforeStarting(() -> this.goal = null);
     }
 
     public Command withSpeed(double speed) {
@@ -227,7 +220,7 @@ public class Elevator extends BlitzSubsystem {
         if (Constants.compBot()) {
             return runOnce(() -> {
                 io.setMotionMagic(clampedGoal.position);
-                this.goal = Optional.of(clampedGoal);
+                this.goal = clampedGoal;
             }
             )
                     .andThen(
@@ -239,10 +232,10 @@ public class Elevator extends BlitzSubsystem {
 
         return runOnce(
                         () -> {
-                            this.goal = Optional.of(goal);
+                            this.goal = clampedGoal;
                         })
                 .andThen(Commands.waitUntil(() -> setpoint.equals(goal)))
-                .handleInterrupt(() -> this.goal = Optional.of(setpoint))
+                .handleInterrupt(() -> this.goal = setpoint)
                 .beforeStarting(refreshCurrentState());
     }
 
@@ -265,6 +258,7 @@ public class Elevator extends BlitzSubsystem {
         return (inputs.velocityLeft + inputs.velocityRight) / 2;
     }
 
+    // TODO: Implement limit switch override
     public boolean atBottomLimit() {
         return inputs.bottomLimitSwitch;
     }

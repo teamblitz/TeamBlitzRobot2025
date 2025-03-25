@@ -327,8 +327,8 @@ public final class Constants {
         public static final int RIGHT_ID = 20;
         public static final int LEFT_ID = 21;
 
-        public static final double MIN_POS = compBot() ? 0 : .001;
-        public static final double MAX_POS = compBot() ? 1.489501953125 : 1.48;
+        public static final double MIN_POS = 0;
+        public static final double MAX_POS = 1.489501953125;
 
         public static final double OPEN_LOOP_RAMP = .25;
         public static final int CURRENT_LIMIT = 60;
@@ -336,14 +336,8 @@ public final class Constants {
         public static final double SPROCKET_CIRCUMFERENCE =
                 Units.inchesToMeters(.25) * (compBot() ? 22 : 24);
 
-
-
-        public static final InvertedValue LEFT_INVERT =
-                InvertedValue.Clockwise_Positive; // TODO ensure that this is correct
-        public static final InvertedValue RIGHT_INVERT =
-                InvertedValue.CounterClockwise_Positive; // TODO ensure that this is correct
-
-        public static final double P = 180; // TODO config
+        public static final InvertedValue LEFT_INVERT = InvertedValue.CounterClockwise_Positive;
+        public static final InvertedValue RIGHT_INVERT = InvertedValue.Clockwise_Positive;
 
         public static final class RightGains {
             public static final double KS = 0.26266;
