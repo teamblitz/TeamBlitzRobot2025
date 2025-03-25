@@ -11,6 +11,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.Constants;
 
 public class WristIOSpark implements WristIO {
 
@@ -39,8 +40,8 @@ public class WristIOSpark implements WristIO {
         config.softLimit
                 .forwardSoftLimitEnabled(true)
                 .reverseSoftLimitEnabled(true)
-                .forwardSoftLimit(FORWARD_SOFT_LIMIT)
-                .reverseSoftLimit(REVERSE_SOFT_LIMIT);
+                .forwardSoftLimit(MAX_POS)
+                .reverseSoftLimit(MIN_POS);
 
         config.encoder
                 .positionConversionFactor((1 / WRIST_GEAR_RATIO) * (2 * Math.PI))

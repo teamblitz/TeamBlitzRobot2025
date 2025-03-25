@@ -56,6 +56,11 @@ public class WristIOKraken implements WristIO {
                         : InvertedValue.CounterClockwise_Positive);
         wristMotor.getConfigurator().apply(config);
 
+        config.SoftwareLimitSwitch.withForwardSoftLimitEnable(true)
+                .withReverseSoftLimitEnable(true)
+                .withForwardSoftLimitThreshold(MAX_POS)
+                .withReverseSoftLimitThreshold(MIN_POS);
+
         Commands.sequence(
                         Commands.waitSeconds(2),
                         Commands.runOnce(

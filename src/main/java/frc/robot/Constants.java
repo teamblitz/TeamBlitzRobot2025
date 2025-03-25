@@ -383,10 +383,12 @@ public final class Constants {
         public static final int CURRENT_LIMIT = 60;
         public static final boolean INVERTED = false;
 
-        public static final double FORWARD_SOFT_LIMIT = Units.degreesToRadians(90);
-        public static final double REVERSE_SOFT_LIMIT = Units.degreesToRadians(-90);
+        public static final double MAX_POS = Units.degreesToRadians(compBot() ? 94 : 90);
+        public static final double MIN_POS = Units.degreesToRadians(-90);
 
         public static final double ABS_ENCODER_ZERO = Math.toRadians(306.71 + 90);
+        public static final double TOLERANCE = Units.degreesToRadians(2.5);
+
 
         public static final double MAX_VELOCITY =
                 Constants.compBot() ? Units.rotationsToRadians(2) : Units.degreesToRadians(180);
