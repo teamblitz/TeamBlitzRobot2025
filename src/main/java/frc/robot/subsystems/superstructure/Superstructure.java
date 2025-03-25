@@ -18,6 +18,8 @@ import frc.robot.subsystems.superstructure.wrist.WristIO;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import lombok.Getter;
 import org.littletonrobotics.junction.Logger;
 
 /**
@@ -36,8 +38,8 @@ import org.littletonrobotics.junction.Logger;
  * <p>-Noah
  */
 public class Superstructure extends BlitzSubsystem {
-    private final Elevator elevator;
-    private final Wrist wrist;
+    @Getter private final Elevator elevator;
+    @Getter private final Wrist wrist;
 
     public Superstructure(ElevatorIO elevatorIO, WristIO wristIO) {
 
@@ -145,14 +147,6 @@ public class Superstructure extends BlitzSubsystem {
         // superstructure control is disabled until robot is disabled and re-enabled, or manual
         // re-enablement occurs
         DISABLED
-    }
-
-    public Elevator getElevator() {
-        return elevator;
-    }
-
-    public Wrist getWrist() {
-        return wrist;
     }
 
     public Command stowCommand() {
