@@ -329,7 +329,7 @@ public final class Constants {
         public static final double MIN_POS = compBot() ? 0 : .001;
         public static final double MAX_POS = compBot() ? 1.489501953125 : 1.48;
 
-        public static final double TOLLERANCE = compBot() ? 0.005 : 0.01;
+        public static final double TOLERANCE = compBot() ? 0.005 : 0.01;
 
         public static final double OPEN_LOOP_RAMP = .25;
         public static final int CURRENT_LIMIT = 60;

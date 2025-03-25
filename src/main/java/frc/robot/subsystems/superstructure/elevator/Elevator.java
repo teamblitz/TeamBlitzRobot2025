@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.BlitzSubsystem;
+import frc.lib.math.EqualsUtil;
 import frc.lib.util.LoggedTunableNumber;
 import frc.robot.Constants;
 import frc.robot.subsystems.leds.Leds;
@@ -218,56 +219,47 @@ public class Elevator extends BlitzSubsystem {
     }
 
     public Command withGoal(TrapezoidProfile.State goal) {
-        return goToPosition(goal.position).withName(logKey + "/withGoal " + goal.position);
+        return goToPosition(goal.position, false).withName(logKey + "/withGoal " + goal.position);
     }
 
     /**
+     * @param requireProfileCompletion If true, this command will only end once the mechanism position is within a
+     *                                 tolerance of the wanted position. Else this command will end once the time to position has
+     *                                 elapsed, with no guarantee that the mechanism is actually at the goal.
      * @return A command that moves the mechanism to the desired position with motion profiling and
      *     ends when the mechanism reaches that goal.
      */
-    public Command goToPosition(double position) {
-        if (Constants.compBot())
-            return followGoal(() -> position)
-                    .andThen(
+    public Command goToPosition(double position, boolean requireProfileCompletion) {
+        if (requireProfileCompletion)
+            return followGoal(() -> position).andThen(
                             Commands.waitUntil(
-                                    () -> MathUtil.isNear(position, getPosition(), TOLLERANCE)))
-                    .withName(logKey + "/goToPosition " + position);
+                                    () -> MathUtil.isNear(position, getPosition(), TOLERANCE)))
+                    .withName(logKey + "/goToPosition_waitForMechanism " + position);
         else
             return followGoal(() -> position)
                     .andThen(
                             Commands.waitUntil(
-                                            () ->
-                                                    setpoint.equals(
-                                                            new TrapezoidProfile.State(
-                                                                    position, 0)))
-                                    .withName(logKey + "/goToPosition " + position));
+                                    () -> MathUtil.isNear(position, getIdealPosition(), 1e-9))
+                                    .withName(logKey + "/goToPosition_waitForProfile " + position));
+
     }
 
     /**
      * @return A command that commands the mechanism to follow the provided goal and never ends.
      */
     public Command followGoal(DoubleSupplier goal) {
-        if (Constants.compBot()) {
-            return run(() -> {
-                        Logger.recordOutput(logKey + "/profile/type", "talonMotionMagic");
-                        io.setMotionMagic(MathUtil.clamp(goal.getAsDouble(), MIN_POS, MAX_POS));
-                    })
-                    .handleInterrupt(() -> io.setMotionMagic(getPosition()));
-        } else {
-            return run(() -> {
-                        Logger.recordOutput(logKey + "/profile/type", "roborioTrapezoid");
-                        if (this.goal.isEmpty() || this.goal.get().position != goal.getAsDouble()) {
-                            this.goal =
-                                    Optional.of(
-                                            new TrapezoidProfile.State(
-                                                    MathUtil.clamp(
-                                                            goal.getAsDouble(), MIN_POS, MAX_POS),
-                                                    0));
-                        }
-                    })
-                    .handleInterrupt(() -> this.goal = Optional.of(setpoint))
-                    .beforeStarting(refreshCurrentState());
-        }
+        return run(() -> {
+            // Only update the goal if necessary to avoid GC overhead
+            if (this.goal.isEmpty() || this.goal.get().position != goal.getAsDouble()) {
+                this.goal =
+                        Optional.of(
+                                new TrapezoidProfile.State(
+                                        MathUtil.clamp(
+                                                goal.getAsDouble(), MIN_POS, MAX_POS),
+                                        0));
+            }
+        }).handleInterrupt(() -> this.goal = Optional.of(setpoint))
+                .beforeStarting(refreshCurrentState());
     }
 
     /**
@@ -276,7 +268,7 @@ public class Elevator extends BlitzSubsystem {
      */
     private Command refreshCurrentState() {
         return runOnce(() -> setpoint = new TrapezoidProfile.State(getPosition(), getVelocity()))
-                .onlyIf(() -> setpoint == null);
+                .onlyIf(() -> setpoint == null || goal.isEmpty());
     }
 
     @AutoLogOutput(key = "elevator/position")
