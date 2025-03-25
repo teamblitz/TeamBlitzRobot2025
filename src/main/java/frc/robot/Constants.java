@@ -500,7 +500,7 @@ public final class Constants {
     public static final class Intake {
         public static final int CAN_ID = 40;
         public static final boolean INVERTED = compBot() ? true : false;
-        public static final int CURRENT_LIMIT = 40;
+        public static final int CURRENT_LIMIT = compBot() ? 60 : 25;
         public static final double HANDOFF_SPEED = compBot() ? .4 : .5; // TODO CONFIG
         public static final double REVERSE_SPEED = -.15; // TODO CONFIG
         public static final double ALGAE_REMOVAL = .5; // TODO CONFIG
