@@ -302,11 +302,11 @@ public class Elevator extends BlitzSubsystem {
 
 
     public boolean atBottomLimit() {
-        return inputs.bottomLimitSwitch;
+        return Constants.devBot() && inputs.bottomLimitSwitch;
     }
 
     public boolean atTopLimit() {
-        return inputs.topLimitSwitch;
+        return Constants.devBot() && inputs.topLimitSwitch;
     }
 
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {

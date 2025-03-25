@@ -59,6 +59,9 @@ public final class Constants {
     public static boolean compBot() {
         return ROBOT == Robot.CompBot;
     }
+    public static boolean devBot() {
+        return ROBOT == Robot.DevBot;
+    }
 
     //    public static H compDev<H>(H comp, H dev) {
     //        return ROBOT == Robot.CompBot ? comp : dev;
@@ -414,7 +417,7 @@ public final class Constants {
             public static final double KV = 2.5726 * (2 * Math.PI);
             public static final double KA = 0.059493 * (2 * Math.PI);
             public static final double KG = 0.16157;
-            public static final double KP = 4 * 12 * (2 * Math.PI);
+            public static final double KP = 6 * 12 * (2 * Math.PI);
             public static final double KD = 0; // 0.70647
         }
     }
