@@ -156,7 +156,7 @@ public class Elevator extends BlitzSubsystem {
         Logger.recordOutput(logKey + "/profile/positionSetpoint", setpoint.position);
         Logger.recordOutput(logKey + "/profile/velocitySetpoint", setpoint.velocity);
 
-
+        
         Logger.recordOutput(logKey + "/profile/goalPresent", goal.isPresent());
         Logger.recordOutput(logKey + "/profile/positionGoal", goal.orElse(TRAPEZOID_NAN_STATE).position);
         Logger.recordOutput(logKey + "/profile/velocityGoal", goal.orElse(TRAPEZOID_NAN_STATE).velocity);

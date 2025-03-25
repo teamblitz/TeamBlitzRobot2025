@@ -327,17 +327,14 @@ public final class Constants {
         public static final int RIGHT_ID = 20;
         public static final int LEFT_ID = 21;
 
-        public static final double MIN_POS = 0;
-        public static final double MAX_POS = 1.489501953125;
+        public static final double MIN_POS = compBot() ? 0 : .001;
+        public static final double MAX_POS = compBot() ? 1.489501953125 : 1.48;
 
         public static final double OPEN_LOOP_RAMP = .25;
         public static final int CURRENT_LIMIT = 60;
         public static final double ELEVATOR_GEAR_RATIO = compBot() ? 5 : 12;
         public static final double SPROCKET_CIRCUMFERENCE =
                 Units.inchesToMeters(.25) * (compBot() ? 22 : 24);
-
-        public static final double MIN_POS = 0.001;
-        public static final double MAX_POS = 1.48;
 
 
 
