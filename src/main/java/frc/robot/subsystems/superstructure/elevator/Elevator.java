@@ -123,10 +123,6 @@ public class Elevator extends BlitzSubsystem {
         loopTimer.restart();
     }
 
-        loopTimer.start();
-
-    }
-
     @Override
     public void periodic() {
         super.periodic();
@@ -137,26 +133,11 @@ public class Elevator extends BlitzSubsystem {
         Logger.recordOutput(logKey + "/rotRightDeg", Math.toDegrees(inputs.positionRight) % 360);
 
 
-        if (goal.isPresent() && DriverStation.isEnabled()) {
+        if (goal.isPresent() && DriverStation.isEnabled() && !Constants.compBot()) {
 
             TrapezoidProfile.State future_setpoint;
             setpoint = profile.calculate(loopTimer.get(), setpoint, goal.get());
             future_setpoint = profile.calculate(Constants.LOOP_PERIOD_SEC, setpoint, goal.get());
-
-            //            if (atTopLimit()) {
-//                setpoint = new TrapezoidProfile.State(
-//                        Math.min(setpoint.position, topLimitState.position),
-//                        Math.min(setpoint.velocity, 0)
-//                );
-//                future_setpoint = setpoint;
-//            } else if (atBottomLimit()) {
-//                setpoint = new TrapezoidProfile.State(
-//                        Math.max(setpoint.position, bottomLimitState.position),
-//                        Math.max(setpoint.velocity, 0)
-//                );
-//                future_setpoint = setpoint;
-
-
 
             io.setSetpoint(setpoint.position, setpoint.velocity, future_setpoint.velocity);
         }
@@ -246,7 +227,7 @@ public class Elevator extends BlitzSubsystem {
         if (Constants.compBot()) {
             return runOnce(() -> {
                 io.setMotionMagic(clampedGoal.position);
-                this.goal = clampedGoal;
+                this.goal = Optional.of(clampedGoal);
             }
             )
                     .andThen(
