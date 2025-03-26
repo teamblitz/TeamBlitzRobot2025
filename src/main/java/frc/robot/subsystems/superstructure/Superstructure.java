@@ -3,6 +3,7 @@ package frc.robot.subsystems.superstructure;
 import static frc.robot.Constants.SuperstructureSetpoints.*;
 import static java.util.Map.entry;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -18,6 +19,7 @@ import frc.robot.subsystems.superstructure.wrist.WristIO;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.DoubleSupplier;
 
 import lombok.Getter;
 import org.littletonrobotics.junction.Logger;
@@ -272,5 +274,22 @@ public class Superstructure extends BlitzSubsystem {
 
     public Command idle() {
         return Commands.idle(this);
+    }
+
+
+    public Command manual(DoubleSupplier elevatorSpeed, DoubleSupplier wristSpeed) {
+        return Commands.parallel(
+                Commands.either(
+                        elevator.withSpeed(elevatorSpeed),
+                        elevator.followGoal(elevator::getPosition),
+                        () -> !MathUtil.isNear(0, elevatorSpeed.getAsDouble(), 1e-3)
+                ),
+                Commands.either(
+                        wrist.setSpeed(wristSpeed),
+                        wrist.followGoal(wrist::getPosition),
+                        () -> !MathUtil.isNear(0, wristSpeed.getAsDouble(), 1e-3)
+                ),
+                this.idle()
+        );
     }
 }

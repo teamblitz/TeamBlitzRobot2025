@@ -231,13 +231,13 @@ public class Elevator extends BlitzSubsystem {
      */
     public Command goToPosition(double position, boolean requireProfileCompletion) {
         if (requireProfileCompletion)
-            return followGoal(() -> position).andThen(
+            return followGoal(() -> position).withDeadline(
                             Commands.waitUntil(
                                     () -> MathUtil.isNear(position, getPosition(), TOLERANCE)))
                     .withName(logKey + "/goToPosition_waitForMechanism " + position);
         else
             return followGoal(() -> position)
-                    .andThen(
+                    .withDeadline(
                             Commands.waitUntil(
                                     () -> MathUtil.isNear(position, getIdealPosition(), 1e-9))
                                     .withName(logKey + "/goToPosition_waitForProfile " + position));
