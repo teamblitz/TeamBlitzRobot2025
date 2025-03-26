@@ -1,9 +1,13 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import frc.robot.subsystems.drive.Drive;
 import choreo.Choreo;
+import choreo.auto.AutoFactory;
+import choreo.auto.AutoRoutine;
+import choreo.auto.AutoTrajectory;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -12,6 +16,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 public class AutoCommands {
     private final Drive drive;
     private final SwerveDriveKinematics kinematics;
+    private final AutoFactory autoFactory;
 
     private final PIDController x = new PIDController(0, 0, 0);
     private final PIDController y = new PIDController(0, 0, 0);
@@ -21,30 +26,32 @@ public class AutoCommands {
         this.drive = drive;
         this.kinematics = kinematics;
         theta.enableContinuousInput(-Math.PI, Math.PI);
-    }
 
-    public Command defaultDriveAuto() {
-       /*  ChoreoTrajectory trajectory = Choreo.getTrajectory(); 
-
-        return new SwerveControllerCommand(
-            trajectory,
+        autoFactory = new AutoFactory(
             drive::getPose,
-            kinematics,
-            x,
-            y,
-            theta,
-            drive::setModuleStates,
+            drive::resetPose,
+            drive::keepHeadingPid,
+            true,
             drive
-            ).beforeStarting(() -> {
-                Pose2d intialPose = trajectory.getInitialPose();
-                drive.resetOdometry(intialPose);
-        });
-*/
-
-        
-
+        );
     }
 
-    
-    
+    public AutoFactory getFactory() {
+        return autoFactory;
+    }
+
+    public Command getNoAuto() {
+        final var routine = autoFactory.newRoutine("None");
+        routine.active().onTrue(Commands.print("Running No Auto"));
+        return routine.cmd();
+    }
+
+    public Command testDrive() {
+        final var routine = autoFactory.newRoutine("testDrive");
+        final var traj = routine.trajectory("testDrive");
+
+        routine.active().whileTrue(Commands.sequence(traj.resetOdometry(), traj.cmd()));
+        return routine.cmd();
+    }
+
 }

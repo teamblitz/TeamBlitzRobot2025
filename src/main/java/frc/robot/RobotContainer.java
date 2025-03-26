@@ -95,7 +95,7 @@ public class RobotContainer {
 
         autoCommands = new AutoCommands(drive, Constants.Drive.KINEMATICS);
 
-        autoChooser.addDefaultOption("null", autoCommands.defaultDriveAuto());
+        autoChooser.addDefaultOption("null", autoCommands.testDrive());
     }
 
     private void setDefaultCommands() {
