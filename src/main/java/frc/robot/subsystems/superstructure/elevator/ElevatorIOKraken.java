@@ -84,6 +84,8 @@ public class ElevatorIOKraken implements ElevatorIO {
         inputs.positionLeft = leftMotor.getPosition().getValueAsDouble();
         inputs.positionRight = rightMotor.getPosition().getValueAsDouble();
 
+        inputs.position = leader.getPosition().getValueAsDouble();
+
         inputs.velocityLeft = leftMotor.getVelocity().getValueAsDouble();
         inputs.velocityRight = rightMotor.getVelocity().getValueAsDouble();
 

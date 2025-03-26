@@ -119,7 +119,7 @@ public class OIConstants {
 
     public static final class Elevator {
         public static final DoubleSupplier MANUAL = () ->
-                MathUtil.applyDeadband(
+                .3 * MathUtil.applyDeadband(
                         -OPERATOR_CONTROLLER.getLeftY(),
                         .1
                 );

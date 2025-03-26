@@ -10,6 +10,8 @@ public interface ElevatorIO {
         public double positionLeft;
         public double positionRight;
 
+        public double position;
+
         public double velocityLeft;
         public double velocityRight;
 

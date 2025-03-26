@@ -231,6 +231,8 @@ public class ElevatorIOSpark implements ElevatorIO {
         inputs.positionLeft = leftEncoder.getPosition();
         inputs.positionRight = rightEncoder.getPosition();
 
+        inputs.position = inputs.positionLeft + inputs.positionRight / 2;
+
         // Our limit switches are wired nominally closed (nc), so a value of false should mean the
         // limit switch is triggered
         // This is in fact not the case, and for some reason despite behaving as a (nc) switch, the

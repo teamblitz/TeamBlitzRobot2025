@@ -281,15 +281,25 @@ public class Superstructure extends BlitzSubsystem {
         return Commands.parallel(
                 Commands.either(
                         elevator.withSpeed(elevatorSpeed).until(() -> elevatorSpeed.getAsDouble() == 0),
-                        elevator.followGoal(elevator::getPosition).until(() -> elevatorSpeed.getAsDouble() != 0),
+                        Commands.waitSeconds(.5).andThen(
+                                Commands.defer(() -> {
+                            double pos = elevator.getPosition();
+                            return elevator.followGoal(() -> pos);
+                            }, Set.of(elevator)
+                        ).until(() -> elevatorSpeed.getAsDouble() != 0)),
                         () -> elevatorSpeed.getAsDouble() != 0
                 ).repeatedly(),
                 Commands.either(
                         wrist.setSpeed(wristSpeed).until(() -> wristSpeed.getAsDouble() == 0),
-                        wrist.followGoal(wrist::getPosition).until(() -> elevatorSpeed.getAsDouble() != 0),
+                        Commands.waitSeconds(.5).andThen(
+                        Commands.defer(() -> {
+                                    double pos = wrist.getPosition();
+                                    return wrist.followGoal(() -> pos);
+                                }, Set.of(wrist)
+                        ).until(() -> wristSpeed.getAsDouble() != 0)),
                         () -> wristSpeed.getAsDouble() != 0
                 ).repeatedly(),
                 this.idle()
-        );
+        ).withName(logKey + "/smart_manual");
     }
 }

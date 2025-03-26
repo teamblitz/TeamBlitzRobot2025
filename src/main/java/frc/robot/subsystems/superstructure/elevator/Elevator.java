@@ -273,7 +273,7 @@ public class Elevator extends BlitzSubsystem {
 
     @AutoLogOutput(key = "elevator/position")
     public double getPosition() {
-        return (inputs.positionLeft + inputs.positionRight) / 2;
+        return inputs.position;
     }
 
     @AutoLogOutput(key = "elevator/velocity")
