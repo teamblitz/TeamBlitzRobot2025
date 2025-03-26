@@ -1,5 +1,6 @@
 package frc.robot;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
@@ -109,17 +110,19 @@ public class OIConstants {
     }
 
     public static final class Wrist {
-        public static final DoubleSupplier WRIST_MANUAL = () -> -OPERATOR_CONTROLLER.getRightY();
-
-        public static final Trigger WRIST_TEST1 = OPERATOR_CONTROLLER.x();
-        public static final Trigger WRIST_TEST2 = OPERATOR_CONTROLLER.y();
+        public static final DoubleSupplier MANUAL = () ->
+                MathUtil.applyDeadband(
+                        -OPERATOR_CONTROLLER.getRightY(),
+                        .1
+                );
     }
 
     public static final class Elevator {
-        public static final Trigger MANUAL_UP =
-                new Trigger(() -> OPERATOR_CONTROLLER.getLeftY() < -.20);
-        public static final Trigger MANUAL_DOWN =
-                new Trigger(() -> OPERATOR_CONTROLLER.getLeftY() > .20);
+        public static final DoubleSupplier MANUAL = () ->
+                MathUtil.applyDeadband(
+                        -OPERATOR_CONTROLLER.getLeftY(),
+                        .1
+                );
     }
 
     public static final class SuperStructure {
@@ -135,6 +138,12 @@ public class OIConstants {
 
         public static final Trigger KICK_BOTTOM_ALGAE = OPERATOR_CONTROLLER.a();
         public static final Trigger KICK_TOP_ALGAE = OPERATOR_CONTROLLER.b();
+
+        public static final Trigger MANUAL_MODE =
+                new Trigger(() ->
+                        Elevator.MANUAL.getAsDouble() != 0 ||
+                        Wrist.MANUAL.getAsDouble() != 0
+                );
     }
 
     public static final class Winch {

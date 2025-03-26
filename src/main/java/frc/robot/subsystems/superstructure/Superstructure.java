@@ -280,15 +280,15 @@ public class Superstructure extends BlitzSubsystem {
     public Command manual(DoubleSupplier elevatorSpeed, DoubleSupplier wristSpeed) {
         return Commands.parallel(
                 Commands.either(
-                        elevator.withSpeed(elevatorSpeed),
-                        elevator.followGoal(elevator::getPosition),
-                        () -> !MathUtil.isNear(0, elevatorSpeed.getAsDouble(), 1e-3)
-                ),
+                        elevator.withSpeed(elevatorSpeed).until(() -> elevatorSpeed.getAsDouble() == 0),
+                        elevator.followGoal(elevator::getPosition).until(() -> elevatorSpeed.getAsDouble() != 0),
+                        () -> elevatorSpeed.getAsDouble() != 0
+                ).repeatedly(),
                 Commands.either(
-                        wrist.setSpeed(wristSpeed),
-                        wrist.followGoal(wrist::getPosition),
-                        () -> !MathUtil.isNear(0, wristSpeed.getAsDouble(), 1e-3)
-                ),
+                        wrist.setSpeed(wristSpeed).until(() -> wristSpeed.getAsDouble() == 0),
+                        wrist.followGoal(wrist::getPosition).until(() -> elevatorSpeed.getAsDouble() != 0),
+                        () -> wristSpeed.getAsDouble() != 0
+                ).repeatedly(),
                 this.idle()
         );
     }
