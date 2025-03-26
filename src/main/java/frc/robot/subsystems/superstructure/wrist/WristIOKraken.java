@@ -17,6 +17,8 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants;
+import org.littletonrobotics.junction.Logger;
+
 import static frc.robot.Constants.Wrist.*;
 
 public class WristIOKraken implements WristIO {
@@ -42,9 +44,9 @@ public class WristIOKraken implements WristIO {
         config.CurrentLimits.withStatorCurrentLimit(80);
         config.Feedback.withSensorToMechanismRatio(WRIST_GEAR_RATIO);
 
+
         config.MotionMagic.withMotionMagicCruiseVelocity(Units.radiansToRotations(MAX_VELOCITY))
                 .withMotionMagicAcceleration(Units.radiansToRotations(MAX_ACCEL));
-
 
 
         config.Slot0.withGravityType(GravityTypeValue.Arm_Cosine)
@@ -53,6 +55,7 @@ public class WristIOKraken implements WristIO {
                 .withKA(KrakenGains.KA)
                 .withKG(KrakenGains.KG)
                 .withKP(KrakenGains.KP);
+//                .withKD(KrakenGains.KD);
 
 
 
@@ -89,6 +92,8 @@ public class WristIOKraken implements WristIO {
         inputs.volts = wristMotor.getMotorVoltage().getValueAsDouble();
 
         inputs.absoluteEncoderPosition = getAbsPosition();
+
+        Logger.recordOutput("elevator/motionMagicEnabled", wristMotor.getMotionMagicIsRunning().getValue());
     }
 
     @Override
@@ -104,6 +109,7 @@ public class WristIOKraken implements WristIO {
 
     @Override
     public void setMotionMagic(double position) {
+        Logger.recordOutput("elevator/lastMotionMagic", position);
         wristMotor.setControl(motionMagic.withPosition(position / (2 * Math.PI)));
     }
 
