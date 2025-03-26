@@ -10,7 +10,6 @@ public interface ClimberIO {
         public double current;
     }
 
-
     default void updateInputs(ClimberIO.ClimberInputs inputs) {}
 
     default void setSpeed(double speed) {}
@@ -18,4 +17,6 @@ public interface ClimberIO {
     default void setVolts(double volts) {}
 
     default void setMotionProfile(double position) {}
+
+    default void setBrakeMode(boolean brakeMode) {}
 }

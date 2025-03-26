@@ -1,9 +1,11 @@
 package frc.robot.subsystems.superstructure.wrist;
 
 import static edu.wpi.first.units.Units.*;
+import static frc.lib.util.NanUtil.TRAPEZOID_NAN_STATE;
 import static frc.robot.Constants.Wrist.*;
 
 import com.ctre.phoenix6.SignalLogger;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -16,6 +18,8 @@ import frc.lib.BlitzSubsystem;
 import frc.lib.util.LoggedTunableNumber;
 import frc.robot.Constants;
 import frc.robot.subsystems.leds.Leds;
+
+import java.util.Optional;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -29,7 +33,7 @@ public class Wrist extends BlitzSubsystem {
     private TrapezoidProfile profile =
             new TrapezoidProfile(new TrapezoidProfile.Constraints(MAX_VELOCITY, MAX_ACCEL));
 
-    private TrapezoidProfile.State goal;
+    private Optional<TrapezoidProfile.State> goal;
     private TrapezoidProfile.State setpoint;
 
     private final SysIdRoutine routine;
@@ -58,7 +62,7 @@ public class Wrist extends BlitzSubsystem {
         this.superstructureIdleCommand = superstructureIdleCommand;
 
         setpoint = new TrapezoidProfile.State(getPosition(), 0.0);
-        goal = null;
+        goal = Optional.empty();
 
         ShuffleboardTab characterizationTab = Shuffleboard.getTab("Characterization");
 
@@ -105,34 +109,39 @@ public class Wrist extends BlitzSubsystem {
         io.updateInputs(inputs);
         Logger.processInputs(logKey, inputs);
 
-        if (goal != null && DriverStation.isEnabled()) {
+        if (goal.isPresent() && DriverStation.isEnabled()) {
             TrapezoidProfile.State future_setpoint =
-                    profile.calculate(Constants.LOOP_PERIOD_SEC, setpoint, goal);
+                    profile.calculate(Constants.LOOP_PERIOD_SEC, setpoint, goal.get());
 
-            if (!Constants.compBot()) {
+            if (Constants.compBot()) {
+                // If on comp bot, use motion magic to get to goal, trapezoid is just a guide.
+                io.setMotionMagic(goal.get().position);
+            } else {
+                // If on dev bot, set the onboard pid to the current trapezoid position.
                 io.setSetpoint(setpoint.position, setpoint.velocity, future_setpoint.velocity);
             }
 
             setpoint = future_setpoint;
         }
 
-        if (goal != null) {
-            Logger.recordOutput(logKey + "/profile/positionSetpoint", setpoint.position);
-            Logger.recordOutput(logKey + "/profile/velocitySetpoint", setpoint.velocity);
-
-            Logger.recordOutput(logKey + "/profile/positionGoal", goal.position);
-            Logger.recordOutput(logKey + "/profile/velocityGoal", goal.velocity);
-        }
-
         if (DriverStation.isDisabled()) {
-            // Reset profile when disabled
+            // Reset profile while disabled
             setpoint = new TrapezoidProfile.State(getPosition(), 0);
-            goal = null;
+            goal = Optional.empty();
 
             // Stop arm
             io.stop();
-            return;
         }
+
+        Logger.recordOutput(logKey + "/profile/positionSetpoint", setpoint.position);
+        Logger.recordOutput(logKey + "/profile/velocitySetpoint", setpoint.velocity);
+
+        Logger.recordOutput(logKey + "/profile/goalPresent", goal.isPresent());
+        Logger.recordOutput(
+                logKey + "/profile/positionGoal", goal.orElse(TRAPEZOID_NAN_STATE).position);
+        Logger.recordOutput(
+                logKey + "/profile/velocityGoal", goal.orElse(TRAPEZOID_NAN_STATE).velocity);
+
 
         Logger.recordOutput(
                 logKey + "/absEncoderDegrees", Math.toRadians(inputs.absoluteEncoderPosition));
@@ -159,6 +168,22 @@ public class Wrist extends BlitzSubsystem {
         return inputs.velocityRadiansPerSecond;
     }
 
+    @AutoLogOutput(key = "wrist/idealPosition")
+    public double getIdealPosition() {
+        if (goal.isPresent()) {
+            return setpoint.position;
+        }
+        return getPosition();
+    }
+
+    @AutoLogOutput(key = "wrist/idealVelocity")
+    public double getIdealVelocity() {
+        if (goal.isPresent()) {
+            return setpoint.velocity;
+        }
+        return getVelocity();
+    }
+
     public Command setSpeed(double speed) {
         return setSpeed(() -> speed);
     }
@@ -171,41 +196,51 @@ public class Wrist extends BlitzSubsystem {
                         () -> {
                             io.setPercent(0);
                         })
-                .beforeStarting(() -> this.goal = null)
+                .beforeStarting(() -> this.goal = Optional.empty())
                 .withName(logKey + "/speed");
     }
 
     public Command withGoal(TrapezoidProfile.State goal) {
-        //        if (Constants.compBot()) {
-        //            return runOnce(
-        //                    () -> {
-        //                        io.setMotionMagic(goal.position);
-        //                        this.goal = goal;
-        //                    })
-        //                    .andThen(
-        //                            Commands.waitUntil(
-        //                                    () -> MathUtil.isNear(goal.position, getPosition(),
-        // Math.toRadians(3))))
-        //                    .handleInterrupt(() -> io.setMotionMagic(getPosition()))
-        //                    .beforeStarting(refreshCurrentState());
-        //        }
+        return goToPosition(goal.position, false).withName(logKey + "/withGoal " + goal.position);
+    }
 
-        return runOnce(
-                        () -> {
-                            if (Constants.compBot()) {
-                                io.setMotionMagic(goal.position);
-                            }
-                            this.goal = goal;
-                        })
-                .andThen(Commands.waitUntil(() -> setpoint.equals(goal)))
-                .handleInterrupt(
-                        () -> {
-                            this.goal = setpoint;
+    /**
+     * @param requireProfileCompletion If true, this command will only end once the mechanism position is within a
+     *                                 tolerance of the wanted position. Else this command will end once the time to position has
+     *                                 elapsed, with no guarantee that the mechanism is actually at the goal.
+     * @return A command that moves the mechanism to the desired position with motion profiling and
+     *     ends when the mechanism reaches that goal.
+     */
+    public Command goToPosition(double position, boolean requireProfileCompletion) {
+        if (requireProfileCompletion)
+            return followGoal(() -> position).withDeadline(
+                            Commands.waitUntil(
+                                    () -> MathUtil.isNear(position, getPosition(), TOLERANCE)))
+                    .withName(logKey + "/goToPosition_waitForMechanism " + position);
+        else
+            return followGoal(() -> position)
+                    .withDeadline(
+                            Commands.waitUntil(
+                                            () -> MathUtil.isNear(position, getIdealPosition(), 1e-9))
+                                    .withName(logKey + "/goToPosition_waitForProfile " + position));
 
-                            if (Constants.compBot()) {
-                                io.setMotionMagic(getPosition());
-                            }
-                        })
+    }
+
+    /**
+     * @return A command that commands the mechanism to follow the provided goal and never ends.
+     */
+    public Command followGoal(DoubleSupplier goal) {
+        return run(() -> {
+            // Only update the goal if necessary to avoid GC overhead
+            if (this.goal.isEmpty() || this.goal.get().position != goal.getAsDouble()) {
+                this.goal =
+                        Optional.of(
+                                new TrapezoidProfile.State(
+                                        MathUtil.clamp(
+                                                goal.getAsDouble(), MIN_POS, MAX_POS),
+                                        0));
+            }
+        }).handleInterrupt(() -> this.goal = Optional.of(setpoint))
                 .beforeStarting(refreshCurrentState());
     }
 
@@ -214,16 +249,8 @@ public class Wrist extends BlitzSubsystem {
      * conflict
      */
     private Command refreshCurrentState() {
-        return runOnce(() -> setpoint = new TrapezoidProfile.State(getPosition(), 0));
-        //                .onlyIf(
-        //                        () ->
-        //                                setpoint == null
-        //                                        || !EqualsUtil.epsilonEquals(
-        //                                        setpoint.position, getPosition(),
-        // Math.toRadians(2))
-        //                                        || !EqualsUtil.epsilonEquals(
-        //                                        setpoint.velocity, getVelocity(),
-        // Math.toRadians(4)));
+        return runOnce(() -> setpoint = new TrapezoidProfile.State(getPosition(), getVelocity()))
+                .onlyIf(() -> setpoint == null || goal.isEmpty());
     }
 
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {

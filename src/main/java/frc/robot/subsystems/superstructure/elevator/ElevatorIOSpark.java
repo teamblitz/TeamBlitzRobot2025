@@ -1,5 +1,7 @@
 package frc.robot.subsystems.superstructure.elevator;
 
+import static frc.robot.Constants.Elevator.*;
+
 import com.revrobotics.*;
 import com.revrobotics.spark.*;
 import com.revrobotics.spark.config.ClosedLoopConfig;
@@ -63,6 +65,13 @@ public class ElevatorIOSpark implements ElevatorIO {
 
         sharedConfig.closedLoop.maxOutput(.2);
         sharedConfig.closedLoop.minOutput(-.2);
+
+        sharedConfig
+                .softLimit
+                .forwardSoftLimit(MAX_POS)
+                .forwardSoftLimitEnabled(true)
+                .reverseSoftLimit(MIN_POS)
+                .reverseSoftLimitEnabled(true);
 
         SparkMaxConfig leftConfig = new SparkMaxConfig();
 
@@ -222,13 +231,14 @@ public class ElevatorIOSpark implements ElevatorIO {
         inputs.positionLeft = leftEncoder.getPosition();
         inputs.positionRight = rightEncoder.getPosition();
 
-        // Our limit switches are wired nominally closed (nc), so a value of false means the switch
-        // is active
-        inputs.bottomLimitSwitch = !bottomLimitSwitch.get();
-        inputs.topLimitSwitch = !topLimitSwitch.get();
+        inputs.position = inputs.positionLeft + inputs.positionRight / 2;
 
-        inputs.topLimitSwitch = false;
-        inputs.bottomLimitSwitch = false;
+        // Our limit switches are wired nominally closed (nc), so a value of false should mean the
+        // limit switch is triggered
+        // This is in fact not the case, and for some reason despite behaving as a (nc) switch, the
+        // output is reversed
+        inputs.topLimitSwitch = topLimitSwitch.get();
+        inputs.bottomLimitSwitch = bottomLimitSwitch.get();
 
         inputs.currentLeft = left.getOutputCurrent();
         inputs.currentRight = right.getOutputCurrent();
