@@ -59,6 +59,9 @@ public final class Constants {
     public static boolean compBot() {
         return ROBOT == Robot.CompBot;
     }
+    public static boolean devBot() {
+        return ROBOT == Robot.DevBot;
+    }
 
     //    public static H compDev<H>(H comp, H dev) {
     //        return ROBOT == Robot.CompBot ? comp : dev;
@@ -252,15 +255,14 @@ public final class Constants {
                             DRIVE_MOTOR_ID, ANGLE_MOTOR_ID, CAN_CODER_ID, ANGLE_OFFSET);
         }
 
-        public static final double MASS = Units.lbsToKilograms(115+20);
+        public static final double MASS = Units.lbsToKilograms(115 + 20);
         public static final double MOI =
-                (1
-                        / 12.0)
+                (1 / 12.0)
                         * MASS
                         * (WHEEL_BASE * WHEEL_BASE
                                 + TRACK_WIDTH * TRACK_WIDTH); // TODO: EMPIRICALLY MEASURE MOI
         public static final double MAX_MODULE_ANGULAR_VELOCITY =
-                Units.rotationsToRadians(10.0);// CONFIG
+                Units.rotationsToRadians(10.0); // CONFIG
 
         public static final RobotConfig PHYSICAL_CONSTANTS =
                 new RobotConfig(
@@ -330,20 +332,21 @@ public final class Constants {
         public static final double MIN_POS = compBot() ? 0 : .001;
         public static final double MAX_POS = compBot() ? 1.489501953125 : 1.48;
 
+        public static final double TOLERANCE = compBot() ? 0.005 : 0.01;
+
         public static final double OPEN_LOOP_RAMP = .25;
         public static final int CURRENT_LIMIT = 60;
         public static final double ELEVATOR_GEAR_RATIO = compBot() ? 5 : 12;
         public static final double SPROCKET_CIRCUMFERENCE =
                 Units.inchesToMeters(.25) * (compBot() ? 22 : 24);
 
-
-
-        public static final InvertedValue LEFT_INVERT =
-                InvertedValue.Clockwise_Positive; // TODO ensure that this is correct
-        public static final InvertedValue RIGHT_INVERT =
-                InvertedValue.CounterClockwise_Positive; // TODO ensure that this is correct
+        public static final InvertedValue LEFT_INVERT = InvertedValue.CounterClockwise_Positive;
+        public static final InvertedValue RIGHT_INVERT = InvertedValue.Clockwise_Positive;
 
         public static final double P = 180; // TODO config
+
+        public static final double MAX_VEL = compBot() ? 6 : 2;
+        public static final double MAX_ACCEL = compBot() ? 12 : 3;
 
         public static final class RightGains {
             public static final double KS = 0.26266;
@@ -370,8 +373,8 @@ public final class Constants {
             public static final double kV = 0.12729;
             public static final double kA = 0.0055511;
             public static final double kG = 0.26856;
-            public static final double kP = 4 * 12; //75.313;
-            public static final double kD = 0; //0.84699;
+            public static final double kP = 4 * 12; // 75.313;
+            public static final double kD = 0; // 0.84699;
         }
     }
 
@@ -384,13 +387,17 @@ public final class Constants {
         public static final int CURRENT_LIMIT = 60;
         public static final boolean INVERTED = false;
 
-        public static final double FORWARD_SOFT_LIMIT = Units.degreesToRadians(90);
-        public static final double REVERSE_SOFT_LIMIT = Units.degreesToRadians(-90);
+        public static final double MAX_POS = Units.degreesToRadians(compBot() ? 94 : 90);
+        public static final double MIN_POS = Units.degreesToRadians(-90);
 
         public static final double ABS_ENCODER_ZERO = Math.toRadians(306.71 + 90);
+        public static final double TOLERANCE = Units.degreesToRadians(2.5);
 
-        public static final double MAX_VELOCITY = Constants.compBot() ? Units.rotationsToRadians(2) : Units.degreesToRadians(180);
-        public static final double MAX_ACCEL = Constants.compBot() ? Units.rotationsToRadians(4) : Units.degreesToRadians(360);
+
+        public static final double MAX_VELOCITY =
+                Constants.compBot() ? Units.rotationsToRadians(2) : Units.degreesToRadians(180);
+        public static final double MAX_ACCEL =
+                Constants.compBot() ? Units.rotationsToRadians(4) : Units.degreesToRadians(360);
 
         public static final class PidGains {
             public static final double KP = 2;
@@ -411,11 +418,9 @@ public final class Constants {
             public static final double KV = 2.5726 * (2 * Math.PI);
             public static final double KA = 0.059493 * (2 * Math.PI);
             public static final double KG = 0.16157;
-            public static final double KP = 4 * 12 * (2 * Math.PI);
-            public static final double KD = 0; //0.70647
+            public static final double KP = 6 * 12 * (2 * Math.PI);
+            public static final double KD = 0; // 0.70647
         }
-
-
     }
 
     // Reset Elevator To Bottom before reset code
@@ -440,8 +445,8 @@ public final class Constants {
         public static final SuperstructureState KICK_HIGH_ALGAE =
                 new SuperstructureState(.88, Math.toRadians(40));
 
-        public static final SuperstructureState L4_PLOP = new SuperstructureState(L4.elevatorPosition, Math.toRadians(15));
-
+        public static final SuperstructureState L4_PLOP =
+                new SuperstructureState(L4.elevatorPosition, Math.toRadians(15));
 
         public static final List<StateWithMode> L4_DUNK =
                 List.of(
@@ -452,14 +457,14 @@ public final class Constants {
                         SetpointMode.WRIST_SYNC.withState(
                                 new SuperstructureState(1.0, Math.toRadians(70))));
 
-//        public static final List<StateWithMode> L4_PLOP =
-//                List.of(
-//                        SetpointMode.WRIST_SYNC.withState(
-//                                new SuperstructureState(L4.elevatorPosition, Math.toRadians(35))),
-//                        SetpointMode.WRIST_SYNC.withState(
-//                                new SuperstructureState(L4.elevatorPosition, L4.wristRotation)));
-
-
+        //        public static final List<StateWithMode> L4_PLOP =
+        //                List.of(
+        //                        SetpointMode.WRIST_SYNC.withState(
+        //                                new SuperstructureState(L4.elevatorPosition,
+        // Math.toRadians(35))),
+        //                        SetpointMode.WRIST_SYNC.withState(
+        //                                new SuperstructureState(L4.elevatorPosition,
+        // L4.wristRotation)));
 
         public static final SuperstructureState HANDOFF =
                 new SuperstructureState(.001, Math.toRadians(94));
@@ -508,7 +513,6 @@ public final class Constants {
         public static final double SHOOT_CORAL = .5;
         public static final double L1 = .3;
 
-
         public static final double L4_PLOP = .4;
     }
 
@@ -539,8 +543,7 @@ public final class Constants {
         public static final double CLIMB_POSITION = Math.toRadians(230);
         public static final double RESTOW_POSITION = Math.toRadians(270);
 
-        public static final double STARTING_POSITION =
-                Math.toRadians(270);
+        public static final double STARTING_POSITION = Math.toRadians(270);
 
         public static final double EPSILON = Math.toRadians(2.5);
 
@@ -551,8 +554,7 @@ public final class Constants {
             public static final double KV = 5.1394;
             public static final double KA = 0.064502;
 
-            public static final double KP = 24; //65.595;
-
+            public static final double KP = 24; // 65.595;
         }
 
         public static final class LoadedGains {
@@ -560,7 +562,7 @@ public final class Constants {
             public static final double KV = 5.1394;
             public static final double KA = 0.064502;
 
-            public static final double KP = 100; //65.595;
+            public static final double KP = 100; // 65.595;
         }
 
         public static final double MAX_VEL_UNLOADED = Units.degreesToRadians(180 * .6);

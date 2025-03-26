@@ -27,7 +27,8 @@ public class WinchIOSpark implements WinchIO {
         config.encoder.positionConversionFactor(1 / WINCH_GEAR_RATIO);
         config.encoder.velocityConversionFactor(1 / WINCH_GEAR_RATIO * 60);
 
-        config.closedLoop.maxMotion.positionMode(MAXMotionConfig.MAXMotionPositionMode.kMAXMotionTrapezoidal);
+        config.closedLoop.maxMotion.positionMode(
+                MAXMotionConfig.MAXMotionPositionMode.kMAXMotionTrapezoidal);
 
         config.closedLoop.maxOutput(.2);
         config.closedLoop.minOutput(-.2);
@@ -54,9 +55,7 @@ public class WinchIOSpark implements WinchIO {
     @Override
     public void setMotionProfile(double position) {
         Logger.recordOutput("winch/motionProfileGoal", position);
-        pid.setReference(
-                position,
-                SparkBase.ControlType.kPosition);
+        pid.setReference(position, SparkBase.ControlType.kPosition);
     }
 
     @Override
@@ -77,10 +76,10 @@ public class WinchIOSpark implements WinchIO {
     @Override
     public void setMaxOutput(double maxOut) {
         motor.configure(
-                new SparkMaxConfig().apply(new ClosedLoopConfig().maxOutput(maxOut).minOutput(-maxOut)),
+                new SparkMaxConfig()
+                        .apply(new ClosedLoopConfig().maxOutput(maxOut).minOutput(-maxOut)),
                 SparkBase.ResetMode.kNoResetSafeParameters,
-                SparkBase.PersistMode.kNoPersistParameters
-        );
+                SparkBase.PersistMode.kNoPersistParameters);
     }
 
     @Override

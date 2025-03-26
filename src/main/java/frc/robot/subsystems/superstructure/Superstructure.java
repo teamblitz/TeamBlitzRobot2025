@@ -3,6 +3,7 @@ package frc.robot.subsystems.superstructure;
 import static frc.robot.Constants.SuperstructureSetpoints.*;
 import static java.util.Map.entry;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -18,6 +19,9 @@ import frc.robot.subsystems.superstructure.wrist.WristIO;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.DoubleSupplier;
+
+import lombok.Getter;
 import org.littletonrobotics.junction.Logger;
 
 /**
@@ -36,8 +40,8 @@ import org.littletonrobotics.junction.Logger;
  * <p>-Noah
  */
 public class Superstructure extends BlitzSubsystem {
-    private final Elevator elevator;
-    private final Wrist wrist;
+    @Getter private final Elevator elevator;
+    @Getter private final Wrist wrist;
 
     public Superstructure(ElevatorIO elevatorIO, WristIO wristIO) {
 
@@ -57,10 +61,11 @@ public class Superstructure extends BlitzSubsystem {
                         entry(Goal.HANDOFF, HANDOFF),
                         entry(Goal.STOW, STOW));
 
-        dynamicGoals = Map.ofEntries(
-                entry(Goal.L4_DUNK, L4_DUNK)
-//                entry(Goal.L4_PLOP, L4_PLOP)
-        );
+        dynamicGoals =
+                Map.ofEntries(
+                        entry(Goal.L4_DUNK, L4_DUNK)
+                        //                entry(Goal.L4_PLOP, L4_PLOP)
+                        );
 
         ShuffleboardTab tab = Shuffleboard.getTab("SuperStructure");
         GenericEntry elevatorTestEntry = tab.add("elevatorTest", 0).getEntry();
@@ -144,14 +149,6 @@ public class Superstructure extends BlitzSubsystem {
         // superstructure control is disabled until robot is disabled and re-enabled, or manual
         // re-enablement occurs
         DISABLED
-    }
-
-    public Elevator getElevator() {
-        return elevator;
-    }
-
-    public Wrist getWrist() {
-        return wrist;
     }
 
     public Command stowCommand() {
@@ -277,5 +274,32 @@ public class Superstructure extends BlitzSubsystem {
 
     public Command idle() {
         return Commands.idle(this);
+    }
+
+
+    public Command manual(DoubleSupplier elevatorSpeed, DoubleSupplier wristSpeed) {
+        return Commands.parallel(
+                Commands.either(
+                        elevator.withSpeed(elevatorSpeed).until(() -> elevatorSpeed.getAsDouble() == 0),
+                        Commands.waitSeconds(.5).andThen(
+                                Commands.defer(() -> {
+                            double pos = elevator.getPosition();
+                            return elevator.followGoal(() -> pos);
+                            }, Set.of(elevator)
+                        ).until(() -> elevatorSpeed.getAsDouble() != 0)),
+                        () -> elevatorSpeed.getAsDouble() != 0
+                ).repeatedly(),
+                Commands.either(
+                        wrist.setSpeed(wristSpeed).until(() -> wristSpeed.getAsDouble() == 0),
+                        Commands.waitSeconds(.5).andThen(
+                        Commands.defer(() -> {
+                                    double pos = wrist.getPosition();
+                                    return wrist.followGoal(() -> pos);
+                                }, Set.of(wrist)
+                        ).until(() -> wristSpeed.getAsDouble() != 0)),
+                        () -> wristSpeed.getAsDouble() != 0
+                ).repeatedly(),
+                this.idle()
+        ).withName(logKey + "/smart_manual");
     }
 }

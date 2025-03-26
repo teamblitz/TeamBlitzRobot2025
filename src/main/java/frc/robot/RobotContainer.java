@@ -231,14 +231,13 @@ public class RobotContainer {
         OIConstants.Winch.WINCH_MAN_UP.whileTrue(winch.manualUp());
         OIConstants.Winch.WINCH_MAN_DOWN.whileTrue(winch.manualDown());
 
-        OIConstants.Elevator.MANUAL_UP.whileTrue(
-                elevator.upManual()
-                        .alongWith(superstructure.idle())
-                        .withName("elevator/manual_up"));
-        OIConstants.Elevator.MANUAL_DOWN.whileTrue(
-                elevator.downManual()
-                        .alongWith(superstructure.idle())
-                        .withName("elevator/manual_down"));
+        OIConstants.SuperStructure.MANUAL_MODE
+                        .onTrue(
+                                superstructure.manual(
+                                        OIConstants.Elevator.MANUAL,
+                                        OIConstants.Wrist.MANUAL
+                                )
+                        );
 
         OIConstants.Climber.CLIMBER_UP_MAN.whileTrue(climber.setSpeed(.8));
         OIConstants.Climber.CLIMBER_DOWN_MAN.whileTrue(climber.setSpeed(-.8));
@@ -252,10 +251,6 @@ public class RobotContainer {
                 .and(() -> climber.getState() == Climber.State.DEPLOYED)
                 .whileTrue(climber.climb());
 
-        new Trigger(() -> Math.abs(OIConstants.Wrist.WRIST_MANUAL.getAsDouble()) > .07)
-                .whileTrue(
-                        wrist.setSpeed(OIConstants.Wrist.WRIST_MANUAL)
-                                .alongWith(superstructure.idle()));
 
         new Trigger(RobotController::getUserButton)
                 .toggleOnTrue(
