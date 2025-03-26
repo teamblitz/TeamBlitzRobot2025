@@ -345,6 +345,9 @@ public final class Constants {
 
         public static final double P = 180; // TODO config
 
+        public static final double MAX_VEL = compBot() ? 6 : 2;
+        public static final double MAX_ACCEL = compBot() ? 12 : 3;
+
         public static final class RightGains {
             public static final double KS = 0.26266;
             public static final double KV = 4.4755;

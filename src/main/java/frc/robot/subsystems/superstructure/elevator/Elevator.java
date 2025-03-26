@@ -28,7 +28,7 @@ public class Elevator extends BlitzSubsystem {
     private final frc.robot.subsystems.superstructure.elevator.ElevatorIO io;
     private final ElevatorIOInputsAutoLogged inputs = new ElevatorIOInputsAutoLogged();
 
-    private final TrapezoidProfile.Constraints constraints = new TrapezoidProfile.Constraints(2, 3);
+    private final TrapezoidProfile.Constraints constraints = new TrapezoidProfile.Constraints(MAX_VEL, MAX_ACCEL);
     private final TrapezoidProfile profile = new TrapezoidProfile(constraints);
 
     private Optional<TrapezoidProfile.State> goal;
