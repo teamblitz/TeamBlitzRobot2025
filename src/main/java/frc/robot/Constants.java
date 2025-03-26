@@ -340,10 +340,8 @@ public final class Constants {
         public static final double SPROCKET_CIRCUMFERENCE =
                 Units.inchesToMeters(.25) * (compBot() ? 22 : 24);
 
-        public static final InvertedValue LEFT_INVERT =
-                InvertedValue.Clockwise_Positive; // TODO ensure that this is correct
-        public static final InvertedValue RIGHT_INVERT =
-                InvertedValue.CounterClockwise_Positive; // TODO ensure that this is correct
+        public static final InvertedValue LEFT_INVERT = InvertedValue.CounterClockwise_Positive;
+        public static final InvertedValue RIGHT_INVERT = InvertedValue.Clockwise_Positive;
 
         public static final double P = 180; // TODO config
 
