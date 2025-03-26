@@ -1,5 +1,7 @@
 package frc.robot.subsystems.leds;
 
+import static java.awt.Color.green;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
@@ -59,10 +61,12 @@ public class Leds extends SubsystemBase {
 
     // LED IO
     private final AddressableLED leds;
+    private final AddressableLED leds2;
     private final AddressableLEDBuffer buffer;
     private final Notifier loadingNotifier;
 
     // Constants
+    private static final boolean patrioticLeds = false;
     private static final boolean prideLeds = false;
     private static final int minLoopCycleCount = 10;
     private static final int length = 32;
@@ -85,10 +89,14 @@ public class Leds extends SubsystemBase {
 
     private Leds() {
         leds = new AddressableLED(2);
+        leds2 = new AddressableLED(3); // TODO MAKE CORRECT PORT
         buffer = new AddressableLEDBuffer(length);
         leds.setLength(length);
         leds.setData(buffer);
         leds.start();
+        leds2.setLength(length);
+        leds2.setData(buffer);
+        leds2.start();
         loadingNotifier =
                 new Notifier(
                         () -> {
@@ -160,6 +168,7 @@ public class Leds extends SubsystemBase {
                                 Color.kRed,
                                 Color.kOrangeRed,
                                 Color.kYellow,
+                                Color.kWhite,
                                 Color.kGreen,
                                 Color.kBlue,
                                 Color.kPurple,
@@ -186,7 +195,8 @@ public class Leds extends SubsystemBase {
                 breath(Color.kRed, Color.kBlack);
             }
         } else if (DriverStation.isAutonomous()) {
-            wave(Color.kGreen, Color.kYellow, waveFastCycleLength, waveFastDuration);
+            tripleWave(
+                    Color.kRed, Color.kWhite, Color.kBlue, waveFastCycleLength, waveSlowDuration);
             if (autoFinished) {
                 double fullTime = (double) length / waveFastCycleLength * waveFastDuration;
                 solid((Timer.getFPGATimestamp() - autoFinishedTime) / fullTime, Color.kGreen);
@@ -237,6 +247,7 @@ public class Leds extends SubsystemBase {
 
         // Update LEDs
         leds.setData(buffer);
+        leds2.setData(buffer);
     }
 
     private void solid(Color color) {
@@ -300,6 +311,25 @@ public class Leds extends SubsystemBase {
             double red = (c1.red * (1 - ratio)) + (c2.red * ratio);
             double green = (c1.green * (1 - ratio)) + (c2.green * ratio);
             double blue = (c1.blue * (1 - ratio)) + (c2.blue * ratio);
+            buffer.setLED(i, new Color(red, green, blue));
+        }
+    }
+
+    private void tripleWave(Color c1, Color c2, Color c3, double cycleLength, double duration) {
+        double x = (1 - ((Timer.getFPGATimestamp() % duration) / duration)) * 2.0 * Math.PI;
+        double xDiffPerLed = (2.0 * Math.PI) / cycleLength;
+        for (int i = 0; i < length; i++) {
+            x += xDiffPerLed;
+            double ratio = (Math.pow(Math.sin(x), waveExponent) + 1.0) / 2.0;
+            if (Double.isNaN(ratio)) {
+                ratio = (-Math.pow(Math.sin(x + Math.PI), waveExponent) + 1.0) / 2.0;
+            }
+            if (Double.isNaN(ratio)) {
+                ratio = 0.5;
+            }
+            double red = (c1.red * (1 - ratio)) + (c2.red * ratio) + (c3.red * ratio);
+            double green = (c1.green * (1 - ratio)) + (c2.green * ratio) + (c3.green * ratio);
+            double blue = (c1.blue * (1 - ratio)) + (c2.blue * ratio) + (c3.blue * ratio);
             buffer.setLED(i, new Color(red, green, blue));
         }
     }
