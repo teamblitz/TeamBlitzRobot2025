@@ -12,6 +12,8 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.util.DriveFeedforwards;
 import com.pathplanner.lib.util.swerve.SwerveSetpoint;
 import com.pathplanner.lib.util.swerve.SwerveSetpointGenerator;
+
+import choreo.trajectory.SwerveSample;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -723,5 +725,15 @@ public class Drive extends BlitzSubsystem {
 
     public Optional<Pose2d> samplePreviousPose(double timestamp) {
         return poseEstimator.sampleAt(timestamp);
+    }
+
+    public void followTrajectory(SwerveSample sample) {
+        Pose2d pos = getPose();
+        ChassisSpeeds speeds = new ChassisSpeeds(
+                sample.vx + x.calculate(pose.getX(), sample.x),
+                sample.vy + y.calculate(pose.getY(), sample.y),
+                sample.omega + headingController.calculate(pose.getRotation().getRadians(), sample.heading)
+        );
+        driveFieldRelative(speeds);
     }
 }

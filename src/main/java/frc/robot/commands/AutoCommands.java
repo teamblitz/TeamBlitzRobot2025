@@ -17,6 +17,7 @@ public class AutoCommands {
     private final Drive drive;
     private final SwerveDriveKinematics kinematics;
     private final AutoFactory autoFactory;
+    private final ChoreoTrajectory trajectory;
 
     private final PIDController x = new PIDController(0, 0, 0);
     private final PIDController y = new PIDController(0, 0, 0);
@@ -27,10 +28,12 @@ public class AutoCommands {
         this.kinematics = kinematics;
         theta.enableContinuousInput(-Math.PI, Math.PI);
 
+        var trajectory = Choreo.loadTrajectory("testDrive");
+
         autoFactory = new AutoFactory(
             drive::getPose,
             drive::resetPose,
-            drive::keepHeadingPid,
+            drive::followTrajectory,
             true,
             drive
         );
