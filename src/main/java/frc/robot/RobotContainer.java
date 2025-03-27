@@ -44,9 +44,12 @@ import frc.robot.subsystems.superstructure.elevator.ElevatorIOSpark;
 import frc.robot.subsystems.superstructure.wrist.Wrist;
 import frc.robot.subsystems.superstructure.wrist.WristIOKraken;
 import frc.robot.subsystems.superstructure.wrist.WristIOSpark;
+import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.winch.Winch;
 import frc.robot.subsystems.winch.WinchIOSpark;
 import org.littletonrobotics.junction.Logger;
+import frc.robot.subsystems.vision.DriveToTagCommand;
+
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -59,6 +62,7 @@ public class RobotContainer {
 
     /* ***** --- Subsystems --- ***** */
     private Drive drive;
+    private Vision vision;
     private Elevator elevator;
     private Wrist wrist;
     private Intake intake;
@@ -169,6 +173,8 @@ public class RobotContainer {
                                     new RangeSensorIO() {});
                 };
 
+        vision = new Vision(drive);
+
         intake = new Intake(Constants.compBot() ? new IntakeIOKraken() : new IntakeIOSpark());
 
         superstructure =
@@ -259,6 +265,8 @@ public class RobotContainer {
                                         elevator.coastCommand(),
                                         climber.coastCommand())
                                 .onlyWhile(RobotState::isDisabled));
+        
+//        OIConstants.Drive.DRIVE_TO_TAG.whileTrue(DriveToTagCommand);
     }
 
     private void configureAutoCommands() {
