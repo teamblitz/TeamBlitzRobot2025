@@ -115,9 +115,6 @@ public class Drive extends BlitzSubsystem {
     private ChassisSpeedFilter velocityFilter = null;
     private HeadingController headingController = null;
 
-    private final PIDController xController = new PIDController(0,0,0);
-    private final PIDController yController = new PIDController(0,0,0);
-    private final PIDController choreoController = new PIDController(0, 0, 0);
 
     public Command setControl(ChassisSpeedController velocityController) {
         return Commands.startEnd(
@@ -741,13 +738,20 @@ public class Drive extends BlitzSubsystem {
         return poseEstimator.sampleAt(timestamp);
     }
 
+
+    private final PIDController xController = new PIDController(0,0,0);
+    private final PIDController yController = new PIDController(0,0,0);
+    private final PIDController choreoThetaController = new PIDController(0, 0, 0);
+
+
     public void followTrajectory(SwerveSample sample) {
-        Pose2d pos = getPose();
+        choreoThetaController.enableContinuousInput(-Math.PI, Math.PI);
+
         ChassisSpeeds speeds = new ChassisSpeeds(
                 sample.vx + xController.calculate(poseEstimator.getEstimatedPosition().getX(), sample.x),
                 sample.vy + yController.calculate(poseEstimator.getEstimatedPosition().getY(), sample.y),
-                sample.omega + choreoController.calculate(poseEstimator.getEstimatedPosition().getRotation().getRadians(), sample.heading)
+                sample.omega + choreoThetaController.calculate(poseEstimator.getEstimatedPosition().getRotation().getRadians(), sample.heading)
         );
-        driveFieldRelative(speeds);
+        driveFieldRelative(speeds, true);
     }
 }
