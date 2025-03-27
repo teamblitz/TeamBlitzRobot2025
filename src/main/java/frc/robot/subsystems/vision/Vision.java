@@ -50,7 +50,8 @@ public class Vision extends SubsystemBase {
                             (result) ->
                             poseEstimator.update(result).ifPresent(
                                     (estimatedRobotPose) -> {
-                                        Logger.recordOutput("vision/" + camera.getName() + "/pose", estimatedRobotPose.estimatedPose.toPose2d());
+                                        Logger.recordOutput("vision/" + camera.getName() + "/pose", estimatedRobotPose.estimatedPose);
+                                        Logger.recordOutput("vision/" + camera.getName() + "/pose2d", estimatedRobotPose.estimatedPose.toPose2d());
                                         Logger.recordOutput("vision/" + camera.getName() + "/timestamp", estimatedRobotPose.timestampSeconds);
                                         Logger.recordOutput("vision/" + camera.getName() + "/latency", Timer.getFPGATimestamp() - estimatedRobotPose.timestampSeconds);
                                         Logger.recordOutput("vision/" + camera.getName() + "/strategy", estimatedRobotPose.strategy);
