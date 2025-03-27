@@ -10,18 +10,21 @@ package frc.robot;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.RobotConfig;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import frc.lib.util.COTSSwerveConstants;
 import frc.lib.util.SwerveModuleConstants;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.DoubleUnaryOperator;
+
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Inches;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -567,6 +570,41 @@ public final class Constants {
 
     public static final class Vision {
 
+        public static final List<RobotCamera> CAMERAS =
+                List.of(
+                        new RobotCamera(// FRONT LEFT
+                                "OV2311_20.0",
+                                new Transform3d(
+                                    new Translation3d(
+                                            // TODO, VERIFY
+                                            Inches.of(10.101652),
+                                            Inches.of(11.104033),
+                                            Inches.of(9.504322)
+                                    ),
+                                    new Rotation3d(
+                                            Degrees.of(0),
+                                            Degrees.of(-20),
+                                            Degrees.of(-20)
+                                    )
+                                )
+                        ),
+                        new RobotCamera(// FRONT RIGHT
+                                "OV2311_20.1",
+                                new Transform3d(
+                                        new Translation3d(
+                                                // TODO, VERIFY
+                                                Inches.of(-10.101652),
+                                                Inches.of(11.104033),
+                                                Inches.of(9.504322)
+                                        ),
+                                        new Rotation3d(
+                                                Degrees.of(0),
+                                                Degrees.of(-20),
+                                                Degrees.of(20)
+                                        )
+                                )
+                        )
+                );
 
 
         public static final List<Transform3d> CAMERA_POSES =
@@ -574,5 +612,7 @@ public final class Constants {
                         new Transform3d(),
                         new Transform3d()
                 );
+
+        public record RobotCamera(String name, Transform3d pose) {}
     }
 }

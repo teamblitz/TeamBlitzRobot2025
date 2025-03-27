@@ -8,8 +8,10 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import frc.robot.subsystems.drive.Drive;
 import org.littletonrobotics.junction.Logger;
@@ -33,13 +35,12 @@ public class Vision extends SubsystemBase {
     public Vision(Drive drive) {
         this.drive = drive;
 
-        cameras = List.of(
-                new PhotonCamera("OV2311_20.0"),
-                new PhotonCamera("OV2311_20.1")
-//                new PhotonCamera("2"),
-//                new PhotonCamera("3")
-        );
+        cameras = CAMERAS.stream()
+                .map(camera -> new PhotonCamera(camera.name()))
+                .toList();
 
+//        poseEstimators = CAMERAS.stream().map().col
+//
         this.poseEstimators = Map.ofEntries(
                 Map.entry(cameras.get(0), new PhotonPoseEstimator(aprilTagFieldLayout, PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, CAMERA_POSES.get(0))),
                 Map.entry(cameras.get(1), new PhotonPoseEstimator(aprilTagFieldLayout, PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, CAMERA_POSES.get(1)))
