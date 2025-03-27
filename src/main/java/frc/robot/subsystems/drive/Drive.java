@@ -12,6 +12,7 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.util.DriveFeedforwards;
 import com.pathplanner.lib.util.swerve.SwerveSetpoint;
 import com.pathplanner.lib.util.swerve.SwerveSetpointGenerator;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -91,7 +92,7 @@ public class Drive extends BlitzSubsystem {
     private final PIDController keepHeadingPid;
     private final ProfiledPIDController rotateToHeadingPid;
 
-    private SysIdRoutine routine;
+    private final SysIdRoutine routine;
 
     private double lastVisionTimeStamp;
 
@@ -515,10 +516,6 @@ public class Drive extends BlitzSubsystem {
         return poseEstimator.getEstimatedPosition();
     }
 
-    public Pose2d getLimelightPose() {
-        return LimelightHelpers.getBotPose2d_wpiBlue("limelight");
-    }
-
     public void resetOdometry(Pose2d pose) {
         swerveOdometry.resetPosition(getYaw(), getModulePositions(), pose);
         poseEstimator.resetPosition(getYaw(), getModulePositions(), pose);
@@ -529,7 +526,15 @@ public class Drive extends BlitzSubsystem {
     }
 
     public void addVisionMeasurement(Pose2d pose, double timestamp) {
-        poseEstimator.addVisionMeasurement(pose, timestamp);
+//        poseEstimator.setVisionMeasurementStdDevs(
+//                VecBuilder.fill(
+//                        .7, .7,
+//                        9999999));
+        poseEstimator.addVisionMeasurement(pose, timestamp, VecBuilder.fill(
+                .7, .7,
+                9999999)); // Maybe base std devs off of camera stuff, .7m seams high as an std
+         // Standard deviations, basically vision
+                
     }
 
     public void zeroGyro() {
@@ -665,8 +670,8 @@ public class Drive extends BlitzSubsystem {
         Logger.processInputs("drive/range", rangeInputs);
 
         swerveOdometry.update(getYaw(), getModulePositions());
-        //        poseEstimator.update(getYaw(), getModulePositions()); // TODO AHHHHH
-        //        LimelightHelpers.PoseEstimate limelightMeasurement =
+        poseEstimator.update(getYaw(), getModulePositions()); // TODO AHHHHH
+//                LimelightHelpers.PoseEstimate limelightMeasurement =
         //                LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
 
         //        if (limelightMeasurement != null) {

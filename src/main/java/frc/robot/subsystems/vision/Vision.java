@@ -25,7 +25,6 @@ import edu.wpi.first.math.geometry.Transform2d;
 import static frc.robot.Constants.Vision.*;
 
 public class Vision extends SubsystemBase {
-    private final List<PhotonCamera> cameras;
     private final Map<PhotonCamera, PhotonPoseEstimator> poseEstimators;
 
     private final AprilTagFieldLayout aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
@@ -35,103 +34,13 @@ public class Vision extends SubsystemBase {
     public Vision(Drive drive) {
         this.drive = drive;
 
-        cameras = CAMERAS.stream()
-                .map(camera -> new PhotonCamera(camera.name()))
-                .toList();
-
-//        poseEstimators = CAMERAS.stream().map().col
-//
-        this.poseEstimators = Map.ofEntries(
-                Map.entry(cameras.get(0), new PhotonPoseEstimator(aprilTagFieldLayout, PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, CAMERA_POSES.get(0))),
-                Map.entry(cameras.get(1), new PhotonPoseEstimator(aprilTagFieldLayout, PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, CAMERA_POSES.get(1)))
-//                Map.entry(cameras.get(2), new PhotonPoseEstimator(aprilTagFieldLayout, PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, CAMERA_POSES.get(2))),
-//                Map.entry(cameras.get(3), new PhotonPoseEstimator(aprilTagFieldLayout, PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, CAMERA_POSES.get(3)))
-        );
+        poseEstimators = CAMERAS.stream().collect(Collectors.toMap(
+                camera -> new PhotonCamera(camera.name()),
+                camera -> new PhotonPoseEstimator(aprilTagFieldLayout, PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camera.pose())
+        ));
 
 
     }
-
-//    public Pose2d getAprilTagPose2d() {
-//        PhotonTrackedTarget goodTarget = null;
-//        PhotonCamera bestCam = null;
-//
-//        for (PhotonCamera cams : cameras)
-//        {
-//            var result = cams.getLatestResult();
-//
-//            if (result.hasTargets())
-//            {
-//                PhotonTrackedTarget target = result.getBestTarget();
-//
-//                if (goodTarget == null || target.getPoseAmbiguity() < goodTarget.getPoseAmbiguity())
-//                {
-//                    goodTarget = target;
-//                    bestCam = cams;
-//                }
-//            }
-//        }
-//
-//        if (goodTarget != null && bestCam != null)
-//        {
-//            Transform2d camToTarget = goodTarget.getBestCameraToTarget();
-//            Translation2d trans = camToTarget.getTranslation();
-//            Rotation2d rot = camToTarget.getRotation();
-//
-//            return new Pose2d(trans, rot);
-//        }
-//    }
-    // public void driveToAprilTags() {
-    //     PhotonTrackedTarget goodTarget = null;
-    //     PhotonCamera bestCam = null;
-
-    //     for (PhotonCamera cams : cam)
-    //     {
-    //         var result = cams.getLatestResult();
-
-    //         if (result.hasTargets())
-    //         {
-    //             PhotonTrackedTarget target = result.getBestTarget();
-
-    //             if (goodTarget == null || target.getPoseAmbiguity() < goodTarget.getPoseAmbiguity())
-    //             {
-    //                 goodTarget = target;
-    //                 bestCam = cams;
-    //             }
-    //         }
-    //     }
-    //     if (goodTarget != null && bestCam != null)
-    //     {
-    //         double yaw = goodTarget.getYaw();
-    //         double pitch = goodTarget.getPitch();
-
-    //         double distanceAway = calculateDistanceToTarget(pitch);
-
-    //         double bestX = distanceAway * Math.cos(Math.toRadians(yaw));
-    //         double bestY = distanceAway * Math.sin(Math.toRadians(yaw));
-
-    //         double outX = x.calculate(bestX, 0); //Prob tune this val
-    //         double outY = y.calculate(bestY, 0); //Prob tune this val
-    //         double outTheta = theta.calculate(yaw, 0); //Prob tune this val
-
-
-
-    //         //drive.drive(new Translation2d(outX, outY), outTheta, true);  //Chasis moves to calculated distance
-    //         drive.drive(null, false);
-    //     }
-    //     else
-    //     {
-    //         drive.drive(null, false); //Chasis doesn't move if no targets are seen
-    //     }
-    // }
-
-    // private double calculateDistanceToTarget(double pitch) {
-    //     double camHeight = 0; //TODO get correct val (height from cam)
-    //     double tagHeight = 0; //TODO get correct val (actual height from ground)
-
-    //     double angle = Math.toRadians(pitch);
-
-    //     return (tagHeight - camHeight) / Math.tan(angle);
-    // }
 
     @Override
     public void periodic() {
