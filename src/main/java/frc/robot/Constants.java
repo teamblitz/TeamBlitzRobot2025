@@ -11,6 +11,7 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.RobotConfig;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -562,5 +563,16 @@ public final class Constants {
 
         public static final double MAX_VEL_LOADED = .5;
         public static final double MAX_ACCEL_LOADED = 1;
+    }
+
+    public static final class Vision {
+
+
+
+        public static final List<Transform3d> CAMERA_POSES =
+                List.of(
+                        new Transform3d(),
+                        new Transform3d()
+                );
     }
 }

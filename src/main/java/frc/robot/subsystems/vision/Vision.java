@@ -1,63 +1,89 @@
 package frc.robot.subsystems.vision;
 
-import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.estimator.PoseEstimator;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.ArrayList;
 import java.util.List;
-import org.photonvision.PhotonCamera;
-import org.photonvision.targeting.PhotonTrackedTarget;
+import java.util.Map;
+
 import frc.robot.subsystems.drive.Drive;
+import org.littletonrobotics.junction.Logger;
+import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.targeting.PhotonTrackedTarget;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 
+import static frc.robot.Constants.Vision.*;
+
 public class Vision extends SubsystemBase {
-    private final List<PhotonCamera> cam;
+    private final List<PhotonCamera> cameras;
+    private final Map<PhotonCamera, PhotonPoseEstimator> poseEstimators;
 
-    public Vision() {
-        this.cam = new ArrayList<>();
-        cam.add(new PhotonCamera("1"));  //TODO get correct name
-        cam.add(new PhotonCamera("2"));  //TODO get correct name
-        cam.add(new PhotonCamera("3"));  //TODO get correct name
-        cam.add(new PhotonCamera("4"));  //TODO get correct name
+    private final AprilTagFieldLayout aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
+
+    Drive drive;
+
+    public Vision(Drive drive) {
+        this.drive = drive;
+
+        cameras = List.of(
+                new PhotonCamera("OV2311_20.0"),
+                new PhotonCamera("OV2311_20.1")
+//                new PhotonCamera("2"),
+//                new PhotonCamera("3")
+        );
+
+        this.poseEstimators = Map.ofEntries(
+                Map.entry(cameras.get(0), new PhotonPoseEstimator(aprilTagFieldLayout, PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, CAMERA_POSES.get(0))),
+                Map.entry(cameras.get(1), new PhotonPoseEstimator(aprilTagFieldLayout, PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, CAMERA_POSES.get(1)))
+//                Map.entry(cameras.get(2), new PhotonPoseEstimator(aprilTagFieldLayout, PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, CAMERA_POSES.get(2))),
+//                Map.entry(cameras.get(3), new PhotonPoseEstimator(aprilTagFieldLayout, PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, CAMERA_POSES.get(3)))
+        );
+
+
     }
 
-    public Pose2d getAprilTagPose2d() {
-        PhotonTrackedTarget goodTarget = null;
-        PhotonCamera bestCam = null;
-
-        for (PhotonCamera cams : cam)
-        {
-            var result = cams.getLatestResult();
-
-            if (result.hasTargets())
-            {
-                PhotonTrackedTarget target = result.getBestTarget();
-
-                if (goodTarget == null || target.getPoseAmbiguity() < goodTarget.getPoseAmbiguity())
-                {
-                    goodTarget = target;
-                    bestCam = cams;
-                }
-            }
-        }
-
-        if (goodTarget != null && bestCam != null)
-        {
-            Transform2d camToTarget = goodTarget.getBestCameraToTarget();
-            Translation2d trans = camToTarget.getTranslation();
-            Rotation2d rot = camToTarget.getRotation();
-
-            return new Pose2d(trans, rot);
-        }
-    }
+//    public Pose2d getAprilTagPose2d() {
+//        PhotonTrackedTarget goodTarget = null;
+//        PhotonCamera bestCam = null;
+//
+//        for (PhotonCamera cams : cameras)
+//        {
+//            var result = cams.getLatestResult();
+//
+//            if (result.hasTargets())
+//            {
+//                PhotonTrackedTarget target = result.getBestTarget();
+//
+//                if (goodTarget == null || target.getPoseAmbiguity() < goodTarget.getPoseAmbiguity())
+//                {
+//                    goodTarget = target;
+//                    bestCam = cams;
+//                }
+//            }
+//        }
+//
+//        if (goodTarget != null && bestCam != null)
+//        {
+//            Transform2d camToTarget = goodTarget.getBestCameraToTarget();
+//            Translation2d trans = camToTarget.getTranslation();
+//            Rotation2d rot = camToTarget.getRotation();
+//
+//            return new Pose2d(trans, rot);
+//        }
+//    }
     // public void driveToAprilTags() {
     //     PhotonTrackedTarget goodTarget = null;
     //     PhotonCamera bestCam = null;
 
-    //     for (PhotonCamera cams : cam) 
+    //     for (PhotonCamera cams : cam)
     //     {
     //         var result = cams.getLatestResult();
 
@@ -86,11 +112,11 @@ public class Vision extends SubsystemBase {
     //         double outY = y.calculate(bestY, 0); //Prob tune this val
     //         double outTheta = theta.calculate(yaw, 0); //Prob tune this val
 
-            
+
 
     //         //drive.drive(new Translation2d(outX, outY), outTheta, true);  //Chasis moves to calculated distance
     //         drive.drive(null, false);
-    //     } 
+    //     }
     //     else
     //     {
     //         drive.drive(null, false); //Chasis doesn't move if no targets are seen
@@ -108,35 +134,25 @@ public class Vision extends SubsystemBase {
 
     @Override
     public void periodic() {
-        boolean hasTargets = false;
+        poseEstimators.forEach(
+                (PhotonCamera camera, PhotonPoseEstimator poseEstimator) ->
+                    camera.getAllUnreadResults().forEach(
+                            (result) ->
+                            poseEstimator.update(result).ifPresent(
+                                    (estimatedRobotPose) -> {
+                                        Logger.recordOutput("vision/" + camera.getName() + "/pose", estimatedRobotPose.estimatedPose.toPose2d());
+                                        Logger.recordOutput("vision/" + camera.getName() + "/timestamp", estimatedRobotPose.timestampSeconds);
+                                        Logger.recordOutput("vision/" + camera.getName() + "/latency", Timer.getFPGATimestamp() - estimatedRobotPose.timestampSeconds);
+                                        Logger.recordOutput("vision/" + camera.getName() + "/strategy", estimatedRobotPose.strategy);
 
-        for (PhotonCamera cams : cam)
-        {
-            if (cams.getLatestResult().hasTargets())
-            {
-                hasTargets = true;
-                break; //maybe?
-            }
-        }
-        SmartDashboard.putBoolean("Cam has targets", hasTargets);
-
-        Pose2d pose = getAprilTagPose2d();
-
-        if (pose != null)
-        {
-            SmartDashboard.putNumber("Pose X: ", pose.getX());
-            SmartDashboard.putNumber("Pose Y: ", pose.getY());
-            SmartDashboard.putNumber("Rotation: ", pose.getRotation().getRadians());
-        }
-        else
-        {
-            SmartDashboard.putString("Pose: ", "None found");
-        }
+                                        drive.addVisionMeasurement(estimatedRobotPose.estimatedPose.toPose2d(), estimatedRobotPose.timestampSeconds);
+                                    }
+                            )
+                    )
+        );
 
 
 
-        // for each new pose
-        // drive.addVisionMeasurement(pose, timestamp, ??standard_deviation??)
     }
 
 }

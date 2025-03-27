@@ -529,7 +529,7 @@ public class Drive extends BlitzSubsystem {
     }
 
     public void addVisionMeasurement(Pose2d pose, double timestamp) {
-        
+        poseEstimator.addVisionMeasurement(pose, timestamp);
     }
 
     public void zeroGyro() {
