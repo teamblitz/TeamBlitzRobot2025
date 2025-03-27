@@ -5,6 +5,8 @@ package frc.robot.subsystems.drive;
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.Constants.Drive.*;
 
+import choreo.Choreo;
+import choreo.util.ChoreoAlert;
 import com.ctre.phoenix6.SignalLogger;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.RobotConfig;
@@ -112,6 +114,10 @@ public class Drive extends BlitzSubsystem {
     private ChassisSpeedController velocityController = null;
     private ChassisSpeedFilter velocityFilter = null;
     private HeadingController headingController = null;
+
+    private final PIDController xController = new PIDController(0,0,0);
+    private final PIDController yController = new PIDController(0,0,0);
+    private final PIDController choreoController = new PIDController(0, 0, 0);
 
     public Command setControl(ChassisSpeedController velocityController) {
         return Commands.startEnd(
@@ -370,6 +376,8 @@ public class Drive extends BlitzSubsystem {
                 sysIdDynamic(SysIdRoutine.Direction.kForward).withName("Drive Dynamic Forward"));
         tuningTab.add(
                 sysIdDynamic(SysIdRoutine.Direction.kReverse).withName("Drive Dynamic Reverse"));
+
+
     }
 
     public void drive(
@@ -429,6 +437,12 @@ public class Drive extends BlitzSubsystem {
                         : new ChassisSpeeds(translation.getX(), translation.getY(), rotation);
 
         drive(robotRel, isOpenLoop);
+    }
+
+
+    // PUsh changes and let me try localy.
+    public void driveFieldRelative(ChassisSpeeds speeds, boolean openLoop) {
+        drive(ChassisSpeeds.fromFieldRelativeSpeeds(speeds, getYaw()), openLoop);
     }
 
     public void drive(ChassisSpeeds speeds, boolean openLoop) {
@@ -730,9 +744,9 @@ public class Drive extends BlitzSubsystem {
     public void followTrajectory(SwerveSample sample) {
         Pose2d pos = getPose();
         ChassisSpeeds speeds = new ChassisSpeeds(
-                sample.vx + x.calculate(pose.getX(), sample.x),
-                sample.vy + y.calculate(pose.getY(), sample.y),
-                sample.omega + headingController.calculate(pose.getRotation().getRadians(), sample.heading)
+                sample.vx + xController.calculate(poseEstimator.getEstimatedPosition().getX(), sample.x),
+                sample.vy + yController.calculate(poseEstimator.getEstimatedPosition().getY(), sample.y),
+                sample.omega + choreoController.calculate(poseEstimator.getEstimatedPosition().getRotation().getRadians(), sample.heading)
         );
         driveFieldRelative(speeds);
     }
