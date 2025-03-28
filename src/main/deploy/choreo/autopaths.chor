@@ -195,6 +195,48 @@
      "val":0.0
     }
    },
+   "START_BB":{
+    "x":{
+     "exp":"START_CENTER.x",
+     "val":7.15
+    },
+    "y":{
+     "exp":"START_CENTER.y + 1.5 m",
+     "val":5.5259
+    },
+    "heading":{
+     "exp":"180 deg",
+     "val":3.141592653589793
+    }
+   },
+   "START_CENTER":{
+    "x":{
+     "exp":"7.15 m",
+     "val":7.15
+    },
+    "y":{
+     "exp":"FIELD_WIDTH / 2",
+     "val":4.0259
+    },
+    "heading":{
+     "exp":"180 deg",
+     "val":3.141592653589793
+    }
+   },
+   "START_RB":{
+    "x":{
+     "exp":"START_CENTER.x",
+     "val":7.15
+    },
+    "y":{
+     "exp":"START_CENTER.y - 1.5 m",
+     "val":2.5259
+    },
+    "heading":{
+     "exp":"180 deg",
+     "val":3.141592653589793
+    }
+   },
    "STATION_BB":{
     "x":{
      "exp":"STATION_RB.x",
