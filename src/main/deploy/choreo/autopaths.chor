@@ -3,7 +3,15 @@
  "version":1,
  "type":"Swerve",
  "variables":{
-  "expressions":{},
+  "expressions":{
+   "FIELD_WIDTH":{
+    "dimension":"Length",
+    "var":{
+     "exp":"317 in",
+     "val":8.0518
+    }
+   }
+  },
   "poses":{
    "A":{
     "x":{
@@ -185,6 +193,34 @@
     "heading":{
      "exp":"0 deg",
      "val":0.0
+    }
+   },
+   "STATION_BB":{
+    "x":{
+     "exp":"STATION_RB.x",
+     "val":1.2182204723358154
+    },
+    "y":{
+     "exp":"FIELD_WIDTH - STATION_RB.y",
+     "val":6.987565624046327
+    },
+    "heading":{
+     "exp":"-54 deg",
+     "val":-0.942477796076938
+    }
+   },
+   "STATION_RB":{
+    "x":{
+     "exp":"1.2182204723358154 m",
+     "val":1.2182204723358154
+    },
+    "y":{
+     "exp":"1.0642343759536743 m",
+     "val":1.0642343759536743
+    },
+    "heading":{
+     "exp":"54 deg",
+     "val":0.942477796076938
     }
    }
   }
