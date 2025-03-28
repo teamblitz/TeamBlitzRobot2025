@@ -29,5 +29,4 @@ public class CommandFactory {
                 .withName("handoff");
     }
 
-    public static Command autoScore
 }
