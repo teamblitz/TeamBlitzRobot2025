@@ -93,7 +93,7 @@ public class RobotContainer {
         startingPositionChooser.addOption("Left", StartingPosition.LEFT);
         startingPositionChooser.addOption("Right", StartingPosition.RIGHT);
 
-        autoCommands = new AutoCommands(drive, Constants.Drive.KINEMATICS);
+        autoCommands = new AutoCommands(drive);
 
         autoChooser.addDefaultOption("null", autoCommands.testDrive());
     }

@@ -50,8 +50,8 @@ public class AutoCommands {
     }
 
     public Command testDrive() {
-        final var routine = autoFactory.newRoutine("testDrive");
-        final var traj = routine.trajectory("testDrive");
+        final var routine = autoFactory.newRoutine("test");
+        final var traj = routine.trajectory("test");
 
         routine.active().whileTrue(Commands.sequence(traj.resetOdometry(), traj.cmd()));
         return routine.cmd();
