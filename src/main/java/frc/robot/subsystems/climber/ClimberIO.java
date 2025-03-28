@@ -5,9 +5,11 @@ import org.littletonrobotics.junction.AutoLog;
 public interface ClimberIO {
     @AutoLog
     public class ClimberInputs {
-        public double rpm;
+        public double velocity;
         public double position;
         public double current;
+
+        public double absolutePosition;
     }
 
     default void updateInputs(ClimberIO.ClimberInputs inputs) {}

@@ -543,13 +543,16 @@ public final class Constants {
         public static final double MAX_POS = Math.toRadians(270);
         public static final double MIN_POS = Math.toRadians(0);
 
+        public static final double ABS_ENCODER_ZERO = Units.rotationsToRadians(0.9178690729467268 - .75);
+        public static final int ABS_ENCODER_DIO_PORT = 1;
+
         public static final double DEPLOY_POSITION = Math.toRadians(105); // TODO CONFIG
         public static final double CLIMB_POSITION = Math.toRadians(230);
         public static final double RESTOW_POSITION = Math.toRadians(270);
 
         public static final double STARTING_POSITION = Math.toRadians(270);
 
-        public static final double EPSILON = Math.toRadians(2.5);
+        public static final double EPSILON = Math.toRadians(1);
 
         public static final double CLIMBER_GEAR_RATIO = (9 * 5 * 3) * (24.0 / 12.0);
 

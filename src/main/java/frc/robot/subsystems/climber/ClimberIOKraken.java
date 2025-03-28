@@ -8,6 +8,13 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DutyCycle;
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+import org.littletonrobotics.junction.Logger;
 
 public class ClimberIOKraken implements ClimberIO {
     public final TalonFX leftMotor;
@@ -17,9 +24,15 @@ public class ClimberIOKraken implements ClimberIO {
     public final MotionMagicVoltage motionMagic = new MotionMagicVoltage(0).withSlot(0);
     public final VoltageOut voltageOut = new VoltageOut(0).withEnableFOC(true);
 
+    public final DutyCycle rawAbsEncoder;
+    public final DutyCycleEncoder absEncoder;
+
     public ClimberIOKraken() {
         leftMotor = new TalonFX(LEFT_ID);
         rightMotor = new TalonFX(RIGHT_ID);
+
+        rawAbsEncoder = new DutyCycle(new DigitalInput(ABS_ENCODER_DIO_PORT));
+        absEncoder = new DutyCycleEncoder(rawAbsEncoder, 2 * Math.PI, ABS_ENCODER_ZERO);
 
         TalonFXConfiguration config = new TalonFXConfiguration();
 
@@ -48,6 +61,19 @@ public class ClimberIOKraken implements ClimberIO {
         leader = rightMotor;
 
         leader.setPosition(STARTING_POSITION);
+
+        new Trigger(absEncoder::isConnected).debounce(1).onTrue(
+                        Commands.runOnce(
+                                () -> {
+                                    if (absEncoder.isConnected())
+                                        leader.setPosition(getAbsPosition());
+                                })
+                .ignoringDisable(true)
+                                .withName("climber/seedPosition"));
+    }
+
+    private double getAbsPosition() {
+        return absEncoder.get();
     }
 
     @Override
@@ -67,7 +93,11 @@ public class ClimberIOKraken implements ClimberIO {
 
     public void updateInputs(ClimberInputs inputs) {
         inputs.position = leader.getPosition().getValueAsDouble();
-        inputs.rpm = leader.getVelocity().getValueAsDouble();
+        inputs.velocity = leader.getVelocity().getValueAsDouble();
+
+        inputs.absolutePosition = getAbsPosition();
+
+        Logger.recordOutput("climber/climberIOKraken/rawAbsEncoder", rawAbsEncoder.getOutput());
     }
 
     @Override
