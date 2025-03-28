@@ -12,6 +12,7 @@ import choreo.auto.AutoTrajectory;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import org.littletonrobotics.junction.Logger;
 
 
 public class AutoCommands {
@@ -28,7 +29,6 @@ public class AutoCommands {
         this.kinematics = Constants.Drive.KINEMATICS;
         theta.enableContinuousInput(-Math.PI, Math.PI);
 
-        var trajectory = Choreo.loadTrajectory("testDrive");
 
         autoFactory = new AutoFactory(
             drive::getPose,
@@ -53,8 +53,13 @@ public class AutoCommands {
         final var routine = autoFactory.newRoutine("test");
         final var traj = routine.trajectory("test");
 
-        routine.active().whileTrue(Commands.sequence(traj.resetOdometry(), traj.cmd()));
-        return routine.cmd();
+        routine.active().whileTrue(
+                Commands.sequence(
+                        traj.resetOdometry(),
+                        traj.cmd()
+                ).withName("auto/cmdSec")
+        );
+        return routine.cmd().withName("auto/test");
     }
 
 }

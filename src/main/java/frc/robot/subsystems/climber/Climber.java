@@ -81,7 +81,7 @@ public class Climber extends BlitzSubsystem {
 
         //        ShuffleboardTab climbTab = Shuffleboard.getTab("climber");
         //        climbTab.add(deployClimber());
-        //        climbTab.add(restowClimber());
+        //        climbTab.add(stowClimber());
         //        climbTab.add(climb());
     }
 
@@ -121,7 +121,7 @@ public class Climber extends BlitzSubsystem {
     public Command restowClimber() {
         return goToPosition(SupplierUtils.toRadians(restowPosition))
                 .andThen(() -> state = State.RESTOWED)
-                .withName(logKey + "/restowClimber");
+                .withName(logKey + "/stowClimber");
     }
 
     public Command setSpeed(double speed) {

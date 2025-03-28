@@ -310,36 +310,36 @@ public class Drive extends BlitzSubsystem {
                                 },
                                 null,
                                 this));
-
-        RobotConfig config;
-
-        try {
-            //            config = RobotConfig.fromGUISettings();
-            config = PHYSICAL_CONSTANTS;
-        } catch (Exception e) {
-            config = PHYSICAL_CONSTANTS;
-            DriverStation.reportError(
-                    "Failed to load PathPlanner config and configure AutoBuilder",
-                    e.getStackTrace());
-        }
-
-        AutoBuilder.configure(
-                this::getPose,
-                this::resetOdometry,
-                () -> KINEMATICS.toChassisSpeeds(getModuleStates()),
-                (speeds, feedforwards) -> {
-                    drive(speeds, true);
-                    Logger.recordOutput("drive/auto/speeds", speeds);
-                },
-                new PPHolonomicDriveController(
-                        AutoConstants.TRANSLATION_PID, AutoConstants.ROTATION_PID),
-                config,
-                () ->
-                        DriverStation.getAlliance().isPresent()
-                                && DriverStation.getAlliance()
-                                        .get()
-                                        .equals(DriverStation.Alliance.Red),
-                this);
+//
+//        RobotConfig config;
+//
+//        try {
+//            //            config = RobotConfig.fromGUISettings();
+//            config = PHYSICAL_CONSTANTS;
+//        } catch (Exception e) {
+//            config = PHYSICAL_CONSTANTS;
+//            DriverStation.reportError(
+//                    "Failed to load PathPlanner config and configure AutoBuilder",
+//                    e.getStackTrace());
+//        }
+//
+//        AutoBuilder.configure(
+//                this::getPose,
+//                this::resetOdometry,
+//                () -> KINEMATICS.toChassisSpeeds(getModuleStates()),
+//                (speeds, feedforwards) -> {
+//                    drive(speeds, true);
+//                    Logger.recordOutput("drive/auto/speeds", speeds);
+//                },
+//                new PPHolonomicDriveController(
+//                        AutoConstants.TRANSLATION_PID, AutoConstants.ROTATION_PID),
+//                config,
+//                () ->
+//                        DriverStation.getAlliance().isPresent()
+//                                && DriverStation.getAlliance()
+//                                        .get()
+//                                        .equals(DriverStation.Alliance.Red),
+//                this);
 
         // https://pathplanner.dev/pplib-swerve-setpoint-generator.html
         setpointGenerator =
@@ -745,6 +745,7 @@ public class Drive extends BlitzSubsystem {
 
 
     public void followTrajectory(SwerveSample sample) {
+        Logger.recordOutput("drive/choreoTrajectory", sample);
         choreoThetaController.enableContinuousInput(-Math.PI, Math.PI);
 
         ChassisSpeeds speeds = new ChassisSpeeds(
