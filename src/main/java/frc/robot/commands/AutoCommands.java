@@ -3,6 +3,7 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
+import frc.robot.Constants;
 import frc.robot.subsystems.drive.Drive;
 import choreo.Choreo;
 import choreo.auto.AutoFactory;
@@ -17,15 +18,14 @@ public class AutoCommands {
     private final Drive drive;
     private final SwerveDriveKinematics kinematics;
     private final AutoFactory autoFactory;
-    private final ChoreoTrajectory trajectory;
 
     private final PIDController x = new PIDController(0, 0, 0);
     private final PIDController y = new PIDController(0, 0, 0);
     private final PIDController theta = new PIDController(0, 0, 0);
 
-    public AutoCommands(Drive drive, SwerveDriveKinematics kinematics) {
+    public AutoCommands(Drive drive) {
         this.drive = drive;
-        this.kinematics = kinematics;
+        this.kinematics = Constants.Drive.KINEMATICS;
         theta.enableContinuousInput(-Math.PI, Math.PI);
 
         var trajectory = Choreo.loadTrajectory("testDrive");
