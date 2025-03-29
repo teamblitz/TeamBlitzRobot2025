@@ -525,14 +525,14 @@ public final class Constants {
 
         public static final int CURRENT_LIMIT = 25;
 
-        public static final double MATCH_FUNNEL_UP = 2.3;
-        public static final double MATCH_FUNNEL_DOWN = 0;
-        public static final double PIT_FUNNEL_STOW = 0.5;
-        public static final double EPSILON = 0.05;
+        public static final double MATCH_FUNNEL_UP = Units.degreesToRadians(63);
+        public static final double MATCH_FUNNEL_DOWN = Units.degreesToRadians(2);
+        public static final double PIT_FUNNEL_STOW = Units.degreesToRadians(20);
+        public static final double EPSILON = Units.degreesToRadians(2);
 
         public static final double WINCH_GEAR_RATIO = 25;
 
-        public static final double KP = 2;
+        public static final double KP = .5;
         public static final double MAX_OUT = .6;
     }
 

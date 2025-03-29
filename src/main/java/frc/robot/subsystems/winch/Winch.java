@@ -75,7 +75,7 @@ public class Winch extends BlitzSubsystem {
                 () -> io.setMotionProfile(position.getAsDouble()),
                 () -> {},
                 (interrupted) -> io.setSpeed(0),
-                () -> MathUtil.isNear(position.getAsDouble(), inputs.position, EPSILON),
+                () -> MathUtil.isNear(position.getAsDouble(), inputs.absPosition, EPSILON),
                 this);
     }
 
