@@ -584,7 +584,7 @@ public final class Constants {
         public static final List<RobotCamera> CAMERAS =
                 List.of(
                         new RobotCamera(// FRONT LEFT
-                                "OV2311_20.0",
+                                "Blitz_2_OV2311",
                                 new Transform3d(
                                     new Translation3d(
                                             // TODO, VERIFY
@@ -600,7 +600,7 @@ public final class Constants {
                                 )
                         ),
                         new RobotCamera(// FRONT RIGHT
-                                "OV2311_20.1",
+                                "Blitz_1_OV2311",
                                 new Transform3d(
                                         new Translation3d(
                                                 // TODO, VERIFY
