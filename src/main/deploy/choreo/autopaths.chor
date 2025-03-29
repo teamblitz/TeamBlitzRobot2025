@@ -195,20 +195,6 @@
      "val":0.0
     }
    },
-   "START_BB":{
-    "x":{
-     "exp":"START_CENTER.x",
-     "val":7.15
-    },
-    "y":{
-     "exp":"START_CENTER.y + 1.5 m",
-     "val":5.5259
-    },
-    "heading":{
-     "exp":"180 deg",
-     "val":3.141592653589793
-    }
-   },
    "START_CENTER":{
     "x":{
      "exp":"7.15 m",
@@ -223,7 +209,21 @@
      "val":3.141592653589793
     }
    },
-   "START_RB":{
+   "START_LEFT":{
+    "x":{
+     "exp":"START_CENTER.x",
+     "val":7.15
+    },
+    "y":{
+     "exp":"START_CENTER.y + 1.5 m",
+     "val":5.5259
+    },
+    "heading":{
+     "exp":"180 deg",
+     "val":3.141592653589793
+    }
+   },
+   "START_RIGHT":{
     "x":{
      "exp":"START_CENTER.x",
      "val":7.15
@@ -237,13 +237,13 @@
      "val":3.141592653589793
     }
    },
-   "STATION_BB":{
+   "STATION_LEFT":{
     "x":{
-     "exp":"STATION_RB.x",
+     "exp":"STATION_RIGHT.x",
      "val":1.2182204723358154
     },
     "y":{
-     "exp":"FIELD_WIDTH - STATION_RB.y",
+     "exp":"FIELD_WIDTH - STATION_RIGHT.y",
      "val":6.987565624046327
     },
     "heading":{
@@ -251,7 +251,7 @@
      "val":-0.942477796076938
     }
    },
-   "STATION_RB":{
+   "STATION_RIGHT":{
     "x":{
      "exp":"1.2182204723358154 m",
      "val":1.2182204723358154

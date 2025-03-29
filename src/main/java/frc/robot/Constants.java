@@ -571,4 +571,10 @@ public final class Constants {
         public static final double MAX_VEL_LOADED = .5;
         public static final double MAX_ACCEL_LOADED = 1;
     }
+
+    public static final class Auto {
+        public static final class Timings {
+            public static final double STOW_TO_L4_READY = .75; // IDK ACTUAL TIMINGS
+        }
+    }
 }

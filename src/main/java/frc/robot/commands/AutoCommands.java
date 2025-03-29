@@ -12,6 +12,7 @@ import choreo.auto.AutoTrajectory;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import frc.robot.subsystems.superstructure.Superstructure;
 import org.littletonrobotics.junction.Logger;
 import frc.robot.subsystems.superstructure.elevator.Elevator;
 import frc.robot.Constants;
@@ -22,19 +23,14 @@ public class AutoCommands {
     private final Drive drive;
     private final SwerveDriveKinematics kinematics;
     private final AutoFactory autoFactory;
-    private final Elevator elevator;
+    private final Superstructure superstructure;
     private final Intake intake;
 
-    private final PIDController x = new PIDController(0, 0, 0);
-    private final PIDController y = new PIDController(0, 0, 0);
-    private final PIDController theta = new PIDController(0, 0, 0);
-
-    public AutoCommands(Drive drive, Elevator elevator, Intake intake) {
+    public AutoCommands(Drive drive, Superstructure superstructure, Intake intake) {
         this.drive = drive;
-        this.elevator = elevator;
+        this.superstructure = superstructure;
         this.intake = intake;
         this.kinematics = Constants.Drive.KINEMATICS;
-        theta.enableContinuousInput(-Math.PI, Math.PI);
 
 
         autoFactory = new AutoFactory(
@@ -53,6 +49,8 @@ public class AutoCommands {
     public Command getNoAuto() {
         final var routine = autoFactory.newRoutine("None");
         routine.active().onTrue(Commands.print("Running No Auto"));
+
+
         return routine.cmd();
     }
 
@@ -66,17 +64,80 @@ public class AutoCommands {
                         traj.cmd()
                 ).withName("auto/cmdSec")
         );
+
+
         return routine.cmd().withName("auto/test");
     }
 
-    public AutoRoutine onePiece() {
-        AutoRoutine routine = autoFactory.newRoutine("onePiece");
+    public AutoRoutine twoPiece() {
+        AutoRoutine routine = autoFactory.newRoutine("twoPiece");
 
-        AutoTrajectory pickup = routine.trajectory("pickup");
-        AutoTrajectory score = routine.trajectory("score");
+        AutoTrajectory scoreInitial = routine.trajectory("twoPiece", 0);
+        AutoTrajectory toStation = routine.trajectory("twoPiece",1);
+        AutoTrajectory scoreSecond = routine.trajectory("twoPiece", 2);
+        AutoTrajectory gtfo = routine.trajectory("twoPiece", 3);
 
-        
+        scoreSecond.atTimeBeforeEnd(Constants.Auto.Timings.STOW_TO_L4_READY).onTrue(prepareL4());
 
+        routine.active().onTrue(
+                Commands.sequence(
+                        scoreInitial.resetOdometry(),
+                        scoreInitial.cmd()
+                )
+        );
+
+        scoreInitial.atTimeBeforeEnd(Constants.Auto.Timings.STOW_TO_L4_READY).onTrue(prepareL4());
+        scoreInitial.done().onTrue(
+                scoreL4().andThen(toStation.cmd()
+                )
+        );
+
+
+        toStation.active().onTrue(handoff());
+
+        toStation.chain(scoreSecond);
+
+
+        scoreSecond.atTimeBeforeEnd(Constants.Auto.Timings.STOW_TO_L4_READY)
+                        .onTrue(
+                                Commands.sequence(
+                                        Commands.waitUntil(intake::hasCoral),
+                                        prepareL4()
+                                ));
+
+        scoreSecond.done().onTrue(
+                Commands.sequence(
+                        Commands.waitUntil(superstructure.triggerAtGoal(Superstructure.Goal.L4)),
+                        scoreL4(),
+                        gtfo.cmd()
+                )
+        );
+
+
+
+        return routine;
+
+    }
+//
+//    public AutoRoutine fourPiece() {
+//        AutoRoutine routine = autoFactory.newRoutine("fourPiece");
+//
+//        AutoTrajectory pickup = routine.trajectory("pickup", 0);
+//    }
+
+    private Command scoreL4() {
+        return Commands.sequence(
+                superstructure.toGoal(Superstructure.Goal.L4),
+                CommandFactory.l4Plop(superstructure, intake)
+        );
+    }
+
+    private Command prepareL4() {
+        return superstructure.toGoalThenIdle(Superstructure.Goal.L4);
+    }
+
+    private Command handoff() {
+        return CommandFactory.handoff(superstructure, intake);
     }
 
 }
