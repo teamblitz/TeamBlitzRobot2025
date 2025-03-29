@@ -17,7 +17,7 @@ public class CommandFactory {
                 superstructure.toGoal(Superstructure.Goal.L4_PLOP),
                 intake.setSpeed(L4_PLOP)
                         .withDeadline(
-                                Commands.waitSeconds(.125)
+                                Commands.waitSeconds(0)
                                         .andThen(superstructure.toGoal(Superstructure.Goal.L4))));
     }
 

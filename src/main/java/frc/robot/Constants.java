@@ -399,9 +399,9 @@ public final class Constants {
 
 
         public static final double MAX_VELOCITY =
-                Constants.compBot() ? Units.rotationsToRadians(2) : Units.degreesToRadians(180);
+                Constants.compBot() ? Units.rotationsToRadians(4) : Units.degreesToRadians(180);
         public static final double MAX_ACCEL =
-                Constants.compBot() ? Units.rotationsToRadians(4) : Units.degreesToRadians(360);
+                Constants.compBot() ? Units.rotationsToRadians(8) : Units.degreesToRadians(360);
 
         public static final class PidGains {
             public static final double KP = 2;
@@ -586,17 +586,17 @@ public final class Constants {
                         new RobotCamera(// FRONT LEFT
                                 "Blitz_2_OV2311",
                                 new Transform3d(
-                                    new Translation3d(
-                                            // TODO, VERIFY
-                                            Inches.of(10.101652),
-                                            Inches.of(11.104033),
-                                            Inches.of(9.504322)
-                                    ),
-                                    new Rotation3d(
-                                            Degrees.of(0),
-                                            Degrees.of(-20),
-                                            Degrees.of(-20)
-                                    )
+                                        new Translation3d(
+                                                // TODO, VERIFY
+                                                Inches.of(10.101652),
+                                                Inches.of(11.104033),
+                                                Inches.of(9.504322)
+                                        ),
+                                        new Rotation3d(
+                                                Degrees.of(0),
+                                                Degrees.of(-20),
+                                                Degrees.of(-20)
+                                        )
                                 )
                         ),
                         new RobotCamera(// FRONT RIGHT
@@ -617,8 +617,9 @@ public final class Constants {
                         )
                 );
 
-
         public record RobotCamera(String name, Transform3d pose) {}
+    }
+
     public static final class Auto {
         public static final class Timings {
             public static final double STOW_TO_L4_READY = .75; // IDK ACTUAL TIMINGS

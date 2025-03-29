@@ -54,7 +54,7 @@ public class AutoCommands {
         return routine.cmd();
     }
 
-    public Command testDrive() {
+    public AutoRoutine testDrive() {
         final var routine = autoFactory.newRoutine("test");
         final var traj = routine.trajectory("test");
 
@@ -66,7 +66,7 @@ public class AutoCommands {
         );
 
 
-        return routine.cmd().withName("auto/test");
+        return routine;
     }
 
     public AutoRoutine twoPiece() {
