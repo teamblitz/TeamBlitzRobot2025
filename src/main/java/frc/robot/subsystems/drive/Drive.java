@@ -477,6 +477,7 @@ public class Drive extends BlitzSubsystem {
         drive(ChassisSpeeds.fromFieldRelativeSpeeds(speeds, getYaw()), openLoop);
     }
 
+
     public void drive(ChassisSpeeds speeds, boolean openLoop) {
         Logger.recordOutput("drive/requestedSpeeds", speeds);
 
@@ -485,24 +486,24 @@ public class Drive extends BlitzSubsystem {
 
         SwerveModuleState[] swerveModuleStates = KINEMATICS.toSwerveModuleStates(discretizedSpeeds);
 
-//        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, MAX_SPEED);
-//
-//                Logger.recordOutput(logKey + "/drivespeeds", speeds);
-//                Logger.recordOutput(logKey + "/driveopen", openLoop);
-//                // Note: it is important to not discretize speeds before or after
-//                // using the setpoint generator, as it will discretize them for you
-//                previousSetpoint =
-//                        setpointGenerator.generateSetpoint(
-//                                previousSetpoint, // The previous setpoint
-//                                speeds, // The desired target speeds
-//                                Constants.LOOP_PERIOD_SEC // The loop time of the robot code, in
-//                                );
-//
-//                Logger.recordOutput(logKey + "/setpoint/speeds",
-//         previousSetpoint.robotRelativeSpeeds());
-//                Logger.recordOutput(logKey + "/setpoint/states", previousSetpoint.moduleStates());
-//                Logger.recordOutput(logKey + "/setpoint/ff", previousSetpoint.feedforwards());
-//        previousSetpoint.feedforwards().
+        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, MAX_SPEED);
+
+                Logger.recordOutput(logKey + "/drivespeeds", speeds);
+                Logger.recordOutput(logKey + "/driveopen", openLoop);
+                // Note: it is important to not discretize speeds before or after
+                // using the setpoint generator, as it will discretize them for you
+                previousSetpoint =
+                        setpointGenerator.generateSetpoint(
+                                previousSetpoint, // The previous setpoint
+                                speeds, // The desired target speeds
+                                Constants.LOOP_PERIOD_SEC // The loop time of the robot code, in
+                                );
+
+                Logger.recordOutput(logKey + "/setpoint/speeds",
+         previousSetpoint.robotRelativeSpeeds());
+                Logger.recordOutput(logKey + "/setpoint/states", previousSetpoint.moduleStates());
+                Logger.recordOutput(logKey + "/setpoint/ff", previousSetpoint.feedforwards());
+
 
         setModuleStates(swerveModuleStates, openLoop, false, false);
     }

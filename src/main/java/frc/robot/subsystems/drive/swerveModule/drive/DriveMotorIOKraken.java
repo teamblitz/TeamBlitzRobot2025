@@ -45,12 +45,16 @@ public class DriveMotorIOKraken implements DriveMotorIO {
         motor.setControl(openLoopVoltage.withOutput(volts));
     }
 
+    double lastVelocity = 0;
+
     @Override
     public void setSetpoint(double setpoint, double ffVolts) {
+        double accel = (setpoint-lastVelocity) / Constants.LOOP_PERIOD_SEC;
+        lastVelocity = setpoint;
         Logger.recordOutput("drive/driveIOKraken/velocitySetpointMPS", setpoint);
         Logger.recordOutput("drive/driveIOKraken/velocitySetpointRPS", setpoint/ Constants.Drive.WHEEL_CIRCUMFERENCE);
         motor.setControl(
-                closedLoopVelocity.withVelocity(setpoint / Constants.Drive.WHEEL_CIRCUMFERENCE).withSlot(0));
+                closedLoopVelocity.withVelocity(setpoint / Constants.Drive.WHEEL_CIRCUMFERENCE).withAcceleration(accel).withSlot(0));
     }
 
     @Override
