@@ -323,10 +323,9 @@ public class Drive extends BlitzSubsystem {
                                                 "sysid-angular-drive", state.toString())),
                         new SysIdRoutine.Mechanism(
                                 (volts) -> {
-                                    for (SwerveModule module : swerveModules) {
-                                        module.setStatesVoltage(new SwerveModuleState(
-                                                volts.in(Volt), Rotation2d.fromDegrees(45)
-                                        ));
+                                    SwerveModuleState[] desiredStates = KINEMATICS.toSwerveModuleStates(new ChassisSpeeds(0, 0, volts.in(Volt)));
+                                    for (SwerveModule mod : swerveModules) {
+                                        mod.setStatesVoltage(desiredStates[mod.moduleNumber]);
                                     }
                                 },
                                 null,
