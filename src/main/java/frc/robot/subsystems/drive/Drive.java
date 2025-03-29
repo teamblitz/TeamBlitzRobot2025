@@ -686,21 +686,17 @@ public class Drive extends BlitzSubsystem {
 
     public Command linearAysIdQuasistatic(SysIdRoutine.Direction direction) {
 
-        Rotation2d rot = switch (direction) {
-            case kForward -> Rotation2d.kZero;
-            case kReverse -> Rotation2d.k180deg;
-        };
+        Rotation2d rot = Rotation2d.kZero;
 
         return Commands.sequence(
-                runOnce(() -> setModuleStates(
+                run(() -> setModuleStates(
                         new SwerveModuleState[]{
                                 new SwerveModuleState(0, rot),
                                 new SwerveModuleState(0, rot),
                                 new SwerveModuleState(0, rot),
                                 new SwerveModuleState(0, rot)
                         }, true, true, true
-                )),
-                Commands.waitSeconds(1),
+                )).withTimeout(1),
                 linearRoutine.quasistatic(direction)
 
         )
@@ -712,21 +708,17 @@ public class Drive extends BlitzSubsystem {
 
     public Command linearSysIdDynamic(SysIdRoutine.Direction direction) {
 
-        Rotation2d rot = switch (direction) {
-            case kForward -> Rotation2d.kZero;
-            case kReverse -> Rotation2d.k180deg;
-        };
+        Rotation2d rot =  Rotation2d.kZero;
 
         return Commands.sequence(
-                        runOnce(() -> setModuleStates(
+                        run(() -> setModuleStates(
                                 new SwerveModuleState[]{
                                         new SwerveModuleState(0, rot),
                                         new SwerveModuleState(0, rot),
                                         new SwerveModuleState(0, rot),
                                         new SwerveModuleState(0, rot)
                                 }, true, true, true
-                        )),
-                        Commands.waitSeconds(1),
+                        )).withTimeout(1),
                         linearRoutine.dynamic(direction)
 
                 )

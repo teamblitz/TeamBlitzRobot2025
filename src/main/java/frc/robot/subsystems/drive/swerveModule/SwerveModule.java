@@ -83,6 +83,8 @@ public class SwerveModule {
 
     // UNITS ARE BUT AN ILLUSION
     public void setStatesVoltage(SwerveModuleState desiredState) {
+        desiredState = ModuleStateOptimizer.optimize(desiredState, getState().angle);
+
         setAngle(desiredState, true, false);
         setVolts(desiredState.speedMetersPerSecond);
     }
