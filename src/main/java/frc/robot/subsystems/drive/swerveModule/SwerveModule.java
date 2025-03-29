@@ -81,6 +81,17 @@ public class SwerveModule {
         setSpeed(desiredState, isOpenLoop);
     }
 
+    // UNITS ARE BUT AN ILLUSION
+    public void setStatesVoltage(SwerveModuleState desiredState) {
+        setAngle(desiredState, true, false);
+        setVolts(desiredState.speedMetersPerSecond);
+    }
+
+    private void setVolts(double volts) {
+        driveMotor.setDriveVolts(volts);
+        Logger.recordOutput(logKey + "/driveVolts", volts);
+    }
+
     private void setSpeed(SwerveModuleState desiredState, boolean isOpenLoop) {
         if (isOpenLoop) {
             double percentOutput = desiredState.speedMetersPerSecond / Constants.Drive.MAX_SPEED;

@@ -5,6 +5,7 @@ import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.VelocityVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -16,6 +17,7 @@ public class DriveMotorIOKraken implements DriveMotorIO {
 
     private final VelocityVoltage closedLoopVelocity = new VelocityVoltage(0).withEnableFOC(true);
     private final DutyCycleOut openLoopDutyCycle = new DutyCycleOut(0).withEnableFOC(true);
+    private final VoltageOut openLoopVoltage = new VoltageOut(0).withEnableFOC(true);
     private boolean brakeEnabled = false;
 
     public DriveMotorIOKraken(SwerveModuleConstants moduleConstants) {
@@ -35,6 +37,11 @@ public class DriveMotorIOKraken implements DriveMotorIO {
     @Override
     public void setDrivePercent(double percent) {
         motor.setControl(openLoopDutyCycle.withOutput(percent));
+    }
+
+    @Override
+    public void setDriveVolts(double volts) {
+        motor.setControl(openLoopVoltage.withOutput(volts));
     }
 
     @Override
