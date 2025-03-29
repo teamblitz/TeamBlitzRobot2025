@@ -13,19 +13,26 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import org.littletonrobotics.junction.Logger;
+import frc.robot.subsystems.superstructure.elevator.Elevator;
+import frc.robot.Constants;
+import frc.robot.subsystems.intake.Intake;
 
 
 public class AutoCommands {
     private final Drive drive;
     private final SwerveDriveKinematics kinematics;
     private final AutoFactory autoFactory;
+    private final Elevator elevator;
+    private final Intake intake;
 
     private final PIDController x = new PIDController(0, 0, 0);
     private final PIDController y = new PIDController(0, 0, 0);
     private final PIDController theta = new PIDController(0, 0, 0);
 
-    public AutoCommands(Drive drive) {
+    public AutoCommands(Drive drive, Elevator elevator, Intake intake) {
         this.drive = drive;
+        this.elevator = elevator;
+        this.intake = intake;
         this.kinematics = Constants.Drive.KINEMATICS;
         theta.enableContinuousInput(-Math.PI, Math.PI);
 
@@ -60,6 +67,16 @@ public class AutoCommands {
                 ).withName("auto/cmdSec")
         );
         return routine.cmd().withName("auto/test");
+    }
+
+    public AutoRoutine onePiece() {
+        AutoRoutine routine = autoFactory.newRoutine("onePiece");
+
+        AutoTrajectory pickup = routine.trajectory("pickup");
+        AutoTrajectory score = routine.trajectory("score");
+
+        
+
     }
 
 }
