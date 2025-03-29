@@ -22,10 +22,10 @@
  "params":{
   "waypoints":[
     {"x":{"exp":"START_LEFT.x", "val":7.15}, "y":{"exp":"START_LEFT.y", "val":5.5259}, "heading":{"exp":"START_LEFT.heading", "val":3.141592653589793}, "intervals":54, "split":true, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
-    {"x":{"exp":"I.x", "val":5.304744243621826}, "y":{"exp":"I.y", "val":5.1019415855407715}, "heading":{"exp":"I.heading", "val":4.1887902047863905}, "intervals":50, "split":true, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
+    {"x":{"exp":"I.x", "val":5.330144243621826}, "y":{"exp":"I.y", "val":5.145935676053021}, "heading":{"exp":"I.heading", "val":4.1887902047863905}, "intervals":50, "split":true, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
     {"x":{"exp":"4.049324035644531 m", "val":4.049324035644531}, "y":{"exp":"5.968186855316162 m", "val":5.968186855316162}, "heading":{"exp":"0 deg", "val":0.0}, "intervals":76, "split":false, "fixTranslation":true, "fixHeading":false, "overrideIntervals":false},
     {"x":{"exp":"STATION_LEFT.x", "val":1.2182204723358154}, "y":{"exp":"STATION_LEFT.y", "val":6.987565624046327}, "heading":{"exp":"STATION_LEFT.heading", "val":-0.942477796076938}, "intervals":77, "split":true, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
-    {"x":{"exp":"K.x", "val":3.965139389038086}, "y":{"exp":"K.y", "val":5.26593542098999}, "heading":{"exp":"K.heading", "val":5.235987755982989}, "intervals":29, "split":true, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
+    {"x":{"exp":"K.x", "val":3.939739389038086}, "y":{"exp":"K.y", "val":5.30992951150224}, "heading":{"exp":"K.heading", "val":5.235987755982989}, "intervals":29, "split":true, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
     {"x":{"exp":"3.4963796138763428 m", "val":3.4963796138763428}, "y":{"exp":"6.072185516357422 m", "val":6.072185516357422}, "heading":{"exp":"-60 deg", "val":-1.0471975511965976}, "intervals":40, "split":true, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false}],
   "constraints":[
     {"from":"first", "to":"last", "data":{"type":"MaxAcceleration", "props":{"max":{"exp":"10 m / s ^ 2", "val":10.0}}}, "enabled":true},
