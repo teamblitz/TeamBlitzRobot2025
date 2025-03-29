@@ -383,16 +383,29 @@ public class Drive extends BlitzSubsystem {
                         DriveFeedforwards.zeros(PHYSICAL_CONSTANTS.numModules));
 
         tuningTab.add(
-                sysIdQuasistatic(SysIdRoutine.Direction.kForward)
-                        .withName("Drive Quasistic Forward"));
+                linearAysIdQuasistatic(SysIdRoutine.Direction.kForward)
+                        .withName("DriveLinear Quasistic Forward"));
         tuningTab.add(
-                sysIdQuasistatic(SysIdRoutine.Direction.kReverse)
-                        .withName("Drive Quasistic Reverse"));
+                linearAysIdQuasistatic(SysIdRoutine.Direction.kReverse)
+                        .withName("DriveLinear Quasistic Reverse"));
 
         tuningTab.add(
-                sysIdDynamic(SysIdRoutine.Direction.kForward).withName("Drive Dynamic Forward"));
+                linearSysIdDynamic(SysIdRoutine.Direction.kForward).withName("DriveLinear Dynamic Forward"));
         tuningTab.add(
-                sysIdDynamic(SysIdRoutine.Direction.kReverse).withName("Drive Dynamic Reverse"));
+                linearSysIdDynamic(SysIdRoutine.Direction.kReverse).withName("DriveLinear Dynamic Reverse"));
+
+
+        tuningTab.add(
+                angularSysIdQuasistatic(SysIdRoutine.Direction.kForward)
+                        .withName("DriveAngular Quasistic Forward"));
+        tuningTab.add(
+                angularSysIdQuasistatic(SysIdRoutine.Direction.kReverse)
+                        .withName("DriveAngular Quasistic Reverse"));
+
+        tuningTab.add(
+                angularSysIdDynamic(SysIdRoutine.Direction.kForward).withName("DriveAngular Dynamic Forward"));
+        tuningTab.add(
+                angularSysIdDynamic(SysIdRoutine.Direction.kReverse).withName("DriveAngular Dynamic Reverse"));
 
 
     }
@@ -669,19 +682,35 @@ public class Drive extends BlitzSubsystem {
                 .withName(logKey + "/zeroAbsEncoders");
     }
 
-    public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
+    public Command linearAysIdQuasistatic(SysIdRoutine.Direction direction) {
         return linearRoutine.quasistatic(direction)
                 .withName(
                         logKey
-                                + "/quasistatic"
+                                + "/linearQuasistatic"
                                 + (direction == SysIdRoutine.Direction.kForward ? "Fwd" : "Rev"));
     }
 
-    public Command sysIdDynamic(SysIdRoutine.Direction direction) {
+    public Command linearSysIdDynamic(SysIdRoutine.Direction direction) {
         return linearRoutine.dynamic(direction)
                 .withName(
                         logKey
-                                + "/dynamic"
+                                + "/linearDynamic"
+                                + (direction == SysIdRoutine.Direction.kForward ? "Fwd" : "Rev"));
+    }
+
+    public Command angularSysIdQuasistatic(SysIdRoutine.Direction direction) {
+        return linearRoutine.quasistatic(direction)
+                .withName(
+                        logKey
+                                + "/angularQuasistatic"
+                                + (direction == SysIdRoutine.Direction.kForward ? "Fwd" : "Rev"));
+    }
+
+    public Command angularSysIdDynamic(SysIdRoutine.Direction direction) {
+        return linearRoutine.quasistatic(direction)
+                .withName(
+                        logKey
+                                + "/angularDynamic"
                                 + (direction == SysIdRoutine.Direction.kForward ? "Fwd" : "Rev"));
     }
 
