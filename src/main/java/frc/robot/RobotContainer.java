@@ -7,19 +7,19 @@
 
 package frc.robot;
 
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.events.EventTrigger;
+import choreo.auto.AutoChooser;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.AutoConstants.StartingPosition;
+import frc.robot.commands.ClimbCommandFactory;
 import frc.robot.commands.CommandFactory;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.subsystems.climber.Climber;
@@ -51,6 +51,7 @@ import org.littletonrobotics.junction.Logger;
 import frc.robot.subsystems.vision.DriveToTagCommand;
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+import frc.robot.commands.AutoCommands;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -69,9 +70,10 @@ public class RobotContainer {
     private Superstructure superstructure;
     private Winch winch;
     private Climber climber;
+    private AutoCommands autoCommands;
 
     /* ***** --- Autonomous --- ***** */
-    private final LoggedDashboardChooser<Command> autoChooser;
+    private final AutoChooser autoChooser;
 
     private final LoggedDashboardChooser<StartingPosition> startingPositionChooser;
 
@@ -87,12 +89,21 @@ public class RobotContainer {
         Shuffleboard.getTab("Drive")
                 .add("ResetOdometry", Commands.runOnce(() -> drive.resetOdometry(new Pose2d())));
 
-        autoChooser = new LoggedDashboardChooser<>("autoChoice", AutoBuilder.buildAutoChooser());
+//        autoChooser = new LoggedDashboardChooser<>("autoChoice", autoCommands.getFactory().ch);
+        autoChooser = new AutoChooser();
+        SmartDashboard.putData("autoChooser", autoChooser);
+
+        autoCommands = new AutoCommands(drive, superstructure, intake);
+
+        autoChooser.addRoutine("twoPiece", autoCommands::twoPiece);
+        autoChooser.addRoutine("test", autoCommands::testDrive);
 
         startingPositionChooser = new LoggedDashboardChooser<>("startingPos");
         startingPositionChooser.addDefaultOption("Center", StartingPosition.CENTER);
         startingPositionChooser.addOption("Left", StartingPosition.LEFT);
         startingPositionChooser.addOption("Right", StartingPosition.RIGHT);
+
+
     }
 
     private void setDefaultCommands() {
@@ -104,7 +115,7 @@ public class RobotContainer {
                                 OIConstants.Drive.ROTATION_SPEED,
                                 () -> false,
                                 () -> Double.NaN,
-                                () -> climber.getState() != Climber.State.CLIMB)
+                                () -> climber.getState() != Climber.State.CLIMB).unless(RobotState::isTest).until(RobotState::isTest)
                         .withName("TeleopSwerve"));
 
         superstructure.setDefaultCommand(
@@ -248,9 +259,9 @@ public class RobotContainer {
         OIConstants.Climber.CLIMBER_UP_MAN.whileTrue(climber.setSpeed(.8));
         OIConstants.Climber.CLIMBER_DOWN_MAN.whileTrue(climber.setSpeed(-.8));
 
-        OIConstants.Climber.DEPLOY_CLIMBER.onTrue(CommandFactory.readyClimb(climber, winch));
+        OIConstants.Climber.DEPLOY_CLIMBER.onTrue(ClimbCommandFactory.deployClimber(climber, winch));
         OIConstants.Climber.RESTOW_CLIMBER.onTrue(
-                CommandFactory.restoreClimber(climber, winch)
+                ClimbCommandFactory.stowClimber(climber, winch)
                         .unless(() -> climber.getState() == Climber.State.CLIMB));
 
         OIConstants.SuperStructure.SCORE
@@ -270,25 +281,29 @@ public class RobotContainer {
     }
 
     private void configureAutoCommands() {
-        NamedCommands.registerCommand(
-                "score_l3",
-                superstructure
-                        .toGoal(Superstructure.Goal.L3)
-                        .andThen(intake.shoot_coral().withTimeout(1).asProxy()));
-
-        NamedCommands.registerCommand(
-                "score_l4", CommandFactory.l4Plop(superstructure, intake).asProxy());
-
-        new EventTrigger("ready_l4").onTrue(superstructure.toGoalThenIdle(Superstructure.Goal.L4));
+//        NamedCommands.registerCommand(
+//                "score_l3",
+//                superstructure
+//                        .toGoal(Superstructure.Goal.L3)
+//                        .andThen(intake.shoot_coral().withTimeout(1).asProxy()));
+//
+//        NamedCommands.registerCommand(
+//                "score_l4", CommandFactory.l4Plop(superstructure, intake).asProxy());
+//
+//        new EventTrigger("ready_l4").onTrue(superstructure.toGoalThenIdle(Superstructure.Goal.L4));
         //        new EventTrigger("score_l4").onTrue(
         //       Trigger("handoff").onTrue(CommandFactory.handoff(superstructure, intake));
     }
 
     public Command getAutonomousCommand() {
-        Logger.recordOutput("selectedAuto", autoChooser.get().getName());
+        Logger.recordOutput("selectedAuto", autoChooser.selectedCommand().getName());
         return Commands.sequence(
-                        Commands.runOnce(() -> drive.setGyro(180)),
-                        Commands.parallel(winch.lowerFunnel(), autoChooser.get().asProxy()))
-                .withName("autonomousCommand");
+                Commands.runOnce(() -> drive.setGyro(180)),
+                autoChooser.selectedCommand()
+        );
+//        return Commands.sequence(
+//                        Commands.runOnce(() -> drive.setGyro(180)),
+//                        Commands.parallel(winch.lowerFunnel(), autoChooser.get().asProxy()))
+//                .withName("autonomousCommand");
     }
 }

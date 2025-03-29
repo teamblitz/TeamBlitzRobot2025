@@ -176,14 +176,14 @@ public final class Constants {
          * try both or else just guess and check ig
          * .06 something might, but that is quite high
          */
-        public static final double DRIVE_KP = compBot() ? 3.8342 : 0.028215;
+        public static final double DRIVE_KP = compBot() ? 0.73983 : 0.028215;
         public static final double DRIVE_KI = 0.0;
         public static final double DRIVE_KD = 0.0;
 
         /* Drive Motor Characterization Values in volts*/
-        public static final double DRIVE_KS = compBot() ? 0.11193 : (0.19714);
-        public static final double DRIVE_KV = compBot() ? 2.5025 : (2.6198);
-        public static final double DRIVE_KA = compBot() ? 0.55717 : (0.59488);
+        public static final double DRIVE_KS = compBot() ? 0.179124 : (0.19714);
+        public static final double DRIVE_KV = compBot() ? 0.7389575 : (2.6198);
+        public static final double DRIVE_KA = compBot() ? 0.14679 : (0.59488);
 
         /* Drive Profiling Values */
         /** Meters per Second */
@@ -619,5 +619,9 @@ public final class Constants {
 
 
         public record RobotCamera(String name, Transform3d pose) {}
+    public static final class Auto {
+        public static final class Timings {
+            public static final double STOW_TO_L4_READY = .75; // IDK ACTUAL TIMINGS
+        }
     }
 }

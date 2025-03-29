@@ -105,6 +105,8 @@ public class Robot extends LoggedRobot {
         Logger.registerURCL(URCL.startExternal());
         Logger.start();
 
+        SignalLogger.enableAutoLogging(true);
+
         // Log active commands
         Map<String, Integer> commandCounts = new HashMap<>();
         BiConsumer<Command, Boolean> logCommandFunction =
@@ -142,7 +144,6 @@ public class Robot extends LoggedRobot {
 
         robotContainer = new RobotContainer();
 
-        SignalLogger.setPath("/media/sda1/");
     }
 
     long robotPeriodicNano = System.nanoTime();
@@ -214,6 +215,7 @@ public class Robot extends LoggedRobot {
         // Cancels all running commands at the start of test mode.
         CommandScheduler.getInstance().cancelAll();
 
+        SignalLogger.setPath("/media/sda1/");
         System.out.println("STARTING SIGNAL LOGGER");
         SignalLogger.start();
     }
@@ -221,7 +223,7 @@ public class Robot extends LoggedRobot {
     @Override
     public void testExit() {
         System.out.println("STOPPING SIGNAL LOGGER");
-        SignalLogger.stop();
+        System.out.println(SignalLogger.stop().getName());
     }
 
     /* ***** --- Simulation --- ***** */

@@ -5,6 +5,7 @@ import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.VelocityVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -16,6 +17,7 @@ public class DriveMotorIOKraken implements DriveMotorIO {
 
     private final VelocityVoltage closedLoopVelocity = new VelocityVoltage(0).withEnableFOC(true);
     private final DutyCycleOut openLoopDutyCycle = new DutyCycleOut(0).withEnableFOC(true);
+    private final VoltageOut openLoopVoltage = new VoltageOut(0).withEnableFOC(true);
     private boolean brakeEnabled = false;
 
     public DriveMotorIOKraken(SwerveModuleConstants moduleConstants) {
@@ -27,8 +29,8 @@ public class DriveMotorIOKraken implements DriveMotorIO {
 
     @Override
     public void updateInputs(DriveMotorIO.DriveMotorInputs inputs) {
-        inputs.position = motor.getPosition().getValueAsDouble();
-        inputs.velocity = motor.getVelocity().getValueAsDouble();
+        inputs.position = motor.getPosition().getValueAsDouble() * Constants.Drive.WHEEL_CIRCUMFERENCE;
+        inputs.velocity = motor.getVelocity().getValueAsDouble() * Constants.Drive.WHEEL_CIRCUMFERENCE;
         inputs.volts = motor.getMotorVoltage().getValueAsDouble();
     }
 
@@ -38,9 +40,14 @@ public class DriveMotorIOKraken implements DriveMotorIO {
     }
 
     @Override
+    public void setDriveVolts(double volts) {
+        motor.setControl(openLoopVoltage.withOutput(volts));
+    }
+
+    @Override
     public void setSetpoint(double setpoint, double ffVolts) {
         motor.setControl(
-                closedLoopVelocity.withVelocity(setpoint).withSlot(0).withFeedForward(ffVolts));
+                closedLoopVelocity.withVelocity(setpoint / Constants.Drive.WHEEL_CIRCUMFERENCE).withSlot(0).withFeedForward(ffVolts));
     }
 
     @Override
@@ -68,7 +75,14 @@ public class DriveMotorIOKraken implements DriveMotorIO {
                 .withStatorCurrentLimit(Constants.Drive.CurrentLimits.Kraken.DRIVE_STATOR);
 
         config.Feedback.withSensorToMechanismRatio(
-                Constants.Drive.DRIVE_GEAR_RATIO * (1 / Constants.Drive.WHEEL_CIRCUMFERENCE));
+                Constants.Drive.DRIVE_GEAR_RATIO);
+
+        config.Slot0
+                .withKP(Constants.Drive.DRIVE_KP)
+                .withKD(Constants.Drive.DRIVE_KD)
+                .withKS(Constants.Drive.DRIVE_KS)
+                .withKV(Constants.Drive.DRIVE_KV)
+                .withKA(Constants.Drive.DRIVE_KA);
 
         motor.getConfigurator().apply(config);
 

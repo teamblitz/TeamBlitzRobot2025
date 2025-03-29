@@ -6,13 +6,11 @@ import static edu.wpi.first.units.Units.*;
 import static frc.robot.Constants.Drive.*;
 
 import com.ctre.phoenix6.SignalLogger;
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.config.RobotConfig;
-import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.util.DriveFeedforwards;
 import com.pathplanner.lib.util.swerve.SwerveSetpoint;
 import com.pathplanner.lib.util.swerve.SwerveSetpointGenerator;
 import edu.wpi.first.math.VecBuilder;
+import choreo.trajectory.SwerveSample;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -42,7 +40,6 @@ import frc.lib.util.LimelightHelpers;
 import frc.lib.util.LoggedTunableNumber;
 import frc.lib.util.SwerveModuleConstants;
 import frc.robot.Constants;
-import frc.robot.Constants.AutoConstants;
 import frc.robot.subsystems.drive.control.*;
 import frc.robot.subsystems.drive.gyro.GyroIO;
 import frc.robot.subsystems.drive.gyro.GyroIOInputsAutoLogged;
@@ -92,7 +89,8 @@ public class Drive extends BlitzSubsystem {
     private final PIDController keepHeadingPid;
     private final ProfiledPIDController rotateToHeadingPid;
 
-    private final SysIdRoutine routine;
+    private SysIdRoutine linearRoutine;
+    private SysIdRoutine angularRoutine;
 
     private double lastVisionTimeStamp;
 
@@ -111,6 +109,7 @@ public class Drive extends BlitzSubsystem {
     private ChassisSpeedController velocityController = null;
     private ChassisSpeedFilter velocityFilter = null;
     private HeadingController headingController = null;
+
 
     public Command setControl(ChassisSpeedController velocityController) {
         return Commands.startEnd(
@@ -283,12 +282,12 @@ public class Drive extends BlitzSubsystem {
         //        }
 
         // Creates a SysIdRoutine
-        routine =
+        linearRoutine =
                 new SysIdRoutine(
                         new SysIdRoutine.Config(
                                 null,
                                 null,
-                                Seconds.of(5),
+                                Seconds.of(10),
                                 Constants.compBot()
                                         ? (state) ->
                                                 SignalLogger.writeString(
@@ -296,46 +295,73 @@ public class Drive extends BlitzSubsystem {
                                                         state.toString())
                                         : (state) ->
                                                 Logger.recordOutput(
-                                                        "SysIdTestState", state.toString())),
+                                                        "sysid-angular drive", state.toString())),
                         new SysIdRoutine.Mechanism(
                                 (volts) -> {
-                                    drive(
-                                            new ChassisSpeeds(volts.in(Volts) / 12.0, 0, 0)
-                                                    .times(MAX_SPEED),
-                                            true);
+                                    var speeds = ChassisSpeeds.fromFieldRelativeSpeeds(new ChassisSpeeds(volts.in(Volt), 0, 0), getYaw());
+
+
+                                    SwerveModuleState[] desiredStates = KINEMATICS.toSwerveModuleStates(speeds);
+                                    for (SwerveModule mod : swerveModules) {
+                                        mod.setStatesVoltage(desiredStates[mod.moduleNumber]);
+                                    }
                                 },
                                 null,
                                 this));
 
-        RobotConfig config;
-
-        try {
-            //            config = RobotConfig.fromGUISettings();
-            config = PHYSICAL_CONSTANTS;
-        } catch (Exception e) {
-            config = PHYSICAL_CONSTANTS;
-            DriverStation.reportError(
-                    "Failed to load PathPlanner config and configure AutoBuilder",
-                    e.getStackTrace());
-        }
-
-        AutoBuilder.configure(
-                this::getPose,
-                this::resetOdometry,
-                () -> KINEMATICS.toChassisSpeeds(getModuleStates()),
-                (speeds, feedforwards) -> {
-                    drive(speeds, true);
-                    Logger.recordOutput("drive/auto/speeds", speeds);
-                },
-                new PPHolonomicDriveController(
-                        AutoConstants.TRANSLATION_PID, AutoConstants.ROTATION_PID),
-                config,
-                () ->
-                        DriverStation.getAlliance().isPresent()
-                                && DriverStation.getAlliance()
-                                        .get()
-                                        .equals(DriverStation.Alliance.Red),
-                this);
+        angularRoutine =
+                new SysIdRoutine(
+                        new SysIdRoutine.Config(
+                                null,
+                                null,
+                                Seconds.of(10),
+                                Constants.compBot()
+                                        ? (state) ->
+                                        SignalLogger.writeString(
+                                                "sysid-drive-angular-state",
+                                                state.toString())
+                                        : (state) ->
+                                        Logger.recordOutput(
+                                                "sysid-angular-drive", state.toString())),
+                        new SysIdRoutine.Mechanism(
+                                (volts) -> {
+                                    SwerveModuleState[] desiredStates = KINEMATICS.toSwerveModuleStates(new ChassisSpeeds(0, 0, volts.in(Volt)));
+                                    for (SwerveModule mod : swerveModules) {
+                                        mod.setStatesVoltage(desiredStates[mod.moduleNumber]);
+                                    }
+                                },
+                                null,
+                                this));
+//
+//        RobotConfig config;
+//
+//        try {
+//            //            config = RobotConfig.fromGUISettings();
+//            config = PHYSICAL_CONSTANTS;
+//        } catch (Exception e) {
+//            config = PHYSICAL_CONSTANTS;
+//            DriverStation.reportError(
+//                    "Failed to load PathPlanner config and configure AutoBuilder",
+//                    e.getStackTrace());
+//        }
+//
+//        AutoBuilder.configure(
+//                this::getPose,
+//                this::resetOdometry,
+//                () -> KINEMATICS.toChassisSpeeds(getModuleStates()),
+//                (speeds, feedforwards) -> {
+//                    drive(speeds, true);
+//                    Logger.recordOutput("drive/auto/speeds", speeds);
+//                },
+//                new PPHolonomicDriveController(
+//                        AutoConstants.TRANSLATION_PID, AutoConstants.ROTATION_PID),
+//                config,
+//                () ->
+//                        DriverStation.getAlliance().isPresent()
+//                                && DriverStation.getAlliance()
+//                                        .get()
+//                                        .equals(DriverStation.Alliance.Red),
+//                this);
 
         // https://pathplanner.dev/pplib-swerve-setpoint-generator.html
         setpointGenerator =
@@ -359,16 +385,31 @@ public class Drive extends BlitzSubsystem {
                         DriveFeedforwards.zeros(PHYSICAL_CONSTANTS.numModules));
 
         tuningTab.add(
-                sysIdQuasistatic(SysIdRoutine.Direction.kForward)
-                        .withName("Drive Quasistic Forward"));
+                linearAysIdQuasistatic(SysIdRoutine.Direction.kForward)
+                        .withName("DriveLinear Quasistic Forward"));
         tuningTab.add(
-                sysIdQuasistatic(SysIdRoutine.Direction.kReverse)
-                        .withName("Drive Quasistic Reverse"));
+                linearAysIdQuasistatic(SysIdRoutine.Direction.kReverse)
+                        .withName("DriveLinear Quasistic Reverse"));
 
         tuningTab.add(
-                sysIdDynamic(SysIdRoutine.Direction.kForward).withName("Drive Dynamic Forward"));
+                linearSysIdDynamic(SysIdRoutine.Direction.kForward).withName("DriveLinear Dynamic Forward"));
         tuningTab.add(
-                sysIdDynamic(SysIdRoutine.Direction.kReverse).withName("Drive Dynamic Reverse"));
+                linearSysIdDynamic(SysIdRoutine.Direction.kReverse).withName("DriveLinear Dynamic Reverse"));
+
+
+        tuningTab.add(
+                angularSysIdQuasistatic(SysIdRoutine.Direction.kForward)
+                        .withName("DriveAngular Quasistic Forward"));
+        tuningTab.add(
+                angularSysIdQuasistatic(SysIdRoutine.Direction.kReverse)
+                        .withName("DriveAngular Quasistic Reverse"));
+
+        tuningTab.add(
+                angularSysIdDynamic(SysIdRoutine.Direction.kForward).withName("DriveAngular Dynamic Forward"));
+        tuningTab.add(
+                angularSysIdDynamic(SysIdRoutine.Direction.kReverse).withName("DriveAngular Dynamic Reverse"));
+
+
     }
 
     public void drive(
@@ -430,30 +471,36 @@ public class Drive extends BlitzSubsystem {
         drive(robotRel, isOpenLoop);
     }
 
+
+    // PUsh changes and let me try localy.
+    public void driveFieldRelative(ChassisSpeeds speeds, boolean openLoop) {
+        drive(ChassisSpeeds.fromFieldRelativeSpeeds(speeds, getYaw()), openLoop);
+    }
+
     public void drive(ChassisSpeeds speeds, boolean openLoop) {
         ChassisSpeeds discretizedSpeeds =
                 ChassisSpeeds.discretize(speeds, Constants.LOOP_PERIOD_SEC);
 
         SwerveModuleState[] swerveModuleStates = KINEMATICS.toSwerveModuleStates(discretizedSpeeds);
 
-        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, MAX_SPEED);
-
-        //        Logger.recordOutput(logKey + "/drivespeeds", speeds);
-        //        Logger.recordOutput(logKey + "/driveopen", openLoop);
-        //        // Note: it is important to not discretize speeds before or after
-        //        // using the setpoint generator, as it will discretize them for you
-        //        previousSetpoint =
-        //                setpointGenerator.generateSetpoint(
-        //                        previousSetpoint, // The previous setpoint
-        //                        speeds, // The desired target speeds
-        //                        Constants.LOOP_PERIOD_SEC // The loop time of the robot code, in
-        // seconds
-        //                        );
-        //
-        //        Logger.recordOutput(logKey + "/setpoint/speeds",
-        // previousSetpoint.robotRelativeSpeeds());
-        //        Logger.recordOutput(logKey + "/setpoint/states", previousSetpoint.moduleStates());
-        //        Logger.recordOutput(logKey + "/setpoint/ff", previousSetpoint.feedforwards());
+//        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, MAX_SPEED);
+//
+//                Logger.recordOutput(logKey + "/drivespeeds", speeds);
+//                Logger.recordOutput(logKey + "/driveopen", openLoop);
+//                // Note: it is important to not discretize speeds before or after
+//                // using the setpoint generator, as it will discretize them for you
+//                previousSetpoint =
+//                        setpointGenerator.generateSetpoint(
+//                                previousSetpoint, // The previous setpoint
+//                                speeds, // The desired target speeds
+//                                Constants.LOOP_PERIOD_SEC // The loop time of the robot code, in
+//                                );
+//
+//                Logger.recordOutput(logKey + "/setpoint/speeds",
+//         previousSetpoint.robotRelativeSpeeds());
+//                Logger.recordOutput(logKey + "/setpoint/states", previousSetpoint.moduleStates());
+//                Logger.recordOutput(logKey + "/setpoint/ff", previousSetpoint.feedforwards());
+//        previousSetpoint.feedforwards().
 
         setModuleStates(swerveModuleStates, openLoop, false, false);
     }
@@ -645,19 +692,63 @@ public class Drive extends BlitzSubsystem {
                 .withName(logKey + "/zeroAbsEncoders");
     }
 
-    public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-        return routine.quasistatic(direction)
+    public Command linearAysIdQuasistatic(SysIdRoutine.Direction direction) {
+
+        Rotation2d rot = Rotation2d.kZero;
+
+        return Commands.sequence(
+                run(() -> setModuleStates(
+                        new SwerveModuleState[]{
+                                new SwerveModuleState(0, rot),
+                                new SwerveModuleState(0, rot),
+                                new SwerveModuleState(0, rot),
+                                new SwerveModuleState(0, rot)
+                        }, true, true, true
+                )).withTimeout(1),
+                linearRoutine.quasistatic(direction)
+
+        )
                 .withName(
                         logKey
-                                + "/quasistatic"
+                                + "/linearQuasistatic"
                                 + (direction == SysIdRoutine.Direction.kForward ? "Fwd" : "Rev"));
     }
 
-    public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-        return routine.dynamic(direction)
+    public Command linearSysIdDynamic(SysIdRoutine.Direction direction) {
+
+        Rotation2d rot =  Rotation2d.kZero;
+
+        return Commands.sequence(
+                        run(() -> setModuleStates(
+                                new SwerveModuleState[]{
+                                        new SwerveModuleState(0, rot),
+                                        new SwerveModuleState(0, rot),
+                                        new SwerveModuleState(0, rot),
+                                        new SwerveModuleState(0, rot)
+                                }, true, true, true
+                        )).withTimeout(1),
+                        linearRoutine.dynamic(direction)
+
+                )
                 .withName(
                         logKey
-                                + "/dynamic"
+                                + "/linearDynamic"
+                                + (direction == SysIdRoutine.Direction.kForward ? "Fwd" : "Rev"));
+    }
+
+    public Command angularSysIdQuasistatic(SysIdRoutine.Direction direction) {
+        return linearRoutine.quasistatic(direction)
+                .withName(
+                        logKey
+                                + "/angularQuasistatic"
+                                + (direction == SysIdRoutine.Direction.kForward ? "Fwd" : "Rev"));
+    }
+
+    public Command angularSysIdDynamic(SysIdRoutine.Direction direction) {
+        return linearRoutine.quasistatic(direction)
+                .withName(
+                        logKey
+                                + "/angularDynamic"
                                 + (direction == SysIdRoutine.Direction.kForward ? "Fwd" : "Rev"));
     }
 
@@ -709,5 +800,23 @@ public class Drive extends BlitzSubsystem {
 
     public Optional<Pose2d> samplePreviousPose(double timestamp) {
         return poseEstimator.sampleAt(timestamp);
+    }
+
+
+    private final PIDController xController = new PIDController(5,0,0);
+    private final PIDController yController = new PIDController(5,0,0);
+    private final PIDController choreoThetaController = new PIDController(5, 0, 0);
+
+
+    public void followTrajectory(SwerveSample sample) {
+        Logger.recordOutput("drive/choreoTrajectory", sample);
+        choreoThetaController.enableContinuousInput(-Math.PI, Math.PI);
+
+        ChassisSpeeds speeds = new ChassisSpeeds(
+                sample.vx + xController.calculate(poseEstimator.getEstimatedPosition().getX(), sample.x),
+                sample.vy + yController.calculate(poseEstimator.getEstimatedPosition().getY(), sample.y),
+                sample.omega + choreoThetaController.calculate(poseEstimator.getEstimatedPosition().getRotation().getRadians(), sample.heading)
+        );
+        driveFieldRelative(speeds, false);
     }
 }

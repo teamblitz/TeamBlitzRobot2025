@@ -1,0 +1,33 @@
+{
+ "name":"REEF_APPR",
+ "version":1,
+ "snapshot":{
+  "waypoints":[],
+  "constraints":[],
+  "targetDt":0.05
+ },
+ "params":{
+  "waypoints":[
+    {"x":{"exp":"I_APPR.x", "val":5.4547442436218265}, "y":{"exp":"I_APPR.y", "val":5.361749206676103}, "heading":{"exp":"I_APPR.heading", "val":4.1887902047863905}, "intervals":40, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
+    {"x":{"exp":"J_APPR.x", "val":5.168460273742676}, "y":{"exp":"J_APPR.y", "val":5.525743042125322}, "heading":{"exp":"J_APPR.heading", "val":4.1887902047863905}, "intervals":40, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
+    {"x":{"exp":"K_APPR.x", "val":3.815139389038086}, "y":{"exp":"K_APPR.y", "val":5.525743042125322}, "heading":{"exp":"K_APPR.heading", "val":5.235987755982989}, "intervals":40, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
+    {"x":{"exp":"L_APPR.x", "val":3.5288554191589356}, "y":{"exp":"L_APPR.y", "val":5.361749206676103}, "heading":{"exp":"L_APPR.heading", "val":5.235987755982989}, "intervals":40, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
+    {"x":{"exp":"A_APPR.x", "val":2.8590378284454347}, "y":{"exp":"A_APPR.y", "val":4.194949150085449}, "heading":{"exp":"A_APPR.heading", "val":0.0}, "intervals":40, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
+    {"x":{"exp":"B_APPR.x", "val":2.8590378284454347}, "y":{"exp":"B_APPR.y", "val":3.8579721450805664}, "heading":{"exp":"B_APPR.heading", "val":0.0}, "intervals":40, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false}],
+  "constraints":[
+    {"from":"first", "to":null, "data":{"type":"StopPoint", "props":{}}, "enabled":true},
+    {"from":"last", "to":null, "data":{"type":"StopPoint", "props":{}}, "enabled":true},
+    {"from":"first", "to":"last", "data":{"type":"KeepInRectangle", "props":{"x":{"exp":"0 m", "val":0.0}, "y":{"exp":"0 m", "val":0.0}, "w":{"exp":"17.548 m", "val":17.548}, "h":{"exp":"8.052 m", "val":8.052}}}, "enabled":false}],
+  "targetDt":{
+   "exp":"0.05 s",
+   "val":0.05
+  }
+ },
+ "trajectory":{
+  "sampleType":null,
+  "waypoints":[],
+  "samples":[],
+  "splits":[]
+ },
+ "events":[]
+}
