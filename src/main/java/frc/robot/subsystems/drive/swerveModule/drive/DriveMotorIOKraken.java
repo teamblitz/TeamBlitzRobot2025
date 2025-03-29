@@ -29,8 +29,8 @@ public class DriveMotorIOKraken implements DriveMotorIO {
 
     @Override
     public void updateInputs(DriveMotorIO.DriveMotorInputs inputs) {
-        inputs.position = motor.getPosition().getValueAsDouble();
-        inputs.velocity = motor.getVelocity().getValueAsDouble();
+        inputs.position = motor.getPosition().getValueAsDouble() * Constants.Drive.WHEEL_CIRCUMFERENCE;
+        inputs.velocity = motor.getVelocity().getValueAsDouble() * Constants.Drive.WHEEL_CIRCUMFERENCE;
         inputs.volts = motor.getMotorVoltage().getValueAsDouble();
     }
 
@@ -47,7 +47,7 @@ public class DriveMotorIOKraken implements DriveMotorIO {
     @Override
     public void setSetpoint(double setpoint, double ffVolts) {
         motor.setControl(
-                closedLoopVelocity.withVelocity(setpoint).withSlot(0).withFeedForward(ffVolts));
+                closedLoopVelocity.withVelocity(setpoint / Constants.Drive.WHEEL_CIRCUMFERENCE).withSlot(0).withFeedForward(ffVolts));
     }
 
     @Override
@@ -75,7 +75,7 @@ public class DriveMotorIOKraken implements DriveMotorIO {
                 .withStatorCurrentLimit(Constants.Drive.CurrentLimits.Kraken.DRIVE_STATOR);
 
         config.Feedback.withSensorToMechanismRatio(
-                Constants.Drive.DRIVE_GEAR_RATIO * (1 / Constants.Drive.WHEEL_CIRCUMFERENCE));
+                Constants.Drive.DRIVE_GEAR_RATIO);
 
         motor.getConfigurator().apply(config);
 

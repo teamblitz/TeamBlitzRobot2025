@@ -287,7 +287,7 @@ public class Drive extends BlitzSubsystem {
                         new SysIdRoutine.Config(
                                 null,
                                 null,
-                                Seconds.of(5),
+                                Seconds.of(10),
                                 Constants.compBot()
                                         ? (state) ->
                                                 SignalLogger.writeString(
@@ -298,10 +298,12 @@ public class Drive extends BlitzSubsystem {
                                                         "sysid-angular drive", state.toString())),
                         new SysIdRoutine.Mechanism(
                                 (volts) -> {
-                                    for (SwerveModule module : swerveModules) {
-                                        module.setStatesVoltage(new SwerveModuleState(
-                                                volts.in(Volt), Rotation2d.fromDegrees(0)
-                                        ));
+                                    var speeds = ChassisSpeeds.fromFieldRelativeSpeeds(new ChassisSpeeds(volts.in(Volt), 0, 0), getYaw());
+
+
+                                    SwerveModuleState[] desiredStates = KINEMATICS.toSwerveModuleStates(speeds);
+                                    for (SwerveModule mod : swerveModules) {
+                                        mod.setStatesVoltage(desiredStates[mod.moduleNumber]);
                                     }
                                 },
                                 null,
@@ -312,7 +314,7 @@ public class Drive extends BlitzSubsystem {
                         new SysIdRoutine.Config(
                                 null,
                                 null,
-                                Seconds.of(5),
+                                Seconds.of(10),
                                 Constants.compBot()
                                         ? (state) ->
                                         SignalLogger.writeString(
@@ -683,7 +685,25 @@ public class Drive extends BlitzSubsystem {
     }
 
     public Command linearAysIdQuasistatic(SysIdRoutine.Direction direction) {
-        return linearRoutine.quasistatic(direction)
+
+        Rotation2d rot = switch (direction) {
+            case kForward -> Rotation2d.kZero;
+            case kReverse -> Rotation2d.k180deg;
+        };
+
+        return Commands.sequence(
+                runOnce(() -> setModuleStates(
+                        new SwerveModuleState[]{
+                                new SwerveModuleState(0, rot),
+                                new SwerveModuleState(0, rot),
+                                new SwerveModuleState(0, rot),
+                                new SwerveModuleState(0, rot)
+                        }, true, true, true
+                )),
+                Commands.waitSeconds(1),
+                linearRoutine.quasistatic(direction)
+
+        )
                 .withName(
                         logKey
                                 + "/linearQuasistatic"
@@ -691,7 +711,25 @@ public class Drive extends BlitzSubsystem {
     }
 
     public Command linearSysIdDynamic(SysIdRoutine.Direction direction) {
-        return linearRoutine.dynamic(direction)
+
+        Rotation2d rot = switch (direction) {
+            case kForward -> Rotation2d.kZero;
+            case kReverse -> Rotation2d.k180deg;
+        };
+
+        return Commands.sequence(
+                        runOnce(() -> setModuleStates(
+                                new SwerveModuleState[]{
+                                        new SwerveModuleState(0, rot),
+                                        new SwerveModuleState(0, rot),
+                                        new SwerveModuleState(0, rot),
+                                        new SwerveModuleState(0, rot)
+                                }, true, true, true
+                        )),
+                        Commands.waitSeconds(1),
+                        linearRoutine.dynamic(direction)
+
+                )
                 .withName(
                         logKey
                                 + "/linearDynamic"

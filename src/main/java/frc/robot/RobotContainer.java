@@ -112,7 +112,7 @@ public class RobotContainer {
                                 OIConstants.Drive.ROTATION_SPEED,
                                 () -> false,
                                 () -> Double.NaN,
-                                () -> climber.getState() != Climber.State.CLIMB)
+                                () -> climber.getState() != Climber.State.CLIMB).unless(RobotState::isTest).until(RobotState::isTest)
                         .withName("TeleopSwerve"));
 
         superstructure.setDefaultCommand(
