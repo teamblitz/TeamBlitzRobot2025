@@ -9,6 +9,7 @@ import com.ctre.phoenix6.SignalLogger;
 import com.pathplanner.lib.util.DriveFeedforwards;
 import com.pathplanner.lib.util.swerve.SwerveSetpoint;
 import com.pathplanner.lib.util.swerve.SwerveSetpointGenerator;
+import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import choreo.trajectory.SwerveSample;
 import edu.wpi.first.math.controller.PIDController;
@@ -23,6 +24,8 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -579,14 +582,14 @@ public class Drive extends BlitzSubsystem {
 
 
 
-    public void addVisionMeasurement(Pose2d pose, double timestamp) {
+    public void addVisionMeasurement(Pose2d pose, double timestamp, Matrix<N3, N1> visionMeasurementStdDevs) {
 //        poseEstimator.setVisionMeasurementStdDevs(
 //                VecBuilder.fill(
 //                        .7, .7,
 //                        9999999));
-        poseEstimator.addVisionMeasurement(pose, timestamp, VecBuilder.fill(
-                .7, .7,
-                9999999)); // Maybe base std devs off of camera stuff, .7m seams high as an std
+
+
+        poseEstimator.addVisionMeasurement(pose, timestamp, visionMeasurementStdDevs); // Maybe base std devs off of camera stuff, .7m seams high as an std
          // Standard deviations, basically vision
                 
     }
@@ -806,9 +809,9 @@ public class Drive extends BlitzSubsystem {
     }
 
 
-    private final PIDController xController = new PIDController(5,0,0);
-    private final PIDController yController = new PIDController(5,0,0);
-    private final PIDController choreoThetaController = new PIDController(5, 0, 0);
+    private final PIDController xController = new PIDController(2,0,0);
+    private final PIDController yController = new PIDController(2,0,0);
+    private final PIDController choreoThetaController = new PIDController(2.5, 0, 0);
 
 
     public void followTrajectory(SwerveSample sample) {

@@ -589,8 +589,8 @@ public final class Constants {
                                 new Transform3d(
                                         new Translation3d(
                                                 // TODO, VERIFY
-                                                Inches.of(10.101652),
                                                 Inches.of(11.104033),
+                                                Inches.of(10.101652),
                                                 Inches.of(9.504322)
                                         ),
                                         new Rotation3d(
@@ -605,8 +605,8 @@ public final class Constants {
                                 new Transform3d(
                                         new Translation3d(
                                                 // TODO, VERIFY
-                                                Inches.of(10.101652),
-                                                Inches.of(-11.104033),
+                                                Inches.of(11.104033),
+                                                Inches.of(-10.101652),
                                                 Inches.of(9.504322)
                                         ),
                                         new Rotation3d(

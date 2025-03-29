@@ -2,8 +2,12 @@ package frc.robot.subsystems.vision;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.PoseEstimator;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -55,8 +59,26 @@ public class Vision extends SubsystemBase {
                                         Logger.recordOutput("vision/" + camera.getName() + "/timestamp", estimatedRobotPose.timestampSeconds);
                                         Logger.recordOutput("vision/" + camera.getName() + "/latency", Timer.getFPGATimestamp() - estimatedRobotPose.timestampSeconds);
                                         Logger.recordOutput("vision/" + camera.getName() + "/strategy", estimatedRobotPose.strategy);
+                                        Matrix<N3, N1> visionMeasurementStdDevs;
 
-                                        drive.addVisionMeasurement(estimatedRobotPose.estimatedPose.toPose2d(), estimatedRobotPose.timestampSeconds);
+                                        double linearStd;
+
+                                        if (estimatedRobotPose.strategy == PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR) {
+                                            linearStd = .25;
+                                        } else {
+                                            double targetDist = estimatedRobotPose.targetsUsed.get(0).getBestCameraToTarget().getTranslation().getNorm();
+                                            Logger.recordOutput("vision/" + camera.getName() + "/targetDist", targetDist);
+                                            linearStd = .25 * targetDist;
+                                        }
+
+                                        Logger.recordOutput("vision/" + camera.getName() + "/linearSTD", linearStd);
+
+                                        visionMeasurementStdDevs = VecBuilder.fill(
+                                                linearStd, linearStd,
+                                                9999999);
+
+
+                                        drive.addVisionMeasurement(estimatedRobotPose.estimatedPose.toPose2d(), estimatedRobotPose.timestampSeconds, visionMeasurementStdDevs);
                                     }
                             )
                     )
@@ -65,6 +87,7 @@ public class Vision extends SubsystemBase {
 
 
     }
+
 
 }
 

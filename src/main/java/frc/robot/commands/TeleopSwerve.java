@@ -62,7 +62,7 @@ public class TeleopSwerve extends Command {
                     rotationVal * Constants.Drive.MAX_ANGULAR_VELOCITY,
                     headingSup.getAsDouble(),
                     !robotCentricSup.getAsBoolean(),
-                    false,
+                    true,
                     maintainHeading.getAsBoolean(),
                     !Double.isNaN(headingSup.getAsDouble()));
         } else {
