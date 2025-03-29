@@ -818,9 +818,9 @@ public class Drive extends BlitzSubsystem {
     }
 
 
-    private final PIDController xController = new PIDController(0,0,0);
-    private final PIDController yController = new PIDController(0,0,0);
-    private final PIDController choreoThetaController = new PIDController(0, 0, 0);
+    private final PIDController xController = new PIDController(5,0,0);
+    private final PIDController yController = new PIDController(5,0,0);
+    private final PIDController choreoThetaController = new PIDController(5, 0, 0);
 
 
     public void followTrajectory(SwerveSample sample) {

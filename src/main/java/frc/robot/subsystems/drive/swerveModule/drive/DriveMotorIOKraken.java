@@ -77,6 +77,13 @@ public class DriveMotorIOKraken implements DriveMotorIO {
         config.Feedback.withSensorToMechanismRatio(
                 Constants.Drive.DRIVE_GEAR_RATIO);
 
+        config.Slot0
+                .withKP(Constants.Drive.DRIVE_KP)
+                .withKD(Constants.Drive.DRIVE_KD)
+                .withKS(Constants.Drive.DRIVE_KS)
+                .withKV(Constants.Drive.DRIVE_KV)
+                .withKA(Constants.Drive.DRIVE_KA);
+
         motor.getConfigurator().apply(config);
 
         configurePID(Constants.Drive.DRIVE_KP, Constants.Drive.DRIVE_KI, Constants.Drive.DRIVE_KD);

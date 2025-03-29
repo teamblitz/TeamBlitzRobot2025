@@ -92,6 +92,7 @@ public class RobotContainer {
         autoCommands = new AutoCommands(drive, superstructure, intake);
 
         autoChooser.addRoutine("twoPiece", autoCommands::twoPiece);
+        autoChooser.addRoutine("test", autoCommands::testDrive);
 
         startingPositionChooser = new LoggedDashboardChooser<>("startingPos");
         startingPositionChooser.addDefaultOption("Center", StartingPosition.CENTER);
@@ -99,8 +100,6 @@ public class RobotContainer {
         startingPositionChooser.addOption("Right", StartingPosition.RIGHT);
 
 
-//        autoChooser.addDefaultOption("driveTest", autoCommands.testDrive());
-//        autoChooser.addOption("driveTest", autoCommands.testDrive());
     }
 
     private void setDefaultCommands() {
