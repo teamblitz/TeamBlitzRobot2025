@@ -11,6 +11,7 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import frc.lib.util.SwerveModuleConstants;
 import frc.robot.Constants;
+import org.littletonrobotics.junction.Logger;
 
 public class DriveMotorIOKraken implements DriveMotorIO {
     private final TalonFX motor;
@@ -46,13 +47,15 @@ public class DriveMotorIOKraken implements DriveMotorIO {
 
     @Override
     public void setSetpoint(double setpoint, double ffVolts) {
+        Logger.recordOutput("drive/driveIOKraken/velocitySetpointMPS", setpoint);
+        Logger.recordOutput("drive/driveIOKraken/velocitySetpointRPS", setpoint/ Constants.Drive.WHEEL_CIRCUMFERENCE);
         motor.setControl(
-                closedLoopVelocity.withVelocity(setpoint / Constants.Drive.WHEEL_CIRCUMFERENCE).withSlot(0).withFeedForward(ffVolts));
+                closedLoopVelocity.withVelocity(setpoint / Constants.Drive.WHEEL_CIRCUMFERENCE).withSlot(0));
     }
 
     @Override
     public void configurePID(double p, double i, double d) {
-        motor.getConfigurator().apply(new Slot0Configs().withKP(p).withKI(i).withKD(d));
+//        motor.getConfigurator().apply(new Slot0Configs().withKP(p).withKI(i).withKD(d));
     }
 
     private void configDriveMotor() {

@@ -474,10 +474,13 @@ public class Drive extends BlitzSubsystem {
 
     // PUsh changes and let me try localy.
     public void driveFieldRelative(ChassisSpeeds speeds, boolean openLoop) {
+        Logger.recordOutput("drive/requestedFieldSpeeds", speeds);
         drive(ChassisSpeeds.fromFieldRelativeSpeeds(speeds, getYaw()), openLoop);
     }
 
     public void drive(ChassisSpeeds speeds, boolean openLoop) {
+        Logger.recordOutput("drive/requestedSpeeds", speeds);
+
         ChassisSpeeds discretizedSpeeds =
                 ChassisSpeeds.discretize(speeds, Constants.LOOP_PERIOD_SEC);
 
@@ -510,6 +513,8 @@ public class Drive extends BlitzSubsystem {
     public void setModuleStates(
             SwerveModuleState[] desiredStates, boolean openLoop, boolean tuning, boolean parking) {
         SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, MAX_SPEED);
+
+        Logger.recordOutput("drive/desiredSwerveStates", desiredStates);
 
         for (SwerveModule mod : swerveModules) {
             mod.setDesiredState(desiredStates[mod.moduleNumber], openLoop, tuning, parking);
@@ -572,9 +577,7 @@ public class Drive extends BlitzSubsystem {
         poseEstimator.resetPosition(getYaw(), getModulePositions(), pose);
     }
 
-    public void resetPose(Pose2d pose) {
-        swerveOdometry.resetPosition(new Rotation2d(), getModulePositions(), pose);
-    }
+
 
     public void addVisionMeasurement(Pose2d pose, double timestamp) {
 //        poseEstimator.setVisionMeasurementStdDevs(

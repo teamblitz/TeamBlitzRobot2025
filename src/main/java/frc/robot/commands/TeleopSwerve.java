@@ -2,6 +2,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
@@ -61,9 +62,11 @@ public class TeleopSwerve extends Command {
                     rotationVal * Constants.Drive.MAX_ANGULAR_VELOCITY,
                     headingSup.getAsDouble(),
                     !robotCentricSup.getAsBoolean(),
-                    true,
+                    false,
                     maintainHeading.getAsBoolean(),
                     !Double.isNaN(headingSup.getAsDouble()));
+        } else {
+            drive.drive(new ChassisSpeeds(), true);
         }
     }
 }

@@ -299,7 +299,7 @@ public class RobotContainer {
         Logger.recordOutput("selectedAuto", autoChooser.selectedCommand().getName());
         return Commands.sequence(
                 Commands.runOnce(() -> drive.setGyro(180)),
-                autoChooser.selectedCommand()
+                autoChooser.selectedCommandScheduler()
         );
 //        return Commands.sequence(
 //                        Commands.runOnce(() -> drive.setGyro(180)),

@@ -35,7 +35,7 @@ public class AutoCommands {
 
         autoFactory = new AutoFactory(
             drive::getPose,
-            drive::resetPose,
+            drive::resetOdometry,
             drive::followTrajectory,
             true,
             drive
