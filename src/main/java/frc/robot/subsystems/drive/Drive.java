@@ -472,7 +472,6 @@ public class Drive extends BlitzSubsystem {
     }
 
 
-    // PUsh changes and let me try localy.
     public void driveFieldRelative(ChassisSpeeds speeds, boolean openLoop) {
         Logger.recordOutput("drive/requestedFieldSpeeds", speeds);
         drive(ChassisSpeeds.fromFieldRelativeSpeeds(speeds, getYaw()), openLoop);
@@ -820,6 +819,7 @@ public class Drive extends BlitzSubsystem {
                 sample.vy + yController.calculate(poseEstimator.getEstimatedPosition().getY(), sample.y),
                 sample.omega + choreoThetaController.calculate(poseEstimator.getEstimatedPosition().getRotation().getRadians(), sample.heading)
         );
+
         driveFieldRelative(speeds, false);
     }
 }

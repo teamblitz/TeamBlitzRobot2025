@@ -77,8 +77,8 @@ public class AutoCommands {
         AutoTrajectory scoreSecond = routine.trajectory("twoPiece", 2);
         AutoTrajectory gtfo = routine.trajectory("twoPiece", 3);
 
-        scoreSecond.atTimeBeforeEnd(Constants.Auto.Timings.STOW_TO_L4_READY).onTrue(prepareL4());
-
+//        scoreSecond.atTimeBeforeEnd(Constants.Auto.Timings.STOW_TO_L4_READY).onTrue(prepareL4());
+//
         routine.active().onTrue(
                 Commands.sequence(
                         scoreInitial.resetOdometry(),
@@ -86,32 +86,36 @@ public class AutoCommands {
                 )
         );
 
-        scoreInitial.atTimeBeforeEnd(Constants.Auto.Timings.STOW_TO_L4_READY).onTrue(prepareL4());
-        scoreInitial.done().onTrue(
-                scoreL4().andThen(toStation.cmd()
-                )
-        );
-
-
-        toStation.active().onTrue(handoff());
-
+        scoreInitial.chain(toStation);
         toStation.chain(scoreSecond);
-
-
-        scoreSecond.atTimeBeforeEnd(Constants.Auto.Timings.STOW_TO_L4_READY)
-                        .onTrue(
-                                Commands.sequence(
-                                        Commands.waitUntil(intake::hasCoral),
-                                        prepareL4()
-                                ));
-
-        scoreSecond.done().onTrue(
-                Commands.sequence(
-                        Commands.waitUntil(superstructure.triggerAtGoal(Superstructure.Goal.L4)),
-                        scoreL4(),
-                        gtfo.cmd()
-                )
-        );
+        scoreSecond.chain(gtfo);
+//
+//        scoreInitial.atTimeBeforeEnd(Constants.Auto.Timings.STOW_TO_L4_READY).onTrue(prepareL4());
+//        scoreInitial.done().onTrue(
+//                scoreL4().andThen(toStation.cmd()
+//                )
+//        );
+//
+//
+//        toStation.active().onTrue(handoff());
+//
+//        toStation.chain(scoreSecond);
+//
+//
+//        scoreSecond.atTimeBeforeEnd(Constants.Auto.Timings.STOW_TO_L4_READY)
+//                        .onTrue(
+//                                Commands.sequence(
+//                                        Commands.waitUntil(intake::hasCoral),
+//                                        prepareL4()
+//                                ));
+//
+//        scoreSecond.done().onTrue(
+//                Commands.sequence(
+//                        Commands.waitUntil(superstructure.triggerAtGoal(Superstructure.Goal.L4)),
+//                        scoreL4(),
+//                        gtfo.cmd()
+//                )
+//        );
 
 
 
