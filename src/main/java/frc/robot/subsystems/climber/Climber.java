@@ -114,7 +114,7 @@ public class Climber extends BlitzSubsystem {
 
     public Command climb() {
         return goToPosition(SupplierUtils.toRadians(climbPosition))
-                .andThen(() -> state = State.CLIMB)
+                .alongWith(Commands.run(() -> state = State.CLIMB))
                 .withName(logKey + "/climb");
     }
 

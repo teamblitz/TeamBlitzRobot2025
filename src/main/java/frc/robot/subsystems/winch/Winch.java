@@ -6,6 +6,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import frc.lib.BlitzSubsystem;
 import frc.lib.util.LoggedTunableNumber;
@@ -71,12 +72,14 @@ public class Winch extends BlitzSubsystem {
     }
 
     private Command goToPosition(DoubleSupplier position) {
-        return new FunctionalCommand(
-                () -> io.setMotionProfile(position.getAsDouble()),
-                () -> {},
-                (interrupted) -> io.setSpeed(0),
-                () -> MathUtil.isNear(position.getAsDouble(), inputs.absPosition, EPSILON),
-                this);
+        return Commands.none();
+//
+//        return new FunctionalCommand(
+//                () -> io.setMotionProfile(position.getAsDouble()),
+//                () -> {},
+//                (interrupted) -> io.setSpeed(0),
+//                () -> MathUtil.isNear(position.getAsDouble(), inputs.absPosition, EPSILON),
+//                this);
     }
 
     // Designed for match use

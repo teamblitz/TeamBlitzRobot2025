@@ -254,7 +254,7 @@ public class RobotContainer {
                         .unless(() -> climber.getState() == Climber.State.CLIMB));
 
         OIConstants.SuperStructure.SCORE
-                .and(() -> climber.getState() == Climber.State.DEPLOYED)
+                .and(() -> climber.getState() == Climber.State.DEPLOYED || climber.getState() == Climber.State.CLIMB)
                 .whileTrue(climber.climb());
 
 
