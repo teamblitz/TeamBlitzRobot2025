@@ -7,12 +7,14 @@
 
 package frc.robot;
 
+import choreo.auto.AutoChooser;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -67,7 +69,7 @@ public class RobotContainer {
     private AutoCommands autoCommands;
 
     /* ***** --- Autonomous --- ***** */
-    private final LoggedDashboardChooser<Command> autoChooser;
+    private final AutoChooser autoChooser;
 
     private final LoggedDashboardChooser<StartingPosition> startingPositionChooser;
 
@@ -83,17 +85,22 @@ public class RobotContainer {
         Shuffleboard.getTab("Drive")
                 .add("ResetOdometry", Commands.runOnce(() -> drive.resetOdometry(new Pose2d())));
 
-        autoChooser = new LoggedDashboardChooser<>("autoChoice");
+//        autoChooser = new LoggedDashboardChooser<>("autoChoice", autoCommands.getFactory().ch);
+        autoChooser = new AutoChooser();
+        SmartDashboard.putData("autoChooser", autoChooser);
+
+        autoCommands = new AutoCommands(drive, superstructure, intake);
+
+        autoChooser.addRoutine("twoPiece", autoCommands::twoPiece);
 
         startingPositionChooser = new LoggedDashboardChooser<>("startingPos");
         startingPositionChooser.addDefaultOption("Center", StartingPosition.CENTER);
         startingPositionChooser.addOption("Left", StartingPosition.LEFT);
         startingPositionChooser.addOption("Right", StartingPosition.RIGHT);
 
-        autoCommands = new AutoCommands(drive);
 
 //        autoChooser.addDefaultOption("driveTest", autoCommands.testDrive());
-        autoChooser.addOption("driveTest", autoCommands.testDrive());
+//        autoChooser.addOption("driveTest", autoCommands.testDrive());
     }
 
     private void setDefaultCommands() {
@@ -282,10 +289,10 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        Logger.recordOutput("selectedAuto", autoChooser.get().getName());
+        Logger.recordOutput("selectedAuto", autoChooser.selectedCommand().getName());
         return Commands.sequence(
                 Commands.runOnce(() -> drive.setGyro(180)),
-                autoCommands.testDrive()
+                autoChooser.selectedCommand()
         );
 //        return Commands.sequence(
 //                        Commands.runOnce(() -> drive.setGyro(180)),

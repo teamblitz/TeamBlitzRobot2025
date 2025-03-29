@@ -4,6 +4,13 @@
  "type":"Swerve",
  "variables":{
   "expressions":{
+   "APPR_DIST":{
+    "dimension":"Length",
+    "var":{
+     "exp":"0.3 m",
+     "val":0.3
+    }
+   },
    "FIELD_WIDTH":{
     "dimension":"Length",
     "var":{
@@ -27,6 +34,20 @@
      "val":0.0
     }
    },
+   "A_APPR":{
+    "x":{
+     "exp":"A.x - APPR_DIST",
+     "val":2.8590378284454347
+    },
+    "y":{
+     "exp":"A.y",
+     "val":4.194949150085449
+    },
+    "heading":{
+     "exp":"0 deg",
+     "val":0.0
+    }
+   },
    "B":{
     "x":{
      "exp":"3.1590378284454346 m",
@@ -34,6 +55,20 @@
     },
     "y":{
      "exp":"3.8579721450805664 m",
+     "val":3.8579721450805664
+    },
+    "heading":{
+     "exp":"0 deg",
+     "val":0.0
+    }
+   },
+   "B_APPR":{
+    "x":{
+     "exp":"B.x - APPR_DIST",
+     "val":2.8590378284454347
+    },
+    "y":{
+     "exp":"B.y",
      "val":3.8579721450805664
     },
     "heading":{
@@ -139,6 +174,20 @@
      "val":4.1887902047863905
     }
    },
+   "I_APPR":{
+    "x":{
+     "exp":"I.x + cos(60 deg) * APPR_DIST",
+     "val":5.4547442436218265
+    },
+    "y":{
+     "exp":"I.y + sin(60 deg) * APPR_DIST",
+     "val":5.361749206676103
+    },
+    "heading":{
+     "exp":"240 deg",
+     "val":4.1887902047863905
+    }
+   },
    "J":{
     "x":{
      "exp":"REEF.x * 2 - D.x",
@@ -147,6 +196,20 @@
     "y":{
      "exp":"REEF.y * 2 - D.y",
      "val":5.26593542098999
+    },
+    "heading":{
+     "exp":"240 deg",
+     "val":4.1887902047863905
+    }
+   },
+   "J_APPR":{
+    "x":{
+     "exp":"J.x + cos(60 deg) * APPR_DIST",
+     "val":5.168460273742676
+    },
+    "y":{
+     "exp":"J.y + sin(60 deg) * APPR_DIST",
+     "val":5.525743042125322
     },
     "heading":{
      "exp":"240 deg",
@@ -167,6 +230,20 @@
      "val":5.235987755982989
     }
    },
+   "K_APPR":{
+    "x":{
+     "exp":"K.x - cos(60 deg) * APPR_DIST",
+     "val":3.815139389038086
+    },
+    "y":{
+     "exp":"K.y + sin(60 deg) * APPR_DIST",
+     "val":5.525743042125322
+    },
+    "heading":{
+     "exp":"300 deg",
+     "val":5.235987755982989
+    }
+   },
    "L":{
     "x":{
      "exp":"C.x",
@@ -175,6 +252,20 @@
     "y":{
      "exp":"REEF.y * 2 - C.y",
      "val":5.1019415855407715
+    },
+    "heading":{
+     "exp":"300 deg",
+     "val":5.235987755982989
+    }
+   },
+   "L_APPR":{
+    "x":{
+     "exp":"L.x - cos(60 deg) * APPR_DIST",
+     "val":3.5288554191589356
+    },
+    "y":{
+     "exp":"L.y + sin(60 deg) * APPR_DIST",
+     "val":5.361749206676103
     },
     "heading":{
      "exp":"300 deg",

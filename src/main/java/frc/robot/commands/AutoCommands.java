@@ -101,7 +101,7 @@ public class AutoCommands {
         scoreSecond.atTimeBeforeEnd(Constants.Auto.Timings.STOW_TO_L4_READY)
                         .onTrue(
                                 Commands.sequence(
-                                        Commands.waitUntil(intake::hasCoral),
+//                                        Commands.waitUntil(intake::hasCoral),
                                         prepareL4()
                                 ));
 

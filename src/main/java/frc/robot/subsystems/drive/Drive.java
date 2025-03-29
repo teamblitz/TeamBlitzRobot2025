@@ -753,6 +753,6 @@ public class Drive extends BlitzSubsystem {
                 sample.vy + yController.calculate(poseEstimator.getEstimatedPosition().getY(), sample.y),
                 sample.omega + choreoThetaController.calculate(poseEstimator.getEstimatedPosition().getRotation().getRadians(), sample.heading)
         );
-        driveFieldRelative(speeds, true);
+        driveFieldRelative(speeds, false);
     }
 }
