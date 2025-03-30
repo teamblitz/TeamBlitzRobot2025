@@ -1,5 +1,7 @@
 package frc.robot.commands;
 
+import choreo.trajectory.Trajectory;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
@@ -17,6 +19,9 @@ import org.littletonrobotics.junction.Logger;
 import frc.robot.subsystems.superstructure.elevator.Elevator;
 import frc.robot.Constants;
 import frc.robot.subsystems.intake.Intake;
+
+import java.util.List;
+import java.util.stream.IntStream;
 
 
 public class AutoCommands {
@@ -116,6 +121,90 @@ public class AutoCommands {
 
         return routine;
 
+    }
+
+    /**
+     *
+     *
+     * @param numberOfCoral bingus
+     * @param pathName bongus
+     * @return boingus
+     */
+    public AutoRoutine nPiece(int numberOfCoral, String pathName) {
+        if (!List.of(1, 2, 3, 4).contains(numberOfCoral)) {
+            throw new IllegalArgumentException("Number of Coral must be between 1 and 4");
+        }
+
+        AutoRoutine routine = autoFactory.newRoutine(pathName);
+
+        // For each coral we have 2 path splits, one that goes to the reef, and one that goes back to the station
+        // We can do this even for the first and last coral as well, as its likley that we want to end our auto near
+        // the station
+
+        var trajectory = Choreo.loadTrajectory(pathName);
+        if (trajectory.isEmpty()) {
+            DriverStation.reportError("No trajectory found for " + pathName, false);
+            return routine;
+        }
+
+
+        int numSplits = trajectory.get().splits().size();
+
+        // Even splits are toReef trajectories
+        // Odd splits are to station trajectories
+        List<AutoTrajectory> toReef = IntStream.range(0, (numSplits + 1) / 2).mapToObj(i -> routine.trajectory(pathName, i * 2)).toList();
+        List<AutoTrajectory> toStation = IntStream.range(0, numSplits / 2).mapToObj(i -> routine.trajectory(pathName, i * 2 + 1)).toList();
+
+
+        routine.active().onTrue(
+                Commands.sequence(
+                        toReef.get(0).resetOdometry(),
+                        toReef.get(0).cmd()
+                )
+        );
+
+        for (int i = 0; i < toReef.size(); i++) {
+            toReef.get(i).atTimeBeforeEnd(Constants.Auto.Timings.STOW_TO_L4_READY).onTrue(
+                    Commands.sequence(
+                            Commands.waitUntil(intake::hasCoral),
+                            prepareL4())
+            );
+            toReef.get(i).done().onTrue(
+                    scoreL4().andThen(
+                            i < toStation.size() ?
+                            toStation.get(i).spawnCmd() : Commands.none())
+            );
+        }
+
+        for (int i = 0; i < toStation.size(); i++) {
+            toStation.get(i).active().onTrue(handoff());
+
+            // Start the next to reef section if it exists
+            if (i + 1 < toReef.size()) {
+                toStation.get(i).chain(toReef.get(i + 1));
+            }
+        }
+
+
+//        for (int i = 0; i < numberOfCoral; i++) {
+//            toReef.get(i).atTimeBeforeEnd(Constants.Auto.Timings.STOW_TO_L4_READY).onTrue(
+//                    Commands.sequence(
+//                            Commands.waitUntil(intake::hasCoral),
+//                            prepareL4())
+//            );
+//
+//            toReef.get(i).done().onTrue(
+//                    scoreL4().andThen(toStation.get(i).spawnCmd()));
+//
+//            toStation.get(i).active().onTrue(handoff());
+//
+//            // Start the next to reef section if it exists
+//            if (i + 1 < toReef.size()) {
+//                toStation.get(i).chain(toReef.get(i + 1));
+//            }
+//        }
+
+        return routine;
     }
 //
 //    public AutoRoutine fourPiece() {
