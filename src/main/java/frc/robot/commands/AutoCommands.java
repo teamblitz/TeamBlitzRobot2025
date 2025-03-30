@@ -1,10 +1,12 @@
 package frc.robot.commands;
 
+import choreo.trajectory.SwerveSample;
 import choreo.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
+import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.Constants;
 import frc.robot.subsystems.drive.Drive;
 import choreo.Choreo;
@@ -21,6 +23,7 @@ import frc.robot.Constants;
 import frc.robot.subsystems.intake.Intake;
 
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.IntStream;
 
 
@@ -30,6 +33,8 @@ public class AutoCommands {
     private final AutoFactory autoFactory;
     private final Superstructure superstructure;
     private final Intake intake;
+
+    private SwerveSample lastSample;
 
     public AutoCommands(Drive drive, Superstructure superstructure, Intake intake) {
         this.drive = drive;
@@ -41,10 +46,36 @@ public class AutoCommands {
         autoFactory = new AutoFactory(
             drive::getPose,
             drive::resetOdometry,
-            drive::followTrajectory,
+            sample -> {
+                // Don't ask, just cast (the ring into the fire frodo)
+                lastSample = (SwerveSample) sample;
+                drive.followTrajectory((SwerveSample) sample);
+            },
             true,
             drive
         );
+
+        Command normalDriveDefault = drive.getDefaultCommand();
+
+        // I heard you liked commands, so I gave you a command to set the default command to be a different command
+        RobotModeTriggers.autonomous().onTrue(
+                Commands.runOnce(
+                        () -> drive.setDefaultCommand(
+                                Commands.run(
+                                        () -> drive.followTrajectory(lastSample)
+                                )
+                        )
+                )
+        );
+
+        // As funny as it would be for the auto to steal the controls of the robot for the rest of the match,
+        // unfortunately that is undesired behavior :(, so we need to give them back
+        RobotModeTriggers.autonomous().onFalse(
+                Commands.runOnce(
+                        () -> drive.setDefaultCommand(normalDriveDefault)
+                )
+        );
+
     }
 
     public AutoFactory getFactory() {
@@ -129,7 +160,7 @@ public class AutoCommands {
     }
 
     /**
-     * I channelled my inner AP CSA Here
+     * I channelled my inner AP CSA here, I haven't touched normal for loops in a long time, and it really shows.
      *
      * @param numberOfCoral bingus
      * @param pathName bongus
