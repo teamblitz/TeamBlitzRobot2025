@@ -123,8 +123,13 @@ public class AutoCommands {
 
     }
 
+
+    public AutoRoutine fourPieceLeft() {
+        return nPiece(4, "fourPieceLeft");
+    }
+
     /**
-     *
+     * I channelled my inner AP CSA Here
      *
      * @param numberOfCoral bingus
      * @param pathName bongus
@@ -137,9 +142,6 @@ public class AutoCommands {
 
         AutoRoutine routine = autoFactory.newRoutine(pathName);
 
-        // For each coral we have 2 path splits, one that goes to the reef, and one that goes back to the station
-        // We can do this even for the first and last coral as well, as its likley that we want to end our auto near
-        // the station
 
         var trajectory = Choreo.loadTrajectory(pathName);
         if (trajectory.isEmpty()) {
@@ -185,33 +187,8 @@ public class AutoCommands {
             }
         }
 
-
-//        for (int i = 0; i < numberOfCoral; i++) {
-//            toReef.get(i).atTimeBeforeEnd(Constants.Auto.Timings.STOW_TO_L4_READY).onTrue(
-//                    Commands.sequence(
-//                            Commands.waitUntil(intake::hasCoral),
-//                            prepareL4())
-//            );
-//
-//            toReef.get(i).done().onTrue(
-//                    scoreL4().andThen(toStation.get(i).spawnCmd()));
-//
-//            toStation.get(i).active().onTrue(handoff());
-//
-//            // Start the next to reef section if it exists
-//            if (i + 1 < toReef.size()) {
-//                toStation.get(i).chain(toReef.get(i + 1));
-//            }
-//        }
-
         return routine;
     }
-//
-//    public AutoRoutine fourPiece() {
-//        AutoRoutine routine = autoFactory.newRoutine("fourPiece");
-//
-//        AutoTrajectory pickup = routine.trajectory("pickup", 0);
-//    }
 
     private Command scoreL4() {
         return Commands.sequence(

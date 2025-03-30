@@ -97,6 +97,7 @@ public class RobotContainer {
 
         autoChooser.addRoutine("twoPiece", autoCommands::twoPiece);
         autoChooser.addRoutine("test", autoCommands::testDrive);
+        autoChooser.addRoutine("fourPieceLeft", autoCommands::fourPieceLeft);
 
         startingPositionChooser = new LoggedDashboardChooser<>("startingPos");
         startingPositionChooser.addDefaultOption("Center", StartingPosition.CENTER);
