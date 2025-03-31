@@ -453,6 +453,13 @@ public final class Constants {
         public static final SuperstructureState L4_PLOP =
                 new SuperstructureState(L4.elevatorPosition, Math.toRadians(15));
 
+
+        public static final SuperstructureState PICKUP_LOW_ALGAE =
+                new SuperstructureState(.48 + .2, Math.toRadians(60));
+        public static final SuperstructureState PICKUP_HIGH_ALGAE =
+                new SuperstructureState(.88 + .2, Math.toRadians(60));
+
+
         public static final List<StateWithMode> L4_DUNK =
                 List.of(
                         SetpointMode.WRIST_SYNC.withState(
@@ -462,14 +469,6 @@ public final class Constants {
                         SetpointMode.WRIST_SYNC.withState(
                                 new SuperstructureState(1.0, Math.toRadians(70))));
 
-        //        public static final List<StateWithMode> L4_PLOP =
-        //                List.of(
-        //                        SetpointMode.WRIST_SYNC.withState(
-        //                                new SuperstructureState(L4.elevatorPosition,
-        // Math.toRadians(35))),
-        //                        SetpointMode.WRIST_SYNC.withState(
-        //                                new SuperstructureState(L4.elevatorPosition,
-        // L4.wristRotation)));
 
         public static final SuperstructureState HANDOFF =
                 new SuperstructureState(.001, Math.toRadians(94));
@@ -513,7 +512,12 @@ public final class Constants {
         public static final int CURRENT_LIMIT = compBot() ? 80 : 25;
         public static final double HANDOFF_SPEED = compBot() ? .4 : .5; // TODO CONFIG
         public static final double REVERSE_SPEED = -.15; // TODO CONFIG
+
+
         public static final double ALGAE_HOLD = -.4; // TODO CONFIG
+        public static final double ALGAE_EJECT = .4; // TODO CONFIG
+
+
         public static final double ALGAE_REMOVAL = .5; // TODO CONFIG
         public static final double SHOOT_CORAL = .5;
         public static final double L1 = .3;

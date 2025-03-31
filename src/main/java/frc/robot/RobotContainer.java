@@ -246,6 +246,10 @@ public class RobotContainer {
         OIConstants.Intake.ALGAE_REMOVAL.whileTrue(intake.kick_algae());
         OIConstants.Intake.SHOOT_CORAL.whileTrue(intake.shoot_coral());
 
+
+        OIConstants.Intake.INTAKE_ALGAE.whileTrue(intake.setSpeed(Constants.Intake.ALGAE_HOLD));
+        OIConstants.Intake.EJECT_ALGAE.whileTrue(intake.setSpeed(Constants.Intake.ALGAE_REMOVAL));
+
         OIConstants.Winch.WINCH_MAN_UP.whileTrue(winch.manualUp());
         OIConstants.Winch.WINCH_MAN_DOWN.whileTrue(winch.manualDown());
 

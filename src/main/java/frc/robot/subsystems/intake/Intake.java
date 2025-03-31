@@ -22,11 +22,6 @@ public class Intake extends BlitzSubsystem {
 
         this.io = io;
 
-        new Trigger(() -> intakeState == IntakeState.Feeding && coralState == CoralState.Indexed)
-                .whileTrue(
-                        Commands.sequence(
-                                Commands.waitUntil(() -> !intakeSensor()),
-                                Commands.run(() -> coralState = CoralState.Empty)));
     }
 
     @Override
@@ -75,32 +70,4 @@ public class Intake extends BlitzSubsystem {
         return startEnd(() -> io.setSpeed(speed), () -> io.setSpeed(0));
     }
 
-    public enum CoralState {
-        Indexed,
-        Unindexed,
-        Empty,
-        Unknown
-    }
-
-    private CoralState coralState = CoralState.Indexed;
-
-    public enum IntakeState {
-        Intaking,
-        Feeding,
-        Ejecting,
-        Indexing,
-        Idle,
-        Manual
-    }
-
-    private IntakeState intakeState = IntakeState.Idle;
-
-    public Command indexIntake() {
-        return Commands.none();
-    }
-
-    public Command autoIndex() {
-        return new ConditionalCommand(
-                indexIntake(), Commands.none(), () -> coralState == CoralState.Unindexed);
-    }
 }
