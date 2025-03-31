@@ -34,6 +34,9 @@ public class AutoCommands {
     private final Superstructure superstructure;
     private final Intake intake;
 
+//    private final Command configAutonDefault;
+    private final Command configTeleDefault;
+
     private SwerveSample lastSample;
 
     public AutoCommands(Drive drive, Superstructure superstructure, Intake intake) {
@@ -62,7 +65,19 @@ public class AutoCommands {
                 Commands.runOnce(
                         () -> drive.setDefaultCommand(
                                 Commands.run(
-                                        () -> {if (lastSample != null) drive.followTrajectory(lastSample);},
+                                        () -> {if (lastSample != null) {
+                                            drive.followTrajectory(new SwerveSample(0,
+                                                    lastSample.x,
+                                                    lastSample.y,
+                                                    lastSample.heading,
+                                                    0,
+                                                    0,
+                                                    0,
+                                                    0,
+                                                    0,
+                                                    0,
+                                                    lastSample.moduleForcesX(), lastSample.moduleForcesY()));
+                                        }},
                                         drive
                                 )
                         )
@@ -71,11 +86,10 @@ public class AutoCommands {
 
         // As funny as it would be for the auto to steal the controls of the robot for the rest of the match,
         // unfortunately that is undesired behavior :(, so we need to give them back
-        RobotModeTriggers.autonomous().onFalse(
+        configTeleDefault =
                 Commands.runOnce(
                         () -> drive.setDefaultCommand(normalDriveDefault)
-                ).ignoringDisable(true)
-        );
+                ).ignoringDisable(true);
 
     }
 
@@ -150,6 +164,8 @@ public class AutoCommands {
         );
 
 
+        routine.active().onFalse(configTeleDefault);
+
 
         return routine;
 
@@ -204,7 +220,9 @@ public class AutoCommands {
                             prepareL4())
             );
             toReef.get(i).done().onTrue(
-                    scoreL4().andThen(
+                    Commands.sequence(
+                            Commands.waitUntil(superstructure.triggerAtGoal(Superstructure.Goal.L4)),
+                            scoreL4().asProxy(),
                             i < toStation.size() ?
                             toStation.get(i).spawnCmd() : Commands.none())
             );
@@ -219,14 +237,14 @@ public class AutoCommands {
             }
         }
 
+        routine.active().onFalse(configTeleDefault);
+
+
         return routine;
     }
 
     private Command scoreL4() {
-        return Commands.sequence(
-                superstructure.toGoal(Superstructure.Goal.L4),
-                CommandFactory.l4Plop(superstructure, intake)
-        );
+        return CommandFactory.l4Plop(superstructure, intake);
     }
 
     private Command prepareL4() {
