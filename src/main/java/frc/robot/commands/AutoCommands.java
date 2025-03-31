@@ -91,6 +91,8 @@ public class AutoCommands {
                         () -> drive.setDefaultCommand(normalDriveDefault)
                 ).ignoringDisable(true);
 
+        RobotModeTriggers.autonomous().onTrue(configTeleDefault);
+
     }
 
     public AutoFactory getFactory() {
