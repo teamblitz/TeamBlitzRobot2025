@@ -809,8 +809,8 @@ public class Drive extends BlitzSubsystem {
     }
 
 
-    private final PIDController xController = new PIDController(2,0,0);
-    private final PIDController yController = new PIDController(2,0,0);
+    private final PIDController xController = new PIDController(5,0,0);
+    private final PIDController yController = new PIDController(5,0,0);
     private final PIDController choreoThetaController = new PIDController(2.5, 0, 0);
 
 

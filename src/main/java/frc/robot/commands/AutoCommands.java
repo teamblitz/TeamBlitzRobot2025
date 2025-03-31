@@ -62,7 +62,8 @@ public class AutoCommands {
                 Commands.runOnce(
                         () -> drive.setDefaultCommand(
                                 Commands.run(
-                                        () -> drive.followTrajectory(lastSample)
+                                        () -> {if (lastSample != null) drive.followTrajectory(lastSample);},
+                                        drive
                                 )
                         )
                 )
@@ -73,7 +74,7 @@ public class AutoCommands {
         RobotModeTriggers.autonomous().onFalse(
                 Commands.runOnce(
                         () -> drive.setDefaultCommand(normalDriveDefault)
-                )
+                ).ignoringDisable(true)
         );
 
     }
@@ -143,7 +144,7 @@ public class AutoCommands {
         scoreSecond.done().onTrue(
                 Commands.sequence(
                         Commands.waitUntil(superstructure.triggerAtGoal(Superstructure.Goal.L4)),
-                        scoreL4(),
+                        scoreL4().asProxy(),
                         gtfo.spawnCmd()
                 )
         );
