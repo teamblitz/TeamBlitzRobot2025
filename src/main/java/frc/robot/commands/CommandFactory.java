@@ -14,11 +14,11 @@ public class CommandFactory {
 
     public static Command l4Plop(Superstructure superstructure, Intake intake) {
         return Commands.sequence(
-                superstructure.toGoal(Superstructure.Goal.L4_PLOP),
+                superstructure.toGoalDirect(Superstructure.Goal.L4_PLOP),
                 intake.setSpeed(L4_PLOP)
                         .withDeadline(
                                 Commands.waitSeconds(0)
-                                        .andThen(superstructure.toGoal(Superstructure.Goal.L4))));
+                                        .andThen(superstructure.toGoal(Superstructure.Goal.STOW))));
     }
 
     public static Command handoff(Superstructure superstructure, Intake intake) {

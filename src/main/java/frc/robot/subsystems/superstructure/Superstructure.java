@@ -151,25 +151,6 @@ public class Superstructure extends BlitzSubsystem {
         DISABLED
     }
 
-    public Command stowCommand() {
-        return Commands.sequence(
-                        wrist.withGoal(STOW.getWristState()),
-                        elevator.withGoal(STOW.getElevatorState())
-                                .beforeStarting(
-                                        () -> {
-                                            currentGoal = Goal.STOW;
-                                            state = State.IN_TRANSIT;
-                                        })
-                                .finallyDo(
-                                        (interrupted) ->
-                                                state =
-                                                        interrupted
-                                                                ? State.UNKNOWN
-                                                                : State.AT_GOAL))
-                .alongWith(idle())
-                .withName("stow");
-    }
-
     private Command toStateWristLast(SuperstructureState state) {
         return Commands.sequence(
                 wrist.withGoal(state.getElevatorState()), elevator.withGoal(state.getWristState()));
@@ -264,6 +245,23 @@ public class Superstructure extends BlitzSubsystem {
                 .deadlineFor(idle());
     }
 
+    public Command toGoalDirect(Goal goal) {
+        return toStateSynchronous(staticGoals.get(goal))
+                .beforeStarting(
+                        () -> {
+                            state = State.IN_TRANSIT;
+                            previousGoal = currentGoal;
+                            currentGoal = goal;
+                            dynamicStep = -1;
+                        })
+                .finallyDo(
+                        (interrupted) -> {
+                            state = interrupted ? State.UNKNOWN : State.AT_GOAL;
+                        })
+                .withName("superstructure/static_direct_" + goal)
+                .deadlineFor(idle());
+    }
+
     public boolean atGoal(Goal goal) {
         return currentGoal == goal && state == State.AT_GOAL;
     }
@@ -281,7 +279,7 @@ public class Superstructure extends BlitzSubsystem {
         return Commands.parallel(
                 Commands.either(
                         elevator.withSpeed(elevatorSpeed).until(() -> elevatorSpeed.getAsDouble() == 0),
-                        Commands.waitSeconds(.5).andThen(
+                        Commands.waitSeconds(.1).andThen(
                                 Commands.defer(() -> {
                             double pos = elevator.getPosition();
                             return elevator.followGoal(() -> pos);
@@ -291,7 +289,7 @@ public class Superstructure extends BlitzSubsystem {
                 ).repeatedly(),
                 Commands.either(
                         wrist.setSpeed(wristSpeed).until(() -> wristSpeed.getAsDouble() == 0),
-                        Commands.waitSeconds(.5).andThen(
+                        Commands.waitSeconds(.1).andThen(
                         Commands.defer(() -> {
                                     double pos = wrist.getPosition();
                                     return wrist.followGoal(() -> pos);

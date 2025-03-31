@@ -431,10 +431,10 @@ public final class Constants {
     // Reset Elevator To Bottom before reset code
     public static final class SuperstructureSetpoints {
         public static final SuperstructureState STOW =
-                new SuperstructureState(.001, Math.toRadians(70));
+                new SuperstructureState(.001, Math.toRadians(75));
 
         public static final SuperstructureState WRIST_TRANSIT =
-                new SuperstructureState(0, Math.toRadians(62.5));
+                new SuperstructureState(0, Math.toRadians(70));
 
         public static final SuperstructureState L1 =
                 new SuperstructureState(.2, Math.toRadians(60));
@@ -443,7 +443,7 @@ public final class Constants {
         public static final SuperstructureState L3 =
                 new SuperstructureState(.85, Math.toRadians(60));
         public static final SuperstructureState L4 =
-                new SuperstructureState(1.48, Math.toRadians(60)); // Value is not with Drop
+                new SuperstructureState(1.48, Math.toRadians(52.5)); // Value is not with Drop
 
         public static final SuperstructureState KICK_LOW_ALGAE =
                 new SuperstructureState(.48, Math.toRadians(42));
@@ -451,7 +451,7 @@ public final class Constants {
                 new SuperstructureState(.88, Math.toRadians(40));
 
         public static final SuperstructureState L4_PLOP =
-                new SuperstructureState(L4.elevatorPosition, Math.toRadians(15));
+                new SuperstructureState(L4.elevatorPosition, Math.toRadians(20));
 
 
         public static final SuperstructureState PICKUP_LOW_ALGAE =
