@@ -64,11 +64,11 @@ public class Vision extends SubsystemBase {
                                         double linearStd;
 
                                         if (estimatedRobotPose.strategy == PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR) {
-                                            linearStd = .75;
+                                            linearStd = .5;
                                         } else {
                                             double targetDist = estimatedRobotPose.targetsUsed.get(0).getBestCameraToTarget().getTranslation().getNorm();
                                             Logger.recordOutput("vision/" + camera.getName() + "/targetDist", targetDist);
-                                            linearStd = Math.max(1.25 * targetDist + .25, .25);
+                                            linearStd = Math.max(.75   * targetDist + .25, .25);
                                         }
 
                                         Logger.recordOutput("vision/" + camera.getName() + "/linearSTD", linearStd);

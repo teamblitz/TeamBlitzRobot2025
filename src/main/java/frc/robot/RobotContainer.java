@@ -303,7 +303,7 @@ public class RobotContainer {
     public Command getAutonomousCommand() {
         Logger.recordOutput("selectedAuto", autoChooser.selectedCommand().getName());
         return Commands.sequence(
-                Commands.runOnce(() -> drive.setGyro(180)),
+//                Commands.runOnce(() -> drive.setGyro(180)),
                 autoChooser.selectedCommandScheduler()
         );
 //        return Commands.sequence(

@@ -226,7 +226,7 @@ public class Drive extends BlitzSubsystem {
         rotateToHeadingPid.setTolerance(2);
         initTelemetry();
 
-        zeroGyro();
+//        zeroGyro();
 
         new RangeSensorIOFusion();
 

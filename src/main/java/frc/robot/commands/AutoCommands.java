@@ -66,7 +66,8 @@ public class AutoCommands {
                         () -> drive.setDefaultCommand(
                                 Commands.run(
                                         () -> {if (lastSample != null) {
-                                            drive.followTrajectory(new SwerveSample(0,
+                                            Logger.recordOutput("drive/auto/doingDefaultPid", Math.random());
+                                            drive.followTrajectory(new SwerveSample(lastSample.t,
                                                     lastSample.x,
                                                     lastSample.y,
                                                     lastSample.heading,
@@ -91,7 +92,7 @@ public class AutoCommands {
                         () -> drive.setDefaultCommand(normalDriveDefault)
                 ).ignoringDisable(true);
 
-        RobotModeTriggers.autonomous().onTrue(configTeleDefault);
+        RobotModeTriggers.autonomous().onFalse(configTeleDefault);
 
     }
 
@@ -223,7 +224,7 @@ public class AutoCommands {
             );
             toReef.get(i).done().onTrue(
                     Commands.sequence(
-                            Commands.waitSeconds(1),
+                            Commands.waitSeconds(1.5),
                             Commands.waitUntil(superstructure.triggerAtGoal(Superstructure.Goal.L4)),
                             scoreL4().asProxy(),
                             i < toStation.size() ?
