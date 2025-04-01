@@ -68,7 +68,7 @@ public class Vision extends SubsystemBase {
                                         } else {
                                             double targetDist = estimatedRobotPose.targetsUsed.get(0).getBestCameraToTarget().getTranslation().getNorm();
                                             Logger.recordOutput("vision/" + camera.getName() + "/targetDist", targetDist);
-                                            linearStd = Math.max(1.25 * targetDist + .35, .25);
+                                            linearStd = Math.max(1.1 * targetDist + .125, .25);
                                         }
 
                                         Logger.recordOutput("vision/" + camera.getName() + "/linearSTD", linearStd);
