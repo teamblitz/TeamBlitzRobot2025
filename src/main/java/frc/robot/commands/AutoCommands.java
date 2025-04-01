@@ -223,6 +223,7 @@ public class AutoCommands {
             );
             toReef.get(i).done().onTrue(
                     Commands.sequence(
+                            Commands.waitSeconds(1),
                             Commands.waitUntil(superstructure.triggerAtGoal(Superstructure.Goal.L4)),
                             scoreL4().asProxy(),
                             i < toStation.size() ?

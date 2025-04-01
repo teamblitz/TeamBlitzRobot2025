@@ -7,8 +7,8 @@
    "APPR_DIST":{
     "dimension":"Length",
     "var":{
-     "exp":"0.3 m",
-     "val":0.3
+     "exp":"0.5 m",
+     "val":0.5
     }
    },
    "FIELD_WIDTH":{
@@ -37,7 +37,7 @@
    "A_APPR":{
     "x":{
      "exp":"A.x - APPR_DIST",
-     "val":2.8082378284454346
+     "val":2.6082378284454344
     },
     "y":{
      "exp":"A.y",
@@ -65,7 +65,7 @@
    "B_APPR":{
     "x":{
      "exp":"B.x - APPR_DIST",
-     "val":2.8082378284454346
+     "val":2.6082378284454344
     },
     "y":{
      "exp":"B.y",
@@ -177,11 +177,11 @@
    "I_APPR":{
     "x":{
      "exp":"I.x + cos(60 deg) * APPR_DIST",
-     "val":5.480144243621826
+     "val":5.580144243621826
     },
     "y":{
      "exp":"I.y + sin(60 deg) * APPR_DIST",
-     "val":5.405743297188353
+     "val":5.578948377945241
     },
     "heading":{
      "exp":"240 deg",
@@ -205,11 +205,11 @@
    "J_APPR":{
     "x":{
      "exp":"J.x + cos(60 deg) * APPR_DIST",
-     "val":5.193860273742676
+     "val":5.293860273742675
     },
     "y":{
      "exp":"J.y + sin(60 deg) * APPR_DIST",
-     "val":5.569737132637572
+     "val":5.74294221339446
     },
     "heading":{
      "exp":"240 deg",
@@ -233,11 +233,11 @@
    "K_APPR":{
     "x":{
      "exp":"K.x - cos(60 deg) * APPR_DIST",
-     "val":3.789739389038086
+     "val":3.689739389038086
     },
     "y":{
      "exp":"K.y + sin(60 deg) * APPR_DIST",
-     "val":5.569737132637572
+     "val":5.74294221339446
     },
     "heading":{
      "exp":"300 deg",
@@ -261,11 +261,11 @@
    "L_APPR":{
     "x":{
      "exp":"L.x - cos(60 deg) * APPR_DIST",
-     "val":3.503455419158936
+     "val":3.4034554191589357
     },
     "y":{
      "exp":"L.y + sin(60 deg) * APPR_DIST",
-     "val":5.405743297188353
+     "val":5.578948377945241
     },
     "heading":{
      "exp":"300 deg",
