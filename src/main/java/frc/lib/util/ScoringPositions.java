@@ -1,5 +1,7 @@
 package frc.lib.util;
 
+import java.util.Map;
+
 public final class ScoringPositions {
     public enum Level {
         L1,
@@ -21,6 +23,10 @@ public final class ScoringPositions {
         J,
         K,
         L;
+
+        public <T> Map.Entry<Branch, T> toEntry(T value) {
+            return Map.entry(this, value);
+        }
     }
 
     private ScoringPositions() {}

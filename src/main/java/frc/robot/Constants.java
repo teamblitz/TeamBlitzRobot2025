@@ -7,6 +7,9 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Inches;
+
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.RobotConfig;
@@ -16,15 +19,12 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import frc.lib.util.COTSSwerveConstants;
+import frc.lib.util.ScoringPositions;
 import frc.lib.util.SwerveModuleConstants;
-
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.function.DoubleUnaryOperator;
-
-import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.Inches;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -63,6 +63,7 @@ public final class Constants {
     public static boolean compBot() {
         return ROBOT == Robot.CompBot;
     }
+
     public static boolean devBot() {
         return ROBOT == Robot.DevBot;
     }
@@ -177,7 +178,7 @@ public final class Constants {
          * .06 something might, but that is quite high
          */
         public static final double DRIVE_KP = compBot() ? 0.73983 : 0.028215;
-//        public static final double DRIVE_KP = 0;
+        //        public static final double DRIVE_KP = 0;
         public static final double DRIVE_KI = 0.0;
         public static final double DRIVE_KD = 0.0;
 
@@ -398,7 +399,6 @@ public final class Constants {
         public static final double ABS_ENCODER_ZERO = Math.toRadians(306.71 + 90);
         public static final double TOLERANCE = Units.degreesToRadians(2.5);
 
-
         public static final double MAX_VELOCITY =
                 Constants.compBot() ? Units.rotationsToRadians(4) : Units.degreesToRadians(180);
         public static final double MAX_ACCEL =
@@ -453,12 +453,10 @@ public final class Constants {
         public static final SuperstructureState L4_PLOP =
                 new SuperstructureState(L4.elevatorPosition, Math.toRadians(20));
 
-
         public static final SuperstructureState PICKUP_LOW_ALGAE =
                 new SuperstructureState(.48 + .2, Math.toRadians(60));
         public static final SuperstructureState PICKUP_HIGH_ALGAE =
                 new SuperstructureState(.88 + .2, Math.toRadians(60));
-
 
         public static final List<StateWithMode> L4_DUNK =
                 List.of(
@@ -468,7 +466,6 @@ public final class Constants {
                                 new SuperstructureState(1.31, Math.toRadians(0))),
                         SetpointMode.WRIST_SYNC.withState(
                                 new SuperstructureState(1.0, Math.toRadians(70))));
-
 
         public static final SuperstructureState HANDOFF =
                 new SuperstructureState(.001, Math.toRadians(94));
@@ -513,10 +510,8 @@ public final class Constants {
         public static final double HANDOFF_SPEED = compBot() ? .4 : .5; // TODO CONFIG
         public static final double REVERSE_SPEED = -.15; // TODO CONFIG
 
-
         public static final double ALGAE_HOLD = -.4; // TODO CONFIG
         public static final double ALGAE_EJECT = .4; // TODO CONFIG
-
 
         public static final double ALGAE_REMOVAL = .5; // TODO CONFIG
         public static final double SHOOT_CORAL = .5;
@@ -548,7 +543,8 @@ public final class Constants {
         public static final double MAX_POS = Math.toRadians(270);
         public static final double MIN_POS = Math.toRadians(0);
 
-        public static final double ABS_ENCODER_ZERO = Units.rotationsToRadians(0.9178690729467268 - .75);
+        public static final double ABS_ENCODER_ZERO =
+                Units.rotationsToRadians(0.9178690729467268 - .75);
         public static final int ABS_ENCODER_DIO_PORT = 1;
 
         public static final double DEPLOY_POSITION = Math.toRadians(105); // TODO CONFIG
@@ -588,39 +584,26 @@ public final class Constants {
 
         public static final List<RobotCamera> CAMERAS =
                 List.of(
-                        new RobotCamera(// FRONT LEFT
+                        new RobotCamera( // FRONT LEFT
                                 "Blitz_2_OV2311",
                                 new Transform3d(
                                         new Translation3d(
                                                 // TODO, VERIFY
                                                 Inches.of(11.104033),
                                                 Inches.of(10.101652),
-                                                Inches.of(9.504322)
-                                        ),
+                                                Inches.of(9.504322)),
                                         new Rotation3d(
-                                                Degrees.of(0),
-                                                Degrees.of(-20),
-                                                Degrees.of(-20)
-                                        )
-                                )
-                        ),
-                        new RobotCamera(// FRONT RIGHT
+                                                Degrees.of(0), Degrees.of(-20), Degrees.of(-20)))),
+                        new RobotCamera( // FRONT RIGHT
                                 "Blitz_1_OV2311",
                                 new Transform3d(
                                         new Translation3d(
                                                 // TODO, VERIFY
                                                 Inches.of(11.104033),
                                                 Inches.of(-10.101652),
-                                                Inches.of(9.504322)
-                                        ),
+                                                Inches.of(9.504322)),
                                         new Rotation3d(
-                                                Degrees.of(0),
-                                                Degrees.of(-20),
-                                                Degrees.of(20)
-                                        )
-                                )
-                        )
-                );
+                                                Degrees.of(0), Degrees.of(-20), Degrees.of(20)))));
 
         public record RobotCamera(String name, Transform3d pose) {}
     }
@@ -629,5 +612,9 @@ public final class Constants {
         public static final class Timings {
             public static final double STOW_TO_L4_READY = 1.25; // IDK ACTUAL TIMINGS
         }
+
+        // TODO VERY IMPORTANT PART UH
+        public static final Map<ScoringPositions.Branch, Pose2d> SCORING_POSITIONS =
+                Map.ofEntries(ScoringPositions.Branch.A.toEntry(Pose2d.kZero));
     }
 }
