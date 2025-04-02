@@ -5,13 +5,13 @@ package frc.robot.subsystems.drive;
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.Constants.Drive.*;
 
+import choreo.trajectory.SwerveSample;
 import com.ctre.phoenix6.SignalLogger;
 import com.pathplanner.lib.util.DriveFeedforwards;
 import com.pathplanner.lib.util.swerve.SwerveSetpoint;
 import com.pathplanner.lib.util.swerve.SwerveSetpointGenerator;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
-import choreo.trajectory.SwerveSample;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.controller.PIDController;
@@ -30,8 +30,8 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -115,7 +115,6 @@ public class Drive extends BlitzSubsystem {
     private ChassisSpeedController velocityController = null;
     private ChassisSpeedFilter velocityFilter = null;
     private HeadingController headingController = null;
-
 
     public Command setControl(ChassisSpeedController velocityController) {
         return Commands.startEnd(
@@ -229,7 +228,7 @@ public class Drive extends BlitzSubsystem {
         rotateToHeadingPid.setTolerance(2);
         initTelemetry();
 
-//        zeroGyro();
+        //        zeroGyro();
 
         new RangeSensorIOFusion();
 
@@ -304,10 +303,13 @@ public class Drive extends BlitzSubsystem {
                                                         "sysid-angular drive", state.toString())),
                         new SysIdRoutine.Mechanism(
                                 (volts) -> {
-                                    var speeds = ChassisSpeeds.fromFieldRelativeSpeeds(new ChassisSpeeds(volts.in(Volt), 0, 0), getYaw());
+                                    var speeds =
+                                            ChassisSpeeds.fromFieldRelativeSpeeds(
+                                                    new ChassisSpeeds(volts.in(Volt), 0, 0),
+                                                    getYaw());
 
-
-                                    SwerveModuleState[] desiredStates = KINEMATICS.toSwerveModuleStates(speeds);
+                                    SwerveModuleState[] desiredStates =
+                                            KINEMATICS.toSwerveModuleStates(speeds);
                                     for (SwerveModule mod : swerveModules) {
                                         mod.setStatesVoltage(desiredStates[mod.moduleNumber]);
                                     }
@@ -323,51 +325,53 @@ public class Drive extends BlitzSubsystem {
                                 Seconds.of(10),
                                 Constants.compBot()
                                         ? (state) ->
-                                        SignalLogger.writeString(
-                                                "sysid-drive-angular-state",
-                                                state.toString())
+                                                SignalLogger.writeString(
+                                                        "sysid-drive-angular-state",
+                                                        state.toString())
                                         : (state) ->
-                                        Logger.recordOutput(
-                                                "sysid-angular-drive", state.toString())),
+                                                Logger.recordOutput(
+                                                        "sysid-angular-drive", state.toString())),
                         new SysIdRoutine.Mechanism(
                                 (volts) -> {
-                                    SwerveModuleState[] desiredStates = KINEMATICS.toSwerveModuleStates(new ChassisSpeeds(0, 0, volts.in(Volt)));
+                                    SwerveModuleState[] desiredStates =
+                                            KINEMATICS.toSwerveModuleStates(
+                                                    new ChassisSpeeds(0, 0, volts.in(Volt)));
                                     for (SwerveModule mod : swerveModules) {
                                         mod.setStatesVoltage(desiredStates[mod.moduleNumber]);
                                     }
                                 },
                                 null,
                                 this));
-//
-//        RobotConfig config;
-//
-//        try {
-//            //            config = RobotConfig.fromGUISettings();
-//            config = PHYSICAL_CONSTANTS;
-//        } catch (Exception e) {
-//            config = PHYSICAL_CONSTANTS;
-//            DriverStation.reportError(
-//                    "Failed to load PathPlanner config and configure AutoBuilder",
-//                    e.getStackTrace());
-//        }
-//
-//        AutoBuilder.configure(
-//                this::getPose,
-//                this::resetOdometry,
-//                () -> KINEMATICS.toChassisSpeeds(getModuleStates()),
-//                (speeds, feedforwards) -> {
-//                    drive(speeds, true);
-//                    Logger.recordOutput("drive/auto/speeds", speeds);
-//                },
-//                new PPHolonomicDriveController(
-//                        AutoConstants.TRANSLATION_PID, AutoConstants.ROTATION_PID),
-//                config,
-//                () ->
-//                        DriverStation.getAlliance().isPresent()
-//                                && DriverStation.getAlliance()
-//                                        .get()
-//                                        .equals(DriverStation.Alliance.Red),
-//                this);
+        //
+        //        RobotConfig config;
+        //
+        //        try {
+        //            //            config = RobotConfig.fromGUISettings();
+        //            config = PHYSICAL_CONSTANTS;
+        //        } catch (Exception e) {
+        //            config = PHYSICAL_CONSTANTS;
+        //            DriverStation.reportError(
+        //                    "Failed to load PathPlanner config and configure AutoBuilder",
+        //                    e.getStackTrace());
+        //        }
+        //
+        //        AutoBuilder.configure(
+        //                this::getPose,
+        //                this::resetOdometry,
+        //                () -> KINEMATICS.toChassisSpeeds(getModuleStates()),
+        //                (speeds, feedforwards) -> {
+        //                    drive(speeds, true);
+        //                    Logger.recordOutput("drive/auto/speeds", speeds);
+        //                },
+        //                new PPHolonomicDriveController(
+        //                        AutoConstants.TRANSLATION_PID, AutoConstants.ROTATION_PID),
+        //                config,
+        //                () ->
+        //                        DriverStation.getAlliance().isPresent()
+        //                                && DriverStation.getAlliance()
+        //                                        .get()
+        //                                        .equals(DriverStation.Alliance.Red),
+        //                this);
 
         // https://pathplanner.dev/pplib-swerve-setpoint-generator.html
         setpointGenerator =
@@ -398,10 +402,11 @@ public class Drive extends BlitzSubsystem {
                         .withName("DriveLinear Quasistic Reverse"));
 
         tuningTab.add(
-                linearSysIdDynamic(SysIdRoutine.Direction.kForward).withName("DriveLinear Dynamic Forward"));
+                linearSysIdDynamic(SysIdRoutine.Direction.kForward)
+                        .withName("DriveLinear Dynamic Forward"));
         tuningTab.add(
-                linearSysIdDynamic(SysIdRoutine.Direction.kReverse).withName("DriveLinear Dynamic Reverse"));
-
+                linearSysIdDynamic(SysIdRoutine.Direction.kReverse)
+                        .withName("DriveLinear Dynamic Reverse"));
 
         tuningTab.add(
                 angularSysIdQuasistatic(SysIdRoutine.Direction.kForward)
@@ -411,11 +416,11 @@ public class Drive extends BlitzSubsystem {
                         .withName("DriveAngular Quasistic Reverse"));
 
         tuningTab.add(
-                angularSysIdDynamic(SysIdRoutine.Direction.kForward).withName("DriveAngular Dynamic Forward"));
+                angularSysIdDynamic(SysIdRoutine.Direction.kForward)
+                        .withName("DriveAngular Dynamic Forward"));
         tuningTab.add(
-                angularSysIdDynamic(SysIdRoutine.Direction.kReverse).withName("DriveAngular Dynamic Reverse"));
-
-
+                angularSysIdDynamic(SysIdRoutine.Direction.kReverse)
+                        .withName("DriveAngular Dynamic Reverse"));
     }
 
     public void drive(
@@ -477,12 +482,10 @@ public class Drive extends BlitzSubsystem {
         drive(robotRel, isOpenLoop);
     }
 
-
     public void driveFieldRelative(ChassisSpeeds speeds, boolean openLoop) {
         Logger.recordOutput("drive/requestedFieldSpeeds", speeds);
         drive(ChassisSpeeds.fromFieldRelativeSpeeds(speeds, getYaw()), openLoop);
     }
-
 
     public void drive(ChassisSpeeds speeds, boolean openLoop) {
         Logger.recordOutput("drive/requestedSpeeds", speeds);
@@ -494,22 +497,20 @@ public class Drive extends BlitzSubsystem {
 
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, MAX_SPEED);
 
-                Logger.recordOutput(logKey + "/drivespeeds", speeds);
-                Logger.recordOutput(logKey + "/driveopen", openLoop);
-                // Note: it is important to not discretize speeds before or after
-                // using the setpoint generator, as it will discretize them for you
-                previousSetpoint =
-                        setpointGenerator.generateSetpoint(
-                                previousSetpoint, // The previous setpoint
-                                speeds, // The desired target speeds
-                                Constants.LOOP_PERIOD_SEC // The loop time of the robot code, in
-                                );
+        Logger.recordOutput(logKey + "/drivespeeds", speeds);
+        Logger.recordOutput(logKey + "/driveopen", openLoop);
+        // Note: it is important to not discretize speeds before or after
+        // using the setpoint generator, as it will discretize them for you
+        previousSetpoint =
+                setpointGenerator.generateSetpoint(
+                        previousSetpoint, // The previous setpoint
+                        speeds, // The desired target speeds
+                        Constants.LOOP_PERIOD_SEC // The loop time of the robot code, in
+                        );
 
-                Logger.recordOutput(logKey + "/setpoint/speeds",
-         previousSetpoint.robotRelativeSpeeds());
-                Logger.recordOutput(logKey + "/setpoint/states", previousSetpoint.moduleStates());
-                Logger.recordOutput(logKey + "/setpoint/ff", previousSetpoint.feedforwards());
-
+        Logger.recordOutput(logKey + "/setpoint/speeds", previousSetpoint.robotRelativeSpeeds());
+        Logger.recordOutput(logKey + "/setpoint/states", previousSetpoint.moduleStates());
+        Logger.recordOutput(logKey + "/setpoint/ff", previousSetpoint.feedforwards());
 
         setModuleStates(swerveModuleStates, openLoop, false, false);
     }
@@ -574,17 +575,21 @@ public class Drive extends BlitzSubsystem {
         return swerveOdometry.getPoseMeters();
     }
 
-
     public void resetOdometry(Pose2d pose) {
         swerveOdometry.resetPosition(getYaw(), getModulePositions(), pose);
         poseEstimator.resetPosition(getYaw(), getModulePositions(), pose);
     }
 
-    public void addVisionMeasurement(Pose2d pose, double timestamp, Matrix<N3, N1> visionMeasurementStdDevs) {
+    public void addVisionMeasurement(
+            Pose2d pose, double timestamp, Matrix<N3, N1> visionMeasurementStdDevs) {
 
-        poseEstimator.addVisionMeasurement(pose, timestamp, visionMeasurementStdDevs); // Maybe base std devs off of camera stuff, .7m seams high as an std
-         // Standard deviations, basically vision
-                
+        poseEstimator.addVisionMeasurement(
+                pose,
+                timestamp,
+                visionMeasurementStdDevs); // Maybe base std devs off of camera stuff, .7m seams
+        // high as an std
+        // Standard deviations, basically vision
+
     }
 
     public void zeroGyro() {
@@ -696,17 +701,19 @@ public class Drive extends BlitzSubsystem {
         Rotation2d rot = Rotation2d.kZero;
 
         return Commands.sequence(
-                run(() -> setModuleStates(
-                        new SwerveModuleState[]{
-                                new SwerveModuleState(0, rot),
-                                new SwerveModuleState(0, rot),
-                                new SwerveModuleState(0, rot),
-                                new SwerveModuleState(0, rot)
-                        }, true, true, true
-                )).withTimeout(1),
-                linearRoutine.quasistatic(direction)
-
-        )
+                        run(() ->
+                                        setModuleStates(
+                                                new SwerveModuleState[] {
+                                                    new SwerveModuleState(0, rot),
+                                                    new SwerveModuleState(0, rot),
+                                                    new SwerveModuleState(0, rot),
+                                                    new SwerveModuleState(0, rot)
+                                                },
+                                                true,
+                                                true,
+                                                true))
+                                .withTimeout(1),
+                        linearRoutine.quasistatic(direction))
                 .withName(
                         logKey
                                 + "/linearQuasistatic"
@@ -715,20 +722,22 @@ public class Drive extends BlitzSubsystem {
 
     public Command linearSysIdDynamic(SysIdRoutine.Direction direction) {
 
-        Rotation2d rot =  Rotation2d.kZero;
+        Rotation2d rot = Rotation2d.kZero;
 
         return Commands.sequence(
-                        run(() -> setModuleStates(
-                                new SwerveModuleState[]{
-                                        new SwerveModuleState(0, rot),
-                                        new SwerveModuleState(0, rot),
-                                        new SwerveModuleState(0, rot),
-                                        new SwerveModuleState(0, rot)
-                                }, true, true, true
-                        )).withTimeout(1),
-                        linearRoutine.dynamic(direction)
-
-                )
+                        run(() ->
+                                        setModuleStates(
+                                                new SwerveModuleState[] {
+                                                    new SwerveModuleState(0, rot),
+                                                    new SwerveModuleState(0, rot),
+                                                    new SwerveModuleState(0, rot),
+                                                    new SwerveModuleState(0, rot)
+                                                },
+                                                true,
+                                                true,
+                                                true))
+                                .withTimeout(1),
+                        linearRoutine.dynamic(direction))
                 .withName(
                         logKey
                                 + "/linearDynamic"
@@ -736,7 +745,8 @@ public class Drive extends BlitzSubsystem {
     }
 
     public Command angularSysIdQuasistatic(SysIdRoutine.Direction direction) {
-        return linearRoutine.quasistatic(direction)
+        return linearRoutine
+                .quasistatic(direction)
                 .withName(
                         logKey
                                 + "/angularQuasistatic"
@@ -744,7 +754,8 @@ public class Drive extends BlitzSubsystem {
     }
 
     public Command angularSysIdDynamic(SysIdRoutine.Direction direction) {
-        return linearRoutine.quasistatic(direction)
+        return linearRoutine
+                .quasistatic(direction)
                 .withName(
                         logKey
                                 + "/angularDynamic"
@@ -768,7 +779,7 @@ public class Drive extends BlitzSubsystem {
 
         Logger.recordOutput(logKey + "/odometry", swerveOdometry.getPoseMeters());
         Logger.recordOutput(logKey + "/poseEstimator", poseEstimator.getEstimatedPosition());
-        
+
         Logger.recordOutput(logKey + "/modules", getModuleStates());
 
         LoggedTunableNumber.ifChanged(
@@ -801,40 +812,45 @@ public class Drive extends BlitzSubsystem {
         return poseEstimator.sampleAt(timestamp);
     }
 
-
-    private final PIDController xController = new PIDController(14,0,0);
-    private final PIDController yController = new PIDController(14,0,0);
+    private final PIDController xController = new PIDController(14, 0, 0);
+    private final PIDController yController = new PIDController(14, 0, 0);
     private final PIDController choreoThetaController = new PIDController(3, 0, 0);
-
 
     public void followTrajectory(SwerveSample sample) {
         Logger.recordOutput("drive/choreoTrajectory", sample);
         choreoThetaController.enableContinuousInput(-Math.PI, Math.PI);
 
-        ChassisSpeeds speeds = new ChassisSpeeds(
-                sample.vx + xController.calculate(poseEstimator.getEstimatedPosition().getX(), sample.x),
-                sample.vy + yController.calculate(poseEstimator.getEstimatedPosition().getY(), sample.y),
-                sample.omega + choreoThetaController.calculate(poseEstimator.getEstimatedPosition().getRotation().getRadians(), sample.heading)
-        );
+        ChassisSpeeds speeds =
+                new ChassisSpeeds(
+                        sample.vx
+                                + xController.calculate(
+                                        poseEstimator.getEstimatedPosition().getX(), sample.x),
+                        sample.vy
+                                + yController.calculate(
+                                        poseEstimator.getEstimatedPosition().getY(), sample.y),
+                        sample.omega
+                                + choreoThetaController.calculate(
+                                        poseEstimator
+                                                .getEstimatedPosition()
+                                                .getRotation()
+                                                .getRadians(),
+                                        sample.heading));
 
         driveFieldRelative(speeds, false);
     }
-
 
     /* Drive to Pose */
     /* DRIVE TO POSE using Trapezoid Profiles */
     private TrapezoidProfile.Constraints driveToPoseConstraints = new Constraints(2, 1.5);
     private TrapezoidProfile.Constraints driveToPoseRotationConstraints = new Constraints(3, 6);
     private TrapezoidProfile driveToPoseProfile = new TrapezoidProfile(driveToPoseConstraints);
-    private TrapezoidProfile driveToPoseRotationProfile = new TrapezoidProfile(driveToPoseRotationConstraints);
+    private TrapezoidProfile driveToPoseRotationProfile =
+            new TrapezoidProfile(driveToPoseRotationConstraints);
 
     // For modifying goals from within a lambda
 
-
     private TrapezoidProfile.State driveToPoseGoal = new TrapezoidProfile.State(0, 0);
     private TrapezoidProfile.State driveToPoseRotationGoal = new TrapezoidProfile.State(0, 0);
-
-
 
     Capture<Pose2d> initial = new Capture<Pose2d>(new Pose2d());
     // The goal (populated from poseSupplier at command start)
@@ -848,112 +864,147 @@ public class Drive extends BlitzSubsystem {
     TrapezoidProfile.State rotationState = new State(0, 0);
 
     // Threshold for "close enough" to avoid microadjustments
-    Trigger atPose = atPose(()-> goal.inner, Units.inchesToMeters(0.5), Units.degreesToRadians(1));
+    Trigger atPose = atPose(() -> goal.inner, Units.inchesToMeters(0.5), Units.degreesToRadians(1));
 
     /**
-     * <B>IMPORTANT, While this takes a pose supplier, this is mostly for convince. and <U>once the command has started,
-     * the command will sample the value of the supplier and drive there.</U> It will NOT follow the pose</B>
-     * <p>
-
-     * Drives to a pose with motion profiles on translation and rotation.
-     * The translation profile starts at dist(start,end) and drives toward 0. This state is then interpolated
-     * between poses.
-     * <p>
-     * The rotation profile starts at initial.heading and ends at goal.heading, just like a profiled continuous heading controller.
+     * <B>IMPORTANT, While this takes a pose supplier, this is mostly for convince. and <U>once the
+     * command has started, the command will sample the value of the supplier and drive there.</U>
+     * It will NOT follow the pose</B>
+     *
+     * <p>Drives to a pose with motion profiles on translation and rotation. The translation profile
+     * starts at dist(start,end) and drives toward 0. This state is then interpolated between poses.
+     *
+     * <p>The rotation profile starts at initial.heading and ends at goal.heading, just like a
+     * profiled continuous heading controller.
      */
     public Command driveToPose(Supplier<Pose2d> poseSupplier) {
-        Command command = runOnce(
-                () -> {
-                    var getTargetTime = Timer.getFPGATimestamp();
+        Command command =
+                runOnce(
+                                () -> {
+                                    var getTargetTime = Timer.getFPGATimestamp();
 
-                    initial.inner = getPose();
-                    goal.inner = poseSupplier.get();
+                                    initial.inner = getPose();
+                                    goal.inner = poseSupplier.get();
 
+                                    // initial position: distance from end
+                                    // initial velocity: component of velocity away from end, so
+                                    // approaching is a negative number
+                                    var goalToBot = initial.inner.minus(goal.inner);
+                                    var directionGoalToBot =
+                                            goalToBot.getTranslation().toVector().unit();
 
-                    // initial position: distance from end
-                    // initial velocity: component of velocity away from end, so approaching is a negative number
-                    var goalToBot = initial.inner.minus(goal.inner);
-                    var directionGoalToBot = goalToBot.getTranslation().toVector().unit();
+                                    this.directionGoalToBot.inner = directionGoalToBot;
 
-                    this.directionGoalToBot.inner = directionGoalToBot;
+                                    distance.inner = goalToBot.getTranslation().getNorm();
 
-                    distance.inner = goalToBot.getTranslation().getNorm();
+                                    // Position goes from our distance to zero as we approach
+                                    translationState.position = distance.inner;
 
-                    // Position goes from our distance to zero as we approach
-                    translationState.position = distance.inner;
+                                    var speeds = getFieldRelativeSpeeds();
 
-                    var speeds = getFieldRelativeSpeeds();
+                                    // A negative velocity means we are approaching 0, the goal is 0
+                                    translationState.velocity =
+                                            MathUtil.clamp(
+                                                    VecBuilder.fill(
+                                                                    speeds.vxMetersPerSecond,
+                                                                    speeds.vyMetersPerSecond)
+                                                            .dot(directionGoalToBot),
+                                                    -driveToPoseConstraints.maxVelocity,
+                                                    0);
 
-                    // A negative velocity means we are approaching 0, the goal is 0
-                    translationState.velocity = MathUtil.clamp(
-                            VecBuilder.fill(
-                            speeds.vxMetersPerSecond,
-                            speeds.vyMetersPerSecond
-                    ).dot(directionGoalToBot), -driveToPoseConstraints.maxVelocity, 0);
+                                    // Initial state of rotation
+                                    driveToPoseRotationGoal.position =
+                                            goal.inner.getRotation().getRadians();
 
+                                    rotationState.position =
+                                            initial.inner.getRotation().getRadians();
+                                    rotationState.velocity = speeds.omegaRadiansPerSecond;
+                                })
+                        .andThen(
+                                run(
+                                        () -> {
+                                            var setpoint =
+                                                    driveToPoseProfile.calculate(
+                                                            Constants.LOOP_PERIOD_SEC,
+                                                            translationState,
+                                                            driveToPoseGoal);
+                                            translationState.position = setpoint.position;
+                                            translationState.velocity = setpoint.velocity;
 
-                    // Initial state of rotation
-                    driveToPoseRotationGoal.position = goal.inner.getRotation().getRadians();
+                                            // I am trusting them here
 
-                    rotationState.position = initial.inner.getRotation().getRadians();
-                    rotationState.velocity = speeds.omegaRadiansPerSecond;
-                }
-        ).andThen(
-            run(
-                    () -> {
-                        var setpoint = driveToPoseProfile.calculate(Constants.LOOP_PERIOD_SEC, translationState, driveToPoseGoal);
-                        translationState.position = setpoint.position;
-                        translationState.velocity = setpoint.velocity;
+                                            // Rotation continuous input
+                                            // Get error which is the smallest distance between goal
+                                            // and measurement
+                                            double errorBound = Math.PI;
+                                            var measurement = getYaw().getRadians();
+                                            double goalMinDistance =
+                                                    MathUtil.inputModulus(
+                                                            driveToPoseRotationGoal.position
+                                                                    - measurement,
+                                                            -errorBound,
+                                                            errorBound);
+                                            double setpointMinDistance =
+                                                    MathUtil.inputModulus(
+                                                            rotationState.position - measurement,
+                                                            -errorBound,
+                                                            errorBound);
 
-                        // I am trusting them here
+                                            // Recompute the profile goal with the smallest error,
+                                            // thus giving the shortest path. The goal
+                                            // may be outside the input range after this operation,
+                                            // but that's OK because the controller
+                                            // will still go there and report an error of zero. In
+                                            // other words, the setpoint only needs to
+                                            // be offset from the measurement by the input range
+                                            // modulus; they don't need to be equal.
+                                            driveToPoseRotationGoal.position =
+                                                    goalMinDistance + measurement;
+                                            rotationState.position =
+                                                    setpointMinDistance + measurement;
 
-                        // Rotation continuous input
-                        // Get error which is the smallest distance between goal and measurement
-                        double errorBound = Math.PI;
-                        var measurement = getYaw().getRadians();
-                        double goalMinDistance =
-                                MathUtil.inputModulus(driveToPoseRotationGoal.position-measurement, -errorBound, errorBound);
-                        double setpointMinDistance =
-                                MathUtil.inputModulus(rotationState.position - measurement, -errorBound, errorBound);
+                                            var rotSetpoint =
+                                                    driveToPoseRotationProfile.calculate(
+                                                            0.02,
+                                                            rotationState,
+                                                            driveToPoseRotationGoal);
+                                            rotationState.position = rotSetpoint.position;
+                                            rotationState.velocity = rotSetpoint.velocity;
 
+                                            var startPose = initial.inner;
 
-                        // Recompute the profile goal with the smallest error, thus giving the shortest path. The goal
-                        // may be outside the input range after this operation, but that's OK because the controller
-                        // will still go there and report an error of zero. In other words, the setpoint only needs to
-                        // be offset from the measurement by the input range modulus; they don't need to be equal.
-                        driveToPoseRotationGoal.position = goalMinDistance + measurement;
-                        rotationState.position = setpointMinDistance + measurement;
+                                            var interpTrans =
+                                                    goal.inner
+                                                            .getTranslation()
+                                                            .interpolate(
+                                                                    startPose.getTranslation(),
+                                                                    setpoint.position
+                                                                            / distance.inner);
 
-                        var rotSetpoint = driveToPoseRotationProfile.calculate(
-                                0.02, rotationState, driveToPoseRotationGoal);
-                        rotationState.position = rotSetpoint.position;
-                        rotationState.velocity = rotSetpoint.velocity;
-
-                        var startPose = initial.inner;
-
-                        var interpTrans = goal.inner
-                                .getTranslation()
-                                .interpolate(startPose.getTranslation(), setpoint.position / distance.inner);
-
-
-                        if (atPose.getAsBoolean()) {
-                            this.drive(new ChassisSpeeds(), true);
-                        } else {
-                            followTrajectory(DriveUtil.sample(
-                                    interpTrans,
-                                    new Rotation2d(rotationState.position),
-                                    normDirStartToEnd.inner.getX() * -setpoint.velocity,
-                                    normDirStartToEnd.inner.getY() * -setpoint.velocity,
-                                    rotationState.velocity));
-                        }
-                    }
-            )
-        ).until(atPose).finallyDo(() -> drive(new ChassisSpeeds(), true));
+                                            if (atPose.getAsBoolean()) {
+                                                this.drive(new ChassisSpeeds(), true);
+                                            } else {
+                                                followTrajectory(
+                                                        DriveUtil.sample(
+                                                                interpTrans,
+                                                                new Rotation2d(
+                                                                        rotationState.position),
+                                                                normDirStartToEnd.inner.getX()
+                                                                        * -setpoint.velocity,
+                                                                normDirStartToEnd.inner.getY()
+                                                                        * -setpoint.velocity,
+                                                                rotationState.velocity));
+                                            }
+                                        }))
+                        .until(atPose.debounce(.1))
+                        .finallyDo(() -> drive(new ChassisSpeeds(), true));
 
         return command.withName("drive/driveToPoseCommand");
     }
 
-
+    public Command driveToPose(Pose2d pose) {
+        return driveToPose(() -> pose);
+    }
 
     public double toleranceMeters = Units.inchesToMeters(0.5);
     public double toleranceRadians = Units.degreesToRadians(1);
@@ -968,13 +1019,21 @@ public class Drive extends BlitzSubsystem {
         // above.
         return dot > Math.cos(toleranceRadians);
     }
-    public Trigger atPose(Supplier<Pose2d> poseSup, double toleranceMeters, double toleranceRadians) {
+
+    public Trigger atPose(
+            Supplier<Pose2d> poseSup, double toleranceMeters, double toleranceRadians) {
         return new Trigger(
                 () -> {
                     Pose2d pose = poseSup.get();
                     Pose2d currentPose = getPose();
-                    boolean transValid = currentPose.getTranslation().getDistance(pose.getTranslation()) < toleranceMeters;
-                    boolean rotValid = withinTolerance(currentPose.getRotation(), pose.getRotation(), toleranceRadians);
+                    boolean transValid =
+                            currentPose.getTranslation().getDistance(pose.getTranslation())
+                                    < toleranceMeters;
+                    boolean rotValid =
+                            withinTolerance(
+                                    currentPose.getRotation(),
+                                    pose.getRotation(),
+                                    toleranceRadians);
                     return transValid && rotValid;
                 });
     }
@@ -990,8 +1049,4 @@ public class Drive extends BlitzSubsystem {
     public Trigger atPose(Pose2d pose) {
         return atPose(() -> pose);
     }
-
-
-
-
 }

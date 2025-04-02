@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
+import frc.lib.util.ScoringPositions;
 import frc.robot.Constants;
 import frc.robot.subsystems.drive.Drive;
 import choreo.Choreo;
@@ -193,6 +194,7 @@ public class AutoCommands {
 
         AutoRoutine routine = autoFactory.newRoutine(pathName);
 
+        List<ScoringPositions.Branch> scoringPositions = List.of(ScoringPositions.Branch.I);
 
         var trajectory = Choreo.loadTrajectory(pathName);
         if (trajectory.isEmpty()) {
@@ -217,10 +219,20 @@ public class AutoCommands {
         );
 
         for (int i = 0; i < toReef.size(); i++) {
-            toReef.get(i).atTimeBeforeEnd(Constants.Auto.Timings.STOW_TO_L4_READY).onTrue(
-                    Commands.sequence(
-                            Commands.waitUntil(intake::hasCoral),
-                            prepareL4())
+            toReef.get(i).atTime(scoringPositions.get(i).name() + "_APPROACH")
+                    .onTrue(Commands.parallel(
+                                Commands.sequence(
+                                        Commands.waitUntil(intake::hasCoral),
+                                        prepareL4().asProxy() // As proxy so that we don't cancel handoff if the coral isn't here yet
+                                ),
+                            drive.driveToPose(Constants.Auto.SCORING_POSITIONS.get(scoringPositions.get(i)))
+                            )
+                    );
+
+//            toReef.get(i).atTimeBeforeEnd(Constants.Auto.Timings.STOW_TO_L4_READY).onTrue(
+//                    Commands.sequence(
+//                            Commands.waitUntil(intake::hasCoral),
+//                            prepareL4())
             );
             toReef.get(i).done().onTrue(
                     Commands.sequence(
