@@ -97,9 +97,9 @@ public final class Constants {
 
         /* Drivetrain Constants */
         public static final double TRACK_WIDTH =
-                Units.inchesToMeters(24.75 + (compBot() ? -.25 : 0));
+                Units.inchesToMeters(24.25);
         public static final double WHEEL_BASE =
-                Units.inchesToMeters(24.75 + (compBot() ? -.25 : 0));
+                Units.inchesToMeters(24.25);
         public static final double WHEEL_CIRCUMFERENCE = CHOSEN_MODULE.wheelCircumference;
 
         /* Motor Inverts */
