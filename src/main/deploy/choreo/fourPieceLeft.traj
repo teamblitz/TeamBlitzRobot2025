@@ -587,5 +587,8 @@
   "splits":[0,62,152,225,280,351,404]
  },
  "events":[
-   {"name":"I_APPROACH", "from":{"target":1, "targetTimestamp":1.38148, "offset":{"exp":"0 s", "val":0.0}}, "event":null}]
+   {"name":"I_APPROACH", "from":{"target":1, "targetTimestamp":1.38148, "offset":{"exp":"0 s", "val":0.0}}, "event":null},
+   {"name":"K_APPROACH", "from":{"target":5, "targetTimestamp":null, "offset":{"exp":"0 s", "val":0.0}}, "event":null},
+   {"name":"L_APPROACH", "from":{"target":8, "targetTimestamp":null, "offset":{"exp":"0 s", "val":0.0}}, "event":null},
+   {"name":"A_APPROACH", "from":{"target":13, "targetTimestamp":null, "offset":{"exp":"0 s", "val":0.0}}, "event":null}]
 }

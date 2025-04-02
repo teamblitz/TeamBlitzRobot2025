@@ -615,6 +615,8 @@ public final class Constants {
 
         // TODO VERY IMPORTANT PART UH
         public static final Map<ScoringPositions.Branch, Pose2d> SCORING_POSITIONS =
-                Map.ofEntries(ScoringPositions.Branch.A.toEntry(Pose2d.kZero));
+                Map.ofEntries(
+                        ScoringPositions.Branch.A.toEntry(Pose2d.kZero)
+                );
     }
 }
