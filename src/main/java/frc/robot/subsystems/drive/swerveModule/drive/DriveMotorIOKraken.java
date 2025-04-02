@@ -1,7 +1,6 @@
 package frc.robot.subsystems.drive.swerveModule.drive;
 
 import com.ctre.phoenix6.BaseStatusSignal;
-import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.VelocityVoltage;
@@ -30,8 +29,10 @@ public class DriveMotorIOKraken implements DriveMotorIO {
 
     @Override
     public void updateInputs(DriveMotorIO.DriveMotorInputs inputs) {
-        inputs.position = motor.getPosition().getValueAsDouble() * Constants.Drive.WHEEL_CIRCUMFERENCE;
-        inputs.velocity = motor.getVelocity().getValueAsDouble() * Constants.Drive.WHEEL_CIRCUMFERENCE;
+        inputs.position =
+                motor.getPosition().getValueAsDouble() * Constants.Drive.WHEEL_CIRCUMFERENCE;
+        inputs.velocity =
+                motor.getVelocity().getValueAsDouble() * Constants.Drive.WHEEL_CIRCUMFERENCE;
         inputs.volts = motor.getMotorVoltage().getValueAsDouble();
     }
 
@@ -49,17 +50,22 @@ public class DriveMotorIOKraken implements DriveMotorIO {
 
     @Override
     public void setSetpoint(double setpoint, double ffVolts) {
-        double accel = (setpoint-lastVelocity) / Constants.LOOP_PERIOD_SEC;
+        double accel = (setpoint - lastVelocity) / Constants.LOOP_PERIOD_SEC;
         lastVelocity = setpoint;
         Logger.recordOutput("drive/driveIOKraken/velocitySetpointMPS", setpoint);
-        Logger.recordOutput("drive/driveIOKraken/velocitySetpointRPS", setpoint/ Constants.Drive.WHEEL_CIRCUMFERENCE);
+        Logger.recordOutput(
+                "drive/driveIOKraken/velocitySetpointRPS",
+                setpoint / Constants.Drive.WHEEL_CIRCUMFERENCE);
         motor.setControl(
-                closedLoopVelocity.withVelocity(setpoint / Constants.Drive.WHEEL_CIRCUMFERENCE).withAcceleration(accel).withSlot(0));
+                closedLoopVelocity
+                        .withVelocity(setpoint / Constants.Drive.WHEEL_CIRCUMFERENCE)
+                        .withAcceleration(accel)
+                        .withSlot(0));
     }
 
     @Override
     public void configurePID(double p, double i, double d) {
-//        motor.getConfigurator().apply(new Slot0Configs().withKP(p).withKI(i).withKD(d));
+        //        motor.getConfigurator().apply(new Slot0Configs().withKP(p).withKI(i).withKD(d));
     }
 
     private void configDriveMotor() {
@@ -81,11 +87,9 @@ public class DriveMotorIOKraken implements DriveMotorIO {
         config.CurrentLimits.withStatorCurrentLimitEnable(true)
                 .withStatorCurrentLimit(Constants.Drive.CurrentLimits.Kraken.DRIVE_STATOR);
 
-        config.Feedback.withSensorToMechanismRatio(
-                Constants.Drive.DRIVE_GEAR_RATIO);
+        config.Feedback.withSensorToMechanismRatio(Constants.Drive.DRIVE_GEAR_RATIO);
 
-        config.Slot0
-                .withKP(Constants.Drive.DRIVE_KP)
+        config.Slot0.withKP(Constants.Drive.DRIVE_KP)
                 .withKD(Constants.Drive.DRIVE_KD)
                 .withKS(Constants.Drive.DRIVE_KS)
                 .withKV(Constants.Drive.DRIVE_KV)

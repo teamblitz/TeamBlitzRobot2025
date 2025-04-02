@@ -26,7 +26,8 @@ import lombok.RequiredArgsConstructor;
 public class FieldConstants {
     public static final FieldType fieldType = FieldType.WELDED;
 
-    public static final double fieldLength = AprilTagLayoutType.OFFICIAL.getLayout().getFieldLength();
+    public static final double fieldLength =
+            AprilTagLayoutType.OFFICIAL.getLayout().getFieldLength();
     public static final double fieldWidth = AprilTagLayoutType.OFFICIAL.getLayout().getFieldWidth();
     public static final double startingLineX =
             Units.inchesToMeters(299.438); // Measured from the inside of starting line
@@ -85,7 +86,8 @@ public class FieldConstants {
         public static final Pose2d[] centerFaces =
                 new Pose2d[6]; // Starting facing the driver station in clockwise order
         public static final List<Map<ReefLevel, Pose3d>> branchPositions =
-                new ArrayList<>(); // Starting at the right branch facing the driver station in clockwise
+                new ArrayList<>(); // Starting at the right branch facing the driver station in
+        // clockwise
         public static final List<Map<ReefLevel, Pose2d>> branchPositions2d = new ArrayList<>();
 
         static {
@@ -105,7 +107,8 @@ public class FieldConstants {
                 Map<ReefLevel, Pose2d> fillRight2d = new HashMap<>();
                 Map<ReefLevel, Pose2d> fillLeft2d = new HashMap<>();
                 for (var level : ReefLevel.values()) {
-                    Pose2d poseDirection = new Pose2d(center, Rotation2d.fromDegrees(180 - (60 * face)));
+                    Pose2d poseDirection =
+                            new Pose2d(center, Rotation2d.fromDegrees(180 - (60 * face)));
                     double adjustX = Units.inchesToMeters(30.738);
                     double adjustY = Units.inchesToMeters(6.469);
 
@@ -113,10 +116,18 @@ public class FieldConstants {
                             new Pose3d(
                                     new Translation3d(
                                             poseDirection
-                                                    .transformBy(new Transform2d(adjustX, adjustY, Rotation2d.kZero))
+                                                    .transformBy(
+                                                            new Transform2d(
+                                                                    adjustX,
+                                                                    adjustY,
+                                                                    Rotation2d.kZero))
                                                     .getX(),
                                             poseDirection
-                                                    .transformBy(new Transform2d(adjustX, adjustY, Rotation2d.kZero))
+                                                    .transformBy(
+                                                            new Transform2d(
+                                                                    adjustX,
+                                                                    adjustY,
+                                                                    Rotation2d.kZero))
                                                     .getY(),
                                             level.height),
                                     new Rotation3d(
@@ -127,10 +138,18 @@ public class FieldConstants {
                             new Pose3d(
                                     new Translation3d(
                                             poseDirection
-                                                    .transformBy(new Transform2d(adjustX, -adjustY, Rotation2d.kZero))
+                                                    .transformBy(
+                                                            new Transform2d(
+                                                                    adjustX,
+                                                                    -adjustY,
+                                                                    Rotation2d.kZero))
                                                     .getX(),
                                             poseDirection
-                                                    .transformBy(new Transform2d(adjustX, -adjustY, Rotation2d.kZero))
+                                                    .transformBy(
+                                                            new Transform2d(
+                                                                    adjustX,
+                                                                    -adjustY,
+                                                                    Rotation2d.kZero))
                                                     .getY(),
                                             level.height),
                                     new Rotation3d(
@@ -157,9 +176,15 @@ public class FieldConstants {
         public static final Pose2d middleIceCream =
                 new Pose2d(Units.inchesToMeters(48), fieldWidth / 2.0, Rotation2d.kZero);
         public static final Pose2d leftIceCream =
-                new Pose2d(Units.inchesToMeters(48), middleIceCream.getY() + separation, Rotation2d.kZero);
+                new Pose2d(
+                        Units.inchesToMeters(48),
+                        middleIceCream.getY() + separation,
+                        Rotation2d.kZero);
         public static final Pose2d rightIceCream =
-                new Pose2d(Units.inchesToMeters(48), middleIceCream.getY() - separation, Rotation2d.kZero);
+                new Pose2d(
+                        Units.inchesToMeters(48),
+                        middleIceCream.getY() - separation,
+                        Rotation2d.kZero);
     }
 
     public enum ReefLevel {

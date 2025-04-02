@@ -37,7 +37,8 @@ public class ElevatorIOKraken implements ElevatorIO {
                 ELEVATOR_GEAR_RATIO / (SPROCKET_CIRCUMFERENCE * 2));
         config.CurrentLimits.withStatorCurrentLimit(120);
 
-        config.MotionMagic.withMotionMagicCruiseVelocity(MAX_VEL).withMotionMagicAcceleration(MAX_ACCEL);
+        config.MotionMagic.withMotionMagicCruiseVelocity(MAX_VEL)
+                .withMotionMagicAcceleration(MAX_ACCEL);
 
         config.Slot0.withGravityType(GravityTypeValue.Elevator_Static)
                 .withKS(KrakenGains.kS)

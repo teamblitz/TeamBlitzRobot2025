@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.BlitzSubsystem;
-import frc.lib.math.EqualsUtil;
 import frc.lib.util.LoggedTunableNumber;
 import frc.robot.Constants;
 import frc.robot.subsystems.leds.Leds;
@@ -28,7 +27,8 @@ public class Elevator extends BlitzSubsystem {
     private final frc.robot.subsystems.superstructure.elevator.ElevatorIO io;
     private final ElevatorIOInputsAutoLogged inputs = new ElevatorIOInputsAutoLogged();
 
-    private final TrapezoidProfile.Constraints constraints = new TrapezoidProfile.Constraints(MAX_VEL, MAX_ACCEL);
+    private final TrapezoidProfile.Constraints constraints =
+            new TrapezoidProfile.Constraints(MAX_VEL, MAX_ACCEL);
     private final TrapezoidProfile profile = new TrapezoidProfile(constraints);
 
     private Optional<TrapezoidProfile.State> goal;
@@ -132,8 +132,8 @@ public class Elevator extends BlitzSubsystem {
 
         if (goal.isPresent() && DriverStation.isEnabled()) {
             setpoint = profile.calculate(loopTimer.get(), setpoint, goal.get());
-            TrapezoidProfile.State future_setpoint = profile.calculate(Constants.LOOP_PERIOD_SEC, setpoint, goal.get());
-
+            TrapezoidProfile.State future_setpoint =
+                    profile.calculate(Constants.LOOP_PERIOD_SEC, setpoint, goal.get());
 
             if (Constants.compBot()) {
                 // If on comp bot, use motion magic to get to goal, trapezoid is just a guide.
@@ -223,15 +223,17 @@ public class Elevator extends BlitzSubsystem {
     }
 
     /**
-     * @param requireProfileCompletion If true, this command will only end once the mechanism position is within a
-     *                                 tolerance of the wanted position. Else this command will end once the time to position has
-     *                                 elapsed, with no guarantee that the mechanism is actually at the goal.
+     * @param requireProfileCompletion If true, this command will only end once the mechanism
+     *     position is within a tolerance of the wanted position. Else this command will end once
+     *     the time to position has elapsed, with no guarantee that the mechanism is actually at the
+     *     goal.
      * @return A command that moves the mechanism to the desired position with motion profiling and
      *     ends when the mechanism reaches that goal.
      */
     public Command goToPosition(double position, boolean requireProfileCompletion) {
         if (requireProfileCompletion)
-            return followGoal(() -> position).withDeadline(
+            return followGoal(() -> position)
+                    .withDeadline(
                             Commands.waitUntil(
                                     () -> MathUtil.isNear(position, getPosition(), TOLERANCE)))
                     .withName(logKey + "/goToPosition_waitForMechanism " + position);
@@ -239,9 +241,10 @@ public class Elevator extends BlitzSubsystem {
             return followGoal(() -> position)
                     .withDeadline(
                             Commands.waitUntil(
-                                    () -> MathUtil.isNear(position, getIdealPosition(), 1e-9))
+                                            () ->
+                                                    MathUtil.isNear(
+                                                            position, getIdealPosition(), 1e-9))
                                     .withName(logKey + "/goToPosition_waitForProfile " + position));
-
     }
 
     /**
@@ -249,16 +252,17 @@ public class Elevator extends BlitzSubsystem {
      */
     public Command followGoal(DoubleSupplier goal) {
         return run(() -> {
-            // Only update the goal if necessary to avoid GC overhead
-            if (this.goal.isEmpty() || this.goal.get().position != goal.getAsDouble()) {
-                this.goal =
-                        Optional.of(
-                                new TrapezoidProfile.State(
-                                        MathUtil.clamp(
-                                                goal.getAsDouble(), MIN_POS, MAX_POS),
-                                        0));
-            }
-        }).handleInterrupt(() -> this.goal = Optional.of(setpoint))
+                    // Only update the goal if necessary to avoid GC overhead
+                    if (this.goal.isEmpty() || this.goal.get().position != goal.getAsDouble()) {
+                        this.goal =
+                                Optional.of(
+                                        new TrapezoidProfile.State(
+                                                MathUtil.clamp(
+                                                        goal.getAsDouble(), MIN_POS, MAX_POS),
+                                                0));
+                    }
+                })
+                .handleInterrupt(() -> this.goal = Optional.of(setpoint))
                 .beforeStarting(refreshCurrentState());
     }
 
@@ -299,7 +303,6 @@ public class Elevator extends BlitzSubsystem {
         }
         return getVelocity();
     }
-
 
     public boolean atBottomLimit() {
         return Constants.devBot() && inputs.bottomLimitSwitch;

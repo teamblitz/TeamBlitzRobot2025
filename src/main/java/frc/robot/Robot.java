@@ -143,7 +143,6 @@ public class Robot extends LoggedRobot {
         GCMonitor.registerGCListener();
 
         robotContainer = new RobotContainer();
-
     }
 
     long robotPeriodicNano = System.nanoTime();

@@ -15,10 +15,7 @@ import com.reduxrobotics.sensors.canandmag.CanandmagSettings;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.Constants;
 import org.littletonrobotics.junction.Logger;
-
-import static frc.robot.Constants.Wrist.*;
 
 public class WristIOKraken implements WristIO {
     private final TalonFX wristMotor;
@@ -44,7 +41,6 @@ public class WristIOKraken implements WristIO {
         config.CurrentLimits.withStatorCurrentLimit(80);
         config.Feedback.withSensorToMechanismRatio(WRIST_GEAR_RATIO);
 
-
         config.MotionMagic.withMotionMagicCruiseVelocity(Units.radiansToRotations(MAX_VELOCITY))
                 .withMotionMagicAcceleration(Units.radiansToRotations(MAX_ACCEL));
 
@@ -54,7 +50,7 @@ public class WristIOKraken implements WristIO {
                 .withKA(KrakenGains.KA)
                 .withKG(KrakenGains.KG)
                 .withKP(KrakenGains.KP);
-//                .withKD(KrakenGains.KD);
+        //                .withKD(KrakenGains.KD);
 
         config.MotorOutput.withInverted(
                 INVERTED
@@ -93,7 +89,8 @@ public class WristIOKraken implements WristIO {
 
         inputs.absoluteEncoderPosition = getAbsPosition();
 
-        Logger.recordOutput("elevator/motionMagicEnabled", wristMotor.getMotionMagicIsRunning().getValue());
+        Logger.recordOutput(
+                "elevator/motionMagicEnabled", wristMotor.getMotionMagicIsRunning().getValue());
     }
 
     @Override

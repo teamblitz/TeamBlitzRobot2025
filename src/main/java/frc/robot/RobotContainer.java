@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.AutoConstants.StartingPosition;
+import frc.robot.commands.AutoCommands;
 import frc.robot.commands.ClimbCommandFactory;
 import frc.robot.commands.CommandFactory;
 import frc.robot.commands.TeleopSwerve;
@@ -48,10 +49,7 @@ import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.winch.Winch;
 import frc.robot.subsystems.winch.WinchIOSpark;
 import org.littletonrobotics.junction.Logger;
-import frc.robot.subsystems.vision.DriveToTagCommand;
-
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
-import frc.robot.commands.AutoCommands;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -89,7 +87,8 @@ public class RobotContainer {
         Shuffleboard.getTab("Drive")
                 .add("ResetOdometry", Commands.runOnce(() -> drive.resetOdometry(new Pose2d())));
 
-//        autoChooser = new LoggedDashboardChooser<>("autoChoice", autoCommands.getFactory().ch);
+        //        autoChooser = new LoggedDashboardChooser<>("autoChoice",
+        // autoCommands.getFactory().ch);
         autoChooser = new AutoChooser();
         SmartDashboard.putData("autoChooser", autoChooser);
 
@@ -103,8 +102,6 @@ public class RobotContainer {
         startingPositionChooser.addDefaultOption("Center", StartingPosition.CENTER);
         startingPositionChooser.addOption("Left", StartingPosition.LEFT);
         startingPositionChooser.addOption("Right", StartingPosition.RIGHT);
-
-
     }
 
     private void setDefaultCommands() {
@@ -116,7 +113,9 @@ public class RobotContainer {
                                 OIConstants.Drive.ROTATION_SPEED,
                                 () -> false,
                                 () -> Double.NaN,
-                                () -> climber.getState() != Climber.State.CLIMB).unless(RobotState::isTest).until(RobotState::isTest)
+                                () -> climber.getState() != Climber.State.CLIMB)
+                        .unless(RobotState::isTest)
+                        .until(RobotState::isTest)
                         .withName("TeleopSwerve"));
 
         superstructure.setDefaultCommand(
@@ -246,33 +245,30 @@ public class RobotContainer {
         OIConstants.Intake.ALGAE_REMOVAL.whileTrue(intake.kick_algae());
         OIConstants.Intake.SHOOT_CORAL.whileTrue(intake.shoot_coral());
 
-
         OIConstants.Intake.INTAKE_ALGAE.whileTrue(intake.setSpeed(Constants.Intake.ALGAE_HOLD));
         OIConstants.Intake.EJECT_ALGAE.whileTrue(intake.setSpeed(Constants.Intake.ALGAE_REMOVAL));
 
         OIConstants.Winch.WINCH_MAN_UP.whileTrue(winch.manualUp());
         OIConstants.Winch.WINCH_MAN_DOWN.whileTrue(winch.manualDown());
 
-        OIConstants.SuperStructure.MANUAL_MODE
-                        .onTrue(
-                                superstructure.manual(
-                                        OIConstants.Elevator.MANUAL,
-                                        OIConstants.Wrist.MANUAL
-                                )
-                        );
+        OIConstants.SuperStructure.MANUAL_MODE.onTrue(
+                superstructure.manual(OIConstants.Elevator.MANUAL, OIConstants.Wrist.MANUAL));
 
         OIConstants.Climber.CLIMBER_UP_MAN.whileTrue(climber.setSpeed(.8));
         OIConstants.Climber.CLIMBER_DOWN_MAN.whileTrue(climber.setSpeed(-.8));
 
-        OIConstants.Climber.DEPLOY_CLIMBER.onTrue(ClimbCommandFactory.deployClimber(climber, winch));
+        OIConstants.Climber.DEPLOY_CLIMBER.onTrue(
+                ClimbCommandFactory.deployClimber(climber, winch));
         OIConstants.Climber.RESTOW_CLIMBER.onTrue(
                 ClimbCommandFactory.stowClimber(climber, winch)
                         .unless(() -> climber.getState() == Climber.State.CLIMB));
 
         OIConstants.SuperStructure.SCORE
-                .and(() -> climber.getState() == Climber.State.DEPLOYED || climber.getState() == Climber.State.CLIMB)
+                .and(
+                        () ->
+                                climber.getState() == Climber.State.DEPLOYED
+                                        || climber.getState() == Climber.State.CLIMB)
                 .whileTrue(climber.climb());
-
 
         new Trigger(RobotController::getUserButton)
                 .toggleOnTrue(
@@ -281,21 +277,22 @@ public class RobotContainer {
                                         elevator.coastCommand(),
                                         climber.coastCommand())
                                 .onlyWhile(RobotState::isDisabled));
-        
-//        OIConstants.Drive.DRIVE_TO_TAG.whileTrue(DriveToTagCommand);
+
+        //        OIConstants.Drive.DRIVE_TO_TAG.whileTrue(DriveToTagCommand);
     }
 
     private void configureAutoCommands() {
-//        NamedCommands.registerCommand(
-//                "score_l3",
-//                superstructure
-//                        .toGoal(Superstructure.Goal.L3)
-//                        .andThen(intake.shoot_coral().withTimeout(1).asProxy()));
-//
-//        NamedCommands.registerCommand(
-//                "score_l4", CommandFactory.l4Plop(superstructure, intake).asProxy());
-//
-//        new EventTrigger("ready_l4").onTrue(superstructure.toGoalThenIdle(Superstructure.Goal.L4));
+        //        NamedCommands.registerCommand(
+        //                "score_l3",
+        //                superstructure
+        //                        .toGoal(Superstructure.Goal.L3)
+        //                        .andThen(intake.shoot_coral().withTimeout(1).asProxy()));
+        //
+        //        NamedCommands.registerCommand(
+        //                "score_l4", CommandFactory.l4Plop(superstructure, intake).asProxy());
+        //
+        //        new
+        // EventTrigger("ready_l4").onTrue(superstructure.toGoalThenIdle(Superstructure.Goal.L4));
         //        new EventTrigger("score_l4").onTrue(
         //       Trigger("handoff").onTrue(CommandFactory.handoff(superstructure, intake));
     }
@@ -303,12 +300,12 @@ public class RobotContainer {
     public Command getAutonomousCommand() {
         Logger.recordOutput("selectedAuto", autoChooser.selectedCommand().getName());
         return Commands.sequence(
-//                Commands.runOnce(() -> drive.setGyro(180)),
-                autoChooser.selectedCommandScheduler()
-        );
-//        return Commands.sequence(
-//                        Commands.runOnce(() -> drive.setGyro(180)),
-//                        Commands.parallel(winch.lowerFunnel(), autoChooser.get().asProxy()))
-//                .withName("autonomousCommand");
+                //                Commands.runOnce(() -> drive.setGyro(180)),
+                autoChooser.selectedCommandScheduler());
+        //        return Commands.sequence(
+        //                        Commands.runOnce(() -> drive.setGyro(180)),
+        //                        Commands.parallel(winch.lowerFunnel(),
+        // autoChooser.get().asProxy()))
+        //                .withName("autonomousCommand");
     }
 }

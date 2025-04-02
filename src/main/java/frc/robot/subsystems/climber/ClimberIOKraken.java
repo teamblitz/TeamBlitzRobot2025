@@ -8,7 +8,6 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycle;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
@@ -62,13 +61,15 @@ public class ClimberIOKraken implements ClimberIO {
 
         leader.setPosition(STARTING_POSITION);
 
-        new Trigger(absEncoder::isConnected).debounce(1).onTrue(
+        new Trigger(absEncoder::isConnected)
+                .debounce(1)
+                .onTrue(
                         Commands.runOnce(
-                                () -> {
-                                    if (absEncoder.isConnected())
-                                        leader.setPosition(getAbsPosition());
-                                })
-                .ignoringDisable(true)
+                                        () -> {
+                                            if (absEncoder.isConnected())
+                                                leader.setPosition(getAbsPosition());
+                                        })
+                                .ignoringDisable(true)
                                 .withName("climber/seedPosition"));
     }
 

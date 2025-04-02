@@ -114,19 +114,13 @@ public class OIConstants {
     }
 
     public static final class Wrist {
-        public static final DoubleSupplier MANUAL = () ->
-                MathUtil.applyDeadband(
-                        -OPERATOR_CONTROLLER.getRightY(),
-                        .1
-                );
+        public static final DoubleSupplier MANUAL =
+                () -> MathUtil.applyDeadband(-OPERATOR_CONTROLLER.getRightY(), .1);
     }
 
     public static final class Elevator {
-        public static final DoubleSupplier MANUAL = () ->
-                .3 * MathUtil.applyDeadband(
-                        -OPERATOR_CONTROLLER.getLeftY(),
-                        .1
-                );
+        public static final DoubleSupplier MANUAL =
+                () -> .3 * MathUtil.applyDeadband(-OPERATOR_CONTROLLER.getLeftY(), .1);
     }
 
     public static final class SuperStructure {
@@ -144,10 +138,10 @@ public class OIConstants {
         public static final Trigger KICK_TOP_ALGAE = OPERATOR_CONTROLLER.b();
 
         public static final Trigger MANUAL_MODE =
-                new Trigger(() ->
-                        Elevator.MANUAL.getAsDouble() != 0 ||
-                        Wrist.MANUAL.getAsDouble() != 0
-                );
+                new Trigger(
+                        () ->
+                                Elevator.MANUAL.getAsDouble() != 0
+                                        || Wrist.MANUAL.getAsDouble() != 0);
     }
 
     public static final class Winch {

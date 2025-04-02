@@ -18,7 +18,6 @@ import frc.lib.BlitzSubsystem;
 import frc.lib.util.LoggedTunableNumber;
 import frc.robot.Constants;
 import frc.robot.subsystems.leds.Leds;
-
 import java.util.Optional;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
@@ -142,7 +141,6 @@ public class Wrist extends BlitzSubsystem {
         Logger.recordOutput(
                 logKey + "/profile/velocityGoal", goal.orElse(TRAPEZOID_NAN_STATE).velocity);
 
-
         Logger.recordOutput(
                 logKey + "/absEncoderDegrees", Math.toRadians(inputs.absoluteEncoderPosition));
 
@@ -205,15 +203,17 @@ public class Wrist extends BlitzSubsystem {
     }
 
     /**
-     * @param requireProfileCompletion If true, this command will only end once the mechanism position is within a
-     *                                 tolerance of the wanted position. Else this command will end once the time to position has
-     *                                 elapsed, with no guarantee that the mechanism is actually at the goal.
+     * @param requireProfileCompletion If true, this command will only end once the mechanism
+     *     position is within a tolerance of the wanted position. Else this command will end once
+     *     the time to position has elapsed, with no guarantee that the mechanism is actually at the
+     *     goal.
      * @return A command that moves the mechanism to the desired position with motion profiling and
      *     ends when the mechanism reaches that goal.
      */
     public Command goToPosition(double position, boolean requireProfileCompletion) {
         if (requireProfileCompletion)
-            return followGoal(() -> position).withDeadline(
+            return followGoal(() -> position)
+                    .withDeadline(
                             Commands.waitUntil(
                                     () -> MathUtil.isNear(position, getPosition(), TOLERANCE)))
                     .withName(logKey + "/goToPosition_waitForMechanism " + position);
@@ -221,9 +221,10 @@ public class Wrist extends BlitzSubsystem {
             return followGoal(() -> position)
                     .withDeadline(
                             Commands.waitUntil(
-                                            () -> MathUtil.isNear(position, getIdealPosition(), 1e-9))
+                                            () ->
+                                                    MathUtil.isNear(
+                                                            position, getIdealPosition(), 1e-9))
                                     .withName(logKey + "/goToPosition_waitForProfile " + position));
-
     }
 
     /**
@@ -231,16 +232,17 @@ public class Wrist extends BlitzSubsystem {
      */
     public Command followGoal(DoubleSupplier goal) {
         return run(() -> {
-            // Only update the goal if necessary to avoid GC overhead
-            if (this.goal.isEmpty() || this.goal.get().position != goal.getAsDouble()) {
-                this.goal =
-                        Optional.of(
-                                new TrapezoidProfile.State(
-                                        MathUtil.clamp(
-                                                goal.getAsDouble(), MIN_POS, MAX_POS),
-                                        0));
-            }
-        }).handleInterrupt(() -> this.goal = Optional.of(setpoint))
+                    // Only update the goal if necessary to avoid GC overhead
+                    if (this.goal.isEmpty() || this.goal.get().position != goal.getAsDouble()) {
+                        this.goal =
+                                Optional.of(
+                                        new TrapezoidProfile.State(
+                                                MathUtil.clamp(
+                                                        goal.getAsDouble(), MIN_POS, MAX_POS),
+                                                0));
+                    }
+                })
+                .handleInterrupt(() -> this.goal = Optional.of(setpoint))
                 .beforeStarting(refreshCurrentState());
     }
 

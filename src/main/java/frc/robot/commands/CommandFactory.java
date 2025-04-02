@@ -28,5 +28,4 @@ public class CommandFactory {
                 .unless(intake::hasCoral)
                 .withName("handoff");
     }
-
 }

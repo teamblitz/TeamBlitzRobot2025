@@ -4,10 +4,7 @@ import java.util.function.Supplier;
 
 // Source: https://github.com/frc6995/Robot-2025/blob/main/src/main/java/frc/robot/util/Capture.java
 
-/**
- * "Captures" a value so that it can be modified in lambdas
- * similar to mutable reference.
- */
+/** "Captures" a value so that it can be modified in lambdas similar to mutable reference. */
 public class Capture<T> implements Supplier<T> {
     public T inner;
 
@@ -15,5 +12,7 @@ public class Capture<T> implements Supplier<T> {
         this.inner = inner;
     }
 
-    public T get() {return inner;}
+    public T get() {
+        return inner;
+    }
 }

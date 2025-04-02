@@ -3,7 +3,6 @@ package frc.robot.subsystems.superstructure;
 import static frc.robot.Constants.SuperstructureSetpoints.*;
 import static java.util.Map.entry;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -20,7 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.DoubleSupplier;
-
 import lombok.Getter;
 import org.littletonrobotics.junction.Logger;
 
@@ -274,30 +272,53 @@ public class Superstructure extends BlitzSubsystem {
         return Commands.idle(this);
     }
 
-
     public Command manual(DoubleSupplier elevatorSpeed, DoubleSupplier wristSpeed) {
         return Commands.parallel(
-                Commands.either(
-                        elevator.withSpeed(elevatorSpeed).until(() -> elevatorSpeed.getAsDouble() == 0),
-                        Commands.waitSeconds(.1).andThen(
-                                Commands.defer(() -> {
-                            double pos = elevator.getPosition();
-                            return elevator.followGoal(() -> pos);
-                            }, Set.of(elevator)
-                        ).until(() -> elevatorSpeed.getAsDouble() != 0)),
-                        () -> elevatorSpeed.getAsDouble() != 0
-                ).repeatedly(),
-                Commands.either(
-                        wrist.setSpeed(wristSpeed).until(() -> wristSpeed.getAsDouble() == 0),
-                        Commands.waitSeconds(.1).andThen(
-                        Commands.defer(() -> {
-                                    double pos = wrist.getPosition();
-                                    return wrist.followGoal(() -> pos);
-                                }, Set.of(wrist)
-                        ).until(() -> wristSpeed.getAsDouble() != 0)),
-                        () -> wristSpeed.getAsDouble() != 0
-                ).repeatedly(),
-                this.idle()
-        ).withName(logKey + "/smart_manual");
+                        Commands.either(
+                                        elevator.withSpeed(elevatorSpeed)
+                                                .until(() -> elevatorSpeed.getAsDouble() == 0),
+                                        Commands.waitSeconds(.1)
+                                                .andThen(
+                                                        Commands.defer(
+                                                                        () -> {
+                                                                            double pos =
+                                                                                    elevator
+                                                                                            .getPosition();
+                                                                            return elevator
+                                                                                    .followGoal(
+                                                                                            () ->
+                                                                                                    pos);
+                                                                        },
+                                                                        Set.of(elevator))
+                                                                .until(
+                                                                        () ->
+                                                                                elevatorSpeed
+                                                                                                .getAsDouble()
+                                                                                        != 0)),
+                                        () -> elevatorSpeed.getAsDouble() != 0)
+                                .repeatedly(),
+                        Commands.either(
+                                        wrist.setSpeed(wristSpeed)
+                                                .until(() -> wristSpeed.getAsDouble() == 0),
+                                        Commands.waitSeconds(.1)
+                                                .andThen(
+                                                        Commands.defer(
+                                                                        () -> {
+                                                                            double pos =
+                                                                                    wrist
+                                                                                            .getPosition();
+                                                                            return wrist.followGoal(
+                                                                                    () -> pos);
+                                                                        },
+                                                                        Set.of(wrist))
+                                                                .until(
+                                                                        () ->
+                                                                                wristSpeed
+                                                                                                .getAsDouble()
+                                                                                        != 0)),
+                                        () -> wristSpeed.getAsDouble() != 0)
+                                .repeatedly(),
+                        this.idle())
+                .withName(logKey + "/smart_manual");
     }
 }
