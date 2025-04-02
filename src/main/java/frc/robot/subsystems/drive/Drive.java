@@ -851,9 +851,10 @@ public class Drive extends BlitzSubsystem {
     Trigger atPose = atPose(()-> goal.inner, Units.inchesToMeters(0.5), Units.degreesToRadians(1));
 
     /**
-     * <B>IMPORTANT, While this takes a pose supplier, this is mostly for convince and once the command has started,
-     * the command will not follow the pose.</B>
-     *
+     * <B>IMPORTANT, While this takes a pose supplier, this is mostly for convince. and <U>once the command has started,
+     * the command will sample the value of the supplier and drive there.</U> It will NOT follow the pose</B>
+     * <p>
+
      * Drives to a pose with motion profiles on translation and rotation.
      * The translation profile starts at dist(start,end) and drives toward 0. This state is then interpolated
      * between poses.
@@ -947,7 +948,7 @@ public class Drive extends BlitzSubsystem {
                         }
                     }
             )
-        );
+        ).until(atPose).finallyDo(() -> drive(new ChassisSpeeds(), true));
 
         return command.withName("drive/driveToPoseCommand");
     }
