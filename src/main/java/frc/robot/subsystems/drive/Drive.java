@@ -864,7 +864,7 @@ public class Drive extends BlitzSubsystem {
     TrapezoidProfile.State rotationState = new State(0, 0);
 
     // Threshold for "close enough" to avoid microadjustments
-    Trigger atPose = atPose(() -> goal.inner, Units.inchesToMeters(0.5), Units.degreesToRadians(1));
+    public final Trigger atDriveToPosePose = atPose(() -> goal.inner, Units.inchesToMeters(0.5), Units.degreesToRadians(1));
 
     /**
      * <B>IMPORTANT, While this takes a pose supplier, this is mostly for convince. and <U>once the
@@ -981,7 +981,7 @@ public class Drive extends BlitzSubsystem {
                                                                     setpoint.position
                                                                             / distance.inner);
 
-                                            if (atPose.getAsBoolean()) {
+                                            if (atDriveToPosePose.getAsBoolean()) {
                                                 this.drive(new ChassisSpeeds(), true);
                                             } else {
                                                 followTrajectory(
@@ -996,7 +996,7 @@ public class Drive extends BlitzSubsystem {
                                                                 rotationState.velocity));
                                             }
                                         }))
-                        .until(atPose.debounce(.1))
+                        .until(atDriveToPosePose.debounce(.1))
                         .finallyDo(() -> drive(new ChassisSpeeds(), true));
 
         return command.withName("drive/driveToPoseCommand");

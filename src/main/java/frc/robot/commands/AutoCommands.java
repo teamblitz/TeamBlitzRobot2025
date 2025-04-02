@@ -1,32 +1,23 @@
 package frc.robot.commands;
 
-import choreo.trajectory.SwerveSample;
-import choreo.trajectory.Trajectory;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
-import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
-import frc.lib.util.ScoringPositions;
-import frc.robot.Constants;
-import frc.robot.subsystems.drive.Drive;
 import choreo.Choreo;
 import choreo.auto.AutoFactory;
 import choreo.auto.AutoRoutine;
 import choreo.auto.AutoTrajectory;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.geometry.Pose2d;
+import choreo.trajectory.SwerveSample;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import frc.robot.subsystems.superstructure.Superstructure;
-import org.littletonrobotics.junction.Logger;
-import frc.robot.subsystems.superstructure.elevator.Elevator;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
+import frc.lib.util.ScoringPositions;
 import frc.robot.Constants;
+import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.intake.Intake;
-
+import frc.robot.subsystems.superstructure.Superstructure;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.stream.IntStream;
-
+import org.littletonrobotics.junction.Logger;
 
 public class AutoCommands {
     private final Drive drive;
@@ -35,7 +26,7 @@ public class AutoCommands {
     private final Superstructure superstructure;
     private final Intake intake;
 
-//    private final Command configAutonDefault;
+    //    private final Command configAutonDefault;
     private final Command configTeleDefault;
 
     private SwerveSample lastSample;
@@ -46,55 +37,61 @@ public class AutoCommands {
         this.intake = intake;
         this.kinematics = Constants.Drive.KINEMATICS;
 
-
-        autoFactory = new AutoFactory(
-            drive::getPose,
-            drive::resetOdometry,
-            sample -> {
-                // Don't ask, just cast (the ring into the fire frodo)
-                lastSample = (SwerveSample) sample;
-                drive.followTrajectory((SwerveSample) sample);
-            },
-            true,
-            drive
-        );
+        autoFactory =
+                new AutoFactory(
+                        drive::getPose,
+                        drive::resetOdometry,
+                        sample -> {
+                            // Don't ask, just cast (the ring into the fire frodo)
+                            lastSample = (SwerveSample) sample;
+                            drive.followTrajectory((SwerveSample) sample);
+                        },
+                        true,
+                        drive);
 
         Command normalDriveDefault = drive.getDefaultCommand();
 
-        // I heard you liked commands, so I gave you a command to set the default command to be a different command
-        RobotModeTriggers.autonomous().onTrue(
-                Commands.runOnce(
-                        () -> drive.setDefaultCommand(
-                                Commands.run(
-                                        () -> {if (lastSample != null) {
-                                            Logger.recordOutput("drive/auto/doingDefaultPid", Math.random());
-                                            drive.followTrajectory(new SwerveSample(lastSample.t,
-                                                    lastSample.x,
-                                                    lastSample.y,
-                                                    lastSample.heading,
-                                                    0,
-                                                    0,
-                                                    0,
-                                                    0,
-                                                    0,
-                                                    0,
-                                                    lastSample.moduleForcesX(), lastSample.moduleForcesY()));
-                                        }},
-                                        drive
-                                )
-                        )
-                )
-        );
+        // I heard you liked commands, so I gave you a command to set the default command to be a
+        // different command
+        RobotModeTriggers.autonomous()
+                .onTrue(
+                        Commands.runOnce(
+                                () ->
+                                        drive.setDefaultCommand(
+                                                Commands.run(
+                                                        () -> {
+                                                            if (lastSample != null) {
+                                                                Logger.recordOutput(
+                                                                        "drive/auto/doingDefaultPid",
+                                                                        Math.random());
+                                                                drive.followTrajectory(
+                                                                        new SwerveSample(
+                                                                                lastSample.t,
+                                                                                lastSample.x,
+                                                                                lastSample.y,
+                                                                                lastSample.heading,
+                                                                                0,
+                                                                                0,
+                                                                                0,
+                                                                                0,
+                                                                                0,
+                                                                                0,
+                                                                                lastSample
+                                                                                        .moduleForcesX(),
+                                                                                lastSample
+                                                                                        .moduleForcesY()));
+                                                            }
+                                                        },
+                                                        drive))));
 
-        // As funny as it would be for the auto to steal the controls of the robot for the rest of the match,
+        // As funny as it would be for the auto to steal the controls of the robot for the rest of
+        // the match,
         // unfortunately that is undesired behavior :(, so we need to give them back
         configTeleDefault =
-                Commands.runOnce(
-                        () -> drive.setDefaultCommand(normalDriveDefault)
-                ).ignoringDisable(true);
+                Commands.runOnce(() -> drive.setDefaultCommand(normalDriveDefault))
+                        .ignoringDisable(true);
 
         RobotModeTriggers.autonomous().onFalse(configTeleDefault);
-
     }
 
     public AutoFactory getFactory() {
@@ -105,7 +102,6 @@ public class AutoCommands {
         final var routine = autoFactory.newRoutine("None");
         routine.active().onTrue(Commands.print("Running No Auto"));
 
-
         return routine.cmd();
     }
 
@@ -113,13 +109,10 @@ public class AutoCommands {
         final var routine = autoFactory.newRoutine("test");
         final var traj = routine.trajectory("test");
 
-        routine.active().whileTrue(
-                Commands.sequence(
-                        traj.resetOdometry(),
-                        traj.cmd()
-                ).withName("auto/cmdSec")
-        );
-
+        routine.active()
+                .whileTrue(
+                        Commands.sequence(traj.resetOdometry(), traj.cmd())
+                                .withName("auto/cmdSec"));
 
         return routine;
     }
@@ -128,60 +121,45 @@ public class AutoCommands {
         AutoRoutine routine = autoFactory.newRoutine("twoPiece");
 
         AutoTrajectory scoreInitial = routine.trajectory("twoPiece", 0);
-        AutoTrajectory toStation = routine.trajectory("twoPiece",1);
+        AutoTrajectory toStation = routine.trajectory("twoPiece", 1);
         AutoTrajectory scoreSecond = routine.trajectory("twoPiece", 2);
         AutoTrajectory gtfo = routine.trajectory("twoPiece", 3);
 
-
-        routine.active().onTrue(
-                Commands.sequence(
-                        scoreInitial.resetOdometry(),
-                        scoreInitial.cmd()
-                )
-        );
-
-
+        routine.active()
+                .onTrue(Commands.sequence(scoreInitial.resetOdometry(), scoreInitial.cmd()));
 
         scoreInitial.atTimeBeforeEnd(Constants.Auto.Timings.STOW_TO_L4_READY).onTrue(prepareL4());
-        scoreInitial.done().onTrue(
-                scoreL4().andThen(toStation.spawnCmd()));
-
+        scoreInitial.done().onTrue(scoreL4().andThen(toStation.spawnCmd()));
 
         toStation.active().onTrue(handoff());
 
         toStation.chain(scoreSecond);
 
+        scoreSecond
+                .atTimeBeforeEnd(Constants.Auto.Timings.STOW_TO_L4_READY)
+                .onTrue(Commands.sequence(Commands.waitUntil(intake::hasCoral), prepareL4()));
 
-        scoreSecond.atTimeBeforeEnd(Constants.Auto.Timings.STOW_TO_L4_READY)
-                        .onTrue(
-                                Commands.sequence(
-                                        Commands.waitUntil(intake::hasCoral),
-                                        prepareL4()
-                                ));
-
-        scoreSecond.done().onTrue(
-                Commands.sequence(
-                        Commands.waitUntil(superstructure.triggerAtGoal(Superstructure.Goal.L4)),
-                        scoreL4().asProxy(),
-                        gtfo.spawnCmd()
-                )
-        );
-
+        scoreSecond
+                .done()
+                .onTrue(
+                        Commands.sequence(
+                                Commands.waitUntil(
+                                        superstructure.triggerAtGoal(Superstructure.Goal.L4)),
+                                scoreL4().asProxy(),
+                                gtfo.spawnCmd()));
 
         routine.active().onFalse(configTeleDefault);
 
-
         return routine;
-
     }
-
 
     public AutoRoutine fourPieceLeft() {
         return nPiece(4, "fourPieceLeft");
     }
 
     /**
-     * I channelled my inner AP CSA here, I haven't touched normal for loops in a long time, and it really shows.
+     * I channelled my inner AP CSA here, I haven't touched normal for loops in a long time, and it
+     * really shows.
      *
      * @param numberOfCoral bingus
      * @param pathName bongus
@@ -202,46 +180,60 @@ public class AutoCommands {
             return routine;
         }
 
-
         int numSplits = trajectory.get().splits().size();
 
         // Even splits are toReef trajectories
         // Odd splits are to station trajectories
-        List<AutoTrajectory> toReef = IntStream.range(0, (numSplits + 1) / 2).mapToObj(i -> routine.trajectory(pathName, i * 2)).toList();
-        List<AutoTrajectory> toStation = IntStream.range(0, numSplits / 2).mapToObj(i -> routine.trajectory(pathName, i * 2 + 1)).toList();
+        List<AutoTrajectory> toReef =
+                IntStream.range(0, (numSplits + 1) / 2)
+                        .mapToObj(i -> routine.trajectory(pathName, i * 2))
+                        .toList();
+        List<AutoTrajectory> toStation =
+                IntStream.range(0, numSplits / 2)
+                        .mapToObj(i -> routine.trajectory(pathName, i * 2 + 1))
+                        .toList();
 
-
-        routine.active().onTrue(
-                Commands.sequence(
-                        toReef.get(0).resetOdometry(),
-                        toReef.get(0).cmd()
-                )
-        );
+        routine.active()
+                .onTrue(Commands.sequence(toReef.get(0).resetOdometry(), toReef.get(0).cmd()));
 
         for (int i = 0; i < toReef.size(); i++) {
-            toReef.get(i).atTime(scoringPositions.get(i).name() + "_APPROACH")
-                    .onTrue(Commands.parallel(
-                                Commands.sequence(
-                                        Commands.waitUntil(intake::hasCoral),
-                                        prepareL4().asProxy() // As proxy so that we don't cancel handoff if the coral isn't here yet
-                                ),
-                            drive.driveToPose(Constants.Auto.SCORING_POSITIONS.get(scoringPositions.get(i)))
-                            )
-                    );
+            toReef.get(i)
+                    .atTime(scoringPositions.get(i).name() + "_APPROACH")
+                    .onTrue(
+                            Commands.parallel(
+                                    Commands.sequence(
+                                            Commands.waitUntil(intake::hasCoral),
+                                            // As proxy so that we don't cancel
+                                            // handoff if the coral isn't here yet.
+                                            prepareL4().asProxy()
+                                            ),
+                                    drive.driveToPose(
+                                                    Constants.Auto.SCORING_POSITIONS.get(
+                                                            scoringPositions.get(i)))
+                                            .andThen(
+                                                    Commands.waitUntil(
+                                                            superstructure.triggerAtGoal(
+                                                                    Superstructure.Goal.L4)),
+                                                    scoreL4().asProxy(),
+                                                    i < toStation.size()
+                                                            ? toStation.get(i).spawnCmd()
+                                                            : Commands.none())));
 
-//            toReef.get(i).atTimeBeforeEnd(Constants.Auto.Timings.STOW_TO_L4_READY).onTrue(
-//                    Commands.sequence(
-//                            Commands.waitUntil(intake::hasCoral),
-//                            prepareL4())
-            );
-            toReef.get(i).done().onTrue(
-                    Commands.sequence(
-                            Commands.waitSeconds(2),
-                            Commands.waitUntil(superstructure.triggerAtGoal(Superstructure.Goal.L4)),
-                            scoreL4().asProxy(),
-                            i < toStation.size() ?
-                            toStation.get(i).spawnCmd() : Commands.none())
-            );
+            //
+            // toReef.get(i).atTimeBeforeEnd(Constants.Auto.Timings.STOW_TO_L4_READY).onTrue(
+            //                    Commands.sequence(
+            //                            Commands.waitUntil(intake::hasCoral),
+            //                            prepareL4())
+            //            );
+            //            toReef.get(i).done().onTrue(
+            //                    Commands.sequence(
+            //                            Commands.waitSeconds(2),
+            //
+            // Commands.waitUntil(superstructure.triggerAtGoal(Superstructure.Goal.L4)),
+            //                            scoreL4().asProxy(),
+            //                            i < toStation.size() ?
+            //                            toStation.get(i).spawnCmd() : Commands.none())
+            //            );
         }
 
         for (int i = 0; i < toStation.size(); i++) {
@@ -254,7 +246,6 @@ public class AutoCommands {
         }
 
         routine.active().onFalse(configTeleDefault);
-
 
         return routine;
     }
@@ -270,5 +261,4 @@ public class AutoCommands {
     private Command handoff() {
         return CommandFactory.handoff(superstructure, intake);
     }
-
 }
