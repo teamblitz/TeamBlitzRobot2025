@@ -614,42 +614,4 @@ public final class Constants {
         }
 
     }
-
-    public static final class Positions {
-
-
-
-        public static final class Reef {
-
-            static {
-                double adjustX = Units.inchesToMeters(
-                        (32.745545 + 22)
-                );
-                double adjustY = Units.inchesToMeters(6.469);
-                // start with pose
-
-                // UNTRANSFORMED, this is the front most face, the center of the reef is 0, 0
-                var left = new Translation2d(-adjustX, adjustY);
-                var right = new Translation2d(-adjustX, adjustY);
-            }
-
-        }
-
-        // X: 176.746 in
-        // Y: 317 / 2 in
-//        public static final Translation2d REEF_CENTER = FieldConstants.Reef.center;
-        public static final Translation2d REEF_CENTER =
-                new Translation2d(
-                        Units.inchesToMeters(176.746),
-                        Units.inchesToMeters(317. / 2.);
-                );
-
-
-
-        // TODO VERY IMPORTANT PART UH
-        public static final Map<ScoringPositions.Branch, Pose2d> SCORING_POSITIONS =
-                Map.ofEntries(
-                        ScoringPositions.Branch.A.toEntry(Pose2d.kZero)
-                );
-    }
 }

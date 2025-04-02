@@ -11,7 +11,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.lib.util.ScoringPositions;
+import frc.lib.util.ScoringPositions.Branch;
 import frc.robot.Constants;
+import frc.robot.PositionConstants;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.superstructure.Superstructure;
@@ -154,7 +156,13 @@ public class AutoCommands {
     }
 
     public AutoRoutine fourPieceLeft() {
-        return nPiece(4, "fourPieceLeft");
+        return nPiece(4, "fourPieceLeft",
+                List.of(
+                        Branch.I,
+                        Branch.K,
+                        Branch.L,
+                        Branch.A
+                ));
     }
 
     /**
@@ -165,14 +173,13 @@ public class AutoCommands {
      * @param pathName bongus
      * @return boingus
      */
-    public AutoRoutine nPiece(int numberOfCoral, String pathName) {
+    public AutoRoutine nPiece(int numberOfCoral, String pathName, List<ScoringPositions.Branch> scoringPositions) {
         if (!List.of(1, 2, 3, 4).contains(numberOfCoral)) {
             throw new IllegalArgumentException("Number of Coral must be between 1 and 4");
         }
 
         AutoRoutine routine = autoFactory.newRoutine(pathName);
 
-        List<ScoringPositions.Branch> scoringPositions = List.of(ScoringPositions.Branch.I);
 
         var trajectory = Choreo.loadTrajectory(pathName);
         if (trajectory.isEmpty()) {
@@ -208,7 +215,7 @@ public class AutoCommands {
                                             prepareL4().asProxy()
                                             ),
                                     drive.driveToPose(
-                                                    Constants.Positions.SCORING_POSITIONS.get(
+                                                    PositionConstants.Reef.SCORING_POSITIONS.get(
                                                             scoringPositions.get(i)))
                                             .andThen(
                                                     Commands.waitUntil(
@@ -219,21 +226,7 @@ public class AutoCommands {
                                                             ? toStation.get(i).spawnCmd()
                                                             : Commands.none())));
 
-            //
-            // toReef.get(i).atTimeBeforeEnd(Constants.Auto.Timings.STOW_TO_L4_READY).onTrue(
-            //                    Commands.sequence(
-            //                            Commands.waitUntil(intake::hasCoral),
-            //                            prepareL4())
-            //            );
-            //            toReef.get(i).done().onTrue(
-            //                    Commands.sequence(
-            //                            Commands.waitSeconds(2),
-            //
-            // Commands.waitUntil(superstructure.triggerAtGoal(Superstructure.Goal.L4)),
-            //                            scoreL4().asProxy(),
-            //                            i < toStation.size() ?
-            //                            toStation.get(i).spawnCmd() : Commands.none())
-            //            );
+
         }
 
         for (int i = 0; i < toStation.size(); i++) {
