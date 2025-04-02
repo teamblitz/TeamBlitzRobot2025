@@ -208,7 +208,7 @@ public class AutoCommands {
                                             prepareL4().asProxy()
                                             ),
                                     drive.driveToPose(
-                                                    Constants.Auto.SCORING_POSITIONS.get(
+                                                    Constants.Positions.SCORING_POSITIONS.get(
                                                             scoringPositions.get(i)))
                                             .andThen(
                                                     Commands.waitUntil(
