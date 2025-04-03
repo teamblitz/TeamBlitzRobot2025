@@ -22,7 +22,7 @@ public class PositionConstants {
         public static final Map<ScoringPositions.Branch, Supplier<Pose2d>> SCORING_POSITIONS = new HashMap<>();
 
         static {
-            double adjustX = Units.inchesToMeters(32.745545 + 22);
+            double adjustX = Units.inchesToMeters(32.745545 + 22 - 3);
             double adjustY = Units.inchesToMeters(6.469);
 
             Translation2d leftRelative = new Translation2d(-adjustX, adjustY);
