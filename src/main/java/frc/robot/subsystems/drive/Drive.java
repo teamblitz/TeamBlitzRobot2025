@@ -925,6 +925,12 @@ public class Drive extends BlitzSubsystem {
                                                     -driveToPoseConstraints.maxVelocity,
                                                     0);
 
+                                    Logger.recordOutput("drive/driveToPose/unclampedInitialVelocity", VecBuilder.fill(
+                                                    speeds.vxMetersPerSecond,
+                                                    speeds.vyMetersPerSecond)
+                                            .dot(directionGoalToBot));
+
+
                                     // Initial state of rotation
                                     driveToPoseRotationGoal.position =
                                             goal.inner.getRotation().getRadians();
@@ -932,6 +938,11 @@ public class Drive extends BlitzSubsystem {
                                     rotationState.position =
                                             initial.inner.getRotation().getRadians();
                                     rotationState.velocity = speeds.omegaRadiansPerSecond;
+
+
+                                    Logger.recordOutput("drive/driveToPose/pose", poseSupplier.get());
+                                    Logger.recordOutput("drive/driveToPose/initialDistance", translationState.position);
+                                    Logger.recordOutput("drive/driveToPose/initialVelocity", translationState.velocity);
                                 })
                         .andThen(
                                 run(
@@ -943,6 +954,9 @@ public class Drive extends BlitzSubsystem {
                                                             driveToPoseGoal);
                                             translationState.position = setpoint.position;
                                             translationState.velocity = setpoint.velocity;
+
+                                            Logger.recordOutput("drive/driveToPose/distance", translationState.position);
+                                            Logger.recordOutput("drive/driveToPose/velocity", translationState.velocity);
 
                                             // I am trusting them here
 
@@ -993,6 +1007,7 @@ public class Drive extends BlitzSubsystem {
                                                                     startPose.getTranslation(),
                                                                     setpoint.position
                                                                             / distance.inner);
+
 
                                             if (atDriveToPosePose.getAsBoolean()) {
                                                 this.drive(new ChassisSpeeds(), true);
