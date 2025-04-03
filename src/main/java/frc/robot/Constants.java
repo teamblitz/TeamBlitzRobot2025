@@ -532,7 +532,7 @@ public final class Constants {
 
         public static final double MATCH_FUNNEL_UP = 1.35;
         public static final double MATCH_FUNNEL_DOWN = 0;
-        public static final double PIT_FUNNEL_STOW = 0.5;
+        public static final double PIT_FUNNEL_STOW = 0;
         public static final double EPSILON = 0.05;
 
         public static final double WINCH_GEAR_RATIO = 25;
