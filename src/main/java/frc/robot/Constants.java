@@ -451,7 +451,7 @@ public final class Constants {
                 new SuperstructureState(.88, Math.toRadians(40));
 
         public static final SuperstructureState L4_PLOP =
-                new SuperstructureState(L4.elevatorPosition, Math.toRadians(20));
+                new SuperstructureState(L4.elevatorPosition, Math.toRadians(30));
 
 
         public static final SuperstructureState PICKUP_LOW_ALGAE =
