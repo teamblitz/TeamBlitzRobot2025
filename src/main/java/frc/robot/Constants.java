@@ -451,7 +451,7 @@ public final class Constants {
                 new SuperstructureState(.88, Math.toRadians(40));
 
         public static final SuperstructureState L4_PLOP =
-                new SuperstructureState(L4.elevatorPosition, Math.toRadians(20));
+                new SuperstructureState(L4.elevatorPosition, Math.toRadians(30));
 
         public static final SuperstructureState PICKUP_LOW_ALGAE =
                 new SuperstructureState(.48 + .2, Math.toRadians(60));
@@ -525,14 +525,14 @@ public final class Constants {
 
         public static final int CURRENT_LIMIT = 25;
 
-        public static final double MATCH_FUNNEL_UP = Units.degreesToRadians(63);
-        public static final double MATCH_FUNNEL_DOWN = Units.degreesToRadians(2);
-        public static final double PIT_FUNNEL_STOW = Units.degreesToRadians(20);
-        public static final double EPSILON = Units.degreesToRadians(2);
+        public static final double MATCH_FUNNEL_UP = 1.35;
+        public static final double MATCH_FUNNEL_DOWN = 0;
+        public static final double PIT_FUNNEL_STOW = 0;
+        public static final double EPSILON = 0.05;
 
         public static final double WINCH_GEAR_RATIO = 25;
 
-        public static final double KP = .5;
+        public static final double KP = 2;
         public static final double MAX_OUT = .6;
     }
 

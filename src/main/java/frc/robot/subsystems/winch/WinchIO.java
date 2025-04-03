@@ -9,8 +9,6 @@ public interface WinchIO {
     public class WinchInputs {
         public double velocity;
         public double position;
-
-        public double absPosition;
         public double current;
     }
 
