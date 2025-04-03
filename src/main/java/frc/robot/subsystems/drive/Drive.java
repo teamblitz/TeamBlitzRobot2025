@@ -861,7 +861,7 @@ public class Drive extends BlitzSubsystem {
 
     /* Drive to Pose */
     /* DRIVE TO POSE using Trapezoid Profiles */
-    private TrapezoidProfile.Constraints driveToPoseConstraints = new Constraints(2, 1.5);
+    private TrapezoidProfile.Constraints driveToPoseConstraints = new Constraints(1, 1);
     private TrapezoidProfile.Constraints driveToPoseRotationConstraints = new Constraints(3, 6);
     private TrapezoidProfile driveToPoseProfile = new TrapezoidProfile(driveToPoseConstraints);
     private TrapezoidProfile driveToPoseRotationProfile =
