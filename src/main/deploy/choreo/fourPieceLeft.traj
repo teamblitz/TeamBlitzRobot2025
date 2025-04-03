@@ -53,7 +53,8 @@
     {"x":{"exp":"STATION_LEFT.x", "val":1.2182204723358154}, "y":{"exp":"STATION_LEFT.y", "val":6.987565624046327}, "heading":{"exp":"STATION_LEFT.heading", "val":-0.942477796076938}, "intervals":40, "split":true, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
     {"x":{"exp":"2.6284098625183105 m", "val":2.6284098625183105}, "y":{"exp":"5.890518665313721 m", "val":5.890518665313721}, "heading":{"exp":"0 deg", "val":0.0}, "intervals":30, "split":false, "fixTranslation":true, "fixHeading":false, "overrideIntervals":false},
     {"x":{"exp":"A_APPR.x", "val":2.6082378284454344}, "y":{"exp":"4.3949491500854485 m", "val":4.3949491500854485}, "heading":{"exp":"A_APPR.heading", "val":0.0}, "intervals":24, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
-    {"x":{"exp":"A.x", "val":3.1082378284454344}, "y":{"exp":"A.y", "val":4.194949150085449}, "heading":{"exp":"A.heading", "val":0.0}, "intervals":40, "split":true, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false}],
+    {"x":{"exp":"A.x", "val":3.1082378284454344}, "y":{"exp":"A.y", "val":4.194949150085449}, "heading":{"exp":"A.heading", "val":0.0}, "intervals":40, "split":true, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
+    {"x":{"exp":"4.8736114501953125 m", "val":4.8736114501953125}, "y":{"exp":"3.5192575454711914 m", "val":3.5192575454711914}, "heading":{"exp":"0 deg", "val":0.0}, "intervals":40, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false}],
   "constraints":[
     {"from":"first", "to":"last", "data":{"type":"MaxAcceleration", "props":{"max":{"exp":"3 m / s ^ 2", "val":3.0}}}, "enabled":true},
     {"from":0, "to":null, "data":{"type":"StopPoint", "props":{}}, "enabled":true},
@@ -588,7 +589,7 @@
  },
  "events":[
    {"name":"I_APPROACH", "from":{"target":1, "targetTimestamp":1.38148, "offset":{"exp":"0 s", "val":0.0}}, "event":null},
-   {"name":"K_APPROACH", "from":{"target":5, "targetTimestamp":null, "offset":{"exp":"0 s", "val":0.0}}, "event":null},
-   {"name":"L_APPROACH", "from":{"target":8, "targetTimestamp":null, "offset":{"exp":"0 s", "val":0.0}}, "event":null},
-   {"name":"A_APPROACH", "from":{"target":13, "targetTimestamp":null, "offset":{"exp":"0 s", "val":0.0}}, "event":null}]
+   {"name":"K_APPROACH", "from":{"target":5, "targetTimestamp":7.89712, "offset":{"exp":"0 s", "val":0.0}}, "event":null},
+   {"name":"L_APPROACH", "from":{"target":8, "targetTimestamp":13.4057, "offset":{"exp":"0 s", "val":0.0}}, "event":null},
+   {"name":"A_APPROACH", "from":{"target":13, "targetTimestamp":20.26657, "offset":{"exp":"0 s", "val":0.0}}, "event":null}]
 }

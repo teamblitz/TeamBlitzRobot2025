@@ -58,7 +58,7 @@ public final class Constants {
         SimBot
     }
 
-    public static final Robot ROBOT = Robot.CompBot;
+    public static final Robot ROBOT = Robot.SimBot;
 
     public static boolean compBot() {
         return ROBOT == Robot.CompBot;

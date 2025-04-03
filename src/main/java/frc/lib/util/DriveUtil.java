@@ -4,7 +4,7 @@ import choreo.trajectory.SwerveSample;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 
-public static final class DriveUtil {
+public final class DriveUtil {
     public static SwerveSample sample(
             Translation2d trans, Rotation2d rot, double vx, double vy, double omega) {
         return new SwerveSample(

@@ -18,12 +18,14 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.lib.util.ScoringPositions;
 import frc.robot.Constants.AutoConstants.StartingPosition;
 import frc.robot.commands.AutoCommands;
 import frc.robot.commands.ClimbCommandFactory;
 import frc.robot.commands.CommandFactory;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.subsystems.climber.Climber;
+import frc.robot.subsystems.climber.ClimberIO;
 import frc.robot.subsystems.climber.ClimberIOKraken;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.gyro.GyroIO;
@@ -47,6 +49,7 @@ import frc.robot.subsystems.superstructure.wrist.WristIOKraken;
 import frc.robot.subsystems.superstructure.wrist.WristIOSpark;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.winch.Winch;
+import frc.robot.subsystems.winch.WinchIO;
 import frc.robot.subsystems.winch.WinchIOSpark;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -102,6 +105,15 @@ public class RobotContainer {
         startingPositionChooser.addDefaultOption("Center", StartingPosition.CENTER);
         startingPositionChooser.addOption("Left", StartingPosition.LEFT);
         startingPositionChooser.addOption("Right", StartingPosition.RIGHT);
+
+
+        Commands.run(
+                () -> {
+                    for (ScoringPositions.Branch branch : ScoringPositions.Branch.values()) {
+                        Logger.recordOutput("positions/reef/" + branch.name(), PositionConstants.Reef.SCORING_POSITIONS.get(branch).get());
+                    }
+                }
+        ).ignoringDisable(true).schedule();
     }
 
     private void setDefaultCommands() {
@@ -195,8 +207,10 @@ public class RobotContainer {
         elevator = superstructure.getElevator();
         wrist = superstructure.getWrist();
 
-        climber = new Climber(new ClimberIOKraken());
-        winch = new Winch(new WinchIOSpark());
+        climber = new Climber(Constants.compBot() ? new ClimberIOKraken() : new ClimberIO() {});
+        winch = new Winch(Constants.compBot() ? new WinchIOSpark() : new WinchIO() {});
+
+
     }
 
     private void configureButtonBindings() {
