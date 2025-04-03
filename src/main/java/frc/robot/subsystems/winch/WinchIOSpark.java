@@ -27,11 +27,7 @@ public class WinchIOSpark implements WinchIO {
         config.encoder.positionConversionFactor(1 / WINCH_GEAR_RATIO);
         config.encoder.velocityConversionFactor(1 / WINCH_GEAR_RATIO * 60);
 
-        config.closedLoop.maxMotion.positionMode(
-                MAXMotionConfig.MAXMotionPositionMode.kMAXMotionTrapezoidal);
-
-        config.closedLoop.maxOutput(.2);
-        config.closedLoop.minOutput(-.2);
+        config.closedLoop.feedbackSensor(ClosedLoopConfig.FeedbackSensor.kPrimaryEncoder);
 
         encoder = motor.getEncoder();
         pid = motor.getClosedLoopController();

@@ -58,9 +58,9 @@ public class Winch extends BlitzSubsystem {
         io.updateInputs(inputs);
         Logger.processInputs(logKey, inputs);
 
-        LoggedTunableNumber.ifChanged(hashCode(), p -> io.setPid(p[0], 0, 0), kP);
-
-        LoggedTunableNumber.ifChanged(hashCode(), OUT -> io.setMaxOutput(OUT[0]), maxOut);
+//        LoggedTunableNumber.ifChanged(hashCode(), p -> io.setPid(p[0], 0, 0), kP);
+//
+//        LoggedTunableNumber.ifChanged(hashCode(), OUT -> io.setMaxOutput(OUT[0]), maxOut);
     }
 
     public Command manualUp() {
