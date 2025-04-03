@@ -2,7 +2,6 @@ package frc.robot.subsystems.winch;
 
 import static frc.robot.Constants.Winch.*;
 
-import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkClosedLoopController;
@@ -17,7 +16,6 @@ public class WinchIOSpark implements WinchIO {
     private final SparkMax motor;
     private final SparkClosedLoopController pid;
     private final RelativeEncoder encoder;
-    private final AbsoluteEncoder absEncoder;
 
     public WinchIOSpark() {
         motor = new SparkMax(ID, SparkLowLevel.MotorType.kBrushless);
@@ -29,19 +27,13 @@ public class WinchIOSpark implements WinchIO {
         config.encoder.positionConversionFactor(1 / WINCH_GEAR_RATIO);
         config.encoder.velocityConversionFactor(1 / WINCH_GEAR_RATIO * 60);
 
-        config.absoluteEncoder
-                .inverted(true)
-                .zeroCentered(true)
-                .zeroOffset(.135)
-                .positionConversionFactor(2 * Math.PI);
-
-        config.closedLoop.feedbackSensor(ClosedLoopConfig.FeedbackSensor.kAbsoluteEncoder);
-
         config.closedLoop.maxMotion.positionMode(
                 MAXMotionConfig.MAXMotionPositionMode.kMAXMotionTrapezoidal);
 
+        config.closedLoop.maxOutput(.2);
+        config.closedLoop.minOutput(-.2);
+
         encoder = motor.getEncoder();
-        absEncoder = motor.getAbsoluteEncoder();
         pid = motor.getClosedLoopController();
 
         encoder.setPosition(PIT_FUNNEL_STOW);
@@ -71,7 +63,6 @@ public class WinchIOSpark implements WinchIO {
         inputs.velocity = encoder.getVelocity();
         inputs.position = encoder.getPosition();
         inputs.current = motor.getOutputCurrent();
-        inputs.absPosition = absEncoder.getPosition();
     }
 
     @Override

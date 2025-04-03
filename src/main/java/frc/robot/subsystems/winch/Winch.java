@@ -72,14 +72,12 @@ public class Winch extends BlitzSubsystem {
     }
 
     private Command goToPosition(DoubleSupplier position) {
-        return Commands.none();
-//
-//        return new FunctionalCommand(
-//                () -> io.setMotionProfile(position.getAsDouble()),
-//                () -> {},
-//                (interrupted) -> io.setSpeed(0),
-//                () -> MathUtil.isNear(position.getAsDouble(), inputs.absPosition, EPSILON),
-//                this);
+        return new FunctionalCommand(
+                () -> io.setMotionProfile(position.getAsDouble()),
+                () -> {},
+                (interrupted) -> io.setSpeed(0),
+                () -> MathUtil.isNear(position.getAsDouble(), inputs.position, EPSILON),
+                this);
     }
 
     // Designed for match use
