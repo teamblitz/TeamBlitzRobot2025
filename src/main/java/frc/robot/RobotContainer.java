@@ -294,7 +294,6 @@ public class RobotContainer {
                                         climber.coastCommand())
                                 .onlyWhile(RobotState::isDisabled));
 
-        //        OIConstants.Drive.DRIVE_TO_TAG.whileTrue(DriveToTagCommand);
     }
 
     private void configureAutoCommands() {

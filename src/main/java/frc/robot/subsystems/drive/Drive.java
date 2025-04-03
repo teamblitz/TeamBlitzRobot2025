@@ -40,6 +40,7 @@ import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
@@ -49,6 +50,7 @@ import frc.lib.BlitzSubsystem;
 import frc.lib.math.AllianceFlipUtil;
 import frc.lib.util.*;
 import frc.robot.Constants;
+import frc.robot.PositionConstants;
 import frc.robot.Robot;
 import frc.robot.subsystems.drive.control.*;
 import frc.robot.subsystems.drive.gyro.GyroIO;
@@ -425,6 +427,11 @@ public class Drive extends BlitzSubsystem {
         tuningTab.add(
                 angularSysIdDynamic(SysIdRoutine.Direction.kReverse)
                         .withName("DriveAngular Dynamic Reverse"));
+
+
+        for (ScoringPositions.Branch branch : ScoringPositions.Branch.values()) {
+            SmartDashboard.putData(branch.name(), driveToPose(PositionConstants.Reef.SCORING_POSITIONS.get(branch)));
+        }
     }
 
     public void drive(
