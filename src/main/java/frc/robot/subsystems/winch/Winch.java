@@ -2,10 +2,12 @@ package frc.robot.subsystems.winch;
 
 import static frc.robot.Constants.Winch.*;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import frc.lib.BlitzSubsystem;
 import frc.lib.util.LoggedTunableNumber;
 import java.util.function.DoubleSupplier;
