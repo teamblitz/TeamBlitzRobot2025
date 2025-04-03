@@ -30,6 +30,7 @@ import frc.robot.subsystems.climber.ClimberIOKraken;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.gyro.GyroIO;
 import frc.robot.subsystems.drive.gyro.GyroIOPigeon;
+import frc.robot.subsystems.drive.gyro.GyroIOSim;
 import frc.robot.subsystems.drive.range.RangeSensorIO;
 import frc.robot.subsystems.drive.range.RangeSensorIOFusion;
 import frc.robot.subsystems.drive.swerveModule.SwerveModule;
@@ -192,7 +193,7 @@ public class RobotContainer {
                                             new AngleMotorIOSim(),
                                             new DriveMotorIOSim(),
                                             new EncoderIO() {}),
-                                    new GyroIO() {},
+                                    new GyroIOSim(() -> drive.getChassisSpeeds()),
                                     new RangeSensorIO() {});
                 };
 

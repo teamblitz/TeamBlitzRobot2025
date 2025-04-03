@@ -37,6 +37,6 @@ public class GyroIOPigeon implements GyroIO {
         inputs.yawRate = gyro.getAngularVelocityZDevice().getValueAsDouble();
         inputs.pitchRate = gyro.getAngularVelocityYDevice().getValueAsDouble();
         inputs.rollRate = gyro.getAngularVelocityXDevice().getValueAsDouble();
-        inputs.connected = gyro.getUpTime().getValueAsDouble() > 0;
+        inputs.connected = gyro.isConnected();
     }
 }
