@@ -6,6 +6,7 @@ import static edu.wpi.first.units.Units.*;
 import static frc.robot.Constants.Drive.*;
 
 import choreo.trajectory.SwerveSample;
+import choreo.util.ChoreoAllianceFlipUtil;
 import com.ctre.phoenix6.SignalLogger;
 import com.pathplanner.lib.util.DriveFeedforwards;
 import com.pathplanner.lib.util.swerve.SwerveSetpoint;
@@ -45,6 +46,7 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.BlitzSubsystem;
+import frc.lib.math.AllianceFlipUtil;
 import frc.lib.util.*;
 import frc.robot.Constants;
 import frc.robot.Robot;
@@ -475,10 +477,15 @@ public class Drive extends BlitzSubsystem {
         Logger.recordOutput("Drive/keepHeadingSetpointSet", keepHeadingSetpointSet);
         Logger.recordOutput("Drive/keepSetpoint", keepHeadingPid.getSetpoint());
 
+        var fieldRelativeSpeeds = new ChassisSpeeds(translation.getX(), translation.getY(), rotation);
+        var flippedFieldSpeeds = new ChassisSpeeds(-fieldRelativeSpeeds.vxMetersPerSecond, -fieldRelativeSpeeds.vyMetersPerSecond, rotationSetpoint);
+
+        var correctFieldSpeeds = AllianceFlipUtil.shouldFlip() ? flippedFieldSpeeds : fieldRelativeSpeeds;
+
         ChassisSpeeds robotRel =
                 fieldRelative
                         ? ChassisSpeeds.fromFieldRelativeSpeeds(
-                                translation.getX(), translation.getY(), rotation, getYaw())
+                                correctFieldSpeeds, getYaw())
                         : new ChassisSpeeds(translation.getX(), translation.getY(), rotation);
 
         drive(robotRel, isOpenLoop);

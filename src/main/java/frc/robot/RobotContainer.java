@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.lib.math.AllianceFlipUtil;
 import frc.lib.util.ScoringPositions;
 import frc.robot.Constants.AutoConstants.StartingPosition;
 import frc.robot.commands.AutoCommands;
@@ -315,8 +316,8 @@ public class RobotContainer {
     public Command getAutonomousCommand() {
         Logger.recordOutput("selectedAuto", autoChooser.selectedCommand().getName());
         return Commands.sequence(
-                //                Commands.runOnce(() -> drive.setGyro(180)),
-                autoChooser.selectedCommandScheduler());
+                                Commands.runOnce(() -> drive.setGyro(AllianceFlipUtil.shouldFlip() ? 0 : 180)),
+                autoChooser.selectedCommandScheduler()).withName("Auto Command");
         //        return Commands.sequence(
         //                        Commands.runOnce(() -> drive.setGyro(180)),
         //                        Commands.parallel(winch.lowerFunnel(),
