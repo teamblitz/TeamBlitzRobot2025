@@ -588,7 +588,7 @@ public class Drive extends BlitzSubsystem {
     }
 
     public Pose2d getPose() {
-        return swerveOdometry.getPoseMeters();
+        return poseEstimator.getEstimatedPosition();
     }
 
     public void resetOdometry(Pose2d pose) {
@@ -947,7 +947,8 @@ public class Drive extends BlitzSubsystem {
                                     rotationState.velocity = speeds.omegaRadiansPerSecond;
 
 
-                                    Logger.recordOutput("drive/driveToPose/pose", poseSupplier.get());
+                                    Logger.recordOutput("drive/driveToPose/initial", initial.inner);
+                                    Logger.recordOutput("drive/driveToPose/goal", goal.inner);
                                     Logger.recordOutput("drive/driveToPose/initialDistance", translationState.position);
                                     Logger.recordOutput("drive/driveToPose/initialVelocity", translationState.velocity);
                                 })
