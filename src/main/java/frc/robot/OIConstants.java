@@ -76,9 +76,17 @@ public class OIConstants {
         public static final Trigger X_BREAK = UNBOUND;
         public static final Trigger COAST = UNBOUND;
         public static final Trigger BRAKE = UNBOUND;
-        public static final Trigger AUTO_PICKUP = DRIVE_CONTROLLER.button(2);
 
-        public static final Trigger DRIVE_TO_TAG = DRIVE_CONTROLLER.button(3);
+
+        public static final Trigger ALIGN_LEFT =
+                new Trigger(
+                        () -> DRIVE_CONTROLLER.getHID().getPOV() > 180
+                );
+
+        public static final Trigger ALIGN_RIGHT =
+                new Trigger(
+                        () -> DRIVE_CONTROLLER.getHID().getPOV() < 180
+                );
     }
 
     public static final class Overrides {

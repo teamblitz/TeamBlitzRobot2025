@@ -1,11 +1,14 @@
 package frc.robot;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import frc.lib.math.AllianceFlipUtil;
 import frc.lib.util.ScoringPositions;
+import org.littletonrobotics.junction.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,6 +21,7 @@ public class PositionConstants {
                         Units.inchesToMeters(176.746),
                         Units.inchesToMeters(317. / 2.)
                 );
+
 
         public static final Map<ScoringPositions.Branch, Supplier<Pose2d>> SCORING_POSITIONS = new HashMap<>();
 
@@ -52,5 +56,32 @@ public class PositionConstants {
                 SCORING_POSITIONS.put(rightBranch, () -> AllianceFlipUtil.apply(rotatedRight));
             }
         }
+    }
+
+    public static ScoringPositions.Branch[] getClosestFace(Pose2d robotPose) {
+        var angle = new Transform2d(AllianceFlipUtil.apply(new Pose2d(Reef.REEF_CENTER, Rotation2d.kZero)), robotPose).getTranslation().getAngle().getDegrees();
+
+
+        Logger.recordOutput("drive/autoAlign/reefAngle", angle);
+
+
+        return new ScoringPositions.Branch[] {ScoringPositions.Branch.K, ScoringPositions.Branch.L};
+//        if (!AllianceFlipUtil.shouldFlip()) {
+//            angle -= 180;
+//        }
+//
+//        angle = MathUtil.inputModulus(angle, -180, 180);
+//
+//        angle += 30;
+////
+////        while (angle >= 60) {
+////
+////        }
+//
+//        if (angle > -30 && angle < 30) {
+//            return new ScoringPositions.Branch[] {ScoringPositions.Branch.A, ScoringPositions.Branch.B};
+//        } else if (angle > 30 && angle < ) {}
+
+
     }
 }

@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.math.AllianceFlipUtil;
 import frc.lib.util.ScoringPositions;
@@ -55,6 +56,8 @@ import frc.robot.subsystems.winch.WinchIO;
 import frc.robot.subsystems.winch.WinchIOSpark;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+
+import java.util.Set;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -294,6 +297,25 @@ public class RobotContainer {
                                         elevator.coastCommand(),
                                         climber.coastCommand())
                                 .onlyWhile(RobotState::isDisabled));
+
+
+
+
+        OIConstants.Drive.ALIGN_LEFT.whileTrue(
+                new DeferredCommand(
+                        () -> drive.driveToPose(PositionConstants.Reef.SCORING_POSITIONS.get(
+                                PositionConstants.getClosestFace(drive.getPose())[0]
+                        )), Set.of(drive)
+                )
+        );
+
+        OIConstants.Drive.ALIGN_RIGHT.whileTrue(
+                new DeferredCommand(
+                        () -> drive.driveToPose(PositionConstants.Reef.SCORING_POSITIONS.get(
+                                PositionConstants.getClosestFace(drive.getPose())[1]
+                        )), Set.of(drive)
+                )
+        );
 
     }
 
