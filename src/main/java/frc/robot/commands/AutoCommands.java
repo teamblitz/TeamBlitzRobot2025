@@ -120,6 +120,18 @@ public class AutoCommands {
         return routine;
     }
 
+    public AutoRoutine leave(String pathName) {
+        final var routine = autoFactory.newRoutine(pathName);
+        final var traj = routine.trajectory(pathName);
+
+        routine.active()
+                .whileTrue(
+                        Commands.sequence(traj.resetOdometry(), traj.cmd())
+                                .withName("auto/cmdSec"));
+
+        return routine;
+    }
+
     public AutoRoutine twoPiece() {
         AutoRoutine routine = autoFactory.newRoutine("twoPiece");
 
