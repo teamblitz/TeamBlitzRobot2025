@@ -832,8 +832,8 @@ public class Drive extends BlitzSubsystem {
         return poseEstimator.sampleAt(timestamp);
     }
 
-    private final PIDController xController = new PIDController(14, 0, 0);
-    private final PIDController yController = new PIDController(14, 0, 0);
+    private final PIDController xController = new PIDController(10, 0, 0);
+    private final PIDController yController = new PIDController(10, 0, 0);
     private final PIDController choreoThetaController = new PIDController(3, 0, 0);
 
     public void followTrajectory(SwerveSample sample) {
