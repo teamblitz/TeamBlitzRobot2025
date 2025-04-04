@@ -85,7 +85,7 @@ public class OIConstants {
 
         public static final Trigger ALIGN_RIGHT =
                 new Trigger(
-                        () -> DRIVE_CONTROLLER.getHID().getPOV() < 180
+                        () -> DRIVE_CONTROLLER.getHID().getPOV() < 180 && DRIVE_CONTROLLER.getHID().getPOV() > 0
                 );
     }
 

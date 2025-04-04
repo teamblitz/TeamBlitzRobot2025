@@ -914,6 +914,7 @@ public class Drive extends BlitzSubsystem {
                                             goalToBot.getTranslation().toVector().unit();
 
                                     this.directionGoalToBot.inner = directionGoalToBot;
+                                    this.normDirStartToEnd.inner = new Translation2d(directionGoalToBot);
 
                                     distance.inner = goalToBot.getTranslation().getNorm();
 
@@ -1026,9 +1027,9 @@ public class Drive extends BlitzSubsystem {
                                                                 new Rotation2d(
                                                                         rotationState.position),
                                                                 normDirStartToEnd.inner.getX()
-                                                                        * -setpoint.velocity,
+                                                                        * setpoint.velocity,
                                                                 normDirStartToEnd.inner.getY()
-                                                                        * -setpoint.velocity,
+                                                                        * setpoint.velocity,
                                                                 rotationState.velocity));
                                             }
                                             keepHeadingSetpointSet = false;

@@ -65,7 +65,7 @@ public class PositionConstants {
         Logger.recordOutput("drive/autoAlign/reefAngle", angle);
 
 
-        return new ScoringPositions.Branch[] {ScoringPositions.Branch.K, ScoringPositions.Branch.L};
+        return new ScoringPositions.Branch[] {ScoringPositions.Branch.A, ScoringPositions.Branch.B};
 //        if (!AllianceFlipUtil.shouldFlip()) {
 //            angle -= 180;
 //        }
