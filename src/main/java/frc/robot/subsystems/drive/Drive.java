@@ -1031,6 +1031,7 @@ public class Drive extends BlitzSubsystem {
                                                                         * -setpoint.velocity,
                                                                 rotationState.velocity));
                                             }
+                                            keepHeadingSetpointSet = false;
                                         }))
                         .until(atDriveToPosePose.debounce(.1))
                         .finallyDo(() -> drive(new ChassisSpeeds(), true));
