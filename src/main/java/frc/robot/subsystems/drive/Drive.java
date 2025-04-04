@@ -485,7 +485,7 @@ public class Drive extends BlitzSubsystem {
         Logger.recordOutput("Drive/keepSetpoint", keepHeadingPid.getSetpoint());
 
         var fieldRelativeSpeeds = new ChassisSpeeds(translation.getX(), translation.getY(), rotation);
-        var flippedFieldSpeeds = new ChassisSpeeds(-fieldRelativeSpeeds.vxMetersPerSecond, -fieldRelativeSpeeds.vyMetersPerSecond, rotationSetpoint);
+        var flippedFieldSpeeds = new ChassisSpeeds(-fieldRelativeSpeeds.vxMetersPerSecond, -fieldRelativeSpeeds.vyMetersPerSecond, rotation);
 
         var correctFieldSpeeds = AllianceFlipUtil.shouldFlip() ? flippedFieldSpeeds : fieldRelativeSpeeds;
 
