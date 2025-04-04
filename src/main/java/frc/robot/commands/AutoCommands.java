@@ -94,6 +94,7 @@ public class AutoCommands {
                         .ignoringDisable(true);
 
         RobotModeTriggers.autonomous().onFalse(configTeleDefault);
+        RobotModeTriggers.teleop().onTrue(configTeleDefault);
     }
 
     public AutoFactory getFactory() {
