@@ -317,6 +317,12 @@ public class RobotContainer {
                 )
         );
 
+        Commands.run(
+                () -> {
+                    PositionConstants.getClosestFace(drive.getPose());
+                }
+        ).ignoringDisable(true).schedule();
+
     }
 
     private void configureAutoCommands() {

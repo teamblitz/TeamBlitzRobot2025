@@ -59,7 +59,7 @@ public class PositionConstants {
     }
 
     public static ScoringPositions.Branch[] getClosestFace(Pose2d robotPose) {
-        var angle = new Transform2d(AllianceFlipUtil.apply(new Pose2d(Reef.REEF_CENTER, Rotation2d.kZero)), robotPose).getTranslation().getAngle().getDegrees();
+        var angle = new Transform2d(new Pose2d(AllianceFlipUtil.apply(Reef.REEF_CENTER), Rotation2d.kZero), robotPose).getTranslation().getAngle().getDegrees();
 
 
         Logger.recordOutput("drive/autoAlign/reefAngle", angle);
@@ -70,16 +70,20 @@ public class PositionConstants {
         if (!AllianceFlipUtil.shouldFlip()) { // Blue side
             var shiftedAngle = angle - 150;
 
-            adjustedAngle = MathUtil.inputModulus(-shiftedAngle, 0, 360);
+            adjustedAngle = MathUtil.inputModulus(shiftedAngle, 0, 360);
         } else { // Red alliance
             var shiftedAngle = angle + 30;
 
-            adjustedAngle = MathUtil.inputModulus(-shiftedAngle, 0, 360);
+            adjustedAngle = MathUtil.inputModulus(shiftedAngle, 0, 360);
         }
 
         var possiblePositions = ScoringPositions.Branch.values();
 
+        Logger.recordOutput("drive/autoAlign/adjustedAngle", adjustedAngle);
+
         int face = (int) (adjustedAngle / 60);
+
+        Logger.recordOutput("drive/autoAlign/selectedFace", face);
 
         return new ScoringPositions.Branch[] {possiblePositions[face * 2], possiblePositions[face * 2 + 1]};
 
