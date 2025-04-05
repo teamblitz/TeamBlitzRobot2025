@@ -65,10 +65,25 @@ public class PositionConstants {
         Logger.recordOutput("drive/autoAlign/reefAngle", angle);
 
 
-        return new ScoringPositions.Branch[] {ScoringPositions.Branch.A, ScoringPositions.Branch.B};
-//        if (!AllianceFlipUtil.shouldFlip()) {
-//            angle -= 180;
-//        }
+        double adjustedAngle;
+
+        if (!AllianceFlipUtil.shouldFlip()) { // Blue side
+            var shiftedAngle = angle - 150;
+
+            adjustedAngle = MathUtil.inputModulus(-shiftedAngle, 0, 360);
+        } else { // Red alliance
+            var shiftedAngle = angle + 30;
+
+            adjustedAngle = MathUtil.inputModulus(-shiftedAngle, 0, 360);
+        }
+
+        var possiblePositions = ScoringPositions.Branch.values();
+
+        int face = (int) (adjustedAngle / 60);
+
+        return new ScoringPositions.Branch[] {possiblePositions[face * 2], possiblePositions[face * 2 + 1]};
+
+
 //
 //        angle = MathUtil.inputModulus(angle, -180, 180);
 //
@@ -82,6 +97,7 @@ public class PositionConstants {
 //            return new ScoringPositions.Branch[] {ScoringPositions.Branch.A, ScoringPositions.Branch.B};
 //        } else if (angle > 30 && angle < ) {}
 
+//        return new ScoringPositions.Branch[] {ScoringPositions.Branch.A, ScoringPositions.Branch.B};
 
     }
 }
