@@ -914,7 +914,7 @@ public class Drive extends BlitzSubsystem {
                                             goalToBot.getTranslation().toVector().unit();
 
                                     this.directionGoalToBot.inner = directionGoalToBot;
-                                    this.normDirStartToEnd.inner = new Translation2d(directionGoalToBot);
+//                                    this.normDirStartToEnd.inner = new Translation2d(directionGoalToBot);
 
                                     distance.inner = goalToBot.getTranslation().getNorm();
 
