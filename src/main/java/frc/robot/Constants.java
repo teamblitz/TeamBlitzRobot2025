@@ -19,11 +19,9 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import frc.lib.util.COTSSwerveConstants;
-import frc.lib.util.ScoringPositions;
 import frc.lib.util.SwerveModuleConstants;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.function.DoubleUnaryOperator;
 
 /**
@@ -97,10 +95,8 @@ public final class Constants {
                                 : COTSSwerveConstants.driveGearRatios.SDSMK4i_L2);
 
         /* Drivetrain Constants */
-        public static final double TRACK_WIDTH =
-                Units.inchesToMeters(24.25);
-        public static final double WHEEL_BASE =
-                Units.inchesToMeters(24.25);
+        public static final double TRACK_WIDTH = Units.inchesToMeters(24.25);
+        public static final double WHEEL_BASE = Units.inchesToMeters(24.25);
         public static final double WHEEL_CIRCUMFERENCE = CHOSEN_MODULE.wheelCircumference;
 
         /* Motor Inverts */
@@ -612,6 +608,5 @@ public final class Constants {
         public static final class Timings {
             public static final double STOW_TO_L4_READY = 1.25; // IDK ACTUAL TIMINGS
         }
-
     }
 }

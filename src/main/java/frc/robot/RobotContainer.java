@@ -30,7 +30,6 @@ import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.ClimberIO;
 import frc.robot.subsystems.climber.ClimberIOKraken;
 import frc.robot.subsystems.drive.Drive;
-import frc.robot.subsystems.drive.gyro.GyroIO;
 import frc.robot.subsystems.drive.gyro.GyroIOPigeon;
 import frc.robot.subsystems.drive.gyro.GyroIOSim;
 import frc.robot.subsystems.drive.range.RangeSensorIO;
@@ -54,10 +53,9 @@ import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.winch.Winch;
 import frc.robot.subsystems.winch.WinchIO;
 import frc.robot.subsystems.winch.WinchIOSpark;
+import java.util.Set;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
-
-import java.util.Set;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -103,7 +101,7 @@ public class RobotContainer {
         autoCommands = new AutoCommands(drive, superstructure, intake);
 
         autoChooser.addRoutine("twoPiece", autoCommands::twoPiece);
-//        autoChooser.addRoutine("test", autoCommands::testDrive);
+        //        autoChooser.addRoutine("test", autoCommands::testDrive);
         autoChooser.addRoutine("fourPieceLeft", autoCommands::fourPieceLeft);
         autoChooser.addRoutine("leaveRight", () -> autoCommands.leave("leaveRight"));
 
@@ -112,14 +110,17 @@ public class RobotContainer {
         startingPositionChooser.addOption("Left", StartingPosition.LEFT);
         startingPositionChooser.addOption("Right", StartingPosition.RIGHT);
 
-
         Commands.run(
-                () -> {
-                    for (ScoringPositions.Branch branch : ScoringPositions.Branch.values()) {
-                        Logger.recordOutput("positions/reef/" + branch.name(), PositionConstants.Reef.SCORING_POSITIONS.get(branch).get());
-                    }
-                }
-        ).ignoringDisable(true).schedule();
+                        () -> {
+                            for (ScoringPositions.Branch branch :
+                                    ScoringPositions.Branch.values()) {
+                                Logger.recordOutput(
+                                        "positions/reef/" + branch.name(),
+                                        PositionConstants.Reef.SCORING_POSITIONS.get(branch).get());
+                            }
+                        })
+                .ignoringDisable(true)
+                .schedule();
     }
 
     private void setDefaultCommands() {
@@ -215,8 +216,6 @@ public class RobotContainer {
 
         climber = new Climber(Constants.compBot() ? new ClimberIOKraken() : new ClimberIO() {});
         winch = new Winch(Constants.compBot() ? new WinchIOSpark() : new WinchIO() {});
-
-
     }
 
     private void configureButtonBindings() {
@@ -298,31 +297,30 @@ public class RobotContainer {
                                         climber.coastCommand())
                                 .onlyWhile(RobotState::isDisabled));
 
-
-
-
         OIConstants.Drive.ALIGN_LEFT.whileTrue(
                 new DeferredCommand(
-                        () -> drive.driveToPose(PositionConstants.Reef.SCORING_POSITIONS.get(
-                                PositionConstants.getClosestFace(drive.getPose())[0]
-                        )), Set.of(drive)
-                )
-        );
+                        () ->
+                                drive.driveToPose(
+                                        PositionConstants.Reef.SCORING_POSITIONS.get(
+                                                PositionConstants.getClosestFace(drive.getPose())[
+                                                        0])),
+                        Set.of(drive)));
 
         OIConstants.Drive.ALIGN_RIGHT.whileTrue(
                 new DeferredCommand(
-                        () -> drive.driveToPose(PositionConstants.Reef.SCORING_POSITIONS.get(
-                                PositionConstants.getClosestFace(drive.getPose())[1]
-                        )), Set.of(drive)
-                )
-        );
+                        () ->
+                                drive.driveToPose(
+                                        PositionConstants.Reef.SCORING_POSITIONS.get(
+                                                PositionConstants.getClosestFace(drive.getPose())[
+                                                        1])),
+                        Set.of(drive)));
 
         Commands.run(
-                () -> {
-                    PositionConstants.getClosestFace(drive.getPose());
-                }
-        ).ignoringDisable(true).schedule();
-
+                        () -> {
+                            PositionConstants.getClosestFace(drive.getPose());
+                        })
+                .ignoringDisable(true)
+                .schedule();
     }
 
     private void configureAutoCommands() {
@@ -344,8 +342,10 @@ public class RobotContainer {
     public Command getAutonomousCommand() {
         Logger.recordOutput("selectedAuto", autoChooser.selectedCommand().getName());
         return Commands.sequence(
-                                Commands.runOnce(() -> drive.setGyro(AllianceFlipUtil.shouldFlip() ? 0 : 180)),
-                autoChooser.selectedCommandScheduler()).withName("Auto Command");
+                        Commands.runOnce(
+                                () -> drive.setGyro(AllianceFlipUtil.shouldFlip() ? 0 : 180)),
+                        autoChooser.selectedCommandScheduler())
+                .withName("Auto Command");
         //        return Commands.sequence(
         //                        Commands.runOnce(() -> drive.setGyro(180)),
         //                        Commands.parallel(winch.lowerFunnel(),

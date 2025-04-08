@@ -197,7 +197,8 @@ public class Drive extends BlitzSubsystem {
                 .onTrue(Commands.runOnce(() -> keepHeadingSetpointSet = false));
 
         // Especially on the Helium CanAndMag encoders, sometimes a sensor reading to seed the
-        // module isn't available at startup. To fix this we wait 3 seconds and then reseed all modules
+        // module isn't available at startup. To fix this we wait 3 seconds and then reseed all
+        // modules
         Commands.waitSeconds(3)
                 .andThen(
                         Commands.runOnce(
