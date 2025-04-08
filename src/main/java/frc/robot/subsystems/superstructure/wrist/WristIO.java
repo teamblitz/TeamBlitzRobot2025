@@ -19,6 +19,8 @@ public interface WristIO {
 
     public default void setSetpoint(double position, double velocity, double nextVelocity) {}
 
+    public default void setMotionMagic(double position) {}
+
     public default void stop() {}
 
     public default void setPid(double p, double i, double d) {}

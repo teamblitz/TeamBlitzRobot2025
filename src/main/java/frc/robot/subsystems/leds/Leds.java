@@ -81,7 +81,7 @@ public class Leds extends SubsystemBase {
     public static final double pickupAlertDuration = .5;
 
     private Leds() {
-        leds = new AddressableLED(2);
+        leds = new AddressableLED(0);
         buffer = new AddressableLEDBuffer(length);
         leds.setLength(length);
         leds.setData(buffer);

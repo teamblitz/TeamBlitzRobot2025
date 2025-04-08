@@ -1,5 +1,7 @@
 package frc.robot.subsystems.superstructure.elevator;
 
+import static frc.robot.Constants.Elevator.*;
+
 import com.revrobotics.*;
 import com.revrobotics.spark.*;
 import com.revrobotics.spark.config.ClosedLoopConfig;
@@ -63,6 +65,13 @@ public class ElevatorIOSpark implements ElevatorIO {
 
         sharedConfig.closedLoop.maxOutput(.2);
         sharedConfig.closedLoop.minOutput(-.2);
+
+        sharedConfig
+                .softLimit
+                .forwardSoftLimit(MAX_POS)
+                .forwardSoftLimitEnabled(true)
+                .reverseSoftLimit(MIN_POS)
+                .reverseSoftLimitEnabled(true);
 
         SparkMaxConfig leftConfig = new SparkMaxConfig();
 
@@ -140,17 +149,20 @@ public class ElevatorIOSpark implements ElevatorIO {
     @Override
     public void setFFLeft(double kS, double kG, double kV, double kA) {
         leftFeedforward = new ElevatorFeedforward(kS, kG, kV, kA);
-        SmartDashboard.putNumber("lelevatormaxspeed4", leftFeedforward.maxAchievableVelocity(12, 3));
-        SmartDashboard.putNumber("lelevatormaxspeed6", leftFeedforward.maxAchievableVelocity(12, 4));
+        SmartDashboard.putNumber(
+                "lelevatormaxspeed4", leftFeedforward.maxAchievableVelocity(12, 3));
+        SmartDashboard.putNumber(
+                "lelevatormaxspeed6", leftFeedforward.maxAchievableVelocity(12, 4));
     }
 
     @Override
     public void setFFRight(double kS, double kG, double kV, double kA) {
         rightFeedforward = new ElevatorFeedforward(kS, kG, kV, kA);
-         SmartDashboard.putNumber("relevatormaxspeed4", rightFeedforward.maxAchievableVelocity(12, 3));
-         SmartDashboard.putNumber("relevatormaxspeed6", rightFeedforward.maxAchievableVelocity(12, 4));
+        SmartDashboard.putNumber(
+                "relevatormaxspeed4", rightFeedforward.maxAchievableVelocity(12, 3));
+        SmartDashboard.putNumber(
+                "relevatormaxspeed6", rightFeedforward.maxAchievableVelocity(12, 4));
     }
-
 
     @Override
     public void setBrakeMode(boolean brakeMode) {
@@ -219,13 +231,14 @@ public class ElevatorIOSpark implements ElevatorIO {
         inputs.positionLeft = leftEncoder.getPosition();
         inputs.positionRight = rightEncoder.getPosition();
 
-        // Our limit switches are wired nominally closed (nc), so a value of false means the switch
-        // is active
-        inputs.bottomLimitSwitch = !bottomLimitSwitch.get();
-        inputs.topLimitSwitch = !topLimitSwitch.get();
+        inputs.position = inputs.positionLeft + inputs.positionRight / 2;
 
-        inputs.topLimitSwitch = false;
-        inputs.bottomLimitSwitch = false;
+        // Our limit switches are wired nominally closed (nc), so a value of false should mean the
+        // limit switch is triggered
+        // This is in fact not the case, and for some reason despite behaving as a (nc) switch, the
+        // output is reversed
+        inputs.topLimitSwitch = topLimitSwitch.get();
+        inputs.bottomLimitSwitch = bottomLimitSwitch.get();
 
         inputs.currentLeft = left.getOutputCurrent();
         inputs.currentRight = right.getOutputCurrent();

@@ -2,6 +2,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
@@ -18,6 +19,7 @@ public class TeleopSwerve extends Command {
     private final DoubleSupplier rotationSup;
     private final BooleanSupplier robotCentricSup;
     private final DoubleSupplier headingSup;
+    private final BooleanSupplier maintainHeading;
 
     public TeleopSwerve(
             Drive s_Swerve,
@@ -25,7 +27,8 @@ public class TeleopSwerve extends Command {
             DoubleSupplier strafeSup,
             DoubleSupplier rotationSup,
             BooleanSupplier robotCentricSup,
-            DoubleSupplier headingSup) {
+            DoubleSupplier headingSup,
+            BooleanSupplier maintainHeading) {
         this.drive = s_Swerve;
         addRequirements(s_Swerve);
 
@@ -34,6 +37,7 @@ public class TeleopSwerve extends Command {
         this.rotationSup = rotationSup;
         this.robotCentricSup = robotCentricSup;
         this.headingSup = headingSup;
+        this.maintainHeading = maintainHeading;
     }
 
     @Override
@@ -59,8 +63,10 @@ public class TeleopSwerve extends Command {
                     headingSup.getAsDouble(),
                     !robotCentricSup.getAsBoolean(),
                     true,
-                    true,
+                    maintainHeading.getAsBoolean(),
                     !Double.isNaN(headingSup.getAsDouble()));
+        } else {
+            drive.drive(new ChassisSpeeds(), true);
         }
     }
 }

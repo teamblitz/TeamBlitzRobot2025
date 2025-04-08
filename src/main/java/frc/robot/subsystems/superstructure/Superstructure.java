@@ -12,13 +12,14 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.BlitzSubsystem;
 import frc.robot.subsystems.superstructure.elevator.Elevator;
-import frc.robot.subsystems.superstructure.elevator.ElevatorIOSpark;
+import frc.robot.subsystems.superstructure.elevator.ElevatorIO;
 import frc.robot.subsystems.superstructure.wrist.Wrist;
+import frc.robot.subsystems.superstructure.wrist.WristIO;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import frc.robot.subsystems.superstructure.wrist.WristIOSpark;
+import java.util.function.DoubleSupplier;
+import lombok.Getter;
 import org.littletonrobotics.junction.Logger;
 
 /**
@@ -37,14 +38,14 @@ import org.littletonrobotics.junction.Logger;
  * <p>-Noah
  */
 public class Superstructure extends BlitzSubsystem {
-    private final Elevator elevator;
-    private final Wrist wrist;
+    @Getter private final Elevator elevator;
+    @Getter private final Wrist wrist;
 
-    public Superstructure() {
+    public Superstructure(ElevatorIO elevatorIO, WristIO wristIO) {
 
         super("superstructure");
-        this.elevator = new Elevator(new ElevatorIOSpark(), this::idle);
-        this.wrist = new Wrist(new WristIOSpark());
+        this.elevator = new Elevator(elevatorIO, this::idle);
+        this.wrist = new Wrist(wristIO, this::idle);
 
         staticGoals =
                 Map.ofEntries(
@@ -52,12 +53,17 @@ public class Superstructure extends BlitzSubsystem {
                         entry(Goal.L2, L2),
                         entry(Goal.L3, L3),
                         entry(Goal.L4, L4),
+                        entry(Goal.L4_PLOP, L4_PLOP),
                         entry(Goal.KICK_LOW_ALGAE, KICK_LOW_ALGAE),
                         entry(Goal.KICK_HIGH_ALGAE, KICK_HIGH_ALGAE),
                         entry(Goal.HANDOFF, HANDOFF),
                         entry(Goal.STOW, STOW));
 
-        dynamicGoals = Map.ofEntries(entry(Goal.L4_DUNK, L4_DUNK));
+        dynamicGoals =
+                Map.ofEntries(
+                        entry(Goal.L4_DUNK, L4_DUNK)
+                        //                entry(Goal.L4_PLOP, L4_PLOP)
+                        );
 
         ShuffleboardTab tab = Shuffleboard.getTab("SuperStructure");
         GenericEntry elevatorTestEntry = tab.add("elevatorTest", 0).getEntry();
@@ -115,6 +121,7 @@ public class Superstructure extends BlitzSubsystem {
         L3,
         L4,
         L4_DUNK,
+        L4_PLOP,
         KICK_LOW_ALGAE,
         KICK_HIGH_ALGAE,
     }
@@ -142,37 +149,9 @@ public class Superstructure extends BlitzSubsystem {
         DISABLED
     }
 
-    public Elevator getElevator() {
-        return elevator;
-    }
-
-    public Wrist getWrist() {
-        return wrist;
-    }
-
-    public Command stowCommand() {
-        return Commands.sequence(
-                        wrist.withGoal(STOW.getWristState()),
-                        elevator.withGoal(STOW.getElevatorState())
-                                .beforeStarting(
-                                        () -> {
-                                            currentGoal = Goal.STOW;
-                                            state = State.IN_TRANSIT;
-                                        })
-                                .finallyDo(
-                                        (interrupted) ->
-                                                state =
-                                                        interrupted
-                                                                ? State.UNKNOWN
-                                                                : State.AT_GOAL))
-                .alongWith(idle())
-                .withName("stow");
-    }
-
     private Command toStateWristLast(SuperstructureState state) {
         return Commands.sequence(
-                wrist.withGoal(state.getElevatorState()),
-                elevator.withGoal(state.getWristState()));
+                wrist.withGoal(state.getElevatorState()), elevator.withGoal(state.getWristState()));
     }
 
     private Command toStateThroughTransit(SuperstructureState state) {
@@ -186,21 +165,19 @@ public class Superstructure extends BlitzSubsystem {
                     double elevatorGoal = state.getElevatorState().position;
                     double elevatorInitial = elevator.getPosition();
 
-                    return elevatorInitial < ELEVATOR_MAX_TO_SKIP_TRANSIT && elevatorGoal < ELEVATOR_MAX_TO_SKIP_TRANSIT;
-                }
-        );
+                    return elevatorInitial < ELEVATOR_MAX_TO_SKIP_TRANSIT
+                            && elevatorGoal < ELEVATOR_MAX_TO_SKIP_TRANSIT;
+                });
     }
 
     private Command toStateWristFirst(SuperstructureState state) {
         return Commands.sequence(
-                wrist.withGoal(state.getElevatorState()),
-                elevator.withGoal(state.getWristState()));
+                wrist.withGoal(state.getElevatorState()), elevator.withGoal(state.getWristState()));
     }
 
     private Command toStateSynchronous(SuperstructureState state) {
         return Commands.parallel(
-                elevator.withGoal(state.getElevatorState()),
-                wrist.withGoal(state.getWristState()));
+                elevator.withGoal(state.getElevatorState()), wrist.withGoal(state.getWristState()));
     }
 
     private int dynamicStep = 0;
@@ -209,17 +186,26 @@ public class Superstructure extends BlitzSubsystem {
         return dynamicStep;
     }
 
+    public Command toGoalThenIdle(Goal goal) {
+        return toGoal(goal).andThen(idle());
+    }
+
     public Command toGoal(Goal goal) {
         if (goal == Goal.L4_DUNK) {
             Command command = Commands.none();
 
             for (StateWithMode stateWithMode : dynamicGoals.get(goal)) {
-                command = command.andThen(
-                        switch (stateWithMode.mode()) {
-                            case WRIST_FIRST -> toStateWristFirst(stateWithMode.state());
-                             case WRIST_LAST -> toStateWristLast(stateWithMode.state());
-                            case WRIST_SYNC -> toStateSynchronous(stateWithMode.state());
-                        }).finallyDo(() -> dynamicStep++);
+                command =
+                        command.andThen(
+                                        switch (stateWithMode.mode()) {
+                                            case WRIST_FIRST ->
+                                                    toStateWristFirst(stateWithMode.state());
+                                            case WRIST_LAST ->
+                                                    toStateWristLast(stateWithMode.state());
+                                            case WRIST_SYNC ->
+                                                    toStateSynchronous(stateWithMode.state());
+                                        })
+                                .finallyDo(() -> dynamicStep++);
             }
 
             command =
@@ -254,7 +240,24 @@ public class Superstructure extends BlitzSubsystem {
                             state = interrupted ? State.UNKNOWN : State.AT_GOAL;
                         })
                 .withName("superstructure/static_" + goal)
-                .andThen(idle());
+                .deadlineFor(idle());
+    }
+
+    public Command toGoalDirect(Goal goal) {
+        return toStateSynchronous(staticGoals.get(goal))
+                .beforeStarting(
+                        () -> {
+                            state = State.IN_TRANSIT;
+                            previousGoal = currentGoal;
+                            currentGoal = goal;
+                            dynamicStep = -1;
+                        })
+                .finallyDo(
+                        (interrupted) -> {
+                            state = interrupted ? State.UNKNOWN : State.AT_GOAL;
+                        })
+                .withName("superstructure/static_direct_" + goal)
+                .deadlineFor(idle());
     }
 
     public boolean atGoal(Goal goal) {
@@ -267,5 +270,55 @@ public class Superstructure extends BlitzSubsystem {
 
     public Command idle() {
         return Commands.idle(this);
+    }
+
+    public Command manual(DoubleSupplier elevatorSpeed, DoubleSupplier wristSpeed) {
+        return Commands.parallel(
+                        Commands.either(
+                                        elevator.withSpeed(elevatorSpeed)
+                                                .until(() -> elevatorSpeed.getAsDouble() == 0),
+                                        Commands.waitSeconds(.1)
+                                                .andThen(
+                                                        Commands.defer(
+                                                                        () -> {
+                                                                            double pos =
+                                                                                    elevator
+                                                                                            .getPosition();
+                                                                            return elevator
+                                                                                    .followGoal(
+                                                                                            () ->
+                                                                                                    pos);
+                                                                        },
+                                                                        Set.of(elevator))
+                                                                .until(
+                                                                        () ->
+                                                                                elevatorSpeed
+                                                                                                .getAsDouble()
+                                                                                        != 0)),
+                                        () -> elevatorSpeed.getAsDouble() != 0)
+                                .repeatedly(),
+                        Commands.either(
+                                        wrist.setSpeed(wristSpeed)
+                                                .until(() -> wristSpeed.getAsDouble() == 0),
+                                        Commands.waitSeconds(.1)
+                                                .andThen(
+                                                        Commands.defer(
+                                                                        () -> {
+                                                                            double pos =
+                                                                                    wrist
+                                                                                            .getPosition();
+                                                                            return wrist.followGoal(
+                                                                                    () -> pos);
+                                                                        },
+                                                                        Set.of(wrist))
+                                                                .until(
+                                                                        () ->
+                                                                                wristSpeed
+                                                                                                .getAsDouble()
+                                                                                        != 0)),
+                                        () -> wristSpeed.getAsDouble() != 0)
+                                .repeatedly(),
+                        this.idle())
+                .withName(logKey + "/smart_manual");
     }
 }

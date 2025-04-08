@@ -1,45 +1,42 @@
 package frc.robot.subsystems.intake;
 
-import com.ctre.phoenix6.BaseStatusSignal;
+import static frc.robot.Constants.Intake.*;
+
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.MotionMagicVoltage;
-import com.ctre.phoenix6.controls.PositionVoltage;
-import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import frc.robot.Constants;
+import edu.wpi.first.wpilibj.DigitalInput;
 
 public class IntakeIOKraken implements IntakeIO {
-    public final TalonFX Intake;
+    public final TalonFX intake;
 
-    public final PositionVoltage closedLoopPosition = new PositionVoltage(0);
-    public final MotionMagicVoltage motionMagic = new MotionMagicVoltage(0).withSlot(0);
+    private final DigitalInput breakBeam;
 
     public IntakeIOKraken() {
-        Intake = new TalonFX(0); // TODO SET VALUE
+        intake = new TalonFX(CAN_ID); // TODO SET VALUE
 
         TalonFXConfiguration config = new TalonFXConfiguration();
 
-        config.MotorOutput.withNeutralMode((NeutralModeValue.Brake));
+        config.CurrentLimits.withStatorCurrentLimit(CURRENT_LIMIT);
 
-        config.CurrentLimits.withStatorCurrentLimit(Constants.Intake.CURRENT_LIMIT);
+        config.MotorOutput.withNeutralMode((NeutralModeValue.Coast))
+                .withInverted(
+                        INVERTED
+                                ? InvertedValue.Clockwise_Positive
+                                : InvertedValue.CounterClockwise_Positive);
+        breakBeam = new DigitalInput(0);
 
-        config.MotionMagic.withMotionMagicCruiseVelocity(.5).withMotionMagicAcceleration(1);
-
-        Intake.setPosition(0);
-
-        ParentDevice.optimizeBusUtilizationForAll(Intake);
-
-        BaseStatusSignal.setUpdateFrequencyForAll(
-                100,
-                Intake.getPosition(),
-                Intake.getVelocity(),
-                Intake.getMotorVoltage(),
-                Intake.getTorqueCurrent());
+        intake.getConfigurator().apply(config);
     }
 
     @Override
     public void setSpeed(double speed) {
-        Intake.set(speed);
+        intake.set(speed);
+    }
+
+    @Override
+    public void updateInputs(IntakeInputs inputs) {
+        inputs.breakBeam = !breakBeam.get();
     }
 }

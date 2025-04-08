@@ -15,6 +15,8 @@ public interface DriveMotorIO {
 
     public default void setDrivePercent(double percent) {}
 
+    public default void setDriveVolts(double volts) {}
+
     /**
      * Sets the velocity setpoint for the drive pid controller
      *

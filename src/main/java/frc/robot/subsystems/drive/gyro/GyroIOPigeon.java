@@ -26,7 +26,7 @@ public class GyroIOPigeon implements GyroIO {
     private final double[] rateArray = new double[3];
 
     public GyroIOPigeon() {
-        gyro = new Pigeon2(Constants.Drive.PIGEON_ID);
+        gyro = new Pigeon2(Constants.Drive.PIGEON_ID, "drive");
     }
 
     @Override
@@ -37,6 +37,6 @@ public class GyroIOPigeon implements GyroIO {
         inputs.yawRate = gyro.getAngularVelocityZDevice().getValueAsDouble();
         inputs.pitchRate = gyro.getAngularVelocityYDevice().getValueAsDouble();
         inputs.rollRate = gyro.getAngularVelocityXDevice().getValueAsDouble();
-        inputs.connected = gyro.getUpTime().getValueAsDouble() > 0;
+        inputs.connected = gyro.isConnected();
     }
 }

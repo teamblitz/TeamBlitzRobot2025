@@ -1,5 +1,6 @@
 package frc.robot;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
@@ -31,6 +32,7 @@ public class OIConstants {
 
         // Values are in percents, we have full power
         private static final double SPIN_SPEED = Constants.compBot() ? .32 : .4;
+        private static final double SUPER_SPIN = 1.0;
         private static final double SLOW_SPEED = .3;
         public static final double NORMAL_SPEED = .6;
         public static final double FAST_SPEED = 1;
@@ -56,7 +58,9 @@ public class OIConstants {
                 () -> INPUT_CURVE.apply(-DRIVE_CONTROLLER.getX()) * DRIVE_MULTIPLIER.getAsDouble();
 
         public static final DoubleSupplier ROTATION_SPEED =
-                () -> SPIN_SPEED * SPIN_CURVE.apply(-DRIVE_CONTROLLER.getTwist());
+                () ->
+                        (DRIVE_CONTROLLER.getHID().getRawButton(3) ? SUPER_SPIN : SPIN_SPEED)
+                                * SPIN_CURVE.apply(-DRIVE_CONTROLLER.getTwist());
 
         public static final DoubleSupplier HEADING_CONTROL = () -> Double.NaN;
         //                        0 * Math.hypot(DRIVE_CONTROLLER.getLeftY(),
@@ -73,6 +77,8 @@ public class OIConstants {
         public static final Trigger COAST = UNBOUND;
         public static final Trigger BRAKE = UNBOUND;
         public static final Trigger AUTO_PICKUP = DRIVE_CONTROLLER.button(2);
+
+        public static final Trigger DRIVE_TO_TAG = DRIVE_CONTROLLER.button(3);
     }
 
     public static final class Overrides {
@@ -81,7 +87,7 @@ public class OIConstants {
         //        @SuppressWarnings("resource")
         //        public static final BooleanSupplier INTAKE_OVERRIDE =
         //                DashboardHelpers.genericEntrySupplier(
-        //                                TAB.add("Intake", false)
+        //                                TAB.add("intake", false)
         //                                        .withWidget(BuiltInWidgets.kBooleanBox)
         //                                        .getEntry(),
         //                                false,
@@ -102,21 +108,19 @@ public class OIConstants {
         public static final Trigger HANDOFF = UNBOUND;
         public static final Trigger ALGAE_REMOVAL = UNBOUND;
         public static final Trigger REVERSE = OPERATOR_CONTROLLER.leftBumper();
-        public static final Trigger SHOOT_CORAL = OPERATOR_CONTROLLER.rightTrigger();
+        public static final Trigger SHOOT_CORAL = OPERATOR_CONTROLLER.rightBumper();
+        public static final Trigger INTAKE_ALGAE = OPERATOR_CONTROLLER.leftTrigger();
+        public static final Trigger EJECT_ALGAE = OPERATOR_CONTROLLER.rightTrigger();
     }
 
     public static final class Wrist {
-        public static final DoubleSupplier WRIST_MANUAL = () -> -OPERATOR_CONTROLLER.getRightY();
-
-        public static final Trigger WRIST_TEST1 = OPERATOR_CONTROLLER.x();
-        public static final Trigger WRIST_TEST2 = OPERATOR_CONTROLLER.y();
+        public static final DoubleSupplier MANUAL =
+                () -> MathUtil.applyDeadband(-OPERATOR_CONTROLLER.getRightY(), .1);
     }
 
     public static final class Elevator {
-        public static final Trigger MANUAL_UP =
-                new Trigger(() -> OPERATOR_CONTROLLER.getLeftY() < -.20);
-        public static final Trigger MANUAL_DOWN =
-                new Trigger(() -> OPERATOR_CONTROLLER.getLeftY() > .20);
+        public static final DoubleSupplier MANUAL =
+                () -> .3 * MathUtil.applyDeadband(-OPERATOR_CONTROLLER.getLeftY(), .1);
     }
 
     public static final class SuperStructure {
@@ -132,6 +136,28 @@ public class OIConstants {
 
         public static final Trigger KICK_BOTTOM_ALGAE = OPERATOR_CONTROLLER.a();
         public static final Trigger KICK_TOP_ALGAE = OPERATOR_CONTROLLER.b();
+
+        public static final Trigger MANUAL_MODE =
+                new Trigger(
+                        () ->
+                                Elevator.MANUAL.getAsDouble() != 0
+                                        || Wrist.MANUAL.getAsDouble() != 0);
+    }
+
+    public static final class Winch {
+        public static final Trigger WINCH_MAN_UP = DRIVE_CONTROLLER.button(7);
+        public static final Trigger WINCH_MAN_DOWN = DRIVE_CONTROLLER.button(8);
+
+        public static final Trigger FUNNEL_UP = UNBOUND;
+        public static final Trigger FUNNEL_DOWN = UNBOUND;
+    }
+
+    public static final class Climber {
+        public static final Trigger DEPLOY_CLIMBER = DRIVE_CONTROLLER.button(4); // TODO BIND
+        public static final Trigger RESTOW_CLIMBER = DRIVE_CONTROLLER.button(6);
+
+        public static final Trigger CLIMBER_UP_MAN = DRIVE_CONTROLLER.button(9);
+        public static final Trigger CLIMBER_DOWN_MAN = DRIVE_CONTROLLER.button(10);
     }
 
     //    public static final class TestMode {

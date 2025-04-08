@@ -10,6 +10,8 @@ public interface ElevatorIO {
         public double positionLeft;
         public double positionRight;
 
+        public double position;
+
         public double velocityLeft;
         public double velocityRight;
 
@@ -40,7 +42,7 @@ public interface ElevatorIO {
 
     public default void setSetpoint(double position, double velocity, double nextVelocity) {}
 
-    public default void setMotionMagic(double extension) {}
+    public default void setMotionMagic(double position) {}
 
     public default void setPidLeft(double p, double i, double d) {}
 

@@ -5,11 +5,16 @@ package frc.robot.subsystems.drive;
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.Constants.Drive.*;
 
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import choreo.trajectory.SwerveSample;
+import choreo.util.ChoreoAllianceFlipUtil;
+import com.ctre.phoenix6.SignalLogger;
 import com.pathplanner.lib.util.DriveFeedforwards;
 import com.pathplanner.lib.util.swerve.SwerveSetpoint;
 import com.pathplanner.lib.util.swerve.SwerveSetpointGenerator;
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -22,24 +27,31 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N2;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.BlitzSubsystem;
-import frc.lib.util.LimelightHelpers;
-import frc.lib.util.LoggedTunableNumber;
-import frc.lib.util.SwerveModuleConstants;
+import frc.lib.math.AllianceFlipUtil;
+import frc.lib.util.*;
 import frc.robot.Constants;
-import frc.robot.Constants.AutoConstants;
+import frc.robot.PositionConstants;
+import frc.robot.Robot;
 import frc.robot.subsystems.drive.control.*;
 import frc.robot.subsystems.drive.gyro.GyroIO;
 import frc.robot.subsystems.drive.gyro.GyroIOInputsAutoLogged;
@@ -48,6 +60,7 @@ import frc.robot.subsystems.drive.range.RangeSensorIOFusion;
 import frc.robot.subsystems.drive.range.RangeSensorIOInputsAutoLogged;
 import frc.robot.subsystems.drive.swerveModule.SwerveModule;
 import frc.robot.subsystems.drive.swerveModule.SwerveModuleConfiguration;
+import frc.robot.subsystems.drive.swerveModule.angle.AngleMotorIOKraken;
 import frc.robot.subsystems.drive.swerveModule.angle.AngleMotorIOSpark;
 import frc.robot.subsystems.drive.swerveModule.drive.DriveMotorIOKraken;
 import frc.robot.subsystems.drive.swerveModule.drive.DriveMotorIOSpark;
@@ -88,7 +101,8 @@ public class Drive extends BlitzSubsystem {
     private final PIDController keepHeadingPid;
     private final ProfiledPIDController rotateToHeadingPid;
 
-    private SysIdRoutine routine;
+    private SysIdRoutine linearRoutine;
+    private SysIdRoutine angularRoutine;
 
     private double lastVisionTimeStamp;
 
@@ -143,7 +157,9 @@ public class Drive extends BlitzSubsystem {
         this(
                 new SwerveModule(
                         FL,
-                        new AngleMotorIOSpark(flConstants),
+                        configuration.angle == SwerveModuleConfiguration.MotorType.KRAKEN
+                                ? new AngleMotorIOKraken(flConstants)
+                                : new AngleMotorIOSpark(flConstants),
                         configuration.drive == SwerveModuleConfiguration.MotorType.KRAKEN
                                 ? new DriveMotorIOKraken(flConstants)
                                 : new DriveMotorIOSpark(flConstants),
@@ -152,7 +168,9 @@ public class Drive extends BlitzSubsystem {
                                 : new EncoderIOHelium(flConstants.cancoderID, CAN_CODER_INVERT)),
                 new SwerveModule(
                         FR,
-                        new AngleMotorIOSpark(frConstants),
+                        configuration.angle == SwerveModuleConfiguration.MotorType.KRAKEN
+                                ? new AngleMotorIOKraken(frConstants)
+                                : new AngleMotorIOSpark(frConstants),
                         configuration.drive == SwerveModuleConfiguration.MotorType.KRAKEN
                                 ? new DriveMotorIOKraken(frConstants)
                                 : new DriveMotorIOSpark(frConstants),
@@ -161,7 +179,9 @@ public class Drive extends BlitzSubsystem {
                                 : new EncoderIOHelium(frConstants.cancoderID, CAN_CODER_INVERT)),
                 new SwerveModule(
                         BL,
-                        new AngleMotorIOSpark(blConstants),
+                        configuration.angle == SwerveModuleConfiguration.MotorType.KRAKEN
+                                ? new AngleMotorIOKraken(blConstants)
+                                : new AngleMotorIOSpark(blConstants),
                         configuration.drive == SwerveModuleConfiguration.MotorType.KRAKEN
                                 ? new DriveMotorIOKraken(blConstants)
                                 : new DriveMotorIOSpark(blConstants),
@@ -170,7 +190,9 @@ public class Drive extends BlitzSubsystem {
                                 : new EncoderIOHelium(blConstants.cancoderID, CAN_CODER_INVERT)),
                 new SwerveModule(
                         BR,
-                        new AngleMotorIOSpark(brConstants),
+                        configuration.angle == SwerveModuleConfiguration.MotorType.KRAKEN
+                                ? new AngleMotorIOKraken(brConstants)
+                                : new AngleMotorIOSpark(brConstants),
                         configuration.drive == SwerveModuleConfiguration.MotorType.KRAKEN
                                 ? new DriveMotorIOKraken(brConstants)
                                 : new DriveMotorIOSpark(brConstants),
@@ -212,7 +234,7 @@ public class Drive extends BlitzSubsystem {
         rotateToHeadingPid.setTolerance(2);
         initTelemetry();
 
-        zeroGyro();
+        //        zeroGyro();
 
         new RangeSensorIOFusion();
 
@@ -231,81 +253,131 @@ public class Drive extends BlitzSubsystem {
                                             }
                                         })
                                 .ignoringDisable(true))
-                .andThen(
-                        () -> {
-                            // Initialize the previous setpoint to the robot's current speeds &
-                            // module states
-                            ChassisSpeeds currentSpeeds =
-                                    getChassisSpeeds(); // Method to get current robot-relative
-                            // chassis speeds
-                            SwerveModuleState[] currentStates =
-                                    getModuleStates(); // Method to get the current swerve module
-                            // states
-                            previousSetpoint =
-                                    new SwerveSetpoint(
-                                            currentSpeeds,
-                                            currentStates,
-                                            DriveFeedforwards.zeros(PHYSICAL_CONSTANTS.numModules));
-                        })
+                //                .andThen(
+                //                        () -> {
+                //                            // Initialize the previous setpoint to the robot's
+                // current speeds &
+                //                            // module states
+                //                            ChassisSpeeds currentSpeeds =
+                //                                    getChassisSpeeds(); // Method to get current
+                // robot-relative
+                //                            // chassis speeds
+                //                            SwerveModuleState[] currentStates =
+                //                                    getModuleStates(); // Method to get the
+                // current swerve module
+                //                            // states
+                //                            previousSetpoint =
+                //                                    new SwerveSetpoint(
+                //                                            currentSpeeds,
+                //                                            currentStates,
+                //
+                // DriveFeedforwards.zeros(PHYSICAL_CONSTANTS.numModules));
+                //                        })
                 .schedule();
 
-        Commands.sequence(
-                        Commands.waitSeconds(2),
-                        Commands.runOnce(
-                                () -> {
-                                    for (SwerveModule module : swerveModules) {
-                                        module.resetToAbs();
-                                    }
-                                }))
-                .repeatedly()
-                .withName("SWERVE FIX")
-                .until(DriverStation::isEnabled)
-                .ignoringDisable(true)
-                .schedule();
+        //        if (!Constants.compBot()) {
+        //            Commands.sequence(
+        //                            Commands.waitSeconds(2),
+        //                            Commands.runOnce(
+        //                                    () -> {
+        //                                        for (SwerveModule module : swerveModules) {
+        //                                            module.resetToAbs();
+        //                                        }
+        //                                    }))
+        //                    .repeatedly()
+        //                    .withName("SWERVE FIX")
+        //                    .until(DriverStation::isEnabled)
+        //                    .onlyIf(() -> !Constants.compBot())
+        //                    .ignoringDisable(true)
+        //                    .schedule();
+        //        }
 
         // Creates a SysIdRoutine
-        routine =
+        linearRoutine =
                 new SysIdRoutine(
                         new SysIdRoutine.Config(
                                 null,
                                 null,
-                                Seconds.of(5),
-                                (state) -> Logger.recordOutput("SysIdTestState", state.toString())),
+                                Seconds.of(10),
+                                Constants.compBot()
+                                        ? (state) ->
+                                                SignalLogger.writeString(
+                                                        "sysid-drive-linear-state",
+                                                        state.toString())
+                                        : (state) ->
+                                                Logger.recordOutput(
+                                                        "sysid-angular drive", state.toString())),
                         new SysIdRoutine.Mechanism(
                                 (volts) -> {
-                                    drive(
-                                            new Translation2d(volts.in(Volts) / 12.0, 0)
-                                                    .times(Constants.Drive.MAX_SPEED),
-                                            0,
-                                            false,
-                                            true,
-                                            true);
+                                    var speeds =
+                                            ChassisSpeeds.fromFieldRelativeSpeeds(
+                                                    new ChassisSpeeds(volts.in(Volt), 0, 0),
+                                                    getYaw());
+
+                                    SwerveModuleState[] desiredStates =
+                                            KINEMATICS.toSwerveModuleStates(speeds);
+                                    for (SwerveModule mod : swerveModules) {
+                                        mod.setStatesVoltage(desiredStates[mod.moduleNumber]);
+                                    }
                                 },
-                                log -> {
-                                    log.motor("drive")
-                                            .voltage(Volts.of(swerveModules[0].getVoltsDrive()))
-                                            .linearVelocity(
-                                                    MetersPerSecond.of(
-                                                            swerveModules[0].getVelocity()))
-                                            .linearPosition(
-                                                    Meters.of(swerveModules[0].getPositionDrive()));
-                                },
+                                null,
                                 this));
 
-        AutoBuilder.configure(
-                this::getPose,
-                this::resetOdometry,
-                () -> KINEMATICS.toChassisSpeeds(getModuleStates()),
-                (speeds, feedforwards) -> drive(speeds, false),
-                new PPHolonomicDriveController(
-                        AutoConstants.TRANSLATION_PID, AutoConstants.ROTATION_PID),
-                PHYSICAL_CONSTANTS,
-                () ->
-                        DriverStation.getAlliance().isPresent()
-                                && DriverStation.getAlliance()
-                                        .get()
-                                        .equals(DriverStation.Alliance.Red),
-                this);
+        angularRoutine =
+                new SysIdRoutine(
+                        new SysIdRoutine.Config(
+                                null,
+                                null,
+                                Seconds.of(10),
+                                Constants.compBot()
+                                        ? (state) ->
+                                                SignalLogger.writeString(
+                                                        "sysid-drive-angular-state",
+                                                        state.toString())
+                                        : (state) ->
+                                                Logger.recordOutput(
+                                                        "sysid-angular-drive", state.toString())),
+                        new SysIdRoutine.Mechanism(
+                                (volts) -> {
+                                    SwerveModuleState[] desiredStates =
+                                            KINEMATICS.toSwerveModuleStates(
+                                                    new ChassisSpeeds(0, 0, volts.in(Volt)));
+                                    for (SwerveModule mod : swerveModules) {
+                                        mod.setStatesVoltage(desiredStates[mod.moduleNumber]);
+                                    }
+                                },
+                                null,
+                                this));
+        //
+        //        RobotConfig config;
+        //
+        //        try {
+        //            //            config = RobotConfig.fromGUISettings();
+        //            config = PHYSICAL_CONSTANTS;
+        //        } catch (Exception e) {
+        //            config = PHYSICAL_CONSTANTS;
+        //            DriverStation.reportError(
+        //                    "Failed to load PathPlanner config and configure AutoBuilder",
+        //                    e.getStackTrace());
+        //        }
+        //
+        //        AutoBuilder.configure(
+        //                this::getPose,
+        //                this::resetOdometry,
+        //                () -> KINEMATICS.toChassisSpeeds(getModuleStates()),
+        //                (speeds, feedforwards) -> {
+        //                    drive(speeds, true);
+        //                    Logger.recordOutput("drive/auto/speeds", speeds);
+        //                },
+        //                new PPHolonomicDriveController(
+        //                        AutoConstants.TRANSLATION_PID, AutoConstants.ROTATION_PID),
+        //                config,
+        //                () ->
+        //                        DriverStation.getAlliance().isPresent()
+        //                                && DriverStation.getAlliance()
+        //                                        .get()
+        //                                        .equals(DriverStation.Alliance.Red),
+        //                this);
 
         // https://pathplanner.dev/pplib-swerve-setpoint-generator.html
         setpointGenerator =
@@ -327,6 +399,39 @@ public class Drive extends BlitzSubsystem {
                         currentSpeeds,
                         currentStates,
                         DriveFeedforwards.zeros(PHYSICAL_CONSTANTS.numModules));
+
+        tuningTab.add(
+                linearAysIdQuasistatic(SysIdRoutine.Direction.kForward)
+                        .withName("DriveLinear Quasistic Forward"));
+        tuningTab.add(
+                linearAysIdQuasistatic(SysIdRoutine.Direction.kReverse)
+                        .withName("DriveLinear Quasistic Reverse"));
+
+        tuningTab.add(
+                linearSysIdDynamic(SysIdRoutine.Direction.kForward)
+                        .withName("DriveLinear Dynamic Forward"));
+        tuningTab.add(
+                linearSysIdDynamic(SysIdRoutine.Direction.kReverse)
+                        .withName("DriveLinear Dynamic Reverse"));
+
+        tuningTab.add(
+                angularSysIdQuasistatic(SysIdRoutine.Direction.kForward)
+                        .withName("DriveAngular Quasistic Forward"));
+        tuningTab.add(
+                angularSysIdQuasistatic(SysIdRoutine.Direction.kReverse)
+                        .withName("DriveAngular Quasistic Reverse"));
+
+        tuningTab.add(
+                angularSysIdDynamic(SysIdRoutine.Direction.kForward)
+                        .withName("DriveAngular Dynamic Forward"));
+        tuningTab.add(
+                angularSysIdDynamic(SysIdRoutine.Direction.kReverse)
+                        .withName("DriveAngular Dynamic Reverse"));
+
+
+        for (ScoringPositions.Branch branch : ScoringPositions.Branch.values()) {
+            SmartDashboard.putData(branch.name(), driveToPose(PositionConstants.Reef.SCORING_POSITIONS.get(branch)));
+        }
     }
 
     public void drive(
@@ -379,16 +484,28 @@ public class Drive extends BlitzSubsystem {
         Logger.recordOutput("Drive/keepHeadingSetpointSet", keepHeadingSetpointSet);
         Logger.recordOutput("Drive/keepSetpoint", keepHeadingPid.getSetpoint());
 
+        var fieldRelativeSpeeds = new ChassisSpeeds(translation.getX(), translation.getY(), rotation);
+        var flippedFieldSpeeds = new ChassisSpeeds(-fieldRelativeSpeeds.vxMetersPerSecond, -fieldRelativeSpeeds.vyMetersPerSecond, rotation);
+
+        var correctFieldSpeeds = AllianceFlipUtil.shouldFlip() ? flippedFieldSpeeds : fieldRelativeSpeeds;
+
         ChassisSpeeds robotRel =
                 fieldRelative
                         ? ChassisSpeeds.fromFieldRelativeSpeeds(
-                                translation.getX(), translation.getY(), rotation, getYaw())
+                                correctFieldSpeeds, getYaw())
                         : new ChassisSpeeds(translation.getX(), translation.getY(), rotation);
 
         drive(robotRel, isOpenLoop);
     }
 
+    public void driveFieldRelative(ChassisSpeeds speeds, boolean openLoop) {
+        Logger.recordOutput("drive/requestedFieldSpeeds", speeds);
+        drive(ChassisSpeeds.fromFieldRelativeSpeeds(speeds, getYaw()), openLoop);
+    }
+
     public void drive(ChassisSpeeds speeds, boolean openLoop) {
+        Logger.recordOutput("drive/requestedSpeeds", speeds);
+
         ChassisSpeeds discretizedSpeeds =
                 ChassisSpeeds.discretize(speeds, Constants.LOOP_PERIOD_SEC);
 
@@ -396,22 +513,20 @@ public class Drive extends BlitzSubsystem {
 
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, MAX_SPEED);
 
-        //        Logger.recordOutput(logKey + "/drivespeeds", speeds);
-        //        Logger.recordOutput(logKey + "/driveopen", openLoop);
-        //        // Note: it is important to not discretize speeds before or after
-        //        // using the setpoint generator, as it will discretize them for you
-        //        previousSetpoint =
-        //                setpointGenerator.generateSetpoint(
-        //                        previousSetpoint, // The previous setpoint
-        //                        speeds, // The desired target speeds
-        //                        Constants.LOOP_PERIOD_SEC // The loop time of the robot code, in
-        // seconds
-        //                        );
-        //
-        //        Logger.recordOutput(logKey + "/setpoint/speeds",
-        // previousSetpoint.robotRelativeSpeeds());
-        //        Logger.recordOutput(logKey + "/setpoint/states", previousSetpoint.moduleStates());
-        //        Logger.recordOutput(logKey + "/setpoint/ff", previousSetpoint.feedforwards());
+        Logger.recordOutput(logKey + "/drivespeeds", speeds);
+        Logger.recordOutput(logKey + "/driveopen", openLoop);
+        // Note: it is important to not discretize speeds before or after
+        // using the setpoint generator, as it will discretize them for you
+        previousSetpoint =
+                setpointGenerator.generateSetpoint(
+                        previousSetpoint, // The previous setpoint
+                        speeds, // The desired target speeds
+                        Constants.LOOP_PERIOD_SEC // The loop time of the robot code, in
+                        );
+
+        Logger.recordOutput(logKey + "/setpoint/speeds", previousSetpoint.robotRelativeSpeeds());
+        Logger.recordOutput(logKey + "/setpoint/states", previousSetpoint.moduleStates());
+        Logger.recordOutput(logKey + "/setpoint/ff", previousSetpoint.feedforwards());
 
         setModuleStates(swerveModuleStates, openLoop, false, false);
     }
@@ -421,6 +536,8 @@ public class Drive extends BlitzSubsystem {
     public void setModuleStates(
             SwerveModuleState[] desiredStates, boolean openLoop, boolean tuning, boolean parking) {
         SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, MAX_SPEED);
+
+        Logger.recordOutput("drive/desiredSwerveStates", desiredStates);
 
         for (SwerveModule mod : swerveModules) {
             mod.setDesiredState(desiredStates[mod.moduleNumber], openLoop, tuning, parking);
@@ -471,24 +588,28 @@ public class Drive extends BlitzSubsystem {
     }
 
     public Pose2d getPose() {
-        return swerveOdometry.getPoseMeters();
-    }
-
-    public Pose2d getEstimatedPose() {
         return poseEstimator.getEstimatedPosition();
-    }
-
-    public Pose2d getLimelightPose() {
-        return LimelightHelpers.getBotPose2d_wpiBlue("limelight");
     }
 
     public void resetOdometry(Pose2d pose) {
         swerveOdometry.resetPosition(getYaw(), getModulePositions(), pose);
         poseEstimator.resetPosition(getYaw(), getModulePositions(), pose);
+
+        if (Robot.isSimulation()) {
+            setGyro(pose.getRotation().getDegrees());
+        }
     }
 
-    public void resetPose(Pose2d pose) {
-        swerveOdometry.resetPosition(new Rotation2d(), getModulePositions(), pose);
+    public void addVisionMeasurement(
+            Pose2d pose, double timestamp, Matrix<N3, N1> visionMeasurementStdDevs) {
+
+        poseEstimator.addVisionMeasurement(
+                pose,
+                timestamp,
+                visionMeasurementStdDevs); // Maybe base std devs off of camera stuff, .7m seams
+        // high as an std
+        // Standard deviations, basically vision
+
     }
 
     public void zeroGyro() {
@@ -595,20 +716,69 @@ public class Drive extends BlitzSubsystem {
                 .withName(logKey + "/zeroAbsEncoders");
     }
 
-    // Something something super class???
-    public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-        return routine.quasistatic(direction)
+    public Command linearAysIdQuasistatic(SysIdRoutine.Direction direction) {
+
+        Rotation2d rot = Rotation2d.kZero;
+
+        return Commands.sequence(
+                        run(() ->
+                                        setModuleStates(
+                                                new SwerveModuleState[] {
+                                                    new SwerveModuleState(0, rot),
+                                                    new SwerveModuleState(0, rot),
+                                                    new SwerveModuleState(0, rot),
+                                                    new SwerveModuleState(0, rot)
+                                                },
+                                                true,
+                                                true,
+                                                true))
+                                .withTimeout(1),
+                        linearRoutine.quasistatic(direction))
                 .withName(
                         logKey
-                                + "/quasistatic"
+                                + "/linearQuasistatic"
                                 + (direction == SysIdRoutine.Direction.kForward ? "Fwd" : "Rev"));
     }
 
-    public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-        return routine.dynamic(direction)
+    public Command linearSysIdDynamic(SysIdRoutine.Direction direction) {
+
+        Rotation2d rot = Rotation2d.kZero;
+
+        return Commands.sequence(
+                        run(() ->
+                                        setModuleStates(
+                                                new SwerveModuleState[] {
+                                                    new SwerveModuleState(0, rot),
+                                                    new SwerveModuleState(0, rot),
+                                                    new SwerveModuleState(0, rot),
+                                                    new SwerveModuleState(0, rot)
+                                                },
+                                                true,
+                                                true,
+                                                true))
+                                .withTimeout(1),
+                        linearRoutine.dynamic(direction))
                 .withName(
                         logKey
-                                + "/dynamic"
+                                + "/linearDynamic"
+                                + (direction == SysIdRoutine.Direction.kForward ? "Fwd" : "Rev"));
+    }
+
+    public Command angularSysIdQuasistatic(SysIdRoutine.Direction direction) {
+        return linearRoutine
+                .quasistatic(direction)
+                .withName(
+                        logKey
+                                + "/angularQuasistatic"
+                                + (direction == SysIdRoutine.Direction.kForward ? "Fwd" : "Rev"));
+    }
+
+    public Command angularSysIdDynamic(SysIdRoutine.Direction direction) {
+        return linearRoutine
+                .quasistatic(direction)
+                .withName(
+                        logKey
+                                + "/angularDynamic"
                                 + (direction == SysIdRoutine.Direction.kForward ? "Fwd" : "Rev"));
     }
 
@@ -625,34 +795,11 @@ public class Drive extends BlitzSubsystem {
         Logger.processInputs("drive/range", rangeInputs);
 
         swerveOdometry.update(getYaw(), getModulePositions());
-        //        poseEstimator.update(getYaw(), getModulePositions()); // TODO AHHHHH
-        //        LimelightHelpers.PoseEstimate limelightMeasurement =
-        //                LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
+        poseEstimator.update(getYaw(), getModulePositions());
 
-        //        if (limelightMeasurement != null) {
-        //            if ((limelightMeasurement.tagCount >= 1)
-        //                    && limelightMeasurement.timestampSeconds > lastVisionTimeStamp) {
-        //                poseEstimator.setVisionMeasurementStdDevs(
-        //                        VecBuilder.fill(
-        //                                .7, .7,
-        //                                9999999)); // Standard deviations, basically vision
-        // measurements
-        //                // very up
-        //                // to .7m, and just don't trust the vision angle at all (not how std devs
-        // work noah)
-        //                poseEstimator.addVisionMeasurement(
-        //                        limelightMeasurement.pose, limelightMeasurement.timestampSeconds);
-        //            }
-        //
-        //            lastVisionTimeStamp = limelightMeasurement.timestampSeconds;
-        //        }
+        Logger.recordOutput(logKey + "/odometry", swerveOdometry.getPoseMeters());
+        Logger.recordOutput(logKey + "/poseEstimator", poseEstimator.getEstimatedPosition());
 
-        //        Logger.recordOutput(logKey + "/vision/timestampSeconds", lastVisionTimeStamp);
-
-        Logger.recordOutput(logKey + "/Odometry", swerveOdometry.getPoseMeters());
-        //        Logger.recordOutput(logKey + "/Vision+Odometry",
-        // poseEstimator.getEstimatedPosition());
-        //        Logger.recordOutput(logKey + "/Vision", getLimelightPose());
         Logger.recordOutput(logKey + "/modules", getModuleStates());
 
         LoggedTunableNumber.ifChanged(
@@ -683,5 +830,260 @@ public class Drive extends BlitzSubsystem {
 
     public Optional<Pose2d> samplePreviousPose(double timestamp) {
         return poseEstimator.sampleAt(timestamp);
+    }
+
+    private final PIDController xController = new PIDController(14, 0, 0);
+    private final PIDController yController = new PIDController(14, 0, 0);
+    private final PIDController choreoThetaController = new PIDController(3, 0, 0);
+
+    public void followTrajectory(SwerveSample sample) {
+        Logger.recordOutput("drive/choreoTrajectory", sample);
+        choreoThetaController.enableContinuousInput(-Math.PI, Math.PI);
+
+        ChassisSpeeds speeds =
+                new ChassisSpeeds(
+                        sample.vx
+                                + xController.calculate(
+                                        poseEstimator.getEstimatedPosition().getX(), sample.x),
+                        sample.vy
+                                + yController.calculate(
+                                        poseEstimator.getEstimatedPosition().getY(), sample.y),
+                        sample.omega
+                                + choreoThetaController.calculate(
+                                        poseEstimator
+                                                .getEstimatedPosition()
+                                                .getRotation()
+                                                .getRadians(),
+                                        sample.heading));
+
+        driveFieldRelative(speeds, false);
+    }
+
+    /* Drive to Pose */
+    /* DRIVE TO POSE using Trapezoid Profiles */
+    private TrapezoidProfile.Constraints driveToPoseConstraints = new Constraints(1, 1);
+    private TrapezoidProfile.Constraints driveToPoseRotationConstraints = new Constraints(3, 6);
+    private TrapezoidProfile driveToPoseProfile = new TrapezoidProfile(driveToPoseConstraints);
+    private TrapezoidProfile driveToPoseRotationProfile =
+            new TrapezoidProfile(driveToPoseRotationConstraints);
+
+    // For modifying goals from within a lambda
+
+    private TrapezoidProfile.State driveToPoseGoal = new TrapezoidProfile.State(0, 0);
+    private TrapezoidProfile.State driveToPoseRotationGoal = new TrapezoidProfile.State(0, 0);
+
+    Capture<Pose2d> initial = new Capture<Pose2d>(new Pose2d());
+    // The goal (populated from poseSupplier at command start)
+    Capture<Pose2d> goal = new Capture<Pose2d>(new Pose2d());
+    // Distance start-end in meters
+    Capture<Double> distance = new Capture<Double>(1.0);
+    // Unit vector start->end
+    Capture<Translation2d> normDirStartToEnd = new Capture<>(Translation2d.kZero);
+    Capture<Vector<N2>> directionGoalToBot = new Capture<>(VecBuilder.fill(0, 0));
+    TrapezoidProfile.State translationState = new State(0, 0);
+    TrapezoidProfile.State rotationState = new State(0, 0);
+
+    // Threshold for "close enough" to avoid microadjustments
+    public final Trigger atDriveToPosePose = atPose(() -> goal.inner, Units.inchesToMeters(0.5), Units.degreesToRadians(1));
+
+    /**
+     * <B>IMPORTANT, While this takes a pose supplier, this is mostly for convince. and <U>once the
+     * command has started, the command will sample the value of the supplier and drive there.</U>
+     * It will NOT follow the pose</B>
+     *
+     * <p>Drives to a pose with motion profiles on translation and rotation. The translation profile
+     * starts at dist(start,end) and drives toward 0. This state is then interpolated between poses.
+     *
+     * <p>The rotation profile starts at initial.heading and ends at goal.heading, just like a
+     * profiled continuous heading controller.
+     */
+    public Command driveToPose(Supplier<Pose2d> poseSupplier) {
+        Command command =
+                runOnce(
+                                () -> {
+                                    var getTargetTime = Timer.getFPGATimestamp();
+
+                                    initial.inner = getPose();
+                                    goal.inner = poseSupplier.get();
+
+                                    // initial position: distance from end
+                                    // initial velocity: component of velocity away from end, so
+                                    // approaching is a negative number
+                                    var goalToBot = initial.inner.minus(goal.inner);
+                                    var directionGoalToBot =
+                                            goalToBot.getTranslation().toVector().unit();
+
+                                    this.directionGoalToBot.inner = directionGoalToBot;
+
+                                    distance.inner = goalToBot.getTranslation().getNorm();
+
+                                    // Position goes from our distance to zero as we approach
+                                    translationState.position = distance.inner;
+
+                                    var speeds = getFieldRelativeSpeeds();
+
+                                    // A negative velocity means we are approaching 0, the goal is 0
+                                    translationState.velocity =
+                                            MathUtil.clamp(
+                                                    VecBuilder.fill(
+                                                                    speeds.vxMetersPerSecond,
+                                                                    speeds.vyMetersPerSecond)
+                                                            .dot(directionGoalToBot),
+                                                    -driveToPoseConstraints.maxVelocity,
+                                                    0);
+
+                                    Logger.recordOutput("drive/driveToPose/unclampedInitialVelocity", VecBuilder.fill(
+                                                    speeds.vxMetersPerSecond,
+                                                    speeds.vyMetersPerSecond)
+                                            .dot(directionGoalToBot));
+
+
+                                    // Initial state of rotation
+                                    driveToPoseRotationGoal.position =
+                                            goal.inner.getRotation().getRadians();
+
+                                    rotationState.position =
+                                            initial.inner.getRotation().getRadians();
+                                    rotationState.velocity = speeds.omegaRadiansPerSecond;
+
+
+                                    Logger.recordOutput("drive/driveToPose/initial", initial.inner);
+                                    Logger.recordOutput("drive/driveToPose/goal", goal.inner);
+                                    Logger.recordOutput("drive/driveToPose/initialDistance", translationState.position);
+                                    Logger.recordOutput("drive/driveToPose/initialVelocity", translationState.velocity);
+                                })
+                        .andThen(
+                                run(
+                                        () -> {
+                                            var setpoint =
+                                                    driveToPoseProfile.calculate(
+                                                            Constants.LOOP_PERIOD_SEC,
+                                                            translationState,
+                                                            driveToPoseGoal);
+                                            translationState.position = setpoint.position;
+                                            translationState.velocity = setpoint.velocity;
+
+                                            Logger.recordOutput("drive/driveToPose/distance", translationState.position);
+                                            Logger.recordOutput("drive/driveToPose/velocity", translationState.velocity);
+
+                                            // I am trusting them here
+
+                                            // Rotation continuous input
+                                            // Get error which is the smallest distance between goal
+                                            // and measurement
+                                            double errorBound = Math.PI;
+                                            var measurement = getYaw().getRadians();
+                                            double goalMinDistance =
+                                                    MathUtil.inputModulus(
+                                                            driveToPoseRotationGoal.position
+                                                                    - measurement,
+                                                            -errorBound,
+                                                            errorBound);
+                                            double setpointMinDistance =
+                                                    MathUtil.inputModulus(
+                                                            rotationState.position - measurement,
+                                                            -errorBound,
+                                                            errorBound);
+
+                                            // Recompute the profile goal with the smallest error,
+                                            // thus giving the shortest path. The goal
+                                            // may be outside the input range after this operation,
+                                            // but that's OK because the controller
+                                            // will still go there and report an error of zero. In
+                                            // other words, the setpoint only needs to
+                                            // be offset from the measurement by the input range
+                                            // modulus; they don't need to be equal.
+                                            driveToPoseRotationGoal.position =
+                                                    goalMinDistance + measurement;
+                                            rotationState.position =
+                                                    setpointMinDistance + measurement;
+
+                                            var rotSetpoint =
+                                                    driveToPoseRotationProfile.calculate(
+                                                            0.02,
+                                                            rotationState,
+                                                            driveToPoseRotationGoal);
+                                            rotationState.position = rotSetpoint.position;
+                                            rotationState.velocity = rotSetpoint.velocity;
+
+                                            var startPose = initial.inner;
+
+                                            var interpTrans =
+                                                    goal.inner
+                                                            .getTranslation()
+                                                            .interpolate(
+                                                                    startPose.getTranslation(),
+                                                                    setpoint.position
+                                                                            / distance.inner);
+
+
+                                            if (atDriveToPosePose.getAsBoolean()) {
+                                                this.drive(new ChassisSpeeds(), true);
+                                            } else {
+                                                followTrajectory(
+                                                        DriveUtil.sample(
+                                                                interpTrans,
+                                                                new Rotation2d(
+                                                                        rotationState.position),
+                                                                normDirStartToEnd.inner.getX()
+                                                                        * -setpoint.velocity,
+                                                                normDirStartToEnd.inner.getY()
+                                                                        * -setpoint.velocity,
+                                                                rotationState.velocity));
+                                            }
+                                            keepHeadingSetpointSet = false;
+                                        }))
+                        .until(atDriveToPosePose.debounce(.1))
+                        .finallyDo(() -> drive(new ChassisSpeeds(), true));
+
+        return command.withName("drive/driveToPoseCommand");
+    }
+
+    public Command driveToPose(Pose2d pose) {
+        return driveToPose(() -> pose);
+    }
+
+    public double toleranceMeters = Units.inchesToMeters(0.5);
+    public double toleranceRadians = Units.degreesToRadians(1);
+
+    private boolean withinTolerance(Rotation2d lhs, Rotation2d rhs, double toleranceRadians) {
+        if (Math.abs(toleranceRadians) > Math.PI) {
+            return true;
+        }
+        double dot = lhs.getCos() * rhs.getCos() + lhs.getSin() * rhs.getSin();
+        // cos(θ) >= cos(tolerance) means |θ| <= tolerance, for tolerance in [-pi, pi],
+        // as pre-checked
+        // above.
+        return dot > Math.cos(toleranceRadians);
+    }
+
+    public Trigger atPose(
+            Supplier<Pose2d> poseSup, double toleranceMeters, double toleranceRadians) {
+        return new Trigger(
+                () -> {
+                    Pose2d pose = poseSup.get();
+                    Pose2d currentPose = getPose();
+                    boolean transValid =
+                            currentPose.getTranslation().getDistance(pose.getTranslation())
+                                    < toleranceMeters;
+                    boolean rotValid =
+                            withinTolerance(
+                                    currentPose.getRotation(),
+                                    pose.getRotation(),
+                                    toleranceRadians);
+                    return transValid && rotValid;
+                });
+    }
+
+    public Trigger atPose(Supplier<Pose2d> poseSup) {
+        return atPose(poseSup, toleranceMeters, toleranceRadians);
+    }
+
+    public Trigger atPose(Optional<Pose2d> poseOpt) {
+        return poseOpt.map(this::atPose).orElse(new Trigger(() -> false));
+    }
+
+    public Trigger atPose(Pose2d pose) {
+        return atPose(() -> pose);
     }
 }
