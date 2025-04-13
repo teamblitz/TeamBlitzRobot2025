@@ -85,14 +85,6 @@ To run simulations, use the following command:
 ./gradlew simulateJava
 ```
 
-## Contributing
-
-Contributions are welcome! Please follow the standard Git workflow:
-1. Fork the repository.
-2. Create a new branch for your feature or bugfix.
-3. Commit your changes and push to your fork.
-4. Create a pull request with a description of your changes.
-
 ## License
 
 This project is licensed under the BSD License. See the [WPILib-License.md](WPILib-License.md) file for details.
