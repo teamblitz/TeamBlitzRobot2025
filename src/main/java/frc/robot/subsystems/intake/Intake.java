@@ -30,7 +30,13 @@ public class Intake extends BlitzSubsystem {
     }
 
     public Command handoff() {
-        return startEnd(() -> io.setSpeed(HANDOFF_SPEED), () -> io.setSpeed(0))
+        return startEnd(() -> {
+            io.setSpeed(HANDOFF_SPEED);
+            io.enableCoralInterrupt(true);
+        }, () -> {
+            io.setSpeed(0);
+            io.enableCoralInterrupt(false);
+        })
                 .until(this::intakeSensor)
                 .onlyIf(() -> !intakeSensor());
     }
