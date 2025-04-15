@@ -28,7 +28,7 @@ public class IntakeIOKraken implements IntakeIO {
 
         config.CurrentLimits.withStatorCurrentLimit(CURRENT_LIMIT);
 
-        config.MotorOutput.withNeutralMode((NeutralModeValue.Coast))
+        config.MotorOutput.withNeutralMode((NeutralModeValue.Brake))
                 .withInverted(
                         INVERTED
                                 ? InvertedValue.Clockwise_Positive
