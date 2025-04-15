@@ -10,9 +10,12 @@ public interface IntakeIO {
         public double current;
 
         public boolean breakBeam;
+        public boolean interruptTriggered;
     }
 
     default void updateInputs(IntakeInputs inputs) {}
 
     default void setSpeed(double speed) {}
+
+    default void enableCoralInterrupt(boolean interrupt) {}
 }
