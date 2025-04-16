@@ -211,8 +211,8 @@ public class RobotContainer {
 
         superstructure =
                 new Superstructure(
-                        Constants.compBot() ? new ElevatorIO() {} : new ElevatorIOSpark(),
-                        Constants.compBot() ? new WristIO() {} : new WristIOSpark());
+                        Constants.compBot() ? new ElevatorIOKraken() : new ElevatorIOSpark(),
+                        Constants.compBot() ? new WristIOKraken() : new WristIOSpark());
         elevator = superstructure.getElevator();
         wrist = superstructure.getWrist();
 
