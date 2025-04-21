@@ -10,6 +10,7 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import frc.lib.monitor.HardwareWatchdog;
 
 // TODO: With the current elevator design it is unlikely that we will want to be able to control
 // both sides separately
@@ -78,6 +79,9 @@ public class ElevatorIOKraken implements ElevatorIO {
         leftMotor.setControl(new Follower(rightMotor.getDeviceID(), true));
 
         leader = rightMotor;
+
+        HardwareWatchdog.getInstance().registerCTREDevice(leftMotor, this.getClass());
+        HardwareWatchdog.getInstance().registerCTREDevice(rightMotor, this.getClass());
     }
 
     @Override

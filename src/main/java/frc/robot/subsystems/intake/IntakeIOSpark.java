@@ -5,6 +5,7 @@ import static frc.robot.Constants.Intake.*;
 import com.revrobotics.spark.*;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.wpilibj.DigitalInput;
+import frc.lib.monitor.HardwareWatchdog;
 
 public class IntakeIOSpark implements IntakeIO {
     private final SparkMax motor;
@@ -24,6 +25,8 @@ public class IntakeIOSpark implements IntakeIO {
                 config,
                 SparkBase.ResetMode.kResetSafeParameters,
                 SparkBase.PersistMode.kNoPersistParameters);
+
+        HardwareWatchdog.getInstance().registerSpark(motor, this.getClass());
     }
 
     @Override

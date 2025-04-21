@@ -11,6 +11,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.lib.monitor.HardwareWatchdog;
 
 public class WristIOSpark implements WristIO {
 
@@ -71,6 +72,8 @@ public class WristIOSpark implements WristIO {
                         Commands.runOnce(() -> encoder.setPosition(absoluteEncoder.getPosition()))
                                 .ignoringDisable(true))
                 .schedule();
+
+        HardwareWatchdog.getInstance().registerSpark(motor, this.getClass());
     }
 
     @Override
