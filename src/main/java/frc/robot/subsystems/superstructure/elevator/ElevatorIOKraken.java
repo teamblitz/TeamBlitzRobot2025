@@ -41,14 +41,14 @@ public class ElevatorIOKraken implements ElevatorIO {
                 .withMotionMagicAcceleration(MAX_ACCEL);
 
         config.Slot0.withGravityType(GravityTypeValue.Elevator_Static)
-                .withKS(KrakenGains.kS)
+                .withKS(KrakenGains.KS)
                 // Originaly in terms of rotations. But because it is a reciprical
                 // do the other one
                 // ONLY CONVERT KV AND KA, the rest are constant.
-                .withKV(metersToRotations(KrakenGains.kV))
-                .withKA(metersToRotations(KrakenGains.kA))
-                .withKG(KrakenGains.kG)
-                .withKP(KrakenGains.kP);
+                .withKV(metersToRotations(KrakenGains.KV))
+                .withKA(metersToRotations(KrakenGains.KA))
+                .withKG(KrakenGains.KG)
+                .withKP(KrakenGains.KP);
 
         config.SoftwareLimitSwitch.withForwardSoftLimitEnable(true)
                 .withReverseSoftLimitEnable(true)

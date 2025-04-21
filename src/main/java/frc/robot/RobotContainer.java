@@ -21,7 +21,6 @@ import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.math.AllianceFlipUtil;
 import frc.lib.util.ScoringPositions;
-import frc.robot.Constants.AutoConstants.StartingPosition;
 import frc.robot.commands.AutoCommands;
 import frc.robot.commands.ClimbCommandFactory;
 import frc.robot.commands.CommandFactory;
@@ -81,8 +80,6 @@ public class RobotContainer {
     /* ***** --- Autonomous --- ***** */
     private final AutoChooser autoChooser;
 
-    private final LoggedDashboardChooser<StartingPosition> startingPositionChooser;
-
     public RobotContainer() {
         CameraServer.startAutomaticCapture();
         configureSubsystems();
@@ -95,8 +92,7 @@ public class RobotContainer {
         Shuffleboard.getTab("Drive")
                 .add("ResetOdometry", Commands.runOnce(() -> drive.resetOdometry(new Pose2d())));
 
-        //        autoChooser = new LoggedDashboardChooser<>("autoChoice",
-        // autoCommands.getFactory().ch);
+
         autoChooser = new AutoChooser();
         SmartDashboard.putData("autoChooser", autoChooser);
 
@@ -106,11 +102,6 @@ public class RobotContainer {
         //        autoChooser.addRoutine("test", autoCommands::testDrive);
         autoChooser.addRoutine("fourPieceLeft", autoCommands::fourPieceLeft);
         autoChooser.addRoutine("leaveRight", () -> autoCommands.leave("leaveRight"));
-
-        startingPositionChooser = new LoggedDashboardChooser<>("startingPos");
-        startingPositionChooser.addDefaultOption("Center", StartingPosition.CENTER);
-        startingPositionChooser.addOption("Left", StartingPosition.LEFT);
-        startingPositionChooser.addOption("Right", StartingPosition.RIGHT);
 
         Commands.run(
                         () -> {
@@ -326,19 +317,7 @@ public class RobotContainer {
     }
 
     private void configureAutoCommands() {
-        //        NamedCommands.registerCommand(
-        //                "score_l3",
-        //                superstructure
-        //                        .toGoal(Superstructure.Goal.L3)
-        //                        .andThen(intake.shoot_coral().withTimeout(1).asProxy()));
-        //
-        //        NamedCommands.registerCommand(
-        //                "score_l4", CommandFactory.l4Plop(superstructure, intake).asProxy());
-        //
-        //        new
-        // EventTrigger("ready_l4").onTrue(superstructure.toGoalThenIdle(Superstructure.Goal.L4));
-        //        new EventTrigger("score_l4").onTrue(
-        //       Trigger("handoff").onTrue(CommandFactory.handoff(superstructure, intake));
+
     }
 
     public Command getAutonomousCommand() {
@@ -348,10 +327,5 @@ public class RobotContainer {
                                 () -> drive.setGyro(AllianceFlipUtil.shouldFlip() ? 0 : 180)),
                         autoChooser.selectedCommandScheduler())
                 .withName("Auto Command");
-        //        return Commands.sequence(
-        //                        Commands.runOnce(() -> drive.setGyro(180)),
-        //                        Commands.parallel(winch.lowerFunnel(),
-        // autoChooser.get().asProxy()))
-        //                .withName("autonomousCommand");
     }
 }
