@@ -32,7 +32,8 @@ public class PeriodicExecutor {
      *
      * @param callback the Runnable to execute periodically (must not be null)
      * @param periodSeconds the interval in seconds between successive executions (must be ≥ base period)
-     * @param offsetSeconds the delay in seconds before the first eligible execution (will be aligned to the base period)
+     * @param offsetSeconds the delay in seconds before the first eligible execution (will be aligned to the base period).
+     *                      If this is greater than {@code periodSeconds} than the offset will be {@code offsetSeconds % periodSeconds}
      * @throws IllegalArgumentException if {@code periodSeconds} is less than the base execution period
      */
     public void addPeriodicSeconds(@NonNull Runnable callback, double periodSeconds, double offsetSeconds) {
