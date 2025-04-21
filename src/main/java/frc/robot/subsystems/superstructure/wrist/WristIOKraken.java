@@ -15,6 +15,7 @@ import com.reduxrobotics.sensors.canandmag.CanandmagSettings;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.lib.monitor.HardwareWatchdog;
 import org.littletonrobotics.junction.Logger;
 
 public class WristIOKraken implements WristIO {
@@ -79,6 +80,9 @@ public class WristIOKraken implements WristIO {
                 wristMotor.getRotorPosition(),
                 wristMotor.getRotorVelocity(),
                 wristMotor.getMotorVoltage());
+
+        HardwareWatchdog.getInstance().registerCTREDevice(wristMotor, this.getClass());
+        HardwareWatchdog.getInstance().registerReduxDevice(absoluteEncoder, this.getClass());
     }
 
     @Override

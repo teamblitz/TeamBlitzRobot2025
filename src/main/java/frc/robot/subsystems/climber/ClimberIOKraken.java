@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.DutyCycle;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.lib.monitor.HardwareWatchdog;
 import org.littletonrobotics.junction.Logger;
 
 public class ClimberIOKraken implements ClimberIO {
@@ -71,6 +72,11 @@ public class ClimberIOKraken implements ClimberIO {
                                         })
                                 .ignoringDisable(true)
                                 .withName("climber/seedPosition"));
+
+        HardwareWatchdog.getInstance().registerCTREDevice(leftMotor, this.getClass());
+        HardwareWatchdog.getInstance().registerCTREDevice(rightMotor, this.getClass());
+        
+        HardwareWatchdog.getInstance().registerDutyCycleEncoder(absEncoder, this.getClass());
     }
 
     private double getAbsPosition() {

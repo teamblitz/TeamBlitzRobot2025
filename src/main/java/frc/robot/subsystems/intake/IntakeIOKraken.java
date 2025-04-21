@@ -11,6 +11,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj.AsynchronousInterrupt;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Notifier;
+import frc.lib.monitor.HardwareWatchdog;
 import org.littletonrobotics.junction.Logger;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -51,6 +52,8 @@ public class IntakeIOKraken implements IntakeIO {
 
         // Current sensor wiring has reversed phase for some reason.
         coralInterrupt.setInterruptEdges(false, true);
+
+        HardwareWatchdog.getInstance().registerCTREDevice(intake, this.getClass());
     }
 
     @Override
