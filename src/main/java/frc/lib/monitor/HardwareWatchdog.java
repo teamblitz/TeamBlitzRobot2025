@@ -55,7 +55,7 @@ public class HardwareWatchdog {
     }
 
     public void registerSpark(SparkBase spark, Class<?> parent) {
-        registerDevice(() -> spark.getFaults().can || spark.getFirmwareVersion() == 0, "SparkMax " + spark.getDeviceId(), parent);
+        registerDevice(() -> !spark.getFaults().can && spark.getFirmwareVersion() != 0, "SparkMax " + spark.getDeviceId(), parent);
     }
 
     public void registerDutyCycleEncoder(DutyCycleEncoder encoder, Class<?> parent) {
