@@ -28,6 +28,11 @@ public class OIConstants {
             OmegaControl // The rotation stick controls the angular velocity of the robot
         }
 
+        public static double TRANSLATION_DEADBAND = 0.05;
+
+        public static final Function<Double, Double> TRANSLATION_INPUT_CURVE = (x) -> .8 * x + .2 * (x * x * x);
+        public static final Function<Double, Double> SPIN_CURVE = (x) -> (x * x * x);
+
         public static double STICK_DEADBAND = 0.08;
 
         // Values are in percents, we have full power
