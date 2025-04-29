@@ -2,6 +2,7 @@ package frc.robot.subsystems.drive;
 
 import static edu.wpi.first.units.Units.*;
 
+import java.util.Optional;
 import java.util.function.Supplier;
 
 import choreo.trajectory.SwerveSample;
@@ -14,20 +15,33 @@ import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
+import frc.lib.util.Capture;
+import frc.lib.util.DriveUtil;
+import frc.robot.Constants;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
 import org.littletonrobotics.junction.Logger;
 
@@ -293,36 +307,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         simNotifier.startPeriodic(SIM_LOOP_PERIOD);
     }
 
-
-    private final PIDController trajectoryXController = new PIDController(14, 0, 0);
-    private final PIDController trajectoryYController = new PIDController(14, 0, 0);
-    private final PIDController trajectoryThetaController = new PIDController(3, 0, 0);
-
-    private final SwerveRequest.ApplyFieldSpeeds trajectoryApplyFieldSpeeds = new SwerveRequest.ApplyFieldSpeeds()
-            .withDriveRequestType(SwerveModule.DriveRequestType.Velocity);
-
-    public void followTrajectory(SwerveSample sample) {
-        Logger.recordOutput("drive/trajectorySample", sample);
-
-        trajectoryThetaController.enableContinuousInput(-Math.PI, Math.PI);
-        var pose = getState().Pose;
-        var targetSpeeds = sample.getChassisSpeeds();
-        targetSpeeds.vxMetersPerSecond += trajectoryXController.calculate(pose.getX(), sample.x);
-        targetSpeeds.vyMetersPerSecond += trajectoryYController.calculate(pose.getY(), sample.y);
-        targetSpeeds.omegaRadiansPerSecond += trajectoryThetaController.calculate(pose.getRotation().getRadians(),
-                sample.heading);
-
-        setControl(
-                trajectoryApplyFieldSpeeds.withSpeeds(targetSpeeds)
-                        .withSpeeds(targetSpeeds)
-                        .withWheelForceFeedforwardsX(sample.moduleForcesX())
-                        .withWheelForceFeedforwardsY(sample.moduleForcesY()));
-    }
-
-
-
-
-
     /**
      * Adds a vision measurement to the Kalman Filter. This will correct the odometry pose estimate
      * while still accounting for measurement noise.
@@ -356,5 +340,297 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     ) {
         super.addVisionMeasurement(visionRobotPoseMeters, Utils.fpgaToCurrentTime(timestampSeconds), visionMeasurementStdDevs);
     }
+
+    public Rotation2d getHeading() {
+        return getPose().getRotation();
+    }
+
+    public Pose2d getPose() {
+        return getState().Pose;
+    }
+
+    public ChassisSpeeds getSpeeds() {
+        return getState().Speeds;
+    }
+
+    public ChassisSpeeds getFieldSpeeds() {
+        return ChassisSpeeds.fromRobotRelativeSpeeds(
+                getSpeeds(), getHeading()
+        );
+    }
+
+    private final PIDController trajectoryXController = new PIDController(14, 0, 0);
+    private final PIDController trajectoryYController = new PIDController(14, 0, 0);
+    private final PIDController trajectoryThetaController = new PIDController(3, 0, 0);
+
+    private final SwerveRequest.ApplyFieldSpeeds trajectoryApplyFieldSpeeds = new SwerveRequest.ApplyFieldSpeeds()
+            .withDriveRequestType(SwerveModule.DriveRequestType.Velocity);
+
+    public void followTrajectory(SwerveSample sample) {
+        Logger.recordOutput("drive/trajectorySample", sample);
+
+        trajectoryThetaController.enableContinuousInput(-Math.PI, Math.PI);
+        var pose = getState().Pose;
+        var targetSpeeds = sample.getChassisSpeeds();
+        targetSpeeds.vxMetersPerSecond += trajectoryXController.calculate(pose.getX(), sample.x);
+        targetSpeeds.vyMetersPerSecond += trajectoryYController.calculate(pose.getY(), sample.y);
+        targetSpeeds.omegaRadiansPerSecond += trajectoryThetaController.calculate(pose.getRotation().getRadians(),
+                sample.heading);
+
+        setControl(
+                trajectoryApplyFieldSpeeds.withSpeeds(targetSpeeds)
+                        .withSpeeds(targetSpeeds)
+                        .withWheelForceFeedforwardsX(sample.moduleForcesX())
+                        .withWheelForceFeedforwardsY(sample.moduleForcesY()));
+    }
+
+
+    /* Drive to Pose */
+
+    /*
+     * The below code is based on 6995 Nomad's drive to pose code.
+     * https://github.com/frc6995/Robot-2025/blob/ec7eccecc7d6793f9a4bf5057c5cf5b1bfb0f65d/src/main/java/frc/robot/subsystems/DriveBaseS.java#L524
+     */
+
+    /* DRIVE TO POSE using Trapezoid Profiles */
+    private TrapezoidProfile.Constraints driveToPoseConstraints = new TrapezoidProfile.Constraints(1, 1);
+    private TrapezoidProfile.Constraints driveToPoseRotationConstraints = new TrapezoidProfile.Constraints(3, 6);
+    private TrapezoidProfile driveToPoseProfile = new TrapezoidProfile(driveToPoseConstraints);
+    private TrapezoidProfile driveToPoseRotationProfile =
+            new TrapezoidProfile(driveToPoseRotationConstraints);
+
+    // For modifying goals from within a lambda
+
+    private TrapezoidProfile.State driveToPoseGoal = new TrapezoidProfile.State(0, 0);
+    private TrapezoidProfile.State driveToPoseRotationGoal = new TrapezoidProfile.State(0, 0);
+
+    Capture<Pose2d> initial = new Capture<Pose2d>(new Pose2d());
+    // The goal (populated from poseSupplier at command start)
+    Capture<Pose2d> goal = new Capture<Pose2d>(new Pose2d());
+    // Distance start-end in meters
+    Capture<Double> distance = new Capture<Double>(1.0);
+    // Unit vector start->end
+    Capture<Translation2d> normDirStartToEnd = new Capture<>(Translation2d.kZero);
+    Capture<Vector<N2>> directionGoalToBot = new Capture<>(VecBuilder.fill(0, 0));
+    TrapezoidProfile.State translationState = new TrapezoidProfile.State(0, 0);
+    TrapezoidProfile.State rotationState = new TrapezoidProfile.State(0, 0);
+
+    // Threshold for "close enough" to avoid microadjustments
+    public final Trigger atDriveToPosePose =
+            atPose(() -> goal.inner, Units.inchesToMeters(0.5), Units.degreesToRadians(1));
+
+    /**
+     * <B>IMPORTANT, While this takes a pose supplier, this is mostly for convince. and <U>once the
+     * command has started, the command will sample the value of the supplier and drive there.</U>
+     * It will NOT follow the pose</B>
+     *
+     * <p>Drives to a pose with motion profiles on translation and rotation. The translation profile
+     * starts at dist(start,end) and drives toward 0. This state is then interpolated between poses.
+     *
+     * <p>The rotation profile starts at initial.heading and ends at goal.heading, just like a
+     * profiled continuous heading controller.
+     */
+    public Command driveToPose(Supplier<Pose2d> poseSupplier) {
+        Command command =
+                runOnce(
+                        () -> {
+                            var getTargetTime = Timer.getFPGATimestamp();
+
+                            initial.inner = getPose();
+                            goal.inner = poseSupplier.get();
+
+                            // initial position: distance from end
+                            // initial velocity: component of velocity away from end, so
+                            // approaching is a negative number
+                            var goalToBot = initial.inner.minus(goal.inner);
+                            var directionGoalToBot =
+                                    goalToBot.getTranslation().toVector().unit();
+
+                            this.directionGoalToBot.inner = directionGoalToBot;
+                            // TODO: The bellow being commented out means that there is no
+                            // velocity feedforward
+                            //
+                            // this.normDirStartToEnd.inner = new
+                            // Translation2d(directionGoalToBot);
+
+                            distance.inner = goalToBot.getTranslation().getNorm();
+
+                            // Position goes from our distance to zero as we approach
+                            translationState.position = distance.inner;
+
+                            var speeds = getFieldSpeeds();
+
+                            // A negative velocity means we are approaching 0, the goal is 0
+                            translationState.velocity =
+                                    MathUtil.clamp(
+                                            VecBuilder.fill(
+                                                            speeds.vxMetersPerSecond,
+                                                            speeds.vyMetersPerSecond)
+                                                    .dot(directionGoalToBot),
+                                            -driveToPoseConstraints.maxVelocity,
+                                            0);
+
+                            Logger.recordOutput(
+                                    "drive/driveToPose/unclampedInitialVelocity",
+                                    VecBuilder.fill(
+                                                    speeds.vxMetersPerSecond,
+                                                    speeds.vyMetersPerSecond)
+                                            .dot(directionGoalToBot));
+
+                            // Initial state of rotation
+                            driveToPoseRotationGoal.position =
+                                    goal.inner.getRotation().getRadians();
+
+                            rotationState.position =
+                                    initial.inner.getRotation().getRadians();
+                            rotationState.velocity = speeds.omegaRadiansPerSecond;
+
+                            Logger.recordOutput("drive/driveToPose/initial", initial.inner);
+                            Logger.recordOutput("drive/driveToPose/goal", goal.inner);
+                            Logger.recordOutput(
+                                    "drive/driveToPose/initialDistance",
+                                    translationState.position);
+                            Logger.recordOutput(
+                                    "drive/driveToPose/initialVelocity",
+                                    translationState.velocity);
+                        })
+                        .andThen(
+                                run(
+                                        () -> {
+                                            var setpoint =
+                                                    driveToPoseProfile.calculate(
+                                                            Constants.LOOP_PERIOD_SEC,
+                                                            translationState,
+                                                            driveToPoseGoal);
+                                            translationState.position = setpoint.position;
+                                            translationState.velocity = setpoint.velocity;
+
+                                            Logger.recordOutput(
+                                                    "drive/driveToPose/distance",
+                                                    translationState.position);
+                                            Logger.recordOutput(
+                                                    "drive/driveToPose/velocity",
+                                                    translationState.velocity);
+
+                                            // I am trusting them here
+
+                                            // Rotation continuous input
+                                            // Get error which is the smallest distance between goal
+                                            // and measurement
+                                            double errorBound = Math.PI;
+                                            var measurement = getHeading().getRadians();
+                                            double goalMinDistance =
+                                                    MathUtil.inputModulus(
+                                                            driveToPoseRotationGoal.position
+                                                                    - measurement,
+                                                            -errorBound,
+                                                            errorBound);
+                                            double setpointMinDistance =
+                                                    MathUtil.inputModulus(
+                                                            rotationState.position - measurement,
+                                                            -errorBound,
+                                                            errorBound);
+
+                                            // Recompute the profile goal with the smallest error,
+                                            // thus giving the shortest path. The goal
+                                            // may be outside the input range after this operation,
+                                            // but that's OK because the controller
+                                            // will still go there and report an error of zero. In
+                                            // other words, the setpoint only needs to
+                                            // be offset from the measurement by the input range
+                                            // modulus; they don't need to be equal.
+                                            driveToPoseRotationGoal.position =
+                                                    goalMinDistance + measurement;
+                                            rotationState.position =
+                                                    setpointMinDistance + measurement;
+
+                                            var rotSetpoint =
+                                                    driveToPoseRotationProfile.calculate(
+                                                            0.02,
+                                                            rotationState,
+                                                            driveToPoseRotationGoal);
+                                            rotationState.position = rotSetpoint.position;
+                                            rotationState.velocity = rotSetpoint.velocity;
+
+                                            var startPose = initial.inner;
+
+                                            var interpTrans =
+                                                    goal.inner
+                                                            .getTranslation()
+                                                            .interpolate(
+                                                                    startPose.getTranslation(),
+                                                                    setpoint.position
+                                                                            / distance.inner);
+
+                                            if (atDriveToPosePose.getAsBoolean()) {
+                                                setControl(pathApplyRobotSpeeds.withSpeeds(new ChassisSpeeds()));
+                                            } else {
+                                                followTrajectory(
+                                                        DriveUtil.sample(
+                                                                interpTrans,
+                                                                new Rotation2d(
+                                                                        rotationState.position),
+                                                                normDirStartToEnd.inner.getX()
+                                                                        * setpoint.velocity,
+                                                                normDirStartToEnd.inner.getY()
+                                                                        * setpoint.velocity,
+                                                                rotationState.velocity));
+                                            }
+                                        }))
+                        .until(atDriveToPosePose.debounce(.1))
+                        .finallyDo(() -> setControl(pathApplyRobotSpeeds.withSpeeds(new ChassisSpeeds())));
+
+        return command.withName("drive/driveToPoseCommand");
+    }
+
+    public Command driveToPose(Pose2d pose) {
+        return driveToPose(() -> pose);
+    }
+
+    public double toleranceMeters = Units.inchesToMeters(0.5);
+    public double toleranceRadians = Units.degreesToRadians(1);
+
+    private boolean withinTolerance(Rotation2d lhs, Rotation2d rhs, double toleranceRadians) {
+        if (Math.abs(toleranceRadians) > Math.PI) {
+            return true;
+        }
+        double dot = lhs.getCos() * rhs.getCos() + lhs.getSin() * rhs.getSin();
+        // cos(θ) >= cos(tolerance) means |θ| <= tolerance, for tolerance in [-pi, pi],
+        // as pre-checked
+        // above.
+        return dot > Math.cos(toleranceRadians);
+    }
+
+    public Trigger atPose(
+            Supplier<Pose2d> poseSup, double toleranceMeters, double toleranceRadians) {
+        return new Trigger(
+                () -> {
+                    Pose2d pose = poseSup.get();
+                    Pose2d currentPose = getPose();
+                    boolean transValid =
+                            currentPose.getTranslation().getDistance(pose.getTranslation())
+                                    < toleranceMeters;
+                    boolean rotValid =
+                            withinTolerance(
+                                    currentPose.getRotation(),
+                                    pose.getRotation(),
+                                    toleranceRadians);
+                    return transValid && rotValid;
+                });
+    }
+
+    public Trigger atPose(Supplier<Pose2d> poseSup) {
+        return atPose(poseSup, toleranceMeters, toleranceRadians);
+    }
+
+    public Trigger atPose(Optional<Pose2d> poseOpt) {
+        return poseOpt.map(this::atPose).orElse(new Trigger(() -> false));
+    }
+
+    public Trigger atPose(Pose2d pose) {
+        return atPose(() -> pose);
+    }
+
+    /* END DRIVE TO POSE */
 
 }

@@ -10,7 +10,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.drive.CommandSwerveDrivetrain;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.littletonrobotics.junction.Logger;
@@ -23,9 +23,9 @@ public class Vision extends SubsystemBase {
     private final AprilTagFieldLayout aprilTagFieldLayout =
             AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
 
-    Drive drive;
+    CommandSwerveDrivetrain drive;
 
-    public Vision(Drive drive) {
+    public Vision(CommandSwerveDrivetrain drive) {
         this.drive = drive;
 
         poseEstimators =

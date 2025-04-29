@@ -24,20 +24,11 @@ import frc.lib.util.ScoringPositions;
 import frc.robot.commands.AutoCommands;
 import frc.robot.commands.ClimbCommandFactory;
 import frc.robot.commands.CommandFactory;
-import frc.robot.commands.TeleopSwerve;
+import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.ClimberIO;
 import frc.robot.subsystems.climber.ClimberIOKraken;
-import frc.robot.subsystems.drive.Drive;
-import frc.robot.subsystems.drive.gyro.GyroIOPigeon;
-import frc.robot.subsystems.drive.gyro.GyroIOSim;
-import frc.robot.subsystems.drive.range.RangeSensorIO;
-import frc.robot.subsystems.drive.range.RangeSensorIOFusion;
-import frc.robot.subsystems.drive.swerveModule.SwerveModule;
-import frc.robot.subsystems.drive.swerveModule.SwerveModuleConfiguration;
-import frc.robot.subsystems.drive.swerveModule.angle.AngleMotorIOSim;
-import frc.robot.subsystems.drive.swerveModule.drive.DriveMotorIOSim;
-import frc.robot.subsystems.drive.swerveModule.encoder.EncoderIO;
+import frc.robot.subsystems.drive.CommandSwerveDrivetrain;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIOKraken;
 import frc.robot.subsystems.intake.IntakeIOSpark;
@@ -67,7 +58,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 public class RobotContainer {
 
     /* ***** --- Subsystems --- ***** */
-    private Drive drive;
+    private CommandSwerveDrivetrain drive;
     private Vision vision;
     private Elevator elevator;
     private Wrist wrist;
@@ -90,7 +81,7 @@ public class RobotContainer {
 
         DriverStation.silenceJoystickConnectionWarning(true);
         Shuffleboard.getTab("Drive")
-                .add("ResetOdometry", Commands.runOnce(() -> drive.resetOdometry(new Pose2d())));
+                .add("ResetOdometry", Commands.runOnce(() -> drive.resetPose(new Pose2d())));
 
 
         autoChooser = new AutoChooser();
@@ -143,58 +134,7 @@ public class RobotContainer {
     }
 
     private void configureSubsystems() {
-        drive =
-                switch (Constants.ROBOT) {
-                    case CompBot ->
-                            new Drive(
-                                    new SwerveModuleConfiguration(
-                                            SwerveModuleConfiguration.MotorType.KRAKEN,
-                                            SwerveModuleConfiguration.MotorType.KRAKEN,
-                                            SwerveModuleConfiguration.EncoderType.CANCODER),
-                                    Constants.Drive.Mod0.CONSTANTS,
-                                    Constants.Drive.Mod1.CONSTANTS,
-                                    Constants.Drive.Mod2.CONSTANTS,
-                                    Constants.Drive.Mod3.CONSTANTS,
-                                    new GyroIOPigeon(),
-                                    new RangeSensorIOFusion());
-
-                    case DevBot ->
-                            new Drive(
-                                    new SwerveModuleConfiguration(
-                                            SwerveModuleConfiguration.MotorType.NEO,
-                                            SwerveModuleConfiguration.MotorType.NEO,
-                                            SwerveModuleConfiguration.EncoderType.HELIUM),
-                                    Constants.Drive.Mod0.CONSTANTS,
-                                    Constants.Drive.Mod1.CONSTANTS,
-                                    Constants.Drive.Mod2.CONSTANTS,
-                                    Constants.Drive.Mod3.CONSTANTS,
-                                    new GyroIOPigeon(),
-                                    new RangeSensorIO() {});
-                    case SimBot ->
-                            new Drive(
-                                    new SwerveModule(
-                                            Constants.Drive.FL,
-                                            new AngleMotorIOSim(),
-                                            new DriveMotorIOSim(),
-                                            new EncoderIO() {}),
-                                    new SwerveModule(
-                                            Constants.Drive.FR,
-                                            new AngleMotorIOSim(),
-                                            new DriveMotorIOSim(),
-                                            new EncoderIO() {}),
-                                    new SwerveModule(
-                                            Constants.Drive.BL,
-                                            new AngleMotorIOSim(),
-                                            new DriveMotorIOSim(),
-                                            new EncoderIO() {}),
-                                    new SwerveModule(
-                                            Constants.Drive.BR,
-                                            new AngleMotorIOSim(),
-                                            new DriveMotorIOSim(),
-                                            new EncoderIO() {}),
-                                    new GyroIOSim(() -> drive.getChassisSpeeds()),
-                                    new RangeSensorIO() {});
-                };
+        drive = TunerConstants.createDrivetrain();
 
         vision = new Vision(drive);
 
