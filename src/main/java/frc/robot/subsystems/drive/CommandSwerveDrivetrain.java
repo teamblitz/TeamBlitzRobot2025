@@ -89,6 +89,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             startSimThread();
         }
         configureAutoBuilder();
+
+        new DriveSysId(this);
     }
 
     /**
@@ -114,6 +116,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             startSimThread();
         }
         configureAutoBuilder();
+
+        new DriveSysId(this);
     }
 
     /**

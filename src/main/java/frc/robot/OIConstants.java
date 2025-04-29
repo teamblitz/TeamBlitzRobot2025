@@ -13,7 +13,8 @@ public class OIConstants {
 
     public static final double XBOX_STICK_DEADBAND = 0.06;
 
-    public static final CommandJoystick DRIVE_CONTROLLER = new CommandJoystick(0);
+//    public static final CommandJoystick DRIVE_CONTROLLER = new CommandJoystick(0);
+    public static final CommandXboxController DRIVE_CONTROLLER = new CommandXboxController(0);
     public static final CommandXboxController OPERATOR_CONTROLLER = new CommandXboxController(1);
 
     public static final Trigger TELEOP = new Trigger(DriverStation::isTeleop);
@@ -56,10 +57,10 @@ public class OIConstants {
         private static final DoubleSupplier DRIVE_MULTIPLIER =
                 () -> (DRIVE_CONTROLLER.getHID().getRawButton(1) ? FAST_SPEED : NORMAL_SPEED);
 
-        public static final DoubleSupplier X_TRANSLATION = () -> -DRIVE_CONTROLLER.getY();
-        public static final DoubleSupplier Y_TRANSLATION = () -> -DRIVE_CONTROLLER.getX();
+        public static final DoubleSupplier X_TRANSLATION = () -> -DRIVE_CONTROLLER.getLeftY();
+        public static final DoubleSupplier Y_TRANSLATION = () -> -DRIVE_CONTROLLER.getLeftX();
 
-        public static final DoubleSupplier ROTATION_SPEED = () -> -DRIVE_CONTROLLER.getTwist();
+        public static final DoubleSupplier ROTATION_SPEED = () -> -DRIVE_CONTROLLER.getRightX();
 
         public static final DoubleSupplier HEADING_CONTROL = () -> Double.NaN;
         //                        0 * Math.hypot(DRIVE_CONTROLLER.getLeftY(),
