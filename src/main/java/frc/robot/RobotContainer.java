@@ -10,6 +10,7 @@ package frc.robot;
 import choreo.auto.AutoChooser;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.RobotState;
@@ -24,6 +25,7 @@ import frc.lib.util.ScoringPositions;
 import frc.robot.commands.AutoCommands;
 import frc.robot.commands.ClimbCommandFactory;
 import frc.robot.commands.CommandFactory;
+import frc.robot.commands.DriveCommands;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.ClimberIO;
@@ -67,6 +69,7 @@ public class RobotContainer {
     private Winch winch;
     private Climber climber;
     private AutoCommands autoCommands;
+    private DriveCommands driveCommands;
 
     /* ***** --- Autonomous --- ***** */
     private final AutoChooser autoChooser;
@@ -109,17 +112,32 @@ public class RobotContainer {
 
     private void setDefaultCommands() {
         drive.setDefaultCommand(
-                new TeleopSwerve(
-                                drive,
-                                OIConstants.Drive.X_TRANSLATION,
-                                OIConstants.Drive.Y_TRANSLATION,
-                                OIConstants.Drive.ROTATION_SPEED,
-                                () -> false,
-                                () -> Double.NaN,
-                                () -> climber.getState() != Climber.State.CLIMB)
-                        .unless(RobotState::isTest)
-                        .until(RobotState::isTest)
-                        .withName("TeleopSwerve"));
+                driveCommands.joystickDrive(
+                        OIConstants.Drive.X_TRANSLATION,
+                        OIConstants.Drive.Y_TRANSLATION,
+                        OIConstants.Drive.ROTATION_SPEED,
+                        () -> 2,
+                        () -> 10,
+                        () -> Math.PI,
+                        false
+                )
+                        .onlyWhile(RobotState::isTeleop)
+                        .onlyIf(RobotState::isTeleop)
+                        .withName("Joystick Drive")
+        );
+
+//        drive.setDefaultCommand(
+//                new TeleopSwerve(
+//                                drive,
+//                                OIConstants.Drive.X_TRANSLATION,
+//                                OIConstants.Drive.Y_TRANSLATION,
+//                                OIConstants.Drive.ROTATION_SPEED,
+//                                () -> false,
+//                                () -> Double.NaN,
+//                                () -> climber.getState() != Climber.State.CLIMB)
+//                        .unless(RobotState::isTest)
+//                        .until(RobotState::isTest)
+//                        .withName("TeleopSwerve"));
 
         superstructure.setDefaultCommand(
                 Commands.either(
@@ -135,6 +153,7 @@ public class RobotContainer {
 
     private void configureSubsystems() {
         drive = TunerConstants.createDrivetrain();
+        driveCommands = new DriveCommands(drive);
 
         vision = new Vision(drive);
 
@@ -152,11 +171,15 @@ public class RobotContainer {
     }
 
     private void configureButtonBindings() {
-        OIConstants.Drive.RESET_GYRO.onTrue(Commands.runOnce(drive::zeroGyro));
-        OIConstants.Drive.X_BREAK.onTrue(drive.park());
-
-        OIConstants.Drive.BRAKE.onTrue(Commands.runOnce(() -> drive.setBrakeMode(true)));
-        OIConstants.Drive.COAST.onTrue(Commands.runOnce(() -> drive.setBrakeMode(false)));
+        OIConstants.Drive.RESET_GYRO.onTrue(
+                Commands.runOnce(
+                        () ->
+                        drive.resetRotation(
+                AllianceFlipUtil.shouldFlip() ? Rotation2d.k180deg : Rotation2d.kZero)));
+//        OIConstants.Drive.X_BREAK.onTrue(drive.park());
+//
+//        OIConstants.Drive.BRAKE.onTrue(Commands.runOnce(() -> drive.setBrakeMode(true)));
+//        OIConstants.Drive.COAST.onTrue(Commands.runOnce(() -> drive.setBrakeMode(false)));
 
         OIConstants.SuperStructure.L1.whileTrue(
                 superstructure.toGoalThenIdle(Superstructure.Goal.L1));
@@ -264,7 +287,7 @@ public class RobotContainer {
         Logger.recordOutput("selectedAuto", autoChooser.selectedCommand().getName());
         return Commands.sequence(
                         Commands.runOnce(
-                                () -> drive.setGyro(AllianceFlipUtil.shouldFlip() ? 0 : 180)),
+                                () -> drive.resetRotation(AllianceFlipUtil.shouldFlip() ? Rotation2d.kZero: Rotation2d.k180deg)),
                         autoChooser.selectedCommandScheduler())
                 .withName("Auto Command");
     }

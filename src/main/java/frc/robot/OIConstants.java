@@ -56,16 +56,10 @@ public class OIConstants {
         private static final DoubleSupplier DRIVE_MULTIPLIER =
                 () -> (DRIVE_CONTROLLER.getHID().getRawButton(1) ? FAST_SPEED : NORMAL_SPEED);
 
-        public static final DoubleSupplier X_TRANSLATION =
-                () -> INPUT_CURVE.apply(-DRIVE_CONTROLLER.getY()) * DRIVE_MULTIPLIER.getAsDouble();
+        public static final DoubleSupplier X_TRANSLATION = () -> -DRIVE_CONTROLLER.getY();
+        public static final DoubleSupplier Y_TRANSLATION = () -> -DRIVE_CONTROLLER.getX();
 
-        public static final DoubleSupplier Y_TRANSLATION =
-                () -> INPUT_CURVE.apply(-DRIVE_CONTROLLER.getX()) * DRIVE_MULTIPLIER.getAsDouble();
-
-        public static final DoubleSupplier ROTATION_SPEED =
-                () ->
-                        (DRIVE_CONTROLLER.getHID().getRawButton(3) ? SUPER_SPIN : SPIN_SPEED)
-                                * SPIN_CURVE.apply(-DRIVE_CONTROLLER.getTwist());
+        public static final DoubleSupplier ROTATION_SPEED = () -> -DRIVE_CONTROLLER.getTwist();
 
         public static final DoubleSupplier HEADING_CONTROL = () -> Double.NaN;
         //                        0 * Math.hypot(DRIVE_CONTROLLER.getLeftY(),

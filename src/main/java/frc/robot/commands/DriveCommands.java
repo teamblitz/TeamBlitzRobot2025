@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.lib.math.VectorUtils;
 import frc.robot.OIConstants;
 import frc.robot.subsystems.drive.CommandSwerveDrivetrain;
+import org.littletonrobotics.junction.Logger;
 
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
@@ -29,8 +30,16 @@ public class DriveCommands {
     private final Timer maintainHeadingTimer = new Timer();
     private final double maintainHeadingDelay = .5;
 
-    public Command joystickDrive(CommandSwerveDrivetrain drive,
-                                 DoubleSupplier percentX,
+    private final CommandSwerveDrivetrain drive;
+
+    public DriveCommands(
+            CommandSwerveDrivetrain drive
+    ) {
+        this.drive = drive;
+    }
+
+
+    public Command joystickDrive(DoubleSupplier percentX,
                                  DoubleSupplier percentY,
                                  DoubleSupplier percentRotation,
                                  DoubleSupplier maxVelocity,
@@ -46,6 +55,11 @@ public class DriveCommands {
 
                     var omega = angularVelocityFromJoysticks(percentRotation.getAsDouble(), maxAngularVelocity.getAsDouble());
 
+                    Logger.recordOutput("drive/joystick/speeds", new ChassisSpeeds(
+                            velocity.get(0),
+                            velocity.get(1),
+                            omega
+                    ));
 
 //                    if (automaticallyCorrectHeading && omega == 0 && maintainHeadingTimer.hasElapsed(maintainHeadingDelay)) {
 //
