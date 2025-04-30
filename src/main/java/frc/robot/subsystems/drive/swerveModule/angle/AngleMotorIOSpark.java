@@ -9,6 +9,7 @@ import com.revrobotics.spark.config.ClosedLoopConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.geometry.Rotation2d;
+import frc.lib.monitor.HardwareWatchdog;
 import frc.lib.util.SwerveModuleConstants;
 import frc.robot.Constants;
 
@@ -29,6 +30,8 @@ public class AngleMotorIOSpark implements AngleMotorIO {
         encoder = motor.getEncoder();
         pidController = motor.getClosedLoopController();
         configAngleMotor();
+
+        HardwareWatchdog.getInstance().registerSpark(motor, this.getClass());
     }
 
     @Override

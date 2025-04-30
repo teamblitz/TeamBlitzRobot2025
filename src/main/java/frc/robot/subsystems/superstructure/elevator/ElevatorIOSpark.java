@@ -10,6 +10,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.lib.monitor.HardwareWatchdog;
 import frc.robot.Constants;
 import frc.robot.Constants.Elevator;
 
@@ -126,6 +127,9 @@ public class ElevatorIOSpark implements ElevatorIO {
         //
         //                }
         //        ).startPeriodic(5);
+
+        HardwareWatchdog.getInstance().registerSpark(left, this.getClass());
+        HardwareWatchdog.getInstance().registerSpark(right, this.getClass());
     }
 
     @Override

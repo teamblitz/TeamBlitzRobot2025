@@ -7,6 +7,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.geometry.Rotation2d;
+import frc.lib.monitor.HardwareWatchdog;
 import frc.lib.util.SwerveModuleConstants;
 import frc.robot.Constants;
 
@@ -23,6 +24,8 @@ public class AngleMotorIOKraken implements AngleMotorIO {
         /* Angle motor */
         motor = new TalonFX(moduleConstants.angleMotorID, "drive");
         configAngleMotor();
+
+        HardwareWatchdog.getInstance().registerCTREDevice(motor, this.getClass());
     }
 
     @Override

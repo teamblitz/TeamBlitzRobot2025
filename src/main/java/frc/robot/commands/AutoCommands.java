@@ -94,6 +94,7 @@ public class AutoCommands {
                         .ignoringDisable(true);
 
         RobotModeTriggers.autonomous().onFalse(configTeleDefault);
+        RobotModeTriggers.teleop().onTrue(configTeleDefault);
     }
 
     public AutoFactory getFactory() {
@@ -110,6 +111,18 @@ public class AutoCommands {
     public AutoRoutine testDrive() {
         final var routine = autoFactory.newRoutine("test");
         final var traj = routine.trajectory("test");
+
+        routine.active()
+                .whileTrue(
+                        Commands.sequence(traj.resetOdometry(), traj.cmd())
+                                .withName("auto/cmdSec"));
+
+        return routine;
+    }
+
+    public AutoRoutine leave(String pathName) {
+        final var routine = autoFactory.newRoutine(pathName);
+        final var traj = routine.trajectory(pathName);
 
         routine.active()
                 .whileTrue(
@@ -156,13 +169,7 @@ public class AutoCommands {
     }
 
     public AutoRoutine fourPieceLeft() {
-        return nPiece(4, "fourPieceLeft",
-                List.of(
-                        Branch.I,
-                        Branch.K,
-                        Branch.L,
-                        Branch.A
-                ));
+        return nPiece(4, "fourPieceLeft", List.of(Branch.I, Branch.K, Branch.L, Branch.A));
     }
 
     /**
@@ -173,13 +180,13 @@ public class AutoCommands {
      * @param pathName bongus
      * @return boingus
      */
-    public AutoRoutine nPiece(int numberOfCoral, String pathName, List<ScoringPositions.Branch> scoringPositions) {
+    public AutoRoutine nPiece(
+            int numberOfCoral, String pathName, List<ScoringPositions.Branch> scoringPositions) {
         if (!List.of(1, 2, 3, 4).contains(numberOfCoral)) {
             throw new IllegalArgumentException("Number of Coral must be between 1 and 4");
         }
 
         AutoRoutine routine = autoFactory.newRoutine(pathName);
-
 
         var trajectory = Choreo.loadTrajectory(pathName);
         if (trajectory.isEmpty()) {
@@ -212,8 +219,7 @@ public class AutoCommands {
                                             Commands.waitUntil(intake::hasCoral),
                                             // As proxy so that we don't cancel
                                             // handoff if the coral isn't here yet.
-                                            prepareL4().asProxy()
-                                            ),
+                                            prepareL4().asProxy()),
                                     drive.driveToPose(
                                                     PositionConstants.Reef.SCORING_POSITIONS.get(
                                                             scoringPositions.get(i)))
@@ -225,8 +231,6 @@ public class AutoCommands {
                                                     i < toStation.size()
                                                             ? toStation.get(i).spawnCmd()
                                                             : Commands.none())));
-
-
         }
 
         for (int i = 0; i < toStation.size(); i++) {
