@@ -211,6 +211,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 hasAppliedOperatorPerspective = true;
             });
         }
+
+
+        Logger.recordOutput("drive/moduleTargets", getState().ModuleTargets);
+        Logger.recordOutput("drive/moduleStates", getState().ModuleStates);
     }
 
     private void startSimThread() {

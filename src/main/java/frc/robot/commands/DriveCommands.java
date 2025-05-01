@@ -87,6 +87,11 @@ public class DriveCommands {
         // apply deadband
         translationControl = VectorUtils.applyDeadband(translationControl, OIConstants.Drive.TRANSLATION_DEADBAND);
 
+        // Filter out zero control to avoid NaN poisoning.
+        if (translationControl.norm() == 0) {
+            return translationControl;
+        }
+
         // apply input curve
         translationControl = translationControl.unit().times(OIConstants.Drive.TRANSLATION_INPUT_CURVE.apply(translationControl.norm()));
 
