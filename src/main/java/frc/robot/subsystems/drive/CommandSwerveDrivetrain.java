@@ -8,6 +8,7 @@ import java.util.function.Supplier;
 import choreo.trajectory.SwerveSample;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
+import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveModule;
 import com.ctre.phoenix6.swerve.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;

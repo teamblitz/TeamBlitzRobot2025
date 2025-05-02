@@ -30,6 +30,7 @@ public class OIConstants {
         }
 
         public static double TRANSLATION_DEADBAND = 0.05;
+        public static double ROTATION_DEADBAND = 0.05;
 
         public static final Function<Double, Double> TRANSLATION_INPUT_CURVE = (x) -> .8 * x + .2 * (x * x * x);
         public static final Function<Double, Double> SPIN_CURVE = (x) -> (x * x * x);

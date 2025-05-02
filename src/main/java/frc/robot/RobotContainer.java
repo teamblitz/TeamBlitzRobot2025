@@ -116,10 +116,10 @@ public class RobotContainer {
                         OIConstants.Drive.X_TRANSLATION,
                         OIConstants.Drive.Y_TRANSLATION,
                         OIConstants.Drive.ROTATION_SPEED,
-                        () -> 2,
+                        () -> 5,
                         () -> 10,
-                        () -> Math.PI,
-                        false
+                        () -> 2 * Math.PI,
+                        true
                 )
                         .onlyWhile(RobotState::isTeleop)
                         .onlyIf(RobotState::isTeleop)

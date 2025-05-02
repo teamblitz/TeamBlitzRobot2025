@@ -26,7 +26,8 @@ public class DriveCommands {
             .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
 
     private final SwerveRequest.FieldCentricFacingAngle fieldCentricFacingAngle = new SwerveRequest.FieldCentricFacingAngle()
-            .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
+            .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage)// Use open-loop control for drive motors
+            .withHeadingPID(5, 0, .05);
 
 
     private final Timer maintainHeadingTimer = new Timer();
@@ -69,24 +70,37 @@ public class DriveCommands {
                             omega
                     ));
 
-                    Logger.recordOutput("drive/joystick/maintainHeading/timer", maintainHeadingTimer.get());
-
-
-                    if (automaticallyCorrectHeading && omega == 0 && maintainHeadingTimer.hasElapsed(maintainHeadingDelay)) { // Conditions for maintain heading are valid.
-                        Logger.recordOutput("drive/joystick/maintainHeading/valid", true);
-                        if (headingSetpoint.get() != null) { // If we don't have a defined setpoint yet, set it
-                            headingSetpoint.inner = drive.getHeading();
+                    if (automaticallyCorrectHeading) {
+                        if (omega != 0) { // Maintain heading invalid, reset timer and set setpoint to null
+                            maintainHeadingTimer.reset();
+                            maintainHeadingTimer.stop();
+                        } else {
+                            maintainHeadingTimer.start();
                         }
-                        Logger.recordOutput("drive/joystick/maintainHeading/setpoint", headingSetpoint.get());
 
-                        return fieldCentricFacingAngle
-                                .withVelocityX(velocity.get(0))
-                                .withVelocityY(velocity.get(1))
-                                .withTargetDirection(headingSetpoint.get());
-                    } else { // Conditions no longer valid, set setpoint to null (unset)
-                        Logger.recordOutput("drive/joystick/maintainHeading/valid", false);
-                        Logger.recordOutput("drive/joystick/maintainHeading/setpoint", (Rotation2d) null);
-                        headingSetpoint.inner = null;
+                        boolean maintainHeadingValid = maintainHeadingTimer.hasElapsed(maintainHeadingDelay);
+
+                        Logger.recordOutput("drive/joystick/maintainHeading/timer", maintainHeadingTimer.get());
+                        Logger.recordOutput("drive/joystick/maintainHeading/valid", maintainHeadingValid);
+
+                        if (maintainHeadingValid) {
+                            if (headingSetpoint.get() == null) { // Set the setpoint if not yet set
+                                headingSetpoint.inner = drive.getHeading();
+                            }
+
+                            Logger.recordOutput("drive/joystick/maintainHeading/setpoint", headingSetpoint.get());
+
+                            return fieldCentricFacingAngle
+                                    .withVelocityX(velocity.get(0))
+                                    .withVelocityY(velocity.get(1))
+                                    .withTargetDirection(headingSetpoint.get());
+                        } else {
+                            headingSetpoint.inner = null;
+
+                            // Logging NaN is eh, but 0 isn't really appropriate here.
+                            // Generally best if we want this behavior to NOT store NaN intentionally to avoid NaN poisoning.
+                            Logger.recordOutput("drive/joystick/maintainHeading/setpoint", Rotation2d.fromRotations(Double.NaN));
+                        }
                     }
 
                     return fieldCentric
@@ -123,6 +137,8 @@ public class DriveCommands {
     private double angularVelocityFromJoysticks(double percentRotation, double maxOmega) {
         // clamp rotation input
         var rotationControl = MathUtil.clamp(percentRotation, -1.0, 1.0);
+
+        rotationControl = MathUtil.applyDeadband(percentRotation, OIConstants.Drive.ROTATION_DEADBAND);
 
         // apply curve
         rotationControl = OIConstants.Drive.SPIN_CURVE.apply(rotationControl);
