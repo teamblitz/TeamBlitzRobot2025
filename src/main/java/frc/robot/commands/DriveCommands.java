@@ -5,12 +5,14 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.lib.math.VectorUtils;
+import frc.lib.util.Capture;
 import frc.robot.OIConstants;
 import frc.robot.subsystems.drive.CommandSwerveDrivetrain;
 import org.littletonrobotics.junction.Logger;
@@ -46,8 +48,14 @@ public class DriveCommands {
                                  DoubleSupplier maxAcceleration,
                                  DoubleSupplier maxAngularVelocity,
                                  boolean automaticallyCorrectHeading) {
+
+        Capture<Rotation2d> headingSetpoint = new Capture<>(null);
+
         return Commands.runOnce(
-                maintainHeadingTimer::reset
+                () -> {
+                    headingSetpoint.inner = drive.getHeading();
+                    maintainHeadingTimer.restart();
+                }
         ).andThen(
                 drive.applyRequest(
                 () -> {
@@ -61,12 +69,25 @@ public class DriveCommands {
                             omega
                     ));
 
-//                    if (automaticallyCorrectHeading && omega == 0 && maintainHeadingTimer.hasElapsed(maintainHeadingDelay)) {
-//
-//                        return fieldCentricFacingAngle
-//                                .withVelocityX(velocity.get(0))
-//                                .withVelocityY(velocity.get(0))
-//                    }
+                    Logger.recordOutput("drive/joystick/maintainHeading/timer", maintainHeadingTimer.get());
+
+
+                    if (automaticallyCorrectHeading && omega == 0 && maintainHeadingTimer.hasElapsed(maintainHeadingDelay)) { // Conditions for maintain heading are valid.
+                        Logger.recordOutput("drive/joystick/maintainHeading/valid", true);
+                        if (headingSetpoint.get() != null) { // If we don't have a defined setpoint yet, set it
+                            headingSetpoint.inner = drive.getHeading();
+                        }
+                        Logger.recordOutput("drive/joystick/maintainHeading/setpoint", headingSetpoint.get());
+
+                        return fieldCentricFacingAngle
+                                .withVelocityX(velocity.get(0))
+                                .withVelocityY(velocity.get(1))
+                                .withTargetDirection(headingSetpoint.get());
+                    } else { // Conditions no longer valid, set setpoint to null (unset)
+                        Logger.recordOutput("drive/joystick/maintainHeading/valid", false);
+                        Logger.recordOutput("drive/joystick/maintainHeading/setpoint", (Rotation2d) null);
+                        headingSetpoint.inner = null;
+                    }
 
                     return fieldCentric
                             .withVelocityX(velocity.get(0))
