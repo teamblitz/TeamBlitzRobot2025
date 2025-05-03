@@ -47,6 +47,7 @@ import frc.lib.util.Capture;
 import frc.lib.util.DriveUtil;
 import frc.robot.Constants;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -267,18 +268,22 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         super.addVisionMeasurement(visionRobotPoseMeters, Utils.fpgaToCurrentTime(timestampSeconds), visionMeasurementStdDevs);
     }
 
+    @AutoLogOutput(key = "drive/heading")
     public Rotation2d getHeading() {
         return getPose().getRotation();
     }
 
+    @AutoLogOutput(key = "drive/pose")
     public Pose2d getPose() {
         return getState().Pose;
     }
 
+    @AutoLogOutput(key = "drive/chassisSpeeds")
     public ChassisSpeeds getSpeeds() {
         return getState().Speeds;
     }
 
+    @AutoLogOutput(key = "drive/fieldSpeeds")
     public ChassisSpeeds getFieldSpeeds() {
         return ChassisSpeeds.fromRobotRelativeSpeeds(
                 getSpeeds(), getHeading()

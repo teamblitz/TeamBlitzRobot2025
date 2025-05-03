@@ -27,7 +27,7 @@ public class DriveCommands {
 
     private final SwerveRequest.FieldCentricFacingAngle fieldCentricFacingAngle = new SwerveRequest.FieldCentricFacingAngle()
             .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage)// Use open-loop control for drive motors
-            .withHeadingPID(5, 0, .05);
+            .withHeadingPID(10, 0, 0);
 
 
     private final Timer maintainHeadingTimer = new Timer();
