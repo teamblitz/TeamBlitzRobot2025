@@ -13,7 +13,6 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.util.Capture;
-import frc.robot.subsystems.drive.swerveModule.encoder.EncoderIOHelium;
 import lombok.Getter;
 
 import java.util.function.BooleanSupplier;

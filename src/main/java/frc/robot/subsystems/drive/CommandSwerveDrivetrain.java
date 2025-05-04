@@ -214,7 +214,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             });
         }
 
-
         Logger.recordOutput("drive/moduleTargets", getState().ModuleTargets);
         Logger.recordOutput("drive/moduleStates", getState().ModuleStates);
     }

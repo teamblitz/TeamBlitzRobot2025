@@ -22,10 +22,7 @@ import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.math.AllianceFlipUtil;
 import frc.lib.util.ScoringPositions;
-import frc.robot.commands.AutoCommands;
-import frc.robot.commands.ClimbCommandFactory;
-import frc.robot.commands.CommandFactory;
-import frc.robot.commands.DriveCommands;
+import frc.robot.commands.*;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.ClimberIO;
@@ -83,8 +80,10 @@ public class RobotContainer {
         configureAutoCommands();
 
         DriverStation.silenceJoystickConnectionWarning(true);
-        Shuffleboard.getTab("Drive")
+        Shuffleboard.getTab("drive")
                 .add("ResetOdometry", Commands.runOnce(() -> drive.resetPose(new Pose2d())));
+
+        Shuffleboard.getTab("drive").add("wheel size big", DriveCharacterizationCommands.characterizeWheelDiameter(drive));
 
 
         autoChooser = new AutoChooser();
@@ -126,18 +125,6 @@ public class RobotContainer {
                         .withName("Joystick Drive")
         );
 
-//        drive.setDefaultCommand(
-//                new TeleopSwerve(
-//                                drive,
-//                                OIConstants.Drive.X_TRANSLATION,
-//                                OIConstants.Drive.Y_TRANSLATION,
-//                                OIConstants.Drive.ROTATION_SPEED,
-//                                () -> false,
-//                                () -> Double.NaN,
-//                                () -> climber.getState() != Climber.State.CLIMB)
-//                        .unless(RobotState::isTest)
-//                        .until(RobotState::isTest)
-//                        .withName("TeleopSwerve"));
 
         superstructure.setDefaultCommand(
                 Commands.either(
