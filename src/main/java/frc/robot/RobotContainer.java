@@ -8,6 +8,7 @@
 package frc.robot;
 
 import choreo.auto.AutoChooser;
+import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -46,7 +47,8 @@ import frc.robot.subsystems.winch.WinchIO;
 import frc.robot.subsystems.winch.WinchIOSpark;
 import java.util.Set;
 import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+
+import static edu.wpi.first.wpilibj2.command.Commands.*;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -79,11 +81,9 @@ public class RobotContainer {
         setDefaultCommands();
         configureAutoCommands();
 
-        DriverStation.silenceJoystickConnectionWarning(true);
-        Shuffleboard.getTab("drive")
-                .add("ResetOdometry", Commands.runOnce(() -> drive.resetPose(new Pose2d())));
+        configureDashboard();
 
-        Shuffleboard.getTab("drive").add("wheel size big", DriveCharacterizationCommands.characterizeWheelDiameter(drive));
+        DriverStation.silenceJoystickConnectionWarning(true);
 
 
         autoChooser = new AutoChooser();
@@ -155,6 +155,22 @@ public class RobotContainer {
 
         climber = new Climber(Constants.compBot() ? new ClimberIOKraken() : new ClimberIO() {});
         winch = new Winch(Constants.compBot() ? new WinchIOSpark() : new WinchIO() {});
+    }
+
+    private void configureDashboard() {
+        var tab = Shuffleboard.getTab("tuning");
+
+        tab.add("Phoenix SignalLogger",
+                runEnd(
+                        SignalLogger::start,
+                        SignalLogger::stop
+                ).ignoringDisable(true)
+        );
+
+        tab.add("drive/resetOdometry", Commands.runOnce(() -> drive.resetPose(new Pose2d())));
+
+        tab.add("wheel radius characterization", DriveCharacterizationCommands.characterizeWheelDiameter(drive));
+
     }
 
     private void configureButtonBindings() {

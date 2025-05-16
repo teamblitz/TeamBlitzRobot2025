@@ -2,15 +2,11 @@ package frc.robot.subsystems.drive;
 
 import static edu.wpi.first.units.Units.*;
 
-import java.util.Optional;
-import java.util.function.Supplier;
-
 import choreo.trajectory.SwerveSample;
-import com.ctre.phoenix6.SignalLogger;
-import com.ctre.phoenix6.Utils;
-import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveModule;
-import com.ctre.phoenix6.swerve.*;
 
+import com.ctre.phoenix6.Utils;
+import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.swerve.*;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
@@ -35,21 +31,23 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
 import frc.lib.util.Capture;
 import frc.lib.util.DriveUtil;
+import frc.lib.util.LoggedTunableNumber;
 import frc.robot.Constants;
+import frc.robot.generated.TunerConstants;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
+
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+
+import java.util.Arrays;
+import java.util.Optional;
+import java.util.function.Supplier;
 
 /**
  * Class that extends the Phoenix 6 SwerveDrivetrain class and implements
@@ -68,9 +66,36 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private boolean hasAppliedOperatorPerspective = false;
 
     /** Swerve request to apply during robot-centric path following */
-    private final SwerveRequest.ApplyRobotSpeeds pathApplyRobotSpeeds = new SwerveRequest.ApplyRobotSpeeds();
+    private final SwerveRequest.ApplyRobotSpeeds pathApplyRobotSpeeds =
+            new SwerveRequest.ApplyRobotSpeeds();
 
+    private final SwerveDrivetrainConstants drivetrainConstants;
 
+    private final LoggedTunableNumber driveKP =
+            new LoggedTunableNumber("drive/driveKP", TunerConstants.driveGains.kP);
+    private final LoggedTunableNumber driveKI =
+            new LoggedTunableNumber("drive/driveKI", TunerConstants.driveGains.kI);
+    private final LoggedTunableNumber driveKD =
+            new LoggedTunableNumber("drive/driveKD", TunerConstants.driveGains.kD);
+    private final LoggedTunableNumber driveKS =
+            new LoggedTunableNumber("drive/driveKS", TunerConstants.driveGains.kS);
+    private final LoggedTunableNumber driveKV =
+            new LoggedTunableNumber("drive/driveKV", TunerConstants.driveGains.kV);
+    private final LoggedTunableNumber driveKA =
+            new LoggedTunableNumber("drive/driveKA", TunerConstants.driveGains.kA);
+
+    private final LoggedTunableNumber steerKP =
+            new LoggedTunableNumber("drive/steerKP", TunerConstants.steerGains.kP);
+    private final LoggedTunableNumber steerKI =
+            new LoggedTunableNumber("drive/steerKI", TunerConstants.steerGains.kI);
+    private final LoggedTunableNumber steerKD =
+            new LoggedTunableNumber("drive/steerKD", TunerConstants.steerGains.kD);
+    private final LoggedTunableNumber steerKS =
+            new LoggedTunableNumber("drive/steerKS", TunerConstants.steerGains.kS);
+    private final LoggedTunableNumber steerKV =
+            new LoggedTunableNumber("drive/steerKV", TunerConstants.steerGains.kV);
+    private final LoggedTunableNumber steerKA =
+            new LoggedTunableNumber("drive/steerKA", TunerConstants.steerGains.kA);
 
     /**
      * Constructs a CTRE SwerveDrivetrain using the specified constants.
@@ -84,103 +109,47 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
      */
     public CommandSwerveDrivetrain(
             SwerveDrivetrainConstants drivetrainConstants,
-            SwerveModuleConstants<?, ?, ?>... modules
-    ) {
+            SwerveModuleConstants<?, ?, ?>... modules) {
         super(drivetrainConstants, modules);
+
+        this.drivetrainConstants = drivetrainConstants;
+
         if (Utils.isSimulation()) {
             startSimThread();
         }
         configureAutoBuilder();
 
         new DriveSysId(this);
-    }
-
-    /**
-     * Constructs a CTRE SwerveDrivetrain using the specified constants.
-     * <p>
-     * This constructs the underlying hardware devices, so users should not construct
-     * the devices themselves. If they need the devices, they can access them through
-     * getters in the classes.
-     *
-     * @param drivetrainConstants        Drivetrain-wide constants for the swerve drive
-     * @param odometryUpdateFrequency    The frequency to run the odometry loop. If
-     *                                   unspecified or set to 0 Hz, this is 250 Hz on
-     *                                   CAN FD, and 100 Hz on CAN 2.0.
-     * @param modules                    Constants for each specific module
-     */
-    public CommandSwerveDrivetrain(
-            SwerveDrivetrainConstants drivetrainConstants,
-            double odometryUpdateFrequency,
-            SwerveModuleConstants<?, ?, ?>... modules
-    ) {
-        super(drivetrainConstants, odometryUpdateFrequency, modules);
-        if (Utils.isSimulation()) {
-            startSimThread();
-        }
-        configureAutoBuilder();
-
-        new DriveSysId(this);
-    }
-
-    /**
-     * Constructs a CTRE SwerveDrivetrain using the specified constants.
-     * <p>
-     * This constructs the underlying hardware devices, so users should not construct
-     * the devices themselves. If they need the devices, they can access them through
-     * getters in the classes.
-     *
-     * @param drivetrainConstants        Drivetrain-wide constants for the swerve drive
-     * @param odometryUpdateFrequency    The frequency to run the odometry loop. If
-     *                                   unspecified or set to 0 Hz, this is 250 Hz on
-     *                                   CAN FD, and 100 Hz on CAN 2.0.
-     * @param odometryStandardDeviation  The standard deviation for odometry calculation
-     *                                  in the form [x, y, theta]ᵀ, with units in meters
-     *                                  and radians
-     * @param visionStandardDeviation   The standard deviation for vision calculation
-     *                                  in the form [x, y, theta]ᵀ, with units in meters
-     *                                  and radians
-     * @param modules                    Constants for each specific module
-     */
-    public CommandSwerveDrivetrain(
-            SwerveDrivetrainConstants drivetrainConstants,
-            double odometryUpdateFrequency,
-            Matrix<N3, N1> odometryStandardDeviation,
-            Matrix<N3, N1> visionStandardDeviation,
-            SwerveModuleConstants<?, ?, ?>... modules
-    ) {
-        super(drivetrainConstants, odometryUpdateFrequency, odometryStandardDeviation, visionStandardDeviation, modules);
-        if (Utils.isSimulation()) {
-            startSimThread();
-        }
-        configureAutoBuilder();
     }
 
     private void configureAutoBuilder() {
         try {
             var config = RobotConfig.fromGUISettings();
             AutoBuilder.configure(
-                    () -> getState().Pose,   // Supplier of current robot pose
-                    this::resetPose,         // Consumer for seeding pose against auto
+                    () -> getState().Pose, // Supplier of current robot pose
+                    this::resetPose, // Consumer for seeding pose against auto
                     () -> getState().Speeds, // Supplier of current robot speeds
                     // Consumer of ChassisSpeeds and feedforwards to drive the robot
-                    (speeds, feedforwards) -> setControl(
-                            pathApplyRobotSpeeds.withSpeeds(speeds)
-                                    .withWheelForceFeedforwardsX(feedforwards.robotRelativeForcesXNewtons())
-                                    .withWheelForceFeedforwardsY(feedforwards.robotRelativeForcesYNewtons())
-                    ),
+                    (speeds, feedforwards) -> setControl(pathApplyRobotSpeeds
+                            .withSpeeds(speeds)
+                            .withWheelForceFeedforwardsX(feedforwards.robotRelativeForcesXNewtons())
+                            .withWheelForceFeedforwardsY(
+                                    feedforwards.robotRelativeForcesYNewtons())),
                     new PPHolonomicDriveController(
                             // PID constants for translation
                             new PIDConstants(10, 0, 0),
                             // PID constants for rotation
-                            new PIDConstants(7, 0, 0)
-                    ),
+                            new PIDConstants(7, 0, 0)),
                     config,
-                    // Assume the path needs to be flipped for Red vs Blue, this is normally the case
+                    // Assume the path needs to be flipped for Red vs Blue, this is normally the
+                    // case
                     () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
                     this // Subsystem for requirements
-            );
+                    );
         } catch (Exception ex) {
-            DriverStation.reportError("Failed to load PathPlanner config and configure AutoBuilder", ex.getStackTrace());
+            DriverStation.reportError(
+                    "Failed to load PathPlanner config and configure AutoBuilder",
+                    ex.getStackTrace());
         }
     }
 
@@ -208,14 +177,57 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 setOperatorPerspectiveForward(
                         allianceColor == Alliance.Red
                                 ? RED_ALLIANCE_PERSPECTIVE_ROTATION
-                                : BLUE_ALLIANCE_PERSPECTIVE_ROTATION
-                );
+                                : BLUE_ALLIANCE_PERSPECTIVE_ROTATION);
                 hasAppliedOperatorPerspective = true;
             });
         }
 
         Logger.recordOutput("drive/moduleTargets", getState().ModuleTargets);
         Logger.recordOutput("drive/moduleStates", getState().ModuleStates);
+
+        LoggedTunableNumber.ifChanged(
+                hashCode(),
+                PIDSVA -> {
+                    var gains = new Slot0Configs()
+                            .withKP(PIDSVA[0])
+                            .withKI(PIDSVA[1])
+                            .withKD(PIDSVA[2])
+                            .withKS(PIDSVA[3])
+                            .withKV(PIDSVA[4])
+                            .withKA(PIDSVA[5]);
+
+                    Arrays.stream(getModules())
+                            .forEach(module ->
+                                    module.getDriveMotor().getConfigurator().apply(gains));
+                },
+                driveKP,
+                driveKI,
+                driveKD,
+                driveKS,
+                driveKV,
+                driveKA);
+
+        LoggedTunableNumber.ifChanged(
+                hashCode(),
+                PIDSVA -> {
+                    var gains = new Slot0Configs()
+                            .withKP(PIDSVA[0])
+                            .withKI(PIDSVA[1])
+                            .withKD(PIDSVA[2])
+                            .withKS(PIDSVA[3])
+                            .withKV(PIDSVA[4])
+                            .withKA(PIDSVA[5]);
+
+                    Arrays.stream(getModules())
+                            .forEach(module ->
+                                    module.getSteerMotor().getConfigurator().apply(gains));
+                },
+                steerKP,
+                steerKI,
+                steerKD,
+                steerKS,
+                steerKV,
+                steerKA);
     }
 
     private void startSimThread() {
@@ -242,7 +254,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
      */
     @Override
     public void addVisionMeasurement(Pose2d visionRobotPoseMeters, double timestampSeconds) {
-        super.addVisionMeasurement(visionRobotPoseMeters, Utils.fpgaToCurrentTime(timestampSeconds));
+        super.addVisionMeasurement(
+                visionRobotPoseMeters, Utils.fpgaToCurrentTime(timestampSeconds));
     }
 
     /**
@@ -262,9 +275,11 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     public void addVisionMeasurement(
             Pose2d visionRobotPoseMeters,
             double timestampSeconds,
-            Matrix<N3, N1> visionMeasurementStdDevs
-    ) {
-        super.addVisionMeasurement(visionRobotPoseMeters, Utils.fpgaToCurrentTime(timestampSeconds), visionMeasurementStdDevs);
+            Matrix<N3, N1> visionMeasurementStdDevs) {
+        super.addVisionMeasurement(
+                visionRobotPoseMeters,
+                Utils.fpgaToCurrentTime(timestampSeconds),
+                visionMeasurementStdDevs);
     }
 
     @AutoLogOutput(key = "drive/heading")
@@ -284,17 +299,16 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     @AutoLogOutput(key = "drive/fieldSpeeds")
     public ChassisSpeeds getFieldSpeeds() {
-        return ChassisSpeeds.fromRobotRelativeSpeeds(
-                getSpeeds(), getHeading()
-        );
+        return ChassisSpeeds.fromRobotRelativeSpeeds(getSpeeds(), getHeading());
     }
 
     private final PIDController trajectoryXController = new PIDController(14, 0, 0);
     private final PIDController trajectoryYController = new PIDController(14, 0, 0);
     private final PIDController trajectoryThetaController = new PIDController(3, 0, 0);
 
-    private final SwerveRequest.ApplyFieldSpeeds trajectoryApplyFieldSpeeds = new SwerveRequest.ApplyFieldSpeeds()
-            .withDriveRequestType(SwerveModule.DriveRequestType.Velocity);
+    private final SwerveRequest.ApplyFieldSpeeds trajectoryApplyFieldSpeeds =
+            new SwerveRequest.ApplyFieldSpeeds()
+                    .withDriveRequestType(SwerveModule.DriveRequestType.Velocity);
 
     public void followTrajectory(SwerveSample sample) {
         Logger.recordOutput("drive/trajectorySample", sample);
@@ -304,16 +318,15 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         var targetSpeeds = sample.getChassisSpeeds();
         targetSpeeds.vxMetersPerSecond += trajectoryXController.calculate(pose.getX(), sample.x);
         targetSpeeds.vyMetersPerSecond += trajectoryYController.calculate(pose.getY(), sample.y);
-        targetSpeeds.omegaRadiansPerSecond += trajectoryThetaController.calculate(pose.getRotation().getRadians(),
-                sample.heading);
+        targetSpeeds.omegaRadiansPerSecond += trajectoryThetaController.calculate(
+                pose.getRotation().getRadians(), sample.heading);
 
-        setControl(
-                trajectoryApplyFieldSpeeds.withSpeeds(targetSpeeds)
-                        .withSpeeds(targetSpeeds)
-                        .withWheelForceFeedforwardsX(sample.moduleForcesX())
-                        .withWheelForceFeedforwardsY(sample.moduleForcesY()));
+        setControl(trajectoryApplyFieldSpeeds
+                .withSpeeds(targetSpeeds)
+                .withSpeeds(targetSpeeds)
+                .withWheelForceFeedforwardsX(sample.moduleForcesX())
+                .withWheelForceFeedforwardsY(sample.moduleForcesY()));
     }
-
 
     /* Drive to Pose */
 
@@ -323,8 +336,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
      */
 
     /* DRIVE TO POSE using Trapezoid Profiles */
-    private TrapezoidProfile.Constraints driveToPoseConstraints = new TrapezoidProfile.Constraints(1, 1);
-    private TrapezoidProfile.Constraints driveToPoseRotationConstraints = new TrapezoidProfile.Constraints(3, 6);
+    private TrapezoidProfile.Constraints driveToPoseConstraints =
+            new TrapezoidProfile.Constraints(1, 1);
+    private TrapezoidProfile.Constraints driveToPoseRotationConstraints =
+            new TrapezoidProfile.Constraints(3, 6);
     private TrapezoidProfile driveToPoseProfile = new TrapezoidProfile(driveToPoseConstraints);
     private TrapezoidProfile driveToPoseRotationProfile =
             new TrapezoidProfile(driveToPoseRotationConstraints);
@@ -361,154 +376,117 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
      * profiled continuous heading controller.
      */
     public Command driveToPose(Supplier<Pose2d> poseSupplier) {
-        Command command =
-                runOnce(
-                        () -> {
-                            var getTargetTime = Timer.getFPGATimestamp();
+        Command command = runOnce(() -> {
+                    var getTargetTime = Timer.getFPGATimestamp();
 
-                            initial.inner = getPose();
-                            goal.inner = poseSupplier.get();
+                    initial.inner = getPose();
+                    goal.inner = poseSupplier.get();
 
-                            // initial position: distance from end
-                            // initial velocity: component of velocity away from end, so
-                            // approaching is a negative number
-                            var goalToBot = initial.inner.minus(goal.inner);
-                            var directionGoalToBot =
-                                    goalToBot.getTranslation().toVector().unit();
+                    // initial position: distance from end
+                    // initial velocity: component of velocity away from end, so
+                    // approaching is a negative number
+                    var goalToBot = initial.inner.minus(goal.inner);
+                    var directionGoalToBot =
+                            goalToBot.getTranslation().toVector().unit();
 
-                            this.directionGoalToBot.inner = directionGoalToBot;
-                            // TODO: The bellow being commented out means that there is no
-                            // velocity feedforward
-                            //
-                            // this.normDirStartToEnd.inner = new
-                            // Translation2d(directionGoalToBot);
+                    this.directionGoalToBot.inner = directionGoalToBot;
+                    // TODO: The bellow being commented out means that there is no
+                    // velocity feedforward
+                    //
+                    // this.normDirStartToEnd.inner = new
+                    // Translation2d(directionGoalToBot);
 
-                            distance.inner = goalToBot.getTranslation().getNorm();
+                    distance.inner = goalToBot.getTranslation().getNorm();
 
-                            // Position goes from our distance to zero as we approach
-                            translationState.position = distance.inner;
+                    // Position goes from our distance to zero as we approach
+                    translationState.position = distance.inner;
 
-                            var speeds = getFieldSpeeds();
+                    var speeds = getFieldSpeeds();
 
-                            // A negative velocity means we are approaching 0, the goal is 0
-                            translationState.velocity =
-                                    MathUtil.clamp(
-                                            VecBuilder.fill(
-                                                            speeds.vxMetersPerSecond,
-                                                            speeds.vyMetersPerSecond)
-                                                    .dot(directionGoalToBot),
-                                            -driveToPoseConstraints.maxVelocity,
-                                            0);
+                    // A negative velocity means we are approaching 0, the goal is 0
+                    translationState.velocity = MathUtil.clamp(
+                            VecBuilder.fill(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond)
+                                    .dot(directionGoalToBot),
+                            -driveToPoseConstraints.maxVelocity,
+                            0);
 
-                            Logger.recordOutput(
-                                    "drive/driveToPose/unclampedInitialVelocity",
-                                    VecBuilder.fill(
-                                                    speeds.vxMetersPerSecond,
-                                                    speeds.vyMetersPerSecond)
-                                            .dot(directionGoalToBot));
+                    Logger.recordOutput(
+                            "drive/driveToPose/unclampedInitialVelocity",
+                            VecBuilder.fill(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond)
+                                    .dot(directionGoalToBot));
 
-                            // Initial state of rotation
-                            driveToPoseRotationGoal.position =
-                                    goal.inner.getRotation().getRadians();
+                    // Initial state of rotation
+                    driveToPoseRotationGoal.position = goal.inner.getRotation().getRadians();
 
-                            rotationState.position =
-                                    initial.inner.getRotation().getRadians();
-                            rotationState.velocity = speeds.omegaRadiansPerSecond;
+                    rotationState.position = initial.inner.getRotation().getRadians();
+                    rotationState.velocity = speeds.omegaRadiansPerSecond;
 
-                            Logger.recordOutput("drive/driveToPose/initial", initial.inner);
-                            Logger.recordOutput("drive/driveToPose/goal", goal.inner);
-                            Logger.recordOutput(
-                                    "drive/driveToPose/initialDistance",
-                                    translationState.position);
-                            Logger.recordOutput(
-                                    "drive/driveToPose/initialVelocity",
-                                    translationState.velocity);
-                        })
-                        .andThen(
-                                run(
-                                        () -> {
-                                            var setpoint =
-                                                    driveToPoseProfile.calculate(
-                                                            Constants.LOOP_PERIOD_SEC,
-                                                            translationState,
-                                                            driveToPoseGoal);
-                                            translationState.position = setpoint.position;
-                                            translationState.velocity = setpoint.velocity;
+                    Logger.recordOutput("drive/driveToPose/initial", initial.inner);
+                    Logger.recordOutput("drive/driveToPose/goal", goal.inner);
+                    Logger.recordOutput(
+                            "drive/driveToPose/initialDistance", translationState.position);
+                    Logger.recordOutput(
+                            "drive/driveToPose/initialVelocity", translationState.velocity);
+                })
+                .andThen(run(() -> {
+                    var setpoint = driveToPoseProfile.calculate(
+                            Constants.LOOP_PERIOD_SEC, translationState, driveToPoseGoal);
+                    translationState.position = setpoint.position;
+                    translationState.velocity = setpoint.velocity;
 
-                                            Logger.recordOutput(
-                                                    "drive/driveToPose/distance",
-                                                    translationState.position);
-                                            Logger.recordOutput(
-                                                    "drive/driveToPose/velocity",
-                                                    translationState.velocity);
+                    Logger.recordOutput("drive/driveToPose/distance", translationState.position);
+                    Logger.recordOutput("drive/driveToPose/velocity", translationState.velocity);
 
-                                            // I am trusting them here
+                    // I am trusting them here
 
-                                            // Rotation continuous input
-                                            // Get error which is the smallest distance between goal
-                                            // and measurement
-                                            double errorBound = Math.PI;
-                                            var measurement = getHeading().getRadians();
-                                            double goalMinDistance =
-                                                    MathUtil.inputModulus(
-                                                            driveToPoseRotationGoal.position
-                                                                    - measurement,
-                                                            -errorBound,
-                                                            errorBound);
-                                            double setpointMinDistance =
-                                                    MathUtil.inputModulus(
-                                                            rotationState.position - measurement,
-                                                            -errorBound,
-                                                            errorBound);
+                    // Rotation continuous input
+                    // Get error which is the smallest distance between goal
+                    // and measurement
+                    double errorBound = Math.PI;
+                    var measurement = getHeading().getRadians();
+                    double goalMinDistance = MathUtil.inputModulus(
+                            driveToPoseRotationGoal.position - measurement,
+                            -errorBound,
+                            errorBound);
+                    double setpointMinDistance = MathUtil.inputModulus(
+                            rotationState.position - measurement, -errorBound, errorBound);
 
-                                            // Recompute the profile goal with the smallest error,
-                                            // thus giving the shortest path. The goal
-                                            // may be outside the input range after this operation,
-                                            // but that's OK because the controller
-                                            // will still go there and report an error of zero. In
-                                            // other words, the setpoint only needs to
-                                            // be offset from the measurement by the input range
-                                            // modulus; they don't need to be equal.
-                                            driveToPoseRotationGoal.position =
-                                                    goalMinDistance + measurement;
-                                            rotationState.position =
-                                                    setpointMinDistance + measurement;
+                    // Recompute the profile goal with the smallest error,
+                    // thus giving the shortest path. The goal
+                    // may be outside the input range after this operation,
+                    // but that's OK because the controller
+                    // will still go there and report an error of zero. In
+                    // other words, the setpoint only needs to
+                    // be offset from the measurement by the input range
+                    // modulus; they don't need to be equal.
+                    driveToPoseRotationGoal.position = goalMinDistance + measurement;
+                    rotationState.position = setpointMinDistance + measurement;
 
-                                            var rotSetpoint =
-                                                    driveToPoseRotationProfile.calculate(
-                                                            0.02,
-                                                            rotationState,
-                                                            driveToPoseRotationGoal);
-                                            rotationState.position = rotSetpoint.position;
-                                            rotationState.velocity = rotSetpoint.velocity;
+                    var rotSetpoint = driveToPoseRotationProfile.calculate(
+                            0.02, rotationState, driveToPoseRotationGoal);
+                    rotationState.position = rotSetpoint.position;
+                    rotationState.velocity = rotSetpoint.velocity;
 
-                                            var startPose = initial.inner;
+                    var startPose = initial.inner;
 
-                                            var interpTrans =
-                                                    goal.inner
-                                                            .getTranslation()
-                                                            .interpolate(
-                                                                    startPose.getTranslation(),
-                                                                    setpoint.position
-                                                                            / distance.inner);
+                    var interpTrans = goal.inner
+                            .getTranslation()
+                            .interpolate(
+                                    startPose.getTranslation(), setpoint.position / distance.inner);
 
-                                            if (atDriveToPosePose.getAsBoolean()) {
-                                                setControl(pathApplyRobotSpeeds.withSpeeds(new ChassisSpeeds()));
-                                            } else {
-                                                followTrajectory(
-                                                        DriveUtil.sample(
-                                                                interpTrans,
-                                                                new Rotation2d(
-                                                                        rotationState.position),
-                                                                normDirStartToEnd.inner.getX()
-                                                                        * setpoint.velocity,
-                                                                normDirStartToEnd.inner.getY()
-                                                                        * setpoint.velocity,
-                                                                rotationState.velocity));
-                                            }
-                                        }))
-                        .until(atDriveToPosePose.debounce(.1))
-                        .finallyDo(() -> setControl(pathApplyRobotSpeeds.withSpeeds(new ChassisSpeeds())));
+                    if (atDriveToPosePose.getAsBoolean()) {
+                        setControl(pathApplyRobotSpeeds.withSpeeds(new ChassisSpeeds()));
+                    } else {
+                        followTrajectory(DriveUtil.sample(
+                                interpTrans,
+                                new Rotation2d(rotationState.position),
+                                normDirStartToEnd.inner.getX() * setpoint.velocity,
+                                normDirStartToEnd.inner.getY() * setpoint.velocity,
+                                rotationState.velocity));
+                    }
+                }))
+                .until(atDriveToPosePose.debounce(.1))
+                .finallyDo(() -> setControl(pathApplyRobotSpeeds.withSpeeds(new ChassisSpeeds())));
 
         return command.withName("drive/driveToPoseCommand");
     }
@@ -533,20 +511,15 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     public Trigger atPose(
             Supplier<Pose2d> poseSup, double toleranceMeters, double toleranceRadians) {
-        return new Trigger(
-                () -> {
-                    Pose2d pose = poseSup.get();
-                    Pose2d currentPose = getPose();
-                    boolean transValid =
-                            currentPose.getTranslation().getDistance(pose.getTranslation())
-                                    < toleranceMeters;
-                    boolean rotValid =
-                            withinTolerance(
-                                    currentPose.getRotation(),
-                                    pose.getRotation(),
-                                    toleranceRadians);
-                    return transValid && rotValid;
-                });
+        return new Trigger(() -> {
+            Pose2d pose = poseSup.get();
+            Pose2d currentPose = getPose();
+            boolean transValid = currentPose.getTranslation().getDistance(pose.getTranslation())
+                    < toleranceMeters;
+            boolean rotValid = withinTolerance(
+                    currentPose.getRotation(), pose.getRotation(), toleranceRadians);
+            return transValid && rotValid;
+        });
     }
 
     public Trigger atPose(Supplier<Pose2d> poseSup) {
