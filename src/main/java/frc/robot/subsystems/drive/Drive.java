@@ -6,7 +6,6 @@ import static edu.wpi.first.units.Units.*;
 import static frc.robot.Constants.Drive.*;
 
 import choreo.trajectory.SwerveSample;
-import choreo.util.ChoreoAllianceFlipUtil;
 import com.ctre.phoenix6.SignalLogger;
 import com.pathplanner.lib.util.DriveFeedforwards;
 import com.pathplanner.lib.util.swerve.SwerveSetpoint;
@@ -34,16 +33,13 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.BlitzSubsystem;
@@ -72,10 +68,6 @@ import java.util.function.Supplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
-/**
- * Here we can probably do some cleanup, main thing we can probably do here is separate
- * telemetry/hardware io. Also, we need a better way to do dynamic pid loop tuning.
- */
 public class Drive extends BlitzSubsystem {
     private final SwerveDriveOdometry swerveOdometry;
     private final SwerveDrivePoseEstimator poseEstimator;
@@ -104,47 +96,10 @@ public class Drive extends BlitzSubsystem {
     private SysIdRoutine linearRoutine;
     private SysIdRoutine angularRoutine;
 
-    private double lastVisionTimeStamp;
-
     private Rotation2d gyroOffset = new Rotation2d();
-    private final NetworkTableEntry limelightPose =
-            LimelightHelpers.getLimelightNTTableEntry("limelight", "botpose_wpiblue");
 
     private final SwerveSetpointGenerator setpointGenerator;
     private SwerveSetpoint previousSetpoint;
-
-    // Control/Goals Based control
-    private final Subsystem velocityControlMutex = new Subsystem() {};
-    private final Subsystem velocityFilteringMutex = new Subsystem() {};
-    private final Subsystem headingControlMutex = new Subsystem() {};
-
-    private ChassisSpeedController velocityController = null;
-    private ChassisSpeedFilter velocityFilter = null;
-    private HeadingController headingController = null;
-
-    public Command setControl(ChassisSpeedController velocityController) {
-        return Commands.startEnd(
-                () -> this.velocityController = velocityController,
-                () -> this.velocityController = null,
-                velocityControlMutex);
-    }
-
-    public Command setHeadingControl(HeadingController headingController) {
-        return Commands.startEnd(
-                () -> this.headingController = headingController,
-                () -> this.headingController = null,
-                headingControlMutex);
-    }
-
-    public Command useVelocityFilter(ChassisSpeedFilter velocityFilter) {
-        return Commands.startEnd(
-                () -> {
-                    this.velocityFilter = velocityFilter;
-                    this.velocityFilter.reset();
-                },
-                () -> this.velocityFilter = null,
-                velocityFilteringMutex);
-    }
 
     public Drive(
             SwerveModuleConfiguration configuration,
@@ -241,9 +196,9 @@ public class Drive extends BlitzSubsystem {
         new Trigger(DriverStation::isEnabled)
                 .onTrue(Commands.runOnce(() -> keepHeadingSetpointSet = false));
 
-        // Most critical 6 lines of the robot, don't delete, without these it doesn't completely
-        // work
-        // for some reason
+        // Especially on the Helium CanAndMag encoders, sometimes a sensor reading to seed the
+        // module isn't available at startup. To fix this we wait 3 seconds and then reseed all
+        // modules
         Commands.waitSeconds(3)
                 .andThen(
                         Commands.runOnce(
@@ -253,28 +208,11 @@ public class Drive extends BlitzSubsystem {
                                             }
                                         })
                                 .ignoringDisable(true))
-                //                .andThen(
-                //                        () -> {
-                //                            // Initialize the previous setpoint to the robot's
-                // current speeds &
-                //                            // module states
-                //                            ChassisSpeeds currentSpeeds =
-                //                                    getChassisSpeeds(); // Method to get current
-                // robot-relative
-                //                            // chassis speeds
-                //                            SwerveModuleState[] currentStates =
-                //                                    getModuleStates(); // Method to get the
-                // current swerve module
-                //                            // states
-                //                            previousSetpoint =
-                //                                    new SwerveSetpoint(
-                //                                            currentSpeeds,
-                //                                            currentStates,
-                //
-                // DriveFeedforwards.zeros(PHYSICAL_CONSTANTS.numModules));
-                //                        })
                 .schedule();
 
+        // The above wasn't working for some reason on devbot this year, the below code seeds the
+        // module positions every
+        // 2 seconds until the robot is enabled for the first time.
         //        if (!Constants.compBot()) {
         //            Commands.sequence(
         //                            Commands.waitSeconds(2),
@@ -348,36 +286,6 @@ public class Drive extends BlitzSubsystem {
                                 },
                                 null,
                                 this));
-        //
-        //        RobotConfig config;
-        //
-        //        try {
-        //            //            config = RobotConfig.fromGUISettings();
-        //            config = PHYSICAL_CONSTANTS;
-        //        } catch (Exception e) {
-        //            config = PHYSICAL_CONSTANTS;
-        //            DriverStation.reportError(
-        //                    "Failed to load PathPlanner config and configure AutoBuilder",
-        //                    e.getStackTrace());
-        //        }
-        //
-        //        AutoBuilder.configure(
-        //                this::getPose,
-        //                this::resetOdometry,
-        //                () -> KINEMATICS.toChassisSpeeds(getModuleStates()),
-        //                (speeds, feedforwards) -> {
-        //                    drive(speeds, true);
-        //                    Logger.recordOutput("drive/auto/speeds", speeds);
-        //                },
-        //                new PPHolonomicDriveController(
-        //                        AutoConstants.TRANSLATION_PID, AutoConstants.ROTATION_PID),
-        //                config,
-        //                () ->
-        //                        DriverStation.getAlliance().isPresent()
-        //                                && DriverStation.getAlliance()
-        //                                        .get()
-        //                                        .equals(DriverStation.Alliance.Red),
-        //                this);
 
         // https://pathplanner.dev/pplib-swerve-setpoint-generator.html
         setpointGenerator =
@@ -428,9 +336,10 @@ public class Drive extends BlitzSubsystem {
                 angularSysIdDynamic(SysIdRoutine.Direction.kReverse)
                         .withName("DriveAngular Dynamic Reverse"));
 
-
         for (ScoringPositions.Branch branch : ScoringPositions.Branch.values()) {
-            SmartDashboard.putData(branch.name(), driveToPose(PositionConstants.Reef.SCORING_POSITIONS.get(branch)));
+            SmartDashboard.putData(
+                    branch.name(),
+                    driveToPose(PositionConstants.Reef.SCORING_POSITIONS.get(branch)));
         }
     }
 
@@ -484,15 +393,20 @@ public class Drive extends BlitzSubsystem {
         Logger.recordOutput("Drive/keepHeadingSetpointSet", keepHeadingSetpointSet);
         Logger.recordOutput("Drive/keepSetpoint", keepHeadingPid.getSetpoint());
 
-        var fieldRelativeSpeeds = new ChassisSpeeds(translation.getX(), translation.getY(), rotation);
-        var flippedFieldSpeeds = new ChassisSpeeds(-fieldRelativeSpeeds.vxMetersPerSecond, -fieldRelativeSpeeds.vyMetersPerSecond, rotation);
+        var fieldRelativeSpeeds =
+                new ChassisSpeeds(translation.getX(), translation.getY(), rotation);
+        var flippedFieldSpeeds =
+                new ChassisSpeeds(
+                        -fieldRelativeSpeeds.vxMetersPerSecond,
+                        -fieldRelativeSpeeds.vyMetersPerSecond,
+                        rotation);
 
-        var correctFieldSpeeds = AllianceFlipUtil.shouldFlip() ? flippedFieldSpeeds : fieldRelativeSpeeds;
+        var correctFieldSpeeds =
+                AllianceFlipUtil.shouldFlip() ? flippedFieldSpeeds : fieldRelativeSpeeds;
 
         ChassisSpeeds robotRel =
                 fieldRelative
-                        ? ChassisSpeeds.fromFieldRelativeSpeeds(
-                                correctFieldSpeeds, getYaw())
+                        ? ChassisSpeeds.fromFieldRelativeSpeeds(correctFieldSpeeds, getYaw())
                         : new ChassisSpeeds(translation.getX(), translation.getY(), rotation);
 
         drive(robotRel, isOpenLoop);
@@ -860,6 +774,12 @@ public class Drive extends BlitzSubsystem {
     }
 
     /* Drive to Pose */
+
+    /*
+     * The below code is based on 6995 Nomad's drive to pose code.
+     * https://github.com/frc6995/Robot-2025/blob/ec7eccecc7d6793f9a4bf5057c5cf5b1bfb0f65d/src/main/java/frc/robot/subsystems/DriveBaseS.java#L524
+     */
+
     /* DRIVE TO POSE using Trapezoid Profiles */
     private TrapezoidProfile.Constraints driveToPoseConstraints = new Constraints(1, 1);
     private TrapezoidProfile.Constraints driveToPoseRotationConstraints = new Constraints(3, 6);
@@ -884,7 +804,8 @@ public class Drive extends BlitzSubsystem {
     TrapezoidProfile.State rotationState = new State(0, 0);
 
     // Threshold for "close enough" to avoid microadjustments
-    public final Trigger atDriveToPosePose = atPose(() -> goal.inner, Units.inchesToMeters(0.5), Units.degreesToRadians(1));
+    public final Trigger atDriveToPosePose =
+            atPose(() -> goal.inner, Units.inchesToMeters(0.5), Units.degreesToRadians(1));
 
     /**
      * <B>IMPORTANT, While this takes a pose supplier, this is mostly for convince. and <U>once the
@@ -914,7 +835,11 @@ public class Drive extends BlitzSubsystem {
                                             goalToBot.getTranslation().toVector().unit();
 
                                     this.directionGoalToBot.inner = directionGoalToBot;
-//                                    this.normDirStartToEnd.inner = new Translation2d(directionGoalToBot);
+                                    // TODO: The bellow being commented out means that there is no
+                                    // velocity feedforward
+                                    //
+                                    // this.normDirStartToEnd.inner = new
+                                    // Translation2d(directionGoalToBot);
 
                                     distance.inner = goalToBot.getTranslation().getNorm();
 
@@ -933,11 +858,12 @@ public class Drive extends BlitzSubsystem {
                                                     -driveToPoseConstraints.maxVelocity,
                                                     0);
 
-                                    Logger.recordOutput("drive/driveToPose/unclampedInitialVelocity", VecBuilder.fill(
-                                                    speeds.vxMetersPerSecond,
-                                                    speeds.vyMetersPerSecond)
-                                            .dot(directionGoalToBot));
-
+                                    Logger.recordOutput(
+                                            "drive/driveToPose/unclampedInitialVelocity",
+                                            VecBuilder.fill(
+                                                            speeds.vxMetersPerSecond,
+                                                            speeds.vyMetersPerSecond)
+                                                    .dot(directionGoalToBot));
 
                                     // Initial state of rotation
                                     driveToPoseRotationGoal.position =
@@ -947,11 +873,14 @@ public class Drive extends BlitzSubsystem {
                                             initial.inner.getRotation().getRadians();
                                     rotationState.velocity = speeds.omegaRadiansPerSecond;
 
-
                                     Logger.recordOutput("drive/driveToPose/initial", initial.inner);
                                     Logger.recordOutput("drive/driveToPose/goal", goal.inner);
-                                    Logger.recordOutput("drive/driveToPose/initialDistance", translationState.position);
-                                    Logger.recordOutput("drive/driveToPose/initialVelocity", translationState.velocity);
+                                    Logger.recordOutput(
+                                            "drive/driveToPose/initialDistance",
+                                            translationState.position);
+                                    Logger.recordOutput(
+                                            "drive/driveToPose/initialVelocity",
+                                            translationState.velocity);
                                 })
                         .andThen(
                                 run(
@@ -964,8 +893,12 @@ public class Drive extends BlitzSubsystem {
                                             translationState.position = setpoint.position;
                                             translationState.velocity = setpoint.velocity;
 
-                                            Logger.recordOutput("drive/driveToPose/distance", translationState.position);
-                                            Logger.recordOutput("drive/driveToPose/velocity", translationState.velocity);
+                                            Logger.recordOutput(
+                                                    "drive/driveToPose/distance",
+                                                    translationState.position);
+                                            Logger.recordOutput(
+                                                    "drive/driveToPose/velocity",
+                                                    translationState.velocity);
 
                                             // I am trusting them here
 
@@ -1016,7 +949,6 @@ public class Drive extends BlitzSubsystem {
                                                                     startPose.getTranslation(),
                                                                     setpoint.position
                                                                             / distance.inner);
-
 
                                             if (atDriveToPosePose.getAsBoolean()) {
                                                 this.drive(new ChassisSpeeds(), true);

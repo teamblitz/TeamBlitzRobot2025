@@ -19,11 +19,9 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import frc.lib.util.COTSSwerveConstants;
-import frc.lib.util.ScoringPositions;
 import frc.lib.util.SwerveModuleConstants;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.function.DoubleUnaryOperator;
 
 /**
@@ -38,7 +36,6 @@ import java.util.function.DoubleUnaryOperator;
  * be in <a href="https://en.wikipedia.org/wiki/International_System_of_Units">SI Units</a>
  */
 public final class Constants {
-
     public static final Mode SIM_MODE = Mode.SIM;
 
     public static final boolean TUNING_MODE = true;
@@ -58,7 +55,7 @@ public final class Constants {
         SimBot
     }
 
-    public static final Robot ROBOT = Robot.CompBot;
+    public static final Robot ROBOT = Robot.SimBot;
 
     public static boolean compBot() {
         return ROBOT == Robot.CompBot;
@@ -75,18 +72,6 @@ public final class Constants {
     public static final double LOOP_PERIOD_SEC = frc.robot.Robot.defaultPeriodSecs;
 
     public static final class Drive {
-        public static final class NoteAssist {
-            public static double ACTIVATION_RANGE = Units.degreesToRadians(45);
-            public static DoubleUnaryOperator ACTIVATION_FUNCTION =
-                    (x) ->
-                            Units.degreesToRadians(
-                                    Math.exp(
-                                            -Math.pow(
-                                                    Units.radiansToDegrees(x) / 40,
-                                                    4))); // Output a value between 0 and 1, 0 means
-            // no assist, 1 means full assist
-        }
-
         public static final int PIGEON_ID = 14;
         public static final int FUSION_TIME_OF_FLIGHT_ID = 0;
 
@@ -97,10 +82,8 @@ public final class Constants {
                                 : COTSSwerveConstants.driveGearRatios.SDSMK4i_L2);
 
         /* Drivetrain Constants */
-        public static final double TRACK_WIDTH =
-                Units.inchesToMeters(24.25);
-        public static final double WHEEL_BASE =
-                Units.inchesToMeters(24.25);
+        public static final double TRACK_WIDTH = Units.inchesToMeters(24.25);
+        public static final double WHEEL_BASE = Units.inchesToMeters(24.25);
         public static final double WHEEL_CIRCUMFERENCE = CHOSEN_MODULE.wheelCircumference;
 
         /* Motor Inverts */
@@ -168,17 +151,8 @@ public final class Constants {
         public static final double ANGLE_KP = compBot() ? .05 : 0.0035;
         public static final double ANGLE_KI = 0.0;
         public static final double ANGLE_KD = 0.0;
-        public static final double ANGLE_KF = 0.0; // For now, should remain zero
 
-        /* Drive Motor PID Values */
-        /*
-         * Some possible gains for kp
-         * kp : 0.0016 or more likely 0.028215
-         * try both or else just guess and check ig
-         * .06 something might, but that is quite high
-         */
         public static final double DRIVE_KP = compBot() ? 0.73983 : 0.028215;
-        //        public static final double DRIVE_KP = 0;
         public static final double DRIVE_KI = 0.0;
         public static final double DRIVE_KD = 0.0;
 
@@ -192,18 +166,8 @@ public final class Constants {
         public static final double MAX_SPEED = 4.6; // TODO: This must be tuned to specific robot
 
         /**
-         * Radians per Second
-         *
-         * <p>Can likely be figured out using an equation. Or we can just tornado spin it and see
-         * what happens.
-         *
-         * <p>public static final double MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND =
-         * MAX_VELOCITY_METERS_PER_SECOND / Math.hypot(DRIVETRAIN_TRACKWIDTH_METERS / 2.0,
-         * DRIVETRAIN_WHEELBASE_METERS / 2.0);
-         *
-         * <p>Assuming our robot can still go at 4.6 meters per second (which it can't, this value
-         * was taken when we had like nothing on our robot, we can go 10.35 radians per second while
-         * spinning
+         * Theoretical value can be calculated by dividing MAX_LINEAR_SPEED by the distance between the center of
+         * rotation and the wheel.
          */
         public static final double MAX_ANGULAR_VELOCITY =
                 10.0; // TODO: This must be tuned to specific robot
@@ -277,7 +241,7 @@ public final class Constants {
                         new ModuleConfig(
                                 WHEEL_CIRCUMFERENCE / (2 * Math.PI),
                                 MAX_SPEED,
-                                1.2, // TODO, MEASURE WHEEL COEFICENT OF FRICTION,
+                                1.2, // TODO, MEASURE WHEEL COEFFICIENT OF FRICTION,
                                 DCMotor.getKrakenX60Foc(1).withReduction(DRIVE_GEAR_RATIO),
                                 60,
                                 1),
@@ -285,49 +249,6 @@ public final class Constants {
                         CENTER_TO_MODULE.get(FR),
                         CENTER_TO_MODULE.get(BL),
                         CENTER_TO_MODULE.get(BR));
-    }
-
-    public static final class AutoConstants {
-
-        public static final double MAX_SPEED_METERS_PER_SECOND = 3;
-        public static final double MAX_ACCELERATION_METERS_PER_SECOND_SQUARED = 3;
-        public static final double MAX_ANGULAR_SPEED_RADIANS_PER_SECOND = Math.PI;
-        public static final double MAX_ANGULAR_ACCELERATION_RADIANS_PER_SECOND_SQUARED = Math.PI;
-
-        public static final double PX_CONTROLLER = 5;
-        public static final double PY_CONTROLLER = 5;
-        public static final double P_THETA_CONTROLLER = 5;
-
-        // Constraint for the motion profiled robot angle controller
-        public static final TrapezoidProfile.Constraints THETA_CONTROLLER_CONSTRAINTS =
-                new TrapezoidProfile.Constraints(
-                        MAX_ANGULAR_SPEED_RADIANS_PER_SECOND,
-                        MAX_ANGULAR_ACCELERATION_RADIANS_PER_SECOND_SQUARED);
-
-        public static final double MAX_MODULE_SPEED = 3; // M/S
-
-        public static final com.pathplanner.lib.config.PIDConstants TRANSLATION_PID =
-                new com.pathplanner.lib.config.PIDConstants(5, 0, 0);
-        public static final com.pathplanner.lib.config.PIDConstants ROTATION_PID =
-                new com.pathplanner.lib.config.PIDConstants(5, 0, 0);
-
-        public enum StartingPosition {
-            LEFT(60),
-            RIGHT(-60),
-            CENTER(0);
-
-            public final double angle;
-
-            StartingPosition(double angle) {
-                this.angle = angle;
-            }
-        }
-    }
-
-    public static final class Networking {
-        public static final String JETSON_IP_ADDRESS = "10.20.83.130";
-        public static final int PORT = 5810;
-        public static final int INTERVAL = 5;
     }
 
     public static final class Elevator {
@@ -348,8 +269,6 @@ public final class Constants {
 
         public static final InvertedValue LEFT_INVERT = InvertedValue.CounterClockwise_Positive;
         public static final InvertedValue RIGHT_INVERT = InvertedValue.Clockwise_Positive;
-
-        public static final double P = 180; // TODO config
 
         public static final double MAX_VEL = compBot() ? 6 : 2;
         public static final double MAX_ACCEL = compBot() ? 12 : 3;
@@ -375,12 +294,12 @@ public final class Constants {
         }
 
         public static final class KrakenGains {
-            public static final double kS = 0.11757;
-            public static final double kV = 0.12729;
-            public static final double kA = 0.0055511;
-            public static final double kG = 0.26856;
-            public static final double kP = 4 * 12; // 75.313;
-            public static final double kD = 0; // 0.84699;
+            public static final double KS = 0.11757;
+            public static final double KV = 0.12729;
+            public static final double KA = 0.0055511;
+            public static final double KG = 0.26856;
+            public static final double KP = 4 * 12; // 75.313;
+            public static final double KD = 0; // 0.84699;
         }
     }
 
@@ -507,8 +426,8 @@ public final class Constants {
         public static final int CAN_ID = 40;
         public static final boolean INVERTED = compBot() ? true : false;
         public static final int CURRENT_LIMIT = compBot() ? 80 : 25;
-        public static final double HANDOFF_SPEED = compBot() ? .4 : .5; // TODO CONFIG
-        public static final double REVERSE_SPEED = -.15; // TODO CONFIG
+        public static final double HANDOFF_SPEED = compBot() ? .8 : .5;
+        public static final double REVERSE_SPEED = -.15;
 
         public static final double ALGAE_HOLD = -.4; // TODO CONFIG
         public static final double ALGAE_EJECT = .4; // TODO CONFIG
@@ -521,7 +440,7 @@ public final class Constants {
     }
 
     public static final class Winch {
-        public static final int ID = 50; // TODO CONFIG
+        public static final int ID = 50;
 
         public static final int CURRENT_LIMIT = 25;
 
@@ -612,6 +531,5 @@ public final class Constants {
         public static final class Timings {
             public static final double STOW_TO_L4_READY = 1.25; // IDK ACTUAL TIMINGS
         }
-
     }
 }

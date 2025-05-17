@@ -10,6 +10,7 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import frc.lib.monitor.HardwareWatchdog;
 
 // TODO: With the current elevator design it is unlikely that we will want to be able to control
 // both sides separately
@@ -41,14 +42,14 @@ public class ElevatorIOKraken implements ElevatorIO {
                 .withMotionMagicAcceleration(MAX_ACCEL);
 
         config.Slot0.withGravityType(GravityTypeValue.Elevator_Static)
-                .withKS(KrakenGains.kS)
+                .withKS(KrakenGains.KS)
                 // Originaly in terms of rotations. But because it is a reciprical
                 // do the other one
                 // ONLY CONVERT KV AND KA, the rest are constant.
-                .withKV(metersToRotations(KrakenGains.kV))
-                .withKA(metersToRotations(KrakenGains.kA))
-                .withKG(KrakenGains.kG)
-                .withKP(KrakenGains.kP);
+                .withKV(metersToRotations(KrakenGains.KV))
+                .withKA(metersToRotations(KrakenGains.KA))
+                .withKG(KrakenGains.KG)
+                .withKP(KrakenGains.KP);
 
         config.SoftwareLimitSwitch.withForwardSoftLimitEnable(true)
                 .withReverseSoftLimitEnable(true)
@@ -78,6 +79,9 @@ public class ElevatorIOKraken implements ElevatorIO {
         leftMotor.setControl(new Follower(rightMotor.getDeviceID(), true));
 
         leader = rightMotor;
+
+        HardwareWatchdog.getInstance().registerCTREDevice(leftMotor, this.getClass());
+        HardwareWatchdog.getInstance().registerCTREDevice(rightMotor, this.getClass());
     }
 
     @Override

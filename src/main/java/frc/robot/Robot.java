@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.lib.resources.GCMonitor;
 import frc.lib.resources.ResourceMonitor;
+import frc.lib.util.PeriodicExecutor;
 import frc.robot.subsystems.leds.Leds;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -157,6 +158,8 @@ public class Robot extends LoggedRobot {
         long t0 = System.nanoTime();
 
         CommandScheduler.getInstance().run();
+
+        PeriodicExecutor.getInstance().run();
 
         long t1 = System.nanoTime();
 

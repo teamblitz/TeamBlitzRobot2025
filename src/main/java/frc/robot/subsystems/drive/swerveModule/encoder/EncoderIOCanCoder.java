@@ -3,6 +3,7 @@ package frc.robot.subsystems.drive.swerveModule.encoder;
 import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
+import frc.lib.monitor.HardwareWatchdog;
 
 public class EncoderIOCanCoder implements EncoderIO {
 
@@ -18,6 +19,8 @@ public class EncoderIOCanCoder implements EncoderIO {
                                         invert
                                                 ? SensorDirectionValue.Clockwise_Positive
                                                 : SensorDirectionValue.CounterClockwise_Positive));
+
+        HardwareWatchdog.getInstance().registerCTREDevice(encoder, this.getClass());
     }
 
     @Override

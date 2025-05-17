@@ -8,22 +8,18 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import frc.lib.math.AllianceFlipUtil;
 import frc.lib.util.ScoringPositions;
-import org.littletonrobotics.junction.Logger;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
+import org.littletonrobotics.junction.Logger;
 
 public class PositionConstants {
     public static final class Reef {
         public static final Translation2d REEF_CENTER =
-                new Translation2d(
-                        Units.inchesToMeters(176.746),
-                        Units.inchesToMeters(317. / 2.)
-                );
+                new Translation2d(Units.inchesToMeters(176.746), Units.inchesToMeters(317. / 2.));
 
-
-        public static final Map<ScoringPositions.Branch, Supplier<Pose2d>> SCORING_POSITIONS = new HashMap<>();
+        public static final Map<ScoringPositions.Branch, Supplier<Pose2d>> SCORING_POSITIONS =
+                new HashMap<>();
 
         static {
             double adjustX = Units.inchesToMeters(32.745545 + 22 - 3);
@@ -49,7 +45,8 @@ public class PositionConstants {
 
                 // Determine the corresponding branches
                 ScoringPositions.Branch leftBranch = ScoringPositions.Branch.values()[face * 2];
-                ScoringPositions.Branch rightBranch = ScoringPositions.Branch.values()[face * 2 + 1];
+                ScoringPositions.Branch rightBranch =
+                        ScoringPositions.Branch.values()[face * 2 + 1];
 
                 // Add to the map
                 SCORING_POSITIONS.put(leftBranch, () -> AllianceFlipUtil.apply(rotatedLeft));
@@ -59,11 +56,16 @@ public class PositionConstants {
     }
 
     public static ScoringPositions.Branch[] getClosestFace(Pose2d robotPose) {
-        var angle = new Transform2d(new Pose2d(AllianceFlipUtil.apply(Reef.REEF_CENTER), Rotation2d.kZero), robotPose).getTranslation().getAngle().getDegrees();
-
+        var angle =
+                new Transform2d(
+                                new Pose2d(
+                                        AllianceFlipUtil.apply(Reef.REEF_CENTER), Rotation2d.kZero),
+                                robotPose)
+                        .getTranslation()
+                        .getAngle()
+                        .getDegrees();
 
         Logger.recordOutput("drive/autoAlign/reefAngle", angle);
-
 
         double adjustedAngle;
 
@@ -85,23 +87,26 @@ public class PositionConstants {
 
         Logger.recordOutput("drive/autoAlign/selectedFace", face);
 
-        return new ScoringPositions.Branch[] {possiblePositions[face * 2], possiblePositions[face * 2 + 1]};
+        return new ScoringPositions.Branch[] {
+            possiblePositions[face * 2], possiblePositions[face * 2 + 1]
+        };
 
+        //
+        //        angle = MathUtil.inputModulus(angle, -180, 180);
+        //
+        //        angle += 30;
+        ////
+        ////        while (angle >= 60) {
+        ////
+        ////        }
+        //
+        //        if (angle > -30 && angle < 30) {
+        //            return new ScoringPositions.Branch[] {ScoringPositions.Branch.A,
+        // ScoringPositions.Branch.B};
+        //        } else if (angle > 30 && angle < ) {}
 
-//
-//        angle = MathUtil.inputModulus(angle, -180, 180);
-//
-//        angle += 30;
-////
-////        while (angle >= 60) {
-////
-////        }
-//
-//        if (angle > -30 && angle < 30) {
-//            return new ScoringPositions.Branch[] {ScoringPositions.Branch.A, ScoringPositions.Branch.B};
-//        } else if (angle > 30 && angle < ) {}
-
-//        return new ScoringPositions.Branch[] {ScoringPositions.Branch.A, ScoringPositions.Branch.B};
+        //        return new ScoringPositions.Branch[] {ScoringPositions.Branch.A,
+        // ScoringPositions.Branch.B};
 
     }
 }
