@@ -74,41 +74,41 @@ public class RobotContainer {
     private DriveCommands driveCommands;
 
     /* ***** --- Autonomous --- ***** */
-    private final AutoChooser autoChooser;
+    private AutoChooser autoChooser;
 
     public RobotContainer() {
         CameraServer.startAutomaticCapture();
-        configureSubsystems();
 
-        configureButtonBindings();
+        // Configure Subsystems
+        configureSubsystems();
+        // Set default commands
         setDefaultCommands();
-        configureAutoCommands();
+        // Configure Trigger Bindings
+        configureTriggerBindings();
+        // Configure Autonomous
+        configureAutonomous();
 
         configureDashboard();
 
         DriverStation.silenceJoystickConnectionWarning(true);
+    }
 
-        autoChooser = new AutoChooser();
-        SmartDashboard.putData("autoChooser", autoChooser);
+    private void configureSubsystems() {
+        drive = TunerConstants.createDrivetrain();
+        driveCommands = new DriveCommands(drive);
 
-        autoCommands = new AutoCommands(drive, superstructure, intake);
+        vision = new Vision(drive);
 
-        autoChooser.addRoutine("twoPiece", autoCommands::twoPiece);
-        //        autoChooser.addRoutine("test", autoCommands::testDrive);
-        autoChooser.addRoutine("fourPieceLeft", autoCommands::fourPieceLeft);
-        autoChooser.addRoutine("leaveRight", () -> autoCommands.leave("leaveRight"));
+        intake = new Intake(Constants.compBot() ? new IntakeIOKraken() : new IntakeIOSpark());
 
-        Commands.run(() -> {
-                    for (ScoringPositions.Branch branch : ScoringPositions.Branch.values()) {
-                        Logger.recordOutput(
-                                "positions/reef/" + branch.name(),
-                                PositionConstants.Reef.SCORING_POSITIONS
-                                        .get(branch)
-                                        .get());
-                    }
-                })
-                .ignoringDisable(true)
-                .schedule();
+        superstructure = new Superstructure(
+                Constants.compBot() ? new ElevatorIOKraken() : new ElevatorIOSpark(),
+                Constants.compBot() ? new WristIOKraken() : new WristIOSpark());
+        elevator = superstructure.getElevator();
+        wrist = superstructure.getWrist();
+
+        climber = new Climber(Constants.compBot() ? new ClimberIOKraken() : new ClimberIO() {});
+        winch = new Winch(Constants.compBot() ? new WinchIOSpark() : new WinchIO() {});
     }
 
     private void setDefaultCommands() {
@@ -136,39 +136,7 @@ public class RobotContainer {
                 .withName("superstructure/conditionalDefault"));
     }
 
-    private void configureSubsystems() {
-        drive = TunerConstants.createDrivetrain();
-        driveCommands = new DriveCommands(drive);
-
-        vision = new Vision(drive);
-
-        intake = new Intake(Constants.compBot() ? new IntakeIOKraken() : new IntakeIOSpark());
-
-        superstructure = new Superstructure(
-                Constants.compBot() ? new ElevatorIOKraken() : new ElevatorIOSpark(),
-                Constants.compBot() ? new WristIOKraken() : new WristIOSpark());
-        elevator = superstructure.getElevator();
-        wrist = superstructure.getWrist();
-
-        climber = new Climber(Constants.compBot() ? new ClimberIOKraken() : new ClimberIO() {});
-        winch = new Winch(Constants.compBot() ? new WinchIOSpark() : new WinchIO() {});
-    }
-
-    private void configureDashboard() {
-        var tab = Shuffleboard.getTab("tuning");
-
-        tab.add(
-                "Phoenix SignalLogger",
-                runEnd(SignalLogger::start, SignalLogger::stop).ignoringDisable(true));
-
-        tab.add("drive/resetOdometry", Commands.runOnce(() -> drive.resetPose(new Pose2d())));
-
-        tab.add(
-                "wheel radius characterization",
-                DriveCharacterizationCommands.characterizeWheelDiameter(drive));
-    }
-
-    private void configureButtonBindings() {
+    private void configureTriggerBindings() {
         OIConstants.Drive.RESET_GYRO.onTrue(Commands.runOnce(() -> drive.resetRotation(
                 AllianceFlipUtil.shouldFlip() ? Rotation2d.k180deg : Rotation2d.kZero)));
         //        OIConstants.Drive.X_BREAK.onTrue(drive.park());
@@ -251,15 +219,54 @@ public class RobotContainer {
                 () -> drive.driveToPose(PositionConstants.Reef.SCORING_POSITIONS.get(
                         PositionConstants.getClosestFace(drive.getPose())[1])),
                 Set.of(drive)));
+    }
+
+    private void configureDashboard() {
+        var tab = Shuffleboard.getTab("tuning");
+
+        tab.add(
+                "Phoenix SignalLogger",
+                runEnd(SignalLogger::start, SignalLogger::stop).ignoringDisable(true));
+
+        tab.add("drive/resetOdometry", Commands.runOnce(() -> drive.resetPose(new Pose2d())));
+
+        tab.add(
+                "wheel radius characterization",
+                DriveCharacterizationCommands.characterizeWheelDiameter(drive));
+
+        new Trigger(() -> DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue)
+                        == DriverStation.Alliance.Blue)
+                .onChange(runOnce(() -> {
+                            for (ScoringPositions.Branch branch :
+                                    ScoringPositions.Branch.values()) {
+                                Logger.recordOutput(
+                                        "positions/reef/" + branch.name(),
+                                        PositionConstants.Reef.SCORING_POSITIONS
+                                                .get(branch)
+                                                .get());
+                            }
+                        })
+                        .ignoringDisable(true));
 
         Commands.run(() -> {
                     PositionConstants.getClosestFace(drive.getPose());
                 })
                 .ignoringDisable(true)
+                .onlyIf(Robot::isSimulation)
                 .schedule();
     }
 
-    private void configureAutoCommands() {}
+    private void configureAutonomous() {
+        autoChooser = new AutoChooser();
+        SmartDashboard.putData("autoChooser", autoChooser);
+
+        autoCommands = new AutoCommands(drive, superstructure, intake);
+
+        autoChooser.addRoutine("twoPiece", autoCommands::twoPiece);
+        //        autoChooser.addRoutine("test", autoCommands::testDrive);
+        autoChooser.addRoutine("fourPieceLeft", autoCommands::fourPieceLeft);
+        autoChooser.addRoutine("leaveRight", () -> autoCommands.leave("leaveRight"));
+    }
 
     public Command getAutonomousCommand() {
         Logger.recordOutput("selectedAuto", autoChooser.selectedCommand().getName());
