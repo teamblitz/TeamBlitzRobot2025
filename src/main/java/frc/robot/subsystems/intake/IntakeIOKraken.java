@@ -8,10 +8,12 @@ import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+
 import edu.wpi.first.wpilibj.AsynchronousInterrupt;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.Notifier;
+
 import frc.lib.monitor.HardwareWatchdog;
+
 import org.littletonrobotics.junction.Logger;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -40,15 +42,12 @@ public class IntakeIOKraken implements IntakeIO {
 
         ControlRequest _threadInterruptStop = new NeutralOut().withUpdateFreqHz(0);
 
-
-        coralInterrupt = new AsynchronousInterrupt(
-                breakBeam,
-                (rising, falling) -> {
-                    if (falling && doInterrupt.get()) {
-                        System.out.println("STOPPINGS **********");
-                        intake.setControl(_threadInterruptStop);
-                    }
-                });
+        coralInterrupt = new AsynchronousInterrupt(breakBeam, (rising, falling) -> {
+            if (falling && doInterrupt.get()) {
+                System.out.println("STOPPINGS **********");
+                intake.setControl(_threadInterruptStop);
+            }
+        });
 
         // Current sensor wiring has reversed phase for some reason.
         coralInterrupt.setInterruptEdges(false, true);
@@ -68,9 +67,7 @@ public class IntakeIOKraken implements IntakeIO {
         Logger.recordOutput("intake/lastInterruptTriggered", coralInterrupt.getFallingTimestamp());
     }
 
-
     private final AtomicBoolean doInterrupt = new AtomicBoolean(false);
-
 
     @Override
     public void enableCoralInterrupt(boolean interrupt) {

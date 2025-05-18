@@ -1,8 +1,10 @@
 package frc.lib.util.units;
 
 import edu.wpi.first.units.Unit;
-import java.util.function.DoubleUnaryOperator;
+
 import lombok.NonNull;
+
+import java.util.function.DoubleUnaryOperator;
 
 public class UnitConverter implements DoubleUnaryOperator {
     Unit from;

@@ -8,12 +8,14 @@
 package frc.lib.util;
 
 import frc.robot.Constants;
+
+import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.DoubleSupplier;
-import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
 /**
  * Class for a tunable number. Gets value from dashboard in tuning mode, returns default if not or
@@ -107,8 +109,9 @@ public class LoggedTunableNumber implements DoubleSupplier {
     public static void ifChanged(
             int id, Consumer<double[]> action, LoggedTunableNumber... tunableNumbers) {
         if (Arrays.stream(tunableNumbers).anyMatch(tunableNumber -> tunableNumber.hasChanged(id))) {
-            action.accept(
-                    Arrays.stream(tunableNumbers).mapToDouble(LoggedTunableNumber::get).toArray());
+            action.accept(Arrays.stream(tunableNumbers)
+                    .mapToDouble(LoggedTunableNumber::get)
+                    .toArray());
         }
     }
 

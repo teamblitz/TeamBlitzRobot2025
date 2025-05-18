@@ -1,9 +1,11 @@
 package frc.lib.resources;
 
 import com.sun.management.GarbageCollectionNotificationInfo;
+
 import java.lang.management.GarbageCollectorMXBean;
 import java.lang.management.ManagementFactory;
 import java.util.List;
+
 import javax.management.*;
 import javax.management.openmbean.CompositeData;
 

@@ -4,7 +4,9 @@ import static frc.robot.Constants.Intake.*;
 
 import com.revrobotics.spark.*;
 import com.revrobotics.spark.config.SparkMaxConfig;
+
 import edu.wpi.first.wpilibj.DigitalInput;
+
 import frc.lib.monitor.HardwareWatchdog;
 
 public class IntakeIOSpark implements IntakeIO {

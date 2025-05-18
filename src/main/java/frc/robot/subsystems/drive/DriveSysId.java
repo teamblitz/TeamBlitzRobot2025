@@ -1,18 +1,18 @@
 package frc.robot.subsystems.drive;
 
+import static edu.wpi.first.units.Units.Second;
+import static edu.wpi.first.units.Units.Volts;
+
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 import java.util.Set;
-
-import static edu.wpi.first.units.Units.Second;
-import static edu.wpi.first.units.Units.Volts;
 
 public class DriveSysId {
     private final CommandSwerveDrivetrain drive;
@@ -24,34 +24,29 @@ public class DriveSysId {
         /* SysId routine for characterizing translation. This is used to find PID gains for the drive motors. */
         sysIdRoutineTranslation = new SysIdRoutine(
                 new SysIdRoutine.Config(
-                        null,        // Use default ramp rate (1 V/s)
+                        null, // Use default ramp rate (1 V/s)
                         Volts.of(4), // Reduce dynamic step voltage to 4 V to prevent brownout
-                        null,        // Use default timeout (10 s)
+                        null, // Use default timeout (10 s)
                         // Log state with SignalLogger class
-                        state -> SignalLogger.writeString("SysIdTranslation_State", state.toString())
-                ),
+                        state -> SignalLogger.writeString(
+                                "SysIdTranslation_State", state.toString())),
                 new SysIdRoutine.Mechanism(
                         output -> drive.setControl(translationCharacterization.withVolts(output)),
                         null,
-                        drive
-                )
-        );
+                        drive));
 
         /* SysId routine for characterizing steer. This is used to find PID gains for the steer motors. */
         sysIdRoutineSteer = new SysIdRoutine(
                 new SysIdRoutine.Config(
-                        null,        // Use default ramp rate (1 V/s)
+                        null, // Use default ramp rate (1 V/s)
                         Volts.of(7), // Use dynamic voltage of 7 V
-                        null,        // Use default timeout (10 s)
+                        null, // Use default timeout (10 s)
                         // Log state with SignalLogger class
-                        state -> SignalLogger.writeString("SysIdSteer_State", state.toString())
-                ),
+                        state -> SignalLogger.writeString("SysIdSteer_State", state.toString())),
                 new SysIdRoutine.Mechanism(
                         volts -> drive.setControl(steerCharacterization.withVolts(volts)),
                         null,
-                        drive
-                )
-        );
+                        drive));
 
         /*
          * SysId routine for characterizing rotation.
@@ -66,19 +61,17 @@ public class DriveSysId {
                         Volts.of(Math.PI),
                         null, // Use default timeout (10 s)
                         // Log state with SignalLogger class
-                        state -> SignalLogger.writeString("SysIdRotation_State", state.toString())
-                ),
+                        state -> SignalLogger.writeString("SysIdRotation_State", state.toString())),
                 new SysIdRoutine.Mechanism(
                         output -> {
                             /* output is actually radians per second, but SysId only supports "volts" */
-                            drive.setControl(rotationCharacterization.withRotationalRate(output.in(Volts)));
+                            drive.setControl(
+                                    rotationCharacterization.withRotationalRate(output.in(Volts)));
                             /* also log the requested output for SysId */
                             SignalLogger.writeDouble("Rotational_Rate", output.in(Volts));
                         },
                         null,
-                        drive
-                )
-        );
+                        drive));
 
         SendableChooser<SysIdRoutine> routineChooser = new SendableChooser<>();
 
@@ -93,29 +86,36 @@ public class DriveSysId {
 
         SendableChooser<Command> typeChooser = new SendableChooser<>();
 
-        typeChooser.setDefaultOption("quasistatic", new DeferredCommand(
-                () -> sysIdQuasistatic(routineChooser.getSelected(), directionChooser.getSelected()),
-                Set.of(drive)
-        ));
+        typeChooser.setDefaultOption(
+                "quasistatic",
+                new DeferredCommand(
+                        () -> sysIdQuasistatic(
+                                routineChooser.getSelected(), directionChooser.getSelected()),
+                        Set.of(drive)));
 
-        typeChooser.addOption("dynamic", new DeferredCommand(
-                () -> sysIdDynamic(routineChooser.getSelected(), directionChooser.getSelected()),
-                Set.of(drive)
-        ));
+        typeChooser.addOption(
+                "dynamic",
+                new DeferredCommand(
+                        () -> sysIdDynamic(
+                                routineChooser.getSelected(), directionChooser.getSelected()),
+                        Set.of(drive)));
 
         var tab = Shuffleboard.getTab("driveCharacterization");
 
         tab.add("sysIdRoutine", routineChooser);
         tab.add("sysIdDirection", directionChooser);
         tab.add("sysIdType", typeChooser);
-        
+
         tab.add("runSysid", typeChooser.getSelected());
     }
 
     /* Swerve requests to apply during SysId characterization */
-    private final SwerveRequest.SysIdSwerveTranslation translationCharacterization = new SwerveRequest.SysIdSwerveTranslation();
-    private final SwerveRequest.SysIdSwerveSteerGains steerCharacterization = new SwerveRequest.SysIdSwerveSteerGains();
-    private final SwerveRequest.SysIdSwerveRotation rotationCharacterization = new SwerveRequest.SysIdSwerveRotation();
+    private final SwerveRequest.SysIdSwerveTranslation translationCharacterization =
+            new SwerveRequest.SysIdSwerveTranslation();
+    private final SwerveRequest.SysIdSwerveSteerGains steerCharacterization =
+            new SwerveRequest.SysIdSwerveSteerGains();
+    private final SwerveRequest.SysIdSwerveRotation rotationCharacterization =
+            new SwerveRequest.SysIdSwerveRotation();
 
     /* SysId routine for characterizing translation. This is used to find PID gains for the drive motors. */
     private final SysIdRoutine sysIdRoutineTranslation;
@@ -129,7 +129,6 @@ public class DriveSysId {
      * See the documentation of SwerveRequest.SysIdSwerveRotation for info on importing the log to SysId.
      */
     private final SysIdRoutine sysIdRoutineRotation;
-
 
     /**
      * Runs the SysId Quasistatic test in the given direction for the routine

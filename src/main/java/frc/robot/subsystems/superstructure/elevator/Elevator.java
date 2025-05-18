@@ -4,6 +4,7 @@ import static frc.lib.util.NanUtil.TRAPEZOID_NAN_STATE;
 import static frc.robot.Constants.Elevator.*;
 
 import com.ctre.phoenix6.SignalLogger;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.Units;
@@ -13,15 +14,18 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+
 import frc.lib.BlitzSubsystem;
 import frc.lib.util.LoggedTunableNumber;
 import frc.robot.Constants;
 import frc.robot.subsystems.leds.Leds;
+
+import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.Logger;
+
 import java.util.Optional;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
-import org.littletonrobotics.junction.AutoLogOutput;
-import org.littletonrobotics.junction.Logger;
 
 public class Elevator extends BlitzSubsystem {
     private final frc.robot.subsystems.superstructure.elevator.ElevatorIO io;
@@ -83,26 +87,22 @@ public class Elevator extends BlitzSubsystem {
         setpoint = new TrapezoidProfile.State(getPosition(), 0.0);
         goal = Optional.empty();
 
-        routine =
-                new SysIdRoutine(
-                        new SysIdRoutine.Config(
-                                Units.Volts.per(Units.Seconds).of(.5),
-                                Units.Volts.of(4),
-                                null,
-                                Constants.compBot()
-                                        ? (state) ->
-                                                SignalLogger.writeString(
-                                                        "sysid-elevator-state", state.toString())
-                                        : null),
-                        new SysIdRoutine.Mechanism(
-                                (volts) -> io.setVolts(volts.in(Units.Volts)), null, this));
+        routine = new SysIdRoutine(
+                new SysIdRoutine.Config(
+                        Units.Volts.per(Units.Seconds).of(.5),
+                        Units.Volts.of(4),
+                        null,
+                        Constants.compBot()
+                                ? (state) -> SignalLogger.writeString(
+                                        "sysid-elevator-state", state.toString())
+                                : null),
+                new SysIdRoutine.Mechanism(
+                        (volts) -> io.setVolts(volts.in(Units.Volts)), null, this));
 
-        characterizationTab.add(
-                sysIdQuasistatic(SysIdRoutine.Direction.kForward)
-                        .withName("Elevator Quasistic Forward"));
-        characterizationTab.add(
-                sysIdQuasistatic(SysIdRoutine.Direction.kReverse)
-                        .withName("Elevator Quasistic Reverse"));
+        characterizationTab.add(sysIdQuasistatic(SysIdRoutine.Direction.kForward)
+                .withName("Elevator Quasistic Forward"));
+        characterizationTab.add(sysIdQuasistatic(SysIdRoutine.Direction.kReverse)
+                .withName("Elevator Quasistic Reverse"));
 
         characterizationTab.add(
                 sysIdDynamic(SysIdRoutine.Direction.kForward).withName("Elevator Dynamic Forward"));
@@ -194,11 +194,10 @@ public class Elevator extends BlitzSubsystem {
     public Command withSpeed(DoubleSupplier speed) {
         return runEnd(
                         () -> {
-                            io.setSpeed(
-                                    MathUtil.clamp(
-                                            speed.getAsDouble(),
-                                            atBottomLimit() ? 0 : -1,
-                                            atTopLimit() ? 0 : 1));
+                            io.setSpeed(MathUtil.clamp(
+                                    speed.getAsDouble(),
+                                    atBottomLimit() ? 0 : -1,
+                                    atTopLimit() ? 0 : 1));
                         },
                         () -> {
                             io.setSpeed(0);
@@ -233,18 +232,14 @@ public class Elevator extends BlitzSubsystem {
     public Command goToPosition(double position, boolean requireProfileCompletion) {
         if (requireProfileCompletion)
             return followGoal(() -> position)
-                    .withDeadline(
-                            Commands.waitUntil(
-                                    () -> MathUtil.isNear(position, getPosition(), TOLERANCE)))
+                    .withDeadline(Commands.waitUntil(
+                            () -> MathUtil.isNear(position, getPosition(), TOLERANCE)))
                     .withName(logKey + "/goToPosition_waitForMechanism " + position);
         else
             return followGoal(() -> position)
-                    .withDeadline(
-                            Commands.waitUntil(
-                                            () ->
-                                                    MathUtil.isNear(
-                                                            position, getIdealPosition(), 1e-9))
-                                    .withName(logKey + "/goToPosition_waitForProfile " + position));
+                    .withDeadline(Commands.waitUntil(
+                                    () -> MathUtil.isNear(position, getIdealPosition(), 1e-9))
+                            .withName(logKey + "/goToPosition_waitForProfile " + position));
     }
 
     /**
@@ -254,12 +249,8 @@ public class Elevator extends BlitzSubsystem {
         return run(() -> {
                     // Only update the goal if necessary to avoid GC overhead
                     if (this.goal.isEmpty() || this.goal.get().position != goal.getAsDouble()) {
-                        this.goal =
-                                Optional.of(
-                                        new TrapezoidProfile.State(
-                                                MathUtil.clamp(
-                                                        goal.getAsDouble(), MIN_POS, MAX_POS),
-                                                0));
+                        this.goal = Optional.of(new TrapezoidProfile.State(
+                                MathUtil.clamp(goal.getAsDouble(), MIN_POS, MAX_POS), 0));
                     }
                 })
                 .handleInterrupt(() -> this.goal = Optional.of(setpoint))

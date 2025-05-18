@@ -17,8 +17,7 @@ public final class Trajectories {
      * @return angle of release in radians
      */
     public static double angleRequiredToHitCoordinate(double x, double y, double v, double g) {
-        return Math.atan(
-                (v * v - Math.sqrt(Math.pow(v, 4) - g * (g * (x * x) + 2 * y * (v * v))))
-                        / (g * x));
+        return Math.atan((v * v - Math.sqrt(Math.pow(v, 4) - g * (g * (x * x) + 2 * y * (v * v))))
+                / (g * x));
     }
 }

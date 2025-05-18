@@ -16,19 +16,16 @@ public class ModuleStateOptimizer {
      */
     public static SwerveModuleState optimize(
             SwerveModuleState desiredState, Rotation2d currentAngle) {
-        double targetAngle =
-                placeInAppropriate0To360Scope(
-                        currentAngle.getDegrees(), desiredState.angle.getDegrees());
+        double targetAngle = placeInAppropriate0To360Scope(
+                currentAngle.getDegrees(), desiredState.angle.getDegrees());
         double targetSpeed = desiredState.speedMetersPerSecond;
         double delta = targetAngle - currentAngle.getDegrees();
         // If we rotate more than 90 degrees, we need to reverse the speed
         if (Math.abs(delta) > 90) {
             targetSpeed = -targetSpeed;
-            targetAngle =
-                    delta > 90
-                            ? (targetAngle -= 180)
-                            : (targetAngle +=
-                                    180); // I asume this does the same thing the the other method
+            targetAngle = delta > 90
+                    ? (targetAngle -= 180)
+                    : (targetAngle += 180); // I asume this does the same thing the the other method
             // does but I have no clue until I test it.
         }
         return new SwerveModuleState(targetSpeed, Rotation2d.fromDegrees(targetAngle));

@@ -200,7 +200,7 @@ spotless {
             exclude '**/build/**', '**/build-*/**', '**/BuildConstants.java', '/bin/**'
         }
         toggleOffOn()
-        googleJavaFormat().aosp()
+        palantirJavaFormat().style("AOSP") // USE "GOOGLE" for 2 space indents
         removeUnusedImports()
         trimTrailingWhitespace()
         endWithNewline()

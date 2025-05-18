@@ -7,10 +7,13 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
+
 import frc.lib.BlitzSubsystem;
 import frc.lib.util.LoggedTunableNumber;
-import java.util.function.DoubleSupplier;
+
 import org.littletonrobotics.junction.Logger;
+
+import java.util.function.DoubleSupplier;
 
 public class Winch extends BlitzSubsystem {
     private final WinchIO io;
@@ -42,10 +45,9 @@ public class Winch extends BlitzSubsystem {
         Shuffleboard.getTab("winch")
                 .add(
                         "FIX ENCODER",
-                        runOnce(
-                                        () -> {
-                                            io.setPosition(PIT_FUNNEL_STOW);
-                                        })
+                        runOnce(() -> {
+                                    io.setPosition(PIT_FUNNEL_STOW);
+                                })
                                 .ignoringDisable(true)
                                 .withName("RESET ENCODER"));
     }

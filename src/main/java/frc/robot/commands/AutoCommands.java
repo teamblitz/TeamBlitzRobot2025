@@ -5,11 +5,13 @@ import choreo.auto.AutoFactory;
 import choreo.auto.AutoRoutine;
 import choreo.auto.AutoTrajectory;
 import choreo.trajectory.SwerveSample;
+
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
+
 import frc.lib.util.ScoringPositions;
 import frc.lib.util.ScoringPositions.Branch;
 import frc.robot.Constants;
@@ -17,9 +19,11 @@ import frc.robot.PositionConstants;
 import frc.robot.subsystems.drive.CommandSwerveDrivetrain;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.superstructure.Superstructure;
+
+import org.littletonrobotics.junction.Logger;
+
 import java.util.List;
 import java.util.stream.IntStream;
-import org.littletonrobotics.junction.Logger;
 
 public class AutoCommands {
     private final CommandSwerveDrivetrain drive;
@@ -33,65 +37,55 @@ public class AutoCommands {
 
     private SwerveSample lastSample;
 
-    public AutoCommands(CommandSwerveDrivetrain drive, Superstructure superstructure, Intake intake) {
+    public AutoCommands(
+            CommandSwerveDrivetrain drive, Superstructure superstructure, Intake intake) {
         this.drive = drive;
         this.superstructure = superstructure;
         this.intake = intake;
         this.kinematics = Constants.Drive.KINEMATICS;
 
-        autoFactory =
-                new AutoFactory(
-                        drive::getPose,
-                        drive::resetPose,
-                        sample -> {
-                            // Don't ask, just cast (the ring into the fire frodo)
-                            lastSample = (SwerveSample) sample;
-                            drive.followTrajectory((SwerveSample) sample);
-                        },
-                        true,
-                        drive);
+        autoFactory = new AutoFactory(
+                drive::getPose,
+                drive::resetPose,
+                sample -> {
+                    // Don't ask, just cast (the ring into the fire frodo)
+                    lastSample = (SwerveSample) sample;
+                    drive.followTrajectory((SwerveSample) sample);
+                },
+                true,
+                drive);
 
         Command normalDriveDefault = drive.getDefaultCommand();
 
         // I heard you liked commands, so I gave you a command to set the default command to be a
         // different command
         RobotModeTriggers.autonomous()
-                .onTrue(
-                        Commands.runOnce(
-                                () ->
-                                        drive.setDefaultCommand(
-                                                Commands.run(
-                                                        () -> {
-                                                            if (lastSample != null) {
-                                                                Logger.recordOutput(
-                                                                        "drive/auto/doingDefaultPid",
-                                                                        Math.random());
-                                                                drive.followTrajectory(
-                                                                        new SwerveSample(
-                                                                                lastSample.t,
-                                                                                lastSample.x,
-                                                                                lastSample.y,
-                                                                                lastSample.heading,
-                                                                                0,
-                                                                                0,
-                                                                                0,
-                                                                                0,
-                                                                                0,
-                                                                                0,
-                                                                                lastSample
-                                                                                        .moduleForcesX(),
-                                                                                lastSample
-                                                                                        .moduleForcesY()));
-                                                            }
-                                                        },
-                                                        drive))));
+                .onTrue(Commands.runOnce(() -> drive.setDefaultCommand(Commands.run(
+                        () -> {
+                            if (lastSample != null) {
+                                Logger.recordOutput("drive/auto/doingDefaultPid", Math.random());
+                                drive.followTrajectory(new SwerveSample(
+                                        lastSample.t,
+                                        lastSample.x,
+                                        lastSample.y,
+                                        lastSample.heading,
+                                        0,
+                                        0,
+                                        0,
+                                        0,
+                                        0,
+                                        0,
+                                        lastSample.moduleForcesX(),
+                                        lastSample.moduleForcesY()));
+                            }
+                        },
+                        drive))));
 
         // As funny as it would be for the auto to steal the controls of the robot for the rest of
         // the match,
         // unfortunately that is undesired behavior :(, so we need to give them back
-        configTeleDefault =
-                Commands.runOnce(() -> drive.setDefaultCommand(normalDriveDefault))
-                        .ignoringDisable(true);
+        configTeleDefault = Commands.runOnce(() -> drive.setDefaultCommand(normalDriveDefault))
+                .ignoringDisable(true);
 
         RobotModeTriggers.autonomous().onFalse(configTeleDefault);
         RobotModeTriggers.teleop().onTrue(configTeleDefault);
@@ -113,9 +107,8 @@ public class AutoCommands {
         final var traj = routine.trajectory("test");
 
         routine.active()
-                .whileTrue(
-                        Commands.sequence(traj.resetOdometry(), traj.cmd())
-                                .withName("auto/cmdSec"));
+                .whileTrue(Commands.sequence(traj.resetOdometry(), traj.cmd())
+                        .withName("auto/cmdSec"));
 
         return routine;
     }
@@ -125,9 +118,8 @@ public class AutoCommands {
         final var traj = routine.trajectory(pathName);
 
         routine.active()
-                .whileTrue(
-                        Commands.sequence(traj.resetOdometry(), traj.cmd())
-                                .withName("auto/cmdSec"));
+                .whileTrue(Commands.sequence(traj.resetOdometry(), traj.cmd())
+                        .withName("auto/cmdSec"));
 
         return routine;
     }
@@ -156,12 +148,10 @@ public class AutoCommands {
 
         scoreSecond
                 .done()
-                .onTrue(
-                        Commands.sequence(
-                                Commands.waitUntil(
-                                        superstructure.triggerAtGoal(Superstructure.Goal.L4)),
-                                scoreL4().asProxy(),
-                                gtfo.spawnCmd()));
+                .onTrue(Commands.sequence(
+                        Commands.waitUntil(superstructure.triggerAtGoal(Superstructure.Goal.L4)),
+                        scoreL4().asProxy(),
+                        gtfo.spawnCmd()));
 
         routine.active().onFalse(configTeleDefault);
 
@@ -198,39 +188,35 @@ public class AutoCommands {
 
         // Even splits are toReef trajectories
         // Odd splits are to station trajectories
-        List<AutoTrajectory> toReef =
-                IntStream.range(0, (numSplits + 1) / 2)
-                        .mapToObj(i -> routine.trajectory(pathName, i * 2))
-                        .toList();
-        List<AutoTrajectory> toStation =
-                IntStream.range(0, numSplits / 2)
-                        .mapToObj(i -> routine.trajectory(pathName, i * 2 + 1))
-                        .toList();
+        List<AutoTrajectory> toReef = IntStream.range(0, (numSplits + 1) / 2)
+                .mapToObj(i -> routine.trajectory(pathName, i * 2))
+                .toList();
+        List<AutoTrajectory> toStation = IntStream.range(0, numSplits / 2)
+                .mapToObj(i -> routine.trajectory(pathName, i * 2 + 1))
+                .toList();
 
         routine.active()
-                .onTrue(Commands.sequence(toReef.get(0).resetOdometry(), toReef.get(0).cmd()));
+                .onTrue(Commands.sequence(
+                        toReef.get(0).resetOdometry(), toReef.get(0).cmd()));
 
         for (int i = 0; i < toReef.size(); i++) {
             toReef.get(i)
                     .atTime(scoringPositions.get(i).name() + "_APPROACH")
-                    .onTrue(
-                            Commands.parallel(
-                                    Commands.sequence(
-                                            Commands.waitUntil(intake::hasCoral),
-                                            // As proxy so that we don't cancel
-                                            // handoff if the coral isn't here yet.
-                                            prepareL4().asProxy()),
-                                    drive.driveToPose(
-                                                    PositionConstants.Reef.SCORING_POSITIONS.get(
-                                                            scoringPositions.get(i)))
-                                            .andThen(
-                                                    Commands.waitUntil(
-                                                            superstructure.triggerAtGoal(
-                                                                    Superstructure.Goal.L4)),
-                                                    scoreL4().asProxy(),
-                                                    i < toStation.size()
-                                                            ? toStation.get(i).spawnCmd()
-                                                            : Commands.none())));
+                    .onTrue(Commands.parallel(
+                            Commands.sequence(
+                                    Commands.waitUntil(intake::hasCoral),
+                                    // As proxy so that we don't cancel
+                                    // handoff if the coral isn't here yet.
+                                    prepareL4().asProxy()),
+                            drive.driveToPose(PositionConstants.Reef.SCORING_POSITIONS.get(
+                                            scoringPositions.get(i)))
+                                    .andThen(
+                                            Commands.waitUntil(superstructure.triggerAtGoal(
+                                                    Superstructure.Goal.L4)),
+                                            scoreL4().asProxy(),
+                                            i < toStation.size()
+                                                    ? toStation.get(i).spawnCmd()
+                                                    : Commands.none())));
         }
 
         for (int i = 0; i < toStation.size(); i++) {

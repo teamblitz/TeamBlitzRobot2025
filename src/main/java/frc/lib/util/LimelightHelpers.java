@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -20,8 +21,10 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.TimestampedDoubleArray;
+
 import frc.lib.util.LimelightHelpers.LimelightResults;
 import frc.lib.util.LimelightHelpers.PoseEstimate;
+
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -667,10 +670,9 @@ public class LimelightHelpers {
             double corner3_X = extractArrayEntry(rawDetectionArray, baseIndex + 10);
             double corner3_Y = extractArrayEntry(rawDetectionArray, baseIndex + 11);
 
-            rawDetections[i] =
-                    new RawDetection(
-                            classId, txnc, tync, ta, corner0_X, corner0_Y, corner1_X, corner1_Y,
-                            corner2_X, corner2_Y, corner3_X, corner3_Y);
+            rawDetections[i] = new RawDetection(
+                    classId, txnc, tync, ta, corner0_X, corner0_Y, corner1_X, corner1_Y, corner2_X,
+                    corner2_Y, corner3_X, corner3_Y);
         }
 
         return rawDetections;
@@ -726,12 +728,10 @@ public class LimelightHelpers {
     public static DoubleArrayEntry getLimelightDoubleArrayEntry(
             String tableName, String entryName) {
         String key = tableName + "/" + entryName;
-        return doubleArrayEntries.computeIfAbsent(
-                key,
-                k -> {
-                    NetworkTable table = getLimelightNTTable(tableName);
-                    return table.getDoubleArrayTopic(entryName).getEntry(new double[0]);
-                });
+        return doubleArrayEntries.computeIfAbsent(key, k -> {
+            NetworkTable table = getLimelightNTTable(tableName);
+            return table.getDoubleArrayTopic(entryName).getEntry(new double[0]);
+        });
     }
 
     public static double getLimelightNTDouble(String tableName, String entryName) {
@@ -1231,10 +1231,9 @@ public class LimelightHelpers {
 
     /** Asynchronously take snapshot. */
     public static CompletableFuture<Boolean> takeSnapshot(String tableName, String snapshotName) {
-        return CompletableFuture.supplyAsync(
-                () -> {
-                    return SYNCH_TAKESNAPSHOT(tableName, snapshotName);
-                });
+        return CompletableFuture.supplyAsync(() -> {
+            return SYNCH_TAKESNAPSHOT(tableName, snapshotName);
+        });
     }
 
     private static boolean SYNCH_TAKESNAPSHOT(String tableName, String snapshotName) {
@@ -1264,9 +1263,8 @@ public class LimelightHelpers {
         long start = System.nanoTime();
         LimelightHelpers.LimelightResults results = new LimelightHelpers.LimelightResults();
         if (mapper == null) {
-            mapper =
-                    new ObjectMapper()
-                            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            mapper = new ObjectMapper()
+                    .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         }
 
         try {

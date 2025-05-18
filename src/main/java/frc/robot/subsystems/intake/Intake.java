@@ -3,8 +3,10 @@ package frc.robot.subsystems.intake;
 import static frc.robot.Constants.Intake.*;
 
 import edu.wpi.first.wpilibj2.command.Command;
+
 import frc.lib.BlitzSubsystem;
 import frc.robot.Robot;
+
 import org.littletonrobotics.junction.Logger;
 
 public class Intake extends BlitzSubsystem {
@@ -30,13 +32,15 @@ public class Intake extends BlitzSubsystem {
     }
 
     public Command handoff() {
-        return startEnd(() -> {
-            io.setSpeed(HANDOFF_SPEED);
-            io.enableCoralInterrupt(true);
-        }, () -> {
-            io.setSpeed(0);
-            io.enableCoralInterrupt(false);
-        })
+        return startEnd(
+                        () -> {
+                            io.setSpeed(HANDOFF_SPEED);
+                            io.enableCoralInterrupt(true);
+                        },
+                        () -> {
+                            io.setSpeed(0);
+                            io.enableCoralInterrupt(false);
+                        })
                 .until(this::intakeSensor)
                 .onlyIf(() -> !intakeSensor());
     }

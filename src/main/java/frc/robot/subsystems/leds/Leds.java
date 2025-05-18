@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -86,17 +87,12 @@ public class Leds extends SubsystemBase {
         leds.setLength(length);
         leds.setData(buffer);
         leds.start();
-        loadingNotifier =
-                new Notifier(
-                        () -> {
-                            synchronized (this) {
-                                breath(
-                                        Color.kWhite,
-                                        Color.kBlack,
-                                        System.currentTimeMillis() / 1000.0);
-                                leds.setData(buffer);
-                            }
-                        });
+        loadingNotifier = new Notifier(() -> {
+            synchronized (this) {
+                breath(Color.kWhite, Color.kBlack, System.currentTimeMillis() / 1000.0);
+                leds.setData(buffer);
+            }
+        });
         loadingNotifier.startPeriodic(0.02);
     }
 
@@ -104,9 +100,9 @@ public class Leds extends SubsystemBase {
         // Update alliance color
         if (DriverStation.isFMSAttached()) {
             alliance = DriverStation.getAlliance();
-            allianceColor =
-                    alliance.map(alliance -> alliance == Alliance.Blue ? Color.kBlue : Color.kRed)
-                            .orElse(Color.kGreen);
+            allianceColor = alliance.map(
+                            alliance -> alliance == Alliance.Blue ? Color.kBlue : Color.kRed)
+                    .orElse(Color.kGreen);
             secondaryDisabledColor = alliance.isPresent() ? Color.kBlack : Color.kDarkBlue;
         }
 
@@ -299,9 +295,8 @@ public class Leds extends SubsystemBase {
         int offset =
                 (int) (Timer.getFPGATimestamp() % duration / duration * length * colors.size());
         for (int i = 0; i < length; i++) {
-            int colorIndex =
-                    (int) (Math.floor((double) (i - offset) / length) + colors.size())
-                            % colors.size();
+            int colorIndex = (int) (Math.floor((double) (i - offset) / length) + colors.size())
+                    % colors.size();
             colorIndex = colors.size() - 1 - colorIndex;
             buffer.setLED(i, colors.get(colorIndex));
         }

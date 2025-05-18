@@ -1,7 +1,9 @@
 package frc.lib.resources;
 
 import com.sun.management.GarbageCollectionNotificationInfo;
+
 import edu.wpi.first.wpilibj.Timer;
+
 import org.littletonrobotics.junction.Logger;
 
 public class ResourceMonitor {

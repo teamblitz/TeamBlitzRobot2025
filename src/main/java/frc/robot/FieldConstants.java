@@ -9,15 +9,18 @@ package frc.robot;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Filesystem;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 /**
  * Contains various field dimensions and useful reference points. All units are in meters and poses
@@ -28,22 +31,21 @@ public class FieldConstants {
 
     public static final double fieldLength =
             AprilTagLayoutType.OFFICIAL.getLayout().getFieldLength();
-    public static final double fieldWidth = AprilTagLayoutType.OFFICIAL.getLayout().getFieldWidth();
+    public static final double fieldWidth =
+            AprilTagLayoutType.OFFICIAL.getLayout().getFieldWidth();
     public static final double startingLineX =
             Units.inchesToMeters(299.438); // Measured from the inside of starting line
     public static final double algaeDiameter = Units.inchesToMeters(16);
 
     public static class Processor {
-        public static final Pose2d centerFace =
-                new Pose2d(
-                        AprilTagLayoutType.OFFICIAL.getLayout().getTagPose(16).get().getX(),
-                        0,
-                        Rotation2d.fromDegrees(90));
-        public static final Pose2d opposingCenterFace =
-                new Pose2d(
-                        AprilTagLayoutType.OFFICIAL.getLayout().getTagPose(3).get().getX(),
-                        fieldWidth,
-                        Rotation2d.fromDegrees(-90));
+        public static final Pose2d centerFace = new Pose2d(
+                AprilTagLayoutType.OFFICIAL.getLayout().getTagPose(16).get().getX(),
+                0,
+                Rotation2d.fromDegrees(90));
+        public static final Pose2d opposingCenterFace = new Pose2d(
+                AprilTagLayoutType.OFFICIAL.getLayout().getTagPose(3).get().getX(),
+                fieldWidth,
+                Rotation2d.fromDegrees(-90));
     }
 
     public static class Barge {
@@ -64,16 +66,14 @@ public class FieldConstants {
 
     public static class CoralStation {
         public static final double stationLength = Units.inchesToMeters(79.750);
-        public static final Pose2d rightCenterFace =
-                new Pose2d(
-                        Units.inchesToMeters(33.526),
-                        Units.inchesToMeters(25.824),
-                        Rotation2d.fromDegrees(144.011 - 90));
-        public static final Pose2d leftCenterFace =
-                new Pose2d(
-                        rightCenterFace.getX(),
-                        fieldWidth - rightCenterFace.getY(),
-                        Rotation2d.fromRadians(-rightCenterFace.getRotation().getRadians()));
+        public static final Pose2d rightCenterFace = new Pose2d(
+                Units.inchesToMeters(33.526),
+                Units.inchesToMeters(25.824),
+                Rotation2d.fromDegrees(144.011 - 90));
+        public static final Pose2d leftCenterFace = new Pose2d(
+                rightCenterFace.getX(),
+                fieldWidth - rightCenterFace.getY(),
+                Rotation2d.fromRadians(-rightCenterFace.getRotation().getRadians()));
     }
 
     public static class Reef {
@@ -112,50 +112,36 @@ public class FieldConstants {
                     double adjustX = Units.inchesToMeters(30.738);
                     double adjustY = Units.inchesToMeters(6.469);
 
-                    var rightBranchPose =
-                            new Pose3d(
-                                    new Translation3d(
-                                            poseDirection
-                                                    .transformBy(
-                                                            new Transform2d(
-                                                                    adjustX,
-                                                                    adjustY,
-                                                                    Rotation2d.kZero))
-                                                    .getX(),
-                                            poseDirection
-                                                    .transformBy(
-                                                            new Transform2d(
-                                                                    adjustX,
-                                                                    adjustY,
-                                                                    Rotation2d.kZero))
-                                                    .getY(),
-                                            level.height),
-                                    new Rotation3d(
-                                            0,
-                                            Units.degreesToRadians(level.pitch),
-                                            poseDirection.getRotation().getRadians()));
-                    var leftBranchPose =
-                            new Pose3d(
-                                    new Translation3d(
-                                            poseDirection
-                                                    .transformBy(
-                                                            new Transform2d(
-                                                                    adjustX,
-                                                                    -adjustY,
-                                                                    Rotation2d.kZero))
-                                                    .getX(),
-                                            poseDirection
-                                                    .transformBy(
-                                                            new Transform2d(
-                                                                    adjustX,
-                                                                    -adjustY,
-                                                                    Rotation2d.kZero))
-                                                    .getY(),
-                                            level.height),
-                                    new Rotation3d(
-                                            0,
-                                            Units.degreesToRadians(level.pitch),
-                                            poseDirection.getRotation().getRadians()));
+                    var rightBranchPose = new Pose3d(
+                            new Translation3d(
+                                    poseDirection
+                                            .transformBy(new Transform2d(
+                                                    adjustX, adjustY, Rotation2d.kZero))
+                                            .getX(),
+                                    poseDirection
+                                            .transformBy(new Transform2d(
+                                                    adjustX, adjustY, Rotation2d.kZero))
+                                            .getY(),
+                                    level.height),
+                            new Rotation3d(
+                                    0,
+                                    Units.degreesToRadians(level.pitch),
+                                    poseDirection.getRotation().getRadians()));
+                    var leftBranchPose = new Pose3d(
+                            new Translation3d(
+                                    poseDirection
+                                            .transformBy(new Transform2d(
+                                                    adjustX, -adjustY, Rotation2d.kZero))
+                                            .getX(),
+                                    poseDirection
+                                            .transformBy(new Transform2d(
+                                                    adjustX, -adjustY, Rotation2d.kZero))
+                                            .getY(),
+                                    level.height),
+                            new Rotation3d(
+                                    0,
+                                    Units.degreesToRadians(level.pitch),
+                                    poseDirection.getRotation().getRadians()));
 
                     fillRight.put(level, rightBranchPose);
                     fillLeft.put(level, leftBranchPose);
@@ -175,16 +161,10 @@ public class FieldConstants {
         public static final double separation = Units.inchesToMeters(72.0);
         public static final Pose2d middleIceCream =
                 new Pose2d(Units.inchesToMeters(48), fieldWidth / 2.0, Rotation2d.kZero);
-        public static final Pose2d leftIceCream =
-                new Pose2d(
-                        Units.inchesToMeters(48),
-                        middleIceCream.getY() + separation,
-                        Rotation2d.kZero);
-        public static final Pose2d rightIceCream =
-                new Pose2d(
-                        Units.inchesToMeters(48),
-                        middleIceCream.getY() - separation,
-                        Rotation2d.kZero);
+        public static final Pose2d leftIceCream = new Pose2d(
+                Units.inchesToMeters(48), middleIceCream.getY() + separation, Rotation2d.kZero);
+        public static final Pose2d rightIceCream = new Pose2d(
+                Units.inchesToMeters(48), middleIceCream.getY() - separation, Rotation2d.kZero);
     }
 
     public enum ReefLevel {
@@ -224,27 +204,23 @@ public class FieldConstants {
         AprilTagLayoutType(String name) {
             if (Constants.DISABLE_HAL) {
                 try {
-                    layout =
-                            new AprilTagFieldLayout(
-                                    Path.of(
-                                            "src",
-                                            "main",
-                                            "deploy",
-                                            "apriltags",
-                                            fieldType.getJsonFolder(),
-                                            "2025-official.json"));
+                    layout = new AprilTagFieldLayout(Path.of(
+                            "src",
+                            "main",
+                            "deploy",
+                            "apriltags",
+                            fieldType.getJsonFolder(),
+                            "2025-official.json"));
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
             } else {
                 try {
-                    layout =
-                            new AprilTagFieldLayout(
-                                    Path.of(
-                                            Filesystem.getDeployDirectory().getPath(),
-                                            "apriltags",
-                                            fieldType.getJsonFolder(),
-                                            name + ".json"));
+                    layout = new AprilTagFieldLayout(Path.of(
+                            Filesystem.getDeployDirectory().getPath(),
+                            "apriltags",
+                            fieldType.getJsonFolder(),
+                            name + ".json"));
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -275,6 +251,7 @@ public class FieldConstants {
         ANDYMARK("andymark"),
         WELDED("welded");
 
-        @Getter private final String jsonFolder;
+        @Getter
+        private final String jsonFolder;
     }
 }

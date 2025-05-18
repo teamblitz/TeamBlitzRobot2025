@@ -7,9 +7,11 @@ import com.revrobotics.spark.*;
 import com.revrobotics.spark.config.ClosedLoopConfig;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
+
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import frc.lib.monitor.HardwareWatchdog;
 import frc.robot.Constants;
 import frc.robot.Constants.Elevator;
@@ -54,15 +56,13 @@ public class ElevatorIOSpark implements ElevatorIO {
 
         sharedConfig
                 .encoder
-                .positionConversionFactor(
-                        (1 / Constants.Elevator.ELEVATOR_GEAR_RATIO)
-                                * Constants.Elevator.SPROCKET_CIRCUMFERENCE
-                                * 2)
-                .velocityConversionFactor(
-                        (1 / Constants.Elevator.ELEVATOR_GEAR_RATIO)
-                                * (1.0 / 60.0)
-                                * Constants.Elevator.SPROCKET_CIRCUMFERENCE
-                                * 2);
+                .positionConversionFactor((1 / Constants.Elevator.ELEVATOR_GEAR_RATIO)
+                        * Constants.Elevator.SPROCKET_CIRCUMFERENCE
+                        * 2)
+                .velocityConversionFactor((1 / Constants.Elevator.ELEVATOR_GEAR_RATIO)
+                        * (1.0 / 60.0)
+                        * Constants.Elevator.SPROCKET_CIRCUMFERENCE
+                        * 2);
 
         sharedConfig.closedLoop.maxOutput(.2);
         sharedConfig.closedLoop.minOutput(-.2);

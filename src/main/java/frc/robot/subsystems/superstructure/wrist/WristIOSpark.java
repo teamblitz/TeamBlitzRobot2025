@@ -7,10 +7,12 @@ import com.revrobotics.spark.*;
 import com.revrobotics.spark.config.ClosedLoopConfig;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Commands;
+
 import frc.lib.monitor.HardwareWatchdog;
 
 public class WristIOSpark implements WristIO {
@@ -50,9 +52,8 @@ public class WristIOSpark implements WristIO {
         config.absoluteEncoder
                 .zeroCentered(true)
                 .inverted(true)
-                .zeroOffset(
-                        Units.radiansToRotations(
-                                MathUtil.inputModulus(ABS_ENCODER_ZERO, 0, 2 * Math.PI)))
+                .zeroOffset(Units.radiansToRotations(
+                        MathUtil.inputModulus(ABS_ENCODER_ZERO, 0, 2 * Math.PI)))
                 .positionConversionFactor((2 * Math.PI))
                 .velocityConversionFactor((2 * Math.PI));
 
@@ -68,9 +69,8 @@ public class WristIOSpark implements WristIO {
         setFF(WristGains.KS, WristGains.KG, WristGains.KV, WristGains.KA);
 
         Commands.waitSeconds(.25)
-                .andThen(
-                        Commands.runOnce(() -> encoder.setPosition(absoluteEncoder.getPosition()))
-                                .ignoringDisable(true))
+                .andThen(Commands.runOnce(() -> encoder.setPosition(absoluteEncoder.getPosition()))
+                        .ignoringDisable(true))
                 .schedule();
 
         HardwareWatchdog.getInstance().registerSpark(motor, this.getClass());
@@ -105,13 +105,12 @@ public class WristIOSpark implements WristIO {
 
         //        System.out.println("Wrist IO Spark setpoint feedforward: " + arbFF);
 
-        REVLibError errorCode =
-                pid.setReference(
-                        position,
-                        SparkBase.ControlType.kPosition,
-                        ClosedLoopSlot.kSlot0,
-                        arbFF,
-                        SparkClosedLoopController.ArbFFUnits.kVoltage);
+        REVLibError errorCode = pid.setReference(
+                position,
+                SparkBase.ControlType.kPosition,
+                ClosedLoopSlot.kSlot0,
+                arbFF,
+                SparkClosedLoopController.ArbFFUnits.kVoltage);
 
         //        System.out.println("Wrist IO Spark setpoint error code: " + errorCode);
 

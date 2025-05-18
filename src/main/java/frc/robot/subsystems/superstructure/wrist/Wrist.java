@@ -1,10 +1,12 @@
 package frc.robot.subsystems.superstructure.wrist;
 
 import static edu.wpi.first.units.Units.*;
+
 import static frc.lib.util.NanUtil.TRAPEZOID_NAN_STATE;
 import static frc.robot.Constants.Wrist.*;
 
 import com.ctre.phoenix6.SignalLogger;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.Units;
@@ -14,15 +16,18 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+
 import frc.lib.BlitzSubsystem;
 import frc.lib.util.LoggedTunableNumber;
 import frc.robot.Constants;
 import frc.robot.subsystems.leds.Leds;
+
+import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.Logger;
+
 import java.util.Optional;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
-import org.littletonrobotics.junction.AutoLogOutput;
-import org.littletonrobotics.junction.Logger;
 
 public class Wrist extends BlitzSubsystem {
     public final WristIO io;
@@ -65,26 +70,22 @@ public class Wrist extends BlitzSubsystem {
 
         ShuffleboardTab characterizationTab = Shuffleboard.getTab("Characterization");
 
-        routine =
-                new SysIdRoutine(
-                        new SysIdRoutine.Config(
-                                Volts.per(Second).of(.5),
-                                Units.Volts.of(4),
-                                null,
-                                Constants.compBot()
-                                        ? (state) ->
-                                                SignalLogger.writeString(
-                                                        "sysid-wrist-state", state.toString())
-                                        : null),
-                        new SysIdRoutine.Mechanism(
-                                (volts) -> io.setVolts(volts.in(Units.Volts)), null, this));
+        routine = new SysIdRoutine(
+                new SysIdRoutine.Config(
+                        Volts.per(Second).of(.5),
+                        Units.Volts.of(4),
+                        null,
+                        Constants.compBot()
+                                ? (state) -> SignalLogger.writeString(
+                                        "sysid-wrist-state", state.toString())
+                                : null),
+                new SysIdRoutine.Mechanism(
+                        (volts) -> io.setVolts(volts.in(Units.Volts)), null, this));
 
-        characterizationTab.add(
-                sysIdQuasistatic(SysIdRoutine.Direction.kForward)
-                        .withName("Wrist Quasistic Forward"));
-        characterizationTab.add(
-                sysIdQuasistatic(SysIdRoutine.Direction.kReverse)
-                        .withName("Wrist Quasistic Reverse"));
+        characterizationTab.add(sysIdQuasistatic(SysIdRoutine.Direction.kForward)
+                .withName("Wrist Quasistic Forward"));
+        characterizationTab.add(sysIdQuasistatic(SysIdRoutine.Direction.kReverse)
+                .withName("Wrist Quasistic Reverse"));
 
         characterizationTab.add(
                 sysIdDynamic(SysIdRoutine.Direction.kForward).withName("Wrist Dynamic Forward"));
@@ -213,18 +214,14 @@ public class Wrist extends BlitzSubsystem {
     public Command goToPosition(double position, boolean requireProfileCompletion) {
         if (requireProfileCompletion)
             return followGoal(() -> position)
-                    .withDeadline(
-                            Commands.waitUntil(
-                                    () -> MathUtil.isNear(position, getPosition(), TOLERANCE)))
+                    .withDeadline(Commands.waitUntil(
+                            () -> MathUtil.isNear(position, getPosition(), TOLERANCE)))
                     .withName(logKey + "/goToPosition_waitForMechanism " + position);
         else
             return followGoal(() -> position)
-                    .withDeadline(
-                            Commands.waitUntil(
-                                            () ->
-                                                    MathUtil.isNear(
-                                                            position, getIdealPosition(), 1e-9))
-                                    .withName(logKey + "/goToPosition_waitForProfile " + position));
+                    .withDeadline(Commands.waitUntil(
+                                    () -> MathUtil.isNear(position, getIdealPosition(), 1e-9))
+                            .withName(logKey + "/goToPosition_waitForProfile " + position));
     }
 
     /**
@@ -234,12 +231,8 @@ public class Wrist extends BlitzSubsystem {
         return run(() -> {
                     // Only update the goal if necessary to avoid GC overhead
                     if (this.goal.isEmpty() || this.goal.get().position != goal.getAsDouble()) {
-                        this.goal =
-                                Optional.of(
-                                        new TrapezoidProfile.State(
-                                                MathUtil.clamp(
-                                                        goal.getAsDouble(), MIN_POS, MAX_POS),
-                                                0));
+                        this.goal = Optional.of(new TrapezoidProfile.State(
+                                MathUtil.clamp(goal.getAsDouble(), MIN_POS, MAX_POS), 0));
                     }
                 })
                 .handleInterrupt(() -> this.goal = Optional.of(setpoint))

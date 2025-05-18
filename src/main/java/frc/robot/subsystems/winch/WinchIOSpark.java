@@ -9,7 +9,9 @@ import com.revrobotics.spark.SparkLowLevel;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.ClosedLoopConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
+
 import frc.lib.monitor.HardwareWatchdog;
+
 import org.littletonrobotics.junction.Logger;
 
 public class WinchIOSpark implements WinchIO {

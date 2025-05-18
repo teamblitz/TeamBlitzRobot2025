@@ -8,12 +8,15 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycle;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+
 import frc.lib.monitor.HardwareWatchdog;
+
 import org.littletonrobotics.junction.Logger;
 
 public class ClimberIOKraken implements ClimberIO {
@@ -64,18 +67,15 @@ public class ClimberIOKraken implements ClimberIO {
 
         new Trigger(absEncoder::isConnected)
                 .debounce(1)
-                .onTrue(
-                        Commands.runOnce(
-                                        () -> {
-                                            if (absEncoder.isConnected())
-                                                leader.setPosition(getAbsPosition());
-                                        })
-                                .ignoringDisable(true)
-                                .withName("climber/seedPosition"));
+                .onTrue(Commands.runOnce(() -> {
+                            if (absEncoder.isConnected()) leader.setPosition(getAbsPosition());
+                        })
+                        .ignoringDisable(true)
+                        .withName("climber/seedPosition"));
 
         HardwareWatchdog.getInstance().registerCTREDevice(leftMotor, this.getClass());
         HardwareWatchdog.getInstance().registerCTREDevice(rightMotor, this.getClass());
-        
+
         HardwareWatchdog.getInstance().registerDutyCycleEncoder(absEncoder, this.getClass());
     }
 

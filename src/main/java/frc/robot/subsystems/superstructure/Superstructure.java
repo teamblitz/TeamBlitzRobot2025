@@ -1,6 +1,7 @@
 package frc.robot.subsystems.superstructure;
 
 import static frc.robot.Constants.SuperstructureSetpoints.*;
+
 import static java.util.Map.entry;
 
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -10,17 +11,21 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+
 import frc.lib.BlitzSubsystem;
 import frc.robot.subsystems.superstructure.elevator.Elevator;
 import frc.robot.subsystems.superstructure.elevator.ElevatorIO;
 import frc.robot.subsystems.superstructure.wrist.Wrist;
 import frc.robot.subsystems.superstructure.wrist.WristIO;
+
+import lombok.Getter;
+
+import org.littletonrobotics.junction.Logger;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.DoubleSupplier;
-import lombok.Getter;
-import org.littletonrobotics.junction.Logger;
 
 /**
  * Welcome to the war room. (that's also what I called my college essay Google Drive but that's
@@ -38,8 +43,11 @@ import org.littletonrobotics.junction.Logger;
  * <p>-Noah
  */
 public class Superstructure extends BlitzSubsystem {
-    @Getter private final Elevator elevator;
-    @Getter private final Wrist wrist;
+    @Getter
+    private final Elevator elevator;
+
+    @Getter
+    private final Wrist wrist;
 
     public Superstructure(ElevatorIO elevatorIO, WristIO wristIO) {
 
@@ -47,23 +55,21 @@ public class Superstructure extends BlitzSubsystem {
         this.elevator = new Elevator(elevatorIO, this::idle);
         this.wrist = new Wrist(wristIO, this::idle);
 
-        staticGoals =
-                Map.ofEntries(
-                        entry(Goal.L1, L1),
-                        entry(Goal.L2, L2),
-                        entry(Goal.L3, L3),
-                        entry(Goal.L4, L4),
-                        entry(Goal.L4_PLOP, L4_PLOP),
-                        entry(Goal.KICK_LOW_ALGAE, KICK_LOW_ALGAE),
-                        entry(Goal.KICK_HIGH_ALGAE, KICK_HIGH_ALGAE),
-                        entry(Goal.HANDOFF, HANDOFF),
-                        entry(Goal.STOW, STOW));
+        staticGoals = Map.ofEntries(
+                entry(Goal.L1, L1),
+                entry(Goal.L2, L2),
+                entry(Goal.L3, L3),
+                entry(Goal.L4, L4),
+                entry(Goal.L4_PLOP, L4_PLOP),
+                entry(Goal.KICK_LOW_ALGAE, KICK_LOW_ALGAE),
+                entry(Goal.KICK_HIGH_ALGAE, KICK_HIGH_ALGAE),
+                entry(Goal.HANDOFF, HANDOFF),
+                entry(Goal.STOW, STOW));
 
-        dynamicGoals =
-                Map.ofEntries(
-                        entry(Goal.L4_DUNK, L4_DUNK)
-                        //                entry(Goal.L4_PLOP, L4_PLOP)
-                        );
+        dynamicGoals = Map.ofEntries(
+                entry(Goal.L4_DUNK, L4_DUNK)
+                //                entry(Goal.L4_PLOP, L4_PLOP)
+                );
 
         ShuffleboardTab tab = Shuffleboard.getTab("SuperStructure");
         GenericEntry elevatorTestEntry = tab.add("elevatorTest", 0).getEntry();
@@ -72,25 +78,15 @@ public class Superstructure extends BlitzSubsystem {
         tab.add(
                 "positionTest",
                 Commands.defer(
-                                () ->
-                                        Commands.parallel(
-                                                        elevator.withGoal(
-                                                                new TrapezoidProfile.State(
-                                                                        elevatorTestEntry.getDouble(
-                                                                                0),
-                                                                        0)),
-                                                        wrist.withGoal(
-                                                                new TrapezoidProfile.State(
-                                                                        Math.toRadians(
-                                                                                wristTestEntry
-                                                                                        .getDouble(
-                                                                                                45)),
-                                                                        0)))
-                                                .finallyDo(
-                                                        (interrupt) ->
-                                                                Commands.print(
-                                                                        "SuperClosedTestEnd, "
-                                                                                + interrupt)),
+                                () -> Commands.parallel(
+                                                elevator.withGoal(new TrapezoidProfile.State(
+                                                        elevatorTestEntry.getDouble(0), 0)),
+                                                wrist.withGoal(new TrapezoidProfile.State(
+                                                        Math.toRadians(
+                                                                wristTestEntry.getDouble(45)),
+                                                        0)))
+                                        .finallyDo((interrupt) ->
+                                                Commands.print("SuperClosedTestEnd, " + interrupt)),
                                 Set.of(this))
                         .withName("SuperStructure/closedTest"));
     }
@@ -195,67 +191,56 @@ public class Superstructure extends BlitzSubsystem {
             Command command = Commands.none();
 
             for (StateWithMode stateWithMode : dynamicGoals.get(goal)) {
-                command =
-                        command.andThen(
-                                        switch (stateWithMode.mode()) {
-                                            case WRIST_FIRST ->
-                                                    toStateWristFirst(stateWithMode.state());
-                                            case WRIST_LAST ->
-                                                    toStateWristLast(stateWithMode.state());
-                                            case WRIST_SYNC ->
-                                                    toStateSynchronous(stateWithMode.state());
-                                        })
-                                .finallyDo(() -> dynamicStep++);
+                command = command.andThen(
+                                switch (stateWithMode.mode()) {
+                                    case WRIST_FIRST -> toStateWristFirst(stateWithMode.state());
+                                    case WRIST_LAST -> toStateWristLast(stateWithMode.state());
+                                    case WRIST_SYNC -> toStateSynchronous(stateWithMode.state());
+                                })
+                        .finallyDo(() -> dynamicStep++);
             }
 
-            command =
-                    command.beforeStarting(
-                                    () -> {
-                                        this.state = State.IN_TRANSIT;
-                                        previousGoal = currentGoal;
-                                        currentGoal = goal;
-                                        dynamicStep = 0;
-                                    })
-                            .finallyDo(
-                                    (interrupted) -> {
-                                        this.state = interrupted ? State.UNKNOWN : State.AT_GOAL;
-                                        dynamicStep = -1;
-                                    })
-                            .deadlineFor(idle());
+            command = command.beforeStarting(() -> {
+                        this.state = State.IN_TRANSIT;
+                        previousGoal = currentGoal;
+                        currentGoal = goal;
+                        dynamicStep = 0;
+                    })
+                    .finallyDo((interrupted) -> {
+                        this.state = interrupted ? State.UNKNOWN : State.AT_GOAL;
+                        dynamicStep = -1;
+                    })
+                    .deadlineFor(idle());
 
             return command.onlyIf(() -> currentGoal == Goal.L4)
                     .withName("superstructure/dynamic_" + goal);
         }
 
         return toStateThroughTransit(staticGoals.get(goal))
-                .beforeStarting(
-                        () -> {
-                            state = State.IN_TRANSIT;
-                            previousGoal = currentGoal;
-                            currentGoal = goal;
-                            dynamicStep = -1;
-                        })
-                .finallyDo(
-                        (interrupted) -> {
-                            state = interrupted ? State.UNKNOWN : State.AT_GOAL;
-                        })
+                .beforeStarting(() -> {
+                    state = State.IN_TRANSIT;
+                    previousGoal = currentGoal;
+                    currentGoal = goal;
+                    dynamicStep = -1;
+                })
+                .finallyDo((interrupted) -> {
+                    state = interrupted ? State.UNKNOWN : State.AT_GOAL;
+                })
                 .withName("superstructure/static_" + goal)
                 .deadlineFor(idle());
     }
 
     public Command toGoalDirect(Goal goal) {
         return toStateSynchronous(staticGoals.get(goal))
-                .beforeStarting(
-                        () -> {
-                            state = State.IN_TRANSIT;
-                            previousGoal = currentGoal;
-                            currentGoal = goal;
-                            dynamicStep = -1;
-                        })
-                .finallyDo(
-                        (interrupted) -> {
-                            state = interrupted ? State.UNKNOWN : State.AT_GOAL;
-                        })
+                .beforeStarting(() -> {
+                    state = State.IN_TRANSIT;
+                    previousGoal = currentGoal;
+                    currentGoal = goal;
+                    dynamicStep = -1;
+                })
+                .finallyDo((interrupted) -> {
+                    state = interrupted ? State.UNKNOWN : State.AT_GOAL;
+                })
                 .withName("superstructure/static_direct_" + goal)
                 .deadlineFor(idle());
     }
@@ -278,44 +263,32 @@ public class Superstructure extends BlitzSubsystem {
                                         elevator.withSpeed(elevatorSpeed)
                                                 .until(() -> elevatorSpeed.getAsDouble() == 0),
                                         Commands.waitSeconds(.1)
-                                                .andThen(
-                                                        Commands.defer(
-                                                                        () -> {
-                                                                            double pos =
-                                                                                    elevator
-                                                                                            .getPosition();
-                                                                            return elevator
-                                                                                    .followGoal(
-                                                                                            () ->
-                                                                                                    pos);
-                                                                        },
-                                                                        Set.of(elevator))
-                                                                .until(
-                                                                        () ->
-                                                                                elevatorSpeed
-                                                                                                .getAsDouble()
-                                                                                        != 0)),
+                                                .andThen(Commands.defer(
+                                                                () -> {
+                                                                    double pos =
+                                                                            elevator.getPosition();
+                                                                    return elevator.followGoal(
+                                                                            () -> pos);
+                                                                },
+                                                                Set.of(elevator))
+                                                        .until(() ->
+                                                                elevatorSpeed.getAsDouble() != 0)),
                                         () -> elevatorSpeed.getAsDouble() != 0)
                                 .repeatedly(),
                         Commands.either(
                                         wrist.setSpeed(wristSpeed)
                                                 .until(() -> wristSpeed.getAsDouble() == 0),
                                         Commands.waitSeconds(.1)
-                                                .andThen(
-                                                        Commands.defer(
-                                                                        () -> {
-                                                                            double pos =
-                                                                                    wrist
-                                                                                            .getPosition();
-                                                                            return wrist.followGoal(
-                                                                                    () -> pos);
-                                                                        },
-                                                                        Set.of(wrist))
-                                                                .until(
-                                                                        () ->
-                                                                                wristSpeed
-                                                                                                .getAsDouble()
-                                                                                        != 0)),
+                                                .andThen(Commands.defer(
+                                                                () -> {
+                                                                    double pos =
+                                                                            wrist.getPosition();
+                                                                    return wrist.followGoal(
+                                                                            () -> pos);
+                                                                },
+                                                                Set.of(wrist))
+                                                        .until(() ->
+                                                                wristSpeed.getAsDouble() != 0)),
                                         () -> wristSpeed.getAsDouble() != 0)
                                 .repeatedly(),
                         this.idle())

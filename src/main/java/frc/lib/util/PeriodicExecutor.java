@@ -1,6 +1,7 @@
 package frc.lib.util;
 
 import frc.robot.Constants;
+
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -13,7 +14,8 @@ public class PeriodicExecutor {
      *  Returns the singleton instance of the PeriodicExecutor.
      */
     @Getter
-    private static final PeriodicExecutor instance = new PeriodicExecutor(Constants.LOOP_PERIOD_SEC);
+    private static final PeriodicExecutor instance =
+            new PeriodicExecutor(Constants.LOOP_PERIOD_SEC);
 
     double basePeriod;
     int loopCount;
@@ -36,26 +38,18 @@ public class PeriodicExecutor {
      *                      If this is greater than {@code periodSeconds} than the offset will be {@code offsetSeconds % periodSeconds}
      * @throws IllegalArgumentException if {@code periodSeconds} is less than the base execution period
      */
-    public void addPeriodicSeconds(@NonNull Runnable callback, double periodSeconds, double offsetSeconds) {
+    public void addPeriodicSeconds(
+            @NonNull Runnable callback, double periodSeconds, double offsetSeconds) {
         if (periodSeconds < basePeriod) {
             throw new IllegalArgumentException("Period: " + periodSeconds + " is too short");
         }
 
-        addPeriodicCycles(
-                callback,
-                (int) Math.max(1, Math.round(periodSeconds / basePeriod)),
-                (int) Math.round(offsetSeconds / basePeriod)
-        );
+        addPeriodicCycles(callback, (int) Math.max(1, Math.round(periodSeconds / basePeriod)), (int)
+                Math.round(offsetSeconds / basePeriod));
     }
 
     public void addPeriodicCycles(@NonNull Runnable callback, int periodLoops, int offsetLoops) {
-        callbacks.add(
-                new PeriodicRunnable(
-                        callback,
-                        periodLoops,
-                       offsetLoops
-                )
-        );
+        callbacks.add(new PeriodicRunnable(callback, periodLoops, offsetLoops));
     }
 
     public void addPeriodicSeconds(Runnable callback, double periodSeconds) {

@@ -2,6 +2,7 @@ package frc.lib.util;
 
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.networktables.NetworkTableType;
+
 import java.util.function.Supplier;
 
 public final class DashboardHelpers {

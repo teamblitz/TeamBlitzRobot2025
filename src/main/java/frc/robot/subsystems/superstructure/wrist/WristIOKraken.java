@@ -12,10 +12,13 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.reduxrobotics.sensors.canandmag.Canandmag;
 import com.reduxrobotics.sensors.canandmag.CanandmagSettings;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Commands;
+
 import frc.lib.monitor.HardwareWatchdog;
+
 import org.littletonrobotics.junction.Logger;
 
 public class WristIOKraken implements WristIO {
@@ -64,14 +67,11 @@ public class WristIOKraken implements WristIO {
                 .withForwardSoftLimitThreshold(MAX_POS)
                 .withReverseSoftLimitThreshold(MIN_POS);
 
-        Commands.sequence(
-                        Commands.waitSeconds(2),
-                        Commands.runOnce(
-                                () -> {
-                                    if (absoluteEncoder.isConnected())
-                                        wristMotor.setPosition(getAbsPosition() / (2 * Math.PI));
-                                    else wristMotor.setPosition(Units.degreesToRotations(90));
-                                }))
+        Commands.sequence(Commands.waitSeconds(2), Commands.runOnce(() -> {
+                    if (absoluteEncoder.isConnected())
+                        wristMotor.setPosition(getAbsPosition() / (2 * Math.PI));
+                    else wristMotor.setPosition(Units.degreesToRotations(90));
+                }))
                 .ignoringDisable(true)
                 .schedule();
 
@@ -94,7 +94,8 @@ public class WristIOKraken implements WristIO {
         inputs.absoluteEncoderPosition = getAbsPosition();
 
         Logger.recordOutput(
-                "elevator/motionMagicEnabled", wristMotor.getMotionMagicIsRunning().getValue());
+                "elevator/motionMagicEnabled",
+                wristMotor.getMotionMagicIsRunning().getValue());
     }
 
     @Override

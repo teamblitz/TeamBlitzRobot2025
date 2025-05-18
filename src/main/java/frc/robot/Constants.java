@@ -13,16 +13,17 @@ import static edu.wpi.first.units.Units.Inches;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.RobotConfig;
+
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+
 import frc.lib.util.COTSSwerveConstants;
-import frc.lib.util.SwerveModuleConstants;
+
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.DoubleUnaryOperator;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -55,9 +56,7 @@ public final class Constants {
         SimBot
     }
 
-    public static final Robot ROBOT =
-            frc.robot.Robot.isReal() ?
-            Robot.CompBot : Robot.SimBot;
+    public static final Robot ROBOT = frc.robot.Robot.isReal() ? Robot.CompBot : Robot.SimBot;
 
     public static boolean compBot() {
         return ROBOT == Robot.CompBot;
@@ -77,11 +76,10 @@ public final class Constants {
         public static final int PIGEON_ID = 14;
         public static final int FUSION_TIME_OF_FLIGHT_ID = 0;
 
-        public static final COTSSwerveConstants CHOSEN_MODULE =
-                COTSSwerveConstants.SDSMK4i(
-                        compBot()
-                                ? COTSSwerveConstants.driveGearRatios.SDSMK4i_L3
-                                : COTSSwerveConstants.driveGearRatios.SDSMK4i_L2);
+        public static final COTSSwerveConstants CHOSEN_MODULE = COTSSwerveConstants.SDSMK4i(
+                compBot()
+                        ? COTSSwerveConstants.driveGearRatios.SDSMK4i_L3
+                        : COTSSwerveConstants.driveGearRatios.SDSMK4i_L2);
 
         /* Drivetrain Constants */
         public static final double TRACK_WIDTH = Units.inchesToMeters(24.25);
@@ -104,19 +102,17 @@ public final class Constants {
         public static final int BL = 2; // Back Left Module Index
         public static final int BR = 3; // Back Right Module Index
 
-        public static final List<Translation2d> CENTER_TO_MODULE =
-                Arrays.asList(
-                        new Translation2d(WHEEL_BASE / 2.0, TRACK_WIDTH / 2.0),
-                        new Translation2d(WHEEL_BASE / 2.0, -TRACK_WIDTH / 2.0),
-                        new Translation2d(-WHEEL_BASE / 2.0, TRACK_WIDTH / 2.0),
-                        new Translation2d(-WHEEL_BASE / 2.0, -TRACK_WIDTH / 2.0));
+        public static final List<Translation2d> CENTER_TO_MODULE = Arrays.asList(
+                new Translation2d(WHEEL_BASE / 2.0, TRACK_WIDTH / 2.0),
+                new Translation2d(WHEEL_BASE / 2.0, -TRACK_WIDTH / 2.0),
+                new Translation2d(-WHEEL_BASE / 2.0, TRACK_WIDTH / 2.0),
+                new Translation2d(-WHEEL_BASE / 2.0, -TRACK_WIDTH / 2.0));
 
-        public static final SwerveDriveKinematics KINEMATICS =
-                new SwerveDriveKinematics(
-                        CENTER_TO_MODULE.get(FL),
-                        CENTER_TO_MODULE.get(FR),
-                        CENTER_TO_MODULE.get(BL),
-                        CENTER_TO_MODULE.get(BR));
+        public static final SwerveDriveKinematics KINEMATICS = new SwerveDriveKinematics(
+                CENTER_TO_MODULE.get(FL),
+                CENTER_TO_MODULE.get(FR),
+                CENTER_TO_MODULE.get(BL),
+                CENTER_TO_MODULE.get(BR));
 
         /* Current Limits
          *
@@ -175,29 +171,27 @@ public final class Constants {
                 10.0; // TODO: This must be tuned to specific robot
 
         public static final double MASS = Units.lbsToKilograms(115 + 20);
-        public static final double MOI =
-                (1 / 12.0)
-                        * MASS
-                        * (WHEEL_BASE * WHEEL_BASE
-                                + TRACK_WIDTH * TRACK_WIDTH); // TODO: EMPIRICALLY MEASURE MOI
+        public static final double MOI = (1 / 12.0)
+                * MASS
+                * (WHEEL_BASE * WHEEL_BASE
+                        + TRACK_WIDTH * TRACK_WIDTH); // TODO: EMPIRICALLY MEASURE MOI
         public static final double MAX_MODULE_ANGULAR_VELOCITY =
                 Units.rotationsToRadians(10.0); // CONFIG
 
-        public static final RobotConfig PHYSICAL_CONSTANTS =
-                new RobotConfig(
-                        MASS,
-                        MOI,
-                        new ModuleConfig(
-                                WHEEL_CIRCUMFERENCE / (2 * Math.PI),
-                                MAX_SPEED,
-                                1.2, // TODO, MEASURE WHEEL COEFFICIENT OF FRICTION,
-                                DCMotor.getKrakenX60Foc(1).withReduction(DRIVE_GEAR_RATIO),
-                                60,
-                                1),
-                        CENTER_TO_MODULE.get(FL),
-                        CENTER_TO_MODULE.get(FR),
-                        CENTER_TO_MODULE.get(BL),
-                        CENTER_TO_MODULE.get(BR));
+        public static final RobotConfig PHYSICAL_CONSTANTS = new RobotConfig(
+                MASS,
+                MOI,
+                new ModuleConfig(
+                        WHEEL_CIRCUMFERENCE / (2 * Math.PI),
+                        MAX_SPEED,
+                        1.2, // TODO, MEASURE WHEEL COEFFICIENT OF FRICTION,
+                        DCMotor.getKrakenX60Foc(1).withReduction(DRIVE_GEAR_RATIO),
+                        60,
+                        1),
+                CENTER_TO_MODULE.get(FL),
+                CENTER_TO_MODULE.get(FR),
+                CENTER_TO_MODULE.get(BL),
+                CENTER_TO_MODULE.get(BR));
     }
 
     public static final class Elevator {
@@ -326,14 +320,12 @@ public final class Constants {
         public static final SuperstructureState PICKUP_HIGH_ALGAE =
                 new SuperstructureState(.88 + .2, Math.toRadians(60));
 
-        public static final List<StateWithMode> L4_DUNK =
-                List.of(
-                        SetpointMode.WRIST_SYNC.withState(
-                                new SuperstructureState(L4.elevatorPosition, Math.toRadians(0))),
-                        SetpointMode.WRIST_SYNC.withState(
-                                new SuperstructureState(1.31, Math.toRadians(0))),
-                        SetpointMode.WRIST_SYNC.withState(
-                                new SuperstructureState(1.0, Math.toRadians(70))));
+        public static final List<StateWithMode> L4_DUNK = List.of(
+                SetpointMode.WRIST_SYNC.withState(
+                        new SuperstructureState(L4.elevatorPosition, Math.toRadians(0))),
+                SetpointMode.WRIST_SYNC.withState(new SuperstructureState(1.31, Math.toRadians(0))),
+                SetpointMode.WRIST_SYNC.withState(
+                        new SuperstructureState(1.0, Math.toRadians(70))));
 
         public static final SuperstructureState HANDOFF =
                 new SuperstructureState(.001, Math.toRadians(94));
@@ -450,28 +442,25 @@ public final class Constants {
 
     public static final class Vision {
 
-        public static final List<RobotCamera> CAMERAS =
-                List.of(
-                        new RobotCamera( // FRONT LEFT
-                                "Blitz_2_OV2311",
-                                new Transform3d(
-                                        new Translation3d(
-                                                // TODO, VERIFY
-                                                Inches.of(11.104033),
-                                                Inches.of(10.101652),
-                                                Inches.of(9.504322)),
-                                        new Rotation3d(
-                                                Degrees.of(0), Degrees.of(-20), Degrees.of(-20)))),
-                        new RobotCamera( // FRONT RIGHT
-                                "Blitz_1_OV2311",
-                                new Transform3d(
-                                        new Translation3d(
-                                                // TODO, VERIFY
-                                                Inches.of(11.104033),
-                                                Inches.of(-10.101652),
-                                                Inches.of(9.504322)),
-                                        new Rotation3d(
-                                                Degrees.of(0), Degrees.of(-20), Degrees.of(20)))));
+        public static final List<RobotCamera> CAMERAS = List.of(
+                new RobotCamera( // FRONT LEFT
+                        "Blitz_2_OV2311",
+                        new Transform3d(
+                                new Translation3d(
+                                        // TODO, VERIFY
+                                        Inches.of(11.104033),
+                                        Inches.of(10.101652),
+                                        Inches.of(9.504322)),
+                                new Rotation3d(Degrees.of(0), Degrees.of(-20), Degrees.of(-20)))),
+                new RobotCamera( // FRONT RIGHT
+                        "Blitz_1_OV2311",
+                        new Transform3d(
+                                new Translation3d(
+                                        // TODO, VERIFY
+                                        Inches.of(11.104033),
+                                        Inches.of(-10.101652),
+                                        Inches.of(9.504322)),
+                                new Rotation3d(Degrees.of(0), Degrees.of(-20), Degrees.of(20)))));
 
         public record RobotCamera(String name, Transform3d pose) {}
     }

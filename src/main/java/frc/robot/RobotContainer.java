@@ -7,8 +7,12 @@
 
 package frc.robot;
 
+import static edu.wpi.first.wpilibj2.command.Commands.*;
+
 import choreo.auto.AutoChooser;
+
 import com.ctre.phoenix6.SignalLogger;
+
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -21,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+
 import frc.lib.math.AllianceFlipUtil;
 import frc.lib.util.ScoringPositions;
 import frc.robot.commands.*;
@@ -34,21 +39,19 @@ import frc.robot.subsystems.intake.IntakeIOKraken;
 import frc.robot.subsystems.intake.IntakeIOSpark;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.superstructure.elevator.Elevator;
-import frc.robot.subsystems.superstructure.elevator.ElevatorIO;
 import frc.robot.subsystems.superstructure.elevator.ElevatorIOKraken;
 import frc.robot.subsystems.superstructure.elevator.ElevatorIOSpark;
 import frc.robot.subsystems.superstructure.wrist.Wrist;
-import frc.robot.subsystems.superstructure.wrist.WristIO;
 import frc.robot.subsystems.superstructure.wrist.WristIOKraken;
 import frc.robot.subsystems.superstructure.wrist.WristIOSpark;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.winch.Winch;
 import frc.robot.subsystems.winch.WinchIO;
 import frc.robot.subsystems.winch.WinchIOSpark;
-import java.util.Set;
+
 import org.littletonrobotics.junction.Logger;
 
-import static edu.wpi.first.wpilibj2.command.Commands.*;
+import java.util.Set;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -85,7 +88,6 @@ public class RobotContainer {
 
         DriverStation.silenceJoystickConnectionWarning(true);
 
-
         autoChooser = new AutoChooser();
         SmartDashboard.putData("autoChooser", autoChooser);
 
@@ -96,46 +98,42 @@ public class RobotContainer {
         autoChooser.addRoutine("fourPieceLeft", autoCommands::fourPieceLeft);
         autoChooser.addRoutine("leaveRight", () -> autoCommands.leave("leaveRight"));
 
-        Commands.run(
-                        () -> {
-                            for (ScoringPositions.Branch branch :
-                                    ScoringPositions.Branch.values()) {
-                                Logger.recordOutput(
-                                        "positions/reef/" + branch.name(),
-                                        PositionConstants.Reef.SCORING_POSITIONS.get(branch).get());
-                            }
-                        })
+        Commands.run(() -> {
+                    for (ScoringPositions.Branch branch : ScoringPositions.Branch.values()) {
+                        Logger.recordOutput(
+                                "positions/reef/" + branch.name(),
+                                PositionConstants.Reef.SCORING_POSITIONS
+                                        .get(branch)
+                                        .get());
+                    }
+                })
                 .ignoringDisable(true)
                 .schedule();
     }
 
     private void setDefaultCommands() {
-        drive.setDefaultCommand(
-                driveCommands.joystickDrive(
+        drive.setDefaultCommand(driveCommands
+                .joystickDrive(
                         OIConstants.Drive.X_TRANSLATION,
                         OIConstants.Drive.Y_TRANSLATION,
                         OIConstants.Drive.ROTATION_SPEED,
                         () -> 5,
                         () -> 10,
                         () -> 2 * Math.PI,
-                        true
-                )
-                        .onlyWhile(RobotState::isTeleop)
-                        .onlyIf(RobotState::isTeleop)
-                        .withName("Joystick Drive")
-        );
+                        true)
+                .onlyWhile(RobotState::isTeleop)
+                .onlyIf(RobotState::isTeleop)
+                .withName("Joystick Drive"));
 
-
-        superstructure.setDefaultCommand(
-                Commands.either(
-                                superstructure
-                                        .toGoalThenIdle(Superstructure.Goal.STOW)
-                                        .onlyWhile(intake::hasCoral),
-                                superstructure
-                                        .toGoalThenIdle(Superstructure.Goal.HANDOFF)
-                                        .until(intake::hasCoral),
-                                intake::hasCoral)
-                        .withName("superstructure/conditionalDefault"));
+        superstructure.setDefaultCommand(Commands.either(
+                        superstructure
+                                .toGoalThenIdle(Superstructure.Goal.STOW)
+                                .onlyWhile(intake::hasCoral),
+                        superstructure
+                                .toGoalThenIdle(Superstructure.Goal.HANDOFF)
+                                .until(intake::hasCoral),
+                        intake::hasCoral)
+                .withName("superstructure/conditionalDefault"));
     }
 
     private void configureSubsystems() {
@@ -146,10 +144,9 @@ public class RobotContainer {
 
         intake = new Intake(Constants.compBot() ? new IntakeIOKraken() : new IntakeIOSpark());
 
-        superstructure =
-                new Superstructure(
-                        Constants.compBot() ? new ElevatorIOKraken() : new ElevatorIOSpark(),
-                        Constants.compBot() ? new WristIOKraken() : new WristIOSpark());
+        superstructure = new Superstructure(
+                Constants.compBot() ? new ElevatorIOKraken() : new ElevatorIOSpark(),
+                Constants.compBot() ? new WristIOKraken() : new WristIOSpark());
         elevator = superstructure.getElevator();
         wrist = superstructure.getWrist();
 
@@ -160,29 +157,24 @@ public class RobotContainer {
     private void configureDashboard() {
         var tab = Shuffleboard.getTab("tuning");
 
-        tab.add("Phoenix SignalLogger",
-                runEnd(
-                        SignalLogger::start,
-                        SignalLogger::stop
-                ).ignoringDisable(true)
-        );
+        tab.add(
+                "Phoenix SignalLogger",
+                runEnd(SignalLogger::start, SignalLogger::stop).ignoringDisable(true));
 
         tab.add("drive/resetOdometry", Commands.runOnce(() -> drive.resetPose(new Pose2d())));
 
-        tab.add("wheel radius characterization", DriveCharacterizationCommands.characterizeWheelDiameter(drive));
-
+        tab.add(
+                "wheel radius characterization",
+                DriveCharacterizationCommands.characterizeWheelDiameter(drive));
     }
 
     private void configureButtonBindings() {
-        OIConstants.Drive.RESET_GYRO.onTrue(
-                Commands.runOnce(
-                        () ->
-                        drive.resetRotation(
+        OIConstants.Drive.RESET_GYRO.onTrue(Commands.runOnce(() -> drive.resetRotation(
                 AllianceFlipUtil.shouldFlip() ? Rotation2d.k180deg : Rotation2d.kZero)));
-//        OIConstants.Drive.X_BREAK.onTrue(drive.park());
-//
-//        OIConstants.Drive.BRAKE.onTrue(Commands.runOnce(() -> drive.setBrakeMode(true)));
-//        OIConstants.Drive.COAST.onTrue(Commands.runOnce(() -> drive.setBrakeMode(false)));
+        //        OIConstants.Drive.X_BREAK.onTrue(drive.park());
+        //
+        //        OIConstants.Drive.BRAKE.onTrue(Commands.runOnce(() -> drive.setBrakeMode(true)));
+        //        OIConstants.Drive.COAST.onTrue(Commands.runOnce(() -> drive.setBrakeMode(false)));
 
         OIConstants.SuperStructure.L1.whileTrue(
                 superstructure.toGoalThenIdle(Superstructure.Goal.L1));
@@ -193,14 +185,12 @@ public class RobotContainer {
         OIConstants.SuperStructure.L4.whileTrue(
                 superstructure.toGoalThenIdle(Superstructure.Goal.L4));
 
-        OIConstants.SuperStructure.KICK_BOTTOM_ALGAE.whileTrue(
-                superstructure
-                        .toGoalThenIdle(Superstructure.Goal.KICK_LOW_ALGAE)
-                        .alongWith(intake.kick_algae()));
-        OIConstants.SuperStructure.KICK_TOP_ALGAE.whileTrue(
-                superstructure
-                        .toGoalThenIdle(Superstructure.Goal.KICK_HIGH_ALGAE)
-                        .alongWith(intake.kick_algae()));
+        OIConstants.SuperStructure.KICK_BOTTOM_ALGAE.whileTrue(superstructure
+                .toGoalThenIdle(Superstructure.Goal.KICK_LOW_ALGAE)
+                .alongWith(intake.kick_algae()));
+        OIConstants.SuperStructure.KICK_TOP_ALGAE.whileTrue(superstructure
+                .toGoalThenIdle(Superstructure.Goal.KICK_HIGH_ALGAE)
+                .alongWith(intake.kick_algae()));
 
         OIConstants.SuperStructure.HANDOFF.whileTrue(
                 CommandFactory.handoff(superstructure, intake));
@@ -237,60 +227,47 @@ public class RobotContainer {
 
         OIConstants.Climber.DEPLOY_CLIMBER.onTrue(
                 ClimbCommandFactory.deployClimber(climber, winch));
-        OIConstants.Climber.RESTOW_CLIMBER.onTrue(
-                ClimbCommandFactory.stowClimber(climber, winch)
-                        .unless(() -> climber.getState() == Climber.State.CLIMB));
+        OIConstants.Climber.RESTOW_CLIMBER.onTrue(ClimbCommandFactory.stowClimber(climber, winch)
+                .unless(() -> climber.getState() == Climber.State.CLIMB));
 
         OIConstants.SuperStructure.SCORE
-                .and(
-                        () ->
-                                climber.getState() == Climber.State.DEPLOYED
-                                        || climber.getState() == Climber.State.CLIMB)
+                .and(() -> climber.getState() == Climber.State.DEPLOYED
+                        || climber.getState() == Climber.State.CLIMB)
                 .whileTrue(climber.climb());
 
         new Trigger(RobotController::getUserButton)
-                .toggleOnTrue(
-                        Commands.parallel(
-                                        wrist.coastCommand(),
-                                        elevator.coastCommand(),
-                                        climber.coastCommand())
-                                .onlyWhile(RobotState::isDisabled));
+                .toggleOnTrue(Commands.parallel(
+                                wrist.coastCommand(),
+                                elevator.coastCommand(),
+                                climber.coastCommand())
+                        .onlyWhile(RobotState::isDisabled));
 
-        OIConstants.Drive.ALIGN_LEFT.whileTrue(
-                new DeferredCommand(
-                        () ->
-                                drive.driveToPose(
-                                        PositionConstants.Reef.SCORING_POSITIONS.get(
-                                                PositionConstants.getClosestFace(drive.getPose())[
-                                                        0])),
-                        Set.of(drive)));
+        OIConstants.Drive.ALIGN_LEFT.whileTrue(new DeferredCommand(
+                () -> drive.driveToPose(PositionConstants.Reef.SCORING_POSITIONS.get(
+                        PositionConstants.getClosestFace(drive.getPose())[0])),
+                Set.of(drive)));
 
-        OIConstants.Drive.ALIGN_RIGHT.whileTrue(
-                new DeferredCommand(
-                        () ->
-                                drive.driveToPose(
-                                        PositionConstants.Reef.SCORING_POSITIONS.get(
-                                                PositionConstants.getClosestFace(drive.getPose())[
-                                                        1])),
-                        Set.of(drive)));
+        OIConstants.Drive.ALIGN_RIGHT.whileTrue(new DeferredCommand(
+                () -> drive.driveToPose(PositionConstants.Reef.SCORING_POSITIONS.get(
+                        PositionConstants.getClosestFace(drive.getPose())[1])),
+                Set.of(drive)));
 
-        Commands.run(
-                        () -> {
-                            PositionConstants.getClosestFace(drive.getPose());
-                        })
+        Commands.run(() -> {
+                    PositionConstants.getClosestFace(drive.getPose());
+                })
                 .ignoringDisable(true)
                 .schedule();
     }
 
-    private void configureAutoCommands() {
-
-    }
+    private void configureAutoCommands() {}
 
     public Command getAutonomousCommand() {
         Logger.recordOutput("selectedAuto", autoChooser.selectedCommand().getName());
         return Commands.sequence(
-                        Commands.runOnce(
-                                () -> drive.resetRotation(AllianceFlipUtil.shouldFlip() ? Rotation2d.kZero: Rotation2d.k180deg)),
+                        Commands.runOnce(() -> drive.resetRotation(
+                                AllianceFlipUtil.shouldFlip()
+                                        ? Rotation2d.kZero
+                                        : Rotation2d.k180deg)),
                         autoChooser.selectedCommandScheduler())
                 .withName("Auto Command");
     }

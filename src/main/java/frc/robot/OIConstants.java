@@ -3,9 +3,9 @@ package frc.robot;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+
 import java.util.function.DoubleSupplier;
 import java.util.function.Function;
 
@@ -13,7 +13,7 @@ public class OIConstants {
 
     public static final double XBOX_STICK_DEADBAND = 0.06;
 
-//    public static final CommandJoystick DRIVE_CONTROLLER = new CommandJoystick(0);
+    //    public static final CommandJoystick DRIVE_CONTROLLER = new CommandJoystick(0);
     public static final CommandXboxController DRIVE_CONTROLLER = new CommandXboxController(0);
     public static final CommandXboxController OPERATOR_CONTROLLER = new CommandXboxController(1);
 
@@ -32,7 +32,8 @@ public class OIConstants {
         public static double TRANSLATION_DEADBAND = 0.05;
         public static double ROTATION_DEADBAND = 0.05;
 
-        public static final Function<Double, Double> TRANSLATION_INPUT_CURVE = (x) -> .8 * x + .2 * (x * x * x);
+        public static final Function<Double, Double> TRANSLATION_INPUT_CURVE =
+                (x) -> .8 * x + .2 * (x * x * x);
         public static final Function<Double, Double> SPIN_CURVE = (x) -> (x * x * x);
 
         public static double STICK_DEADBAND = 0.08;
@@ -82,10 +83,8 @@ public class OIConstants {
                 new Trigger(() -> DRIVE_CONTROLLER.getHID().getPOV() > 180);
 
         public static final Trigger ALIGN_RIGHT =
-                new Trigger(
-                        () ->
-                                DRIVE_CONTROLLER.getHID().getPOV() < 180
-                                        && DRIVE_CONTROLLER.getHID().getPOV() > 0);
+                new Trigger(() -> DRIVE_CONTROLLER.getHID().getPOV() < 180
+                        && DRIVE_CONTROLLER.getHID().getPOV() > 0);
     }
 
     public static final class Overrides {
@@ -144,11 +143,8 @@ public class OIConstants {
         public static final Trigger KICK_BOTTOM_ALGAE = OPERATOR_CONTROLLER.a();
         public static final Trigger KICK_TOP_ALGAE = OPERATOR_CONTROLLER.b();
 
-        public static final Trigger MANUAL_MODE =
-                new Trigger(
-                        () ->
-                                Elevator.MANUAL.getAsDouble() != 0
-                                        || Wrist.MANUAL.getAsDouble() != 0);
+        public static final Trigger MANUAL_MODE = new Trigger(
+                () -> Elevator.MANUAL.getAsDouble() != 0 || Wrist.MANUAL.getAsDouble() != 0);
     }
 
     public static final class Winch {

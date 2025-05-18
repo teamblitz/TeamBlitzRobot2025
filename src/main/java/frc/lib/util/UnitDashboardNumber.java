@@ -2,6 +2,7 @@ package frc.lib.util;
 
 import edu.wpi.first.units.BaseUnits;
 import edu.wpi.first.units.Unit;
+
 import frc.lib.util.units.UnitConverter;
 
 public class UnitDashboardNumber extends LoggedTunableNumber {

@@ -6,12 +6,15 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
+
 import frc.lib.math.AllianceFlipUtil;
 import frc.lib.util.ScoringPositions;
+
+import org.littletonrobotics.junction.Logger;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
-import org.littletonrobotics.junction.Logger;
 
 public class PositionConstants {
     public static final class Reef {
@@ -56,14 +59,12 @@ public class PositionConstants {
     }
 
     public static ScoringPositions.Branch[] getClosestFace(Pose2d robotPose) {
-        var angle =
-                new Transform2d(
-                                new Pose2d(
-                                        AllianceFlipUtil.apply(Reef.REEF_CENTER), Rotation2d.kZero),
-                                robotPose)
-                        .getTranslation()
-                        .getAngle()
-                        .getDegrees();
+        var angle = new Transform2d(
+                        new Pose2d(AllianceFlipUtil.apply(Reef.REEF_CENTER), Rotation2d.kZero),
+                        robotPose)
+                .getTranslation()
+                .getAngle()
+                .getDegrees();
 
         Logger.recordOutput("drive/autoAlign/reefAngle", angle);
 

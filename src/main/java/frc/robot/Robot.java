@@ -8,22 +8,18 @@
 package frc.robot;
 
 import com.ctre.phoenix6.SignalLogger;
+
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+
 import frc.lib.resources.GCMonitor;
 import frc.lib.resources.ResourceMonitor;
 import frc.lib.util.PeriodicExecutor;
 import frc.robot.subsystems.leds.Leds;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.BiConsumer;
+
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -31,6 +27,14 @@ import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import org.littletonrobotics.urcl.URCL;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.BiConsumer;
 
 public class Robot extends LoggedRobot {
     private Command autonomousCommand;
@@ -87,12 +91,12 @@ public class Robot extends LoggedRobot {
 
         } else
             switch (Constants.SIM_MODE) {
-                // Running a physics simulator, log to local folder
+                    // Running a physics simulator, log to local folder
                 case SIM -> {
                     Logger.addDataReceiver(new WPILOGWriter(""));
                     Logger.addDataReceiver(new NT4Publisher());
                 }
-                // Replaying a log, set up replay source
+                    // Replaying a log, set up replay source
                 case REPLAY -> {
                     setUseTiming(false); // Run as fast as possible
                     String logPath = LogFileUtil.findReplayLog();
@@ -110,34 +114,24 @@ public class Robot extends LoggedRobot {
 
         // Log active commands
         Map<String, Integer> commandCounts = new HashMap<>();
-        BiConsumer<Command, Boolean> logCommandFunction =
-                (Command command, Boolean active) -> {
-                    String name = command.getName();
-                    int count = commandCounts.getOrDefault(name, 0) + (active ? 1 : -1);
-                    commandCounts.put(name, count);
-                    Logger.recordOutput(
-                            "CommandsUnique/"
-                                    + name
-                                    + "_"
-                                    + Integer.toHexString(command.hashCode()),
-                            active);
-                    Logger.recordOutput("CommandsAll/" + name, count > 0);
-                };
-        CommandScheduler.getInstance()
-                .onCommandInitialize(
-                        (Command command) -> {
-                            logCommandFunction.accept(command, true);
-                        });
-        CommandScheduler.getInstance()
-                .onCommandFinish(
-                        (Command command) -> {
-                            logCommandFunction.accept(command, false);
-                        });
-        CommandScheduler.getInstance()
-                .onCommandInterrupt(
-                        (Command command) -> {
-                            logCommandFunction.accept(command, false);
-                        });
+        BiConsumer<Command, Boolean> logCommandFunction = (Command command, Boolean active) -> {
+            String name = command.getName();
+            int count = commandCounts.getOrDefault(name, 0) + (active ? 1 : -1);
+            commandCounts.put(name, count);
+            Logger.recordOutput(
+                    "CommandsUnique/" + name + "_" + Integer.toHexString(command.hashCode()),
+                    active);
+            Logger.recordOutput("CommandsAll/" + name, count > 0);
+        };
+        CommandScheduler.getInstance().onCommandInitialize((Command command) -> {
+            logCommandFunction.accept(command, true);
+        });
+        CommandScheduler.getInstance().onCommandFinish((Command command) -> {
+            logCommandFunction.accept(command, false);
+        });
+        CommandScheduler.getInstance().onCommandInterrupt((Command command) -> {
+            logCommandFunction.accept(command, false);
+        });
 
         Runtime runtime = Runtime.getRuntime();
 

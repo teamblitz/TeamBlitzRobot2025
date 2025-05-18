@@ -5,10 +5,9 @@ package frc.lib.math;
  * this filter limits the magnitude of the desired change, with no impedance on its direction. This results in a filter whos
  * behavior is not dependent on coordinate system axis.
  */
-
 import edu.wpi.first.math.*;
 
-public class VectorSlewRateLimiter<R extends Num>  {
+public class VectorSlewRateLimiter<R extends Num> {
     private final double rateLimit;
     private Vector<R> prevVal;
     private Vector<R> lastDelta;
@@ -26,10 +25,10 @@ public class VectorSlewRateLimiter<R extends Num>  {
         this.prevVal = initialValue;
         this.prevTime = MathSharedStore.getTimestamp();
 
-        // Unsure how to create the proper sized vector with generics. So this just creates a zero vector that is the correct size.
+        // Unsure how to create the proper sized vector with generics. So this just creates a zero
+        // vector that is the correct size.
         this.lastDelta = initialValue.times(0);
     }
-
 
     public Vector<R> calculate(Vector<R> input) {
         double currentTime = MathSharedStore.getTimestamp();
@@ -71,5 +70,4 @@ public class VectorSlewRateLimiter<R extends Num>  {
         prevVal = value;
         prevTime = MathSharedStore.getTimestamp();
     }
-
 }

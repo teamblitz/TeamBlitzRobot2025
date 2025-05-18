@@ -11,7 +11,8 @@ public final class VectorUtils {
         return vec.unit().times(Math.min(vec.norm(), maxMagnitude));
     }
 
-    public static <R extends Num> Vector<R> applyDeadband(Vector<R> vec, double deadband, double maxMagnitude) {
+    public static <R extends Num> Vector<R> applyDeadband(
+            Vector<R> vec, double deadband, double maxMagnitude) {
         if (vec.norm() == 0) return vec;
 
         return vec.unit().times(MathUtil.applyDeadband(vec.norm(), deadband, maxMagnitude));

@@ -1,6 +1,7 @@
 package frc.lib.util;
 
 import choreo.trajectory.SwerveSample;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 
