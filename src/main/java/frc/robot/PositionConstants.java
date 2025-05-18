@@ -8,7 +8,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 
 import frc.lib.math.AllianceFlipUtil;
-import frc.lib.util.ScoringPositions;
+import frc.lib.reefscape.ScoringPositions;
 
 import org.littletonrobotics.junction.Logger;
 

@@ -9,7 +9,7 @@ public final class DashboardHelpers {
     private DashboardHelpers() {}
 
     // I spent way too long on this method
-    @SuppressWarnings(value = "cast")
+    @SuppressWarnings(value = "unchecked")
     public static <T> Supplier<T> genericEntrySupplier(
             GenericEntry entry, T defaultValue, NetworkTableType type) {
 

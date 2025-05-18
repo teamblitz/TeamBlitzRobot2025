@@ -27,7 +27,7 @@ import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import frc.lib.math.AllianceFlipUtil;
-import frc.lib.util.ScoringPositions;
+import frc.lib.reefscape.ScoringPositions;
 import frc.robot.commands.*;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.climber.Climber;
