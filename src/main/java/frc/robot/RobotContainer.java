@@ -8,8 +8,10 @@
 package frc.robot;
 
 import choreo.auto.AutoChooser;
+import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.RobotState;
@@ -21,23 +23,12 @@ import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.math.AllianceFlipUtil;
 import frc.lib.util.ScoringPositions;
-import frc.robot.commands.AutoCommands;
-import frc.robot.commands.ClimbCommandFactory;
-import frc.robot.commands.CommandFactory;
-import frc.robot.commands.TeleopSwerve;
+import frc.robot.commands.*;
+import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.ClimberIO;
 import frc.robot.subsystems.climber.ClimberIOKraken;
-import frc.robot.subsystems.drive.Drive;
-import frc.robot.subsystems.drive.gyro.GyroIOPigeon;
-import frc.robot.subsystems.drive.gyro.GyroIOSim;
-import frc.robot.subsystems.drive.range.RangeSensorIO;
-import frc.robot.subsystems.drive.range.RangeSensorIOFusion;
-import frc.robot.subsystems.drive.swerveModule.SwerveModule;
-import frc.robot.subsystems.drive.swerveModule.SwerveModuleConfiguration;
-import frc.robot.subsystems.drive.swerveModule.angle.AngleMotorIOSim;
-import frc.robot.subsystems.drive.swerveModule.drive.DriveMotorIOSim;
-import frc.robot.subsystems.drive.swerveModule.encoder.EncoderIO;
+import frc.robot.subsystems.drive.CommandSwerveDrivetrain;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIOKraken;
 import frc.robot.subsystems.intake.IntakeIOSpark;
@@ -56,7 +47,8 @@ import frc.robot.subsystems.winch.WinchIO;
 import frc.robot.subsystems.winch.WinchIOSpark;
 import java.util.Set;
 import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+
+import static edu.wpi.first.wpilibj2.command.Commands.*;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -67,7 +59,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 public class RobotContainer {
 
     /* ***** --- Subsystems --- ***** */
-    private Drive drive;
+    private CommandSwerveDrivetrain drive;
     private Vision vision;
     private Elevator elevator;
     private Wrist wrist;
@@ -76,6 +68,7 @@ public class RobotContainer {
     private Winch winch;
     private Climber climber;
     private AutoCommands autoCommands;
+    private DriveCommands driveCommands;
 
     /* ***** --- Autonomous --- ***** */
     private final AutoChooser autoChooser;
@@ -88,9 +81,9 @@ public class RobotContainer {
         setDefaultCommands();
         configureAutoCommands();
 
+        configureDashboard();
+
         DriverStation.silenceJoystickConnectionWarning(true);
-        Shuffleboard.getTab("Drive")
-                .add("ResetOdometry", Commands.runOnce(() -> drive.resetOdometry(new Pose2d())));
 
 
         autoChooser = new AutoChooser();
@@ -118,17 +111,20 @@ public class RobotContainer {
 
     private void setDefaultCommands() {
         drive.setDefaultCommand(
-                new TeleopSwerve(
-                                drive,
-                                OIConstants.Drive.X_TRANSLATION,
-                                OIConstants.Drive.Y_TRANSLATION,
-                                OIConstants.Drive.ROTATION_SPEED,
-                                () -> false,
-                                () -> Double.NaN,
-                                () -> climber.getState() != Climber.State.CLIMB)
-                        .unless(RobotState::isTest)
-                        .until(RobotState::isTest)
-                        .withName("TeleopSwerve"));
+                driveCommands.joystickDrive(
+                        OIConstants.Drive.X_TRANSLATION,
+                        OIConstants.Drive.Y_TRANSLATION,
+                        OIConstants.Drive.ROTATION_SPEED,
+                        () -> 5,
+                        () -> 10,
+                        () -> 2 * Math.PI,
+                        true
+                )
+                        .onlyWhile(RobotState::isTeleop)
+                        .onlyIf(RobotState::isTeleop)
+                        .withName("Joystick Drive")
+        );
+
 
         superstructure.setDefaultCommand(
                 Commands.either(
@@ -143,58 +139,8 @@ public class RobotContainer {
     }
 
     private void configureSubsystems() {
-        drive =
-                switch (Constants.ROBOT) {
-                    case CompBot ->
-                            new Drive(
-                                    new SwerveModuleConfiguration(
-                                            SwerveModuleConfiguration.MotorType.KRAKEN,
-                                            SwerveModuleConfiguration.MotorType.KRAKEN,
-                                            SwerveModuleConfiguration.EncoderType.CANCODER),
-                                    Constants.Drive.Mod0.CONSTANTS,
-                                    Constants.Drive.Mod1.CONSTANTS,
-                                    Constants.Drive.Mod2.CONSTANTS,
-                                    Constants.Drive.Mod3.CONSTANTS,
-                                    new GyroIOPigeon(),
-                                    new RangeSensorIOFusion());
-
-                    case DevBot ->
-                            new Drive(
-                                    new SwerveModuleConfiguration(
-                                            SwerveModuleConfiguration.MotorType.NEO,
-                                            SwerveModuleConfiguration.MotorType.NEO,
-                                            SwerveModuleConfiguration.EncoderType.HELIUM),
-                                    Constants.Drive.Mod0.CONSTANTS,
-                                    Constants.Drive.Mod1.CONSTANTS,
-                                    Constants.Drive.Mod2.CONSTANTS,
-                                    Constants.Drive.Mod3.CONSTANTS,
-                                    new GyroIOPigeon(),
-                                    new RangeSensorIO() {});
-                    case SimBot ->
-                            new Drive(
-                                    new SwerveModule(
-                                            Constants.Drive.FL,
-                                            new AngleMotorIOSim(),
-                                            new DriveMotorIOSim(),
-                                            new EncoderIO() {}),
-                                    new SwerveModule(
-                                            Constants.Drive.FR,
-                                            new AngleMotorIOSim(),
-                                            new DriveMotorIOSim(),
-                                            new EncoderIO() {}),
-                                    new SwerveModule(
-                                            Constants.Drive.BL,
-                                            new AngleMotorIOSim(),
-                                            new DriveMotorIOSim(),
-                                            new EncoderIO() {}),
-                                    new SwerveModule(
-                                            Constants.Drive.BR,
-                                            new AngleMotorIOSim(),
-                                            new DriveMotorIOSim(),
-                                            new EncoderIO() {}),
-                                    new GyroIOSim(() -> drive.getChassisSpeeds()),
-                                    new RangeSensorIO() {});
-                };
+        drive = TunerConstants.createDrivetrain();
+        driveCommands = new DriveCommands(drive);
 
         vision = new Vision(drive);
 
@@ -211,12 +157,32 @@ public class RobotContainer {
         winch = new Winch(Constants.compBot() ? new WinchIOSpark() : new WinchIO() {});
     }
 
-    private void configureButtonBindings() {
-        OIConstants.Drive.RESET_GYRO.onTrue(Commands.runOnce(drive::zeroGyro));
-        OIConstants.Drive.X_BREAK.onTrue(drive.park());
+    private void configureDashboard() {
+        var tab = Shuffleboard.getTab("tuning");
 
-        OIConstants.Drive.BRAKE.onTrue(Commands.runOnce(() -> drive.setBrakeMode(true)));
-        OIConstants.Drive.COAST.onTrue(Commands.runOnce(() -> drive.setBrakeMode(false)));
+        tab.add("Phoenix SignalLogger",
+                runEnd(
+                        SignalLogger::start,
+                        SignalLogger::stop
+                ).ignoringDisable(true)
+        );
+
+        tab.add("drive/resetOdometry", Commands.runOnce(() -> drive.resetPose(new Pose2d())));
+
+        tab.add("wheel radius characterization", DriveCharacterizationCommands.characterizeWheelDiameter(drive));
+
+    }
+
+    private void configureButtonBindings() {
+        OIConstants.Drive.RESET_GYRO.onTrue(
+                Commands.runOnce(
+                        () ->
+                        drive.resetRotation(
+                AllianceFlipUtil.shouldFlip() ? Rotation2d.k180deg : Rotation2d.kZero)));
+//        OIConstants.Drive.X_BREAK.onTrue(drive.park());
+//
+//        OIConstants.Drive.BRAKE.onTrue(Commands.runOnce(() -> drive.setBrakeMode(true)));
+//        OIConstants.Drive.COAST.onTrue(Commands.runOnce(() -> drive.setBrakeMode(false)));
 
         OIConstants.SuperStructure.L1.whileTrue(
                 superstructure.toGoalThenIdle(Superstructure.Goal.L1));
@@ -324,7 +290,7 @@ public class RobotContainer {
         Logger.recordOutput("selectedAuto", autoChooser.selectedCommand().getName());
         return Commands.sequence(
                         Commands.runOnce(
-                                () -> drive.setGyro(AllianceFlipUtil.shouldFlip() ? 0 : 180)),
+                                () -> drive.resetRotation(AllianceFlipUtil.shouldFlip() ? Rotation2d.kZero: Rotation2d.k180deg)),
                         autoChooser.selectedCommandScheduler())
                 .withName("Auto Command");
     }

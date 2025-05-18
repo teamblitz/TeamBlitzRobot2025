@@ -14,7 +14,7 @@ import frc.lib.util.ScoringPositions;
 import frc.lib.util.ScoringPositions.Branch;
 import frc.robot.Constants;
 import frc.robot.PositionConstants;
-import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.drive.CommandSwerveDrivetrain;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.superstructure.Superstructure;
 import java.util.List;
@@ -22,7 +22,7 @@ import java.util.stream.IntStream;
 import org.littletonrobotics.junction.Logger;
 
 public class AutoCommands {
-    private final Drive drive;
+    private final CommandSwerveDrivetrain drive;
     private final SwerveDriveKinematics kinematics;
     private final AutoFactory autoFactory;
     private final Superstructure superstructure;
@@ -33,7 +33,7 @@ public class AutoCommands {
 
     private SwerveSample lastSample;
 
-    public AutoCommands(Drive drive, Superstructure superstructure, Intake intake) {
+    public AutoCommands(CommandSwerveDrivetrain drive, Superstructure superstructure, Intake intake) {
         this.drive = drive;
         this.superstructure = superstructure;
         this.intake = intake;
@@ -42,7 +42,7 @@ public class AutoCommands {
         autoFactory =
                 new AutoFactory(
                         drive::getPose,
-                        drive::resetOdometry,
+                        drive::resetPose,
                         sample -> {
                             // Don't ask, just cast (the ring into the fire frodo)
                             lastSample = (SwerveSample) sample;

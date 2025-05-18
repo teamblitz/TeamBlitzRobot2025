@@ -13,7 +13,8 @@ public class OIConstants {
 
     public static final double XBOX_STICK_DEADBAND = 0.06;
 
-    public static final CommandJoystick DRIVE_CONTROLLER = new CommandJoystick(0);
+//    public static final CommandJoystick DRIVE_CONTROLLER = new CommandJoystick(0);
+    public static final CommandXboxController DRIVE_CONTROLLER = new CommandXboxController(0);
     public static final CommandXboxController OPERATOR_CONTROLLER = new CommandXboxController(1);
 
     public static final Trigger TELEOP = new Trigger(DriverStation::isTeleop);
@@ -27,6 +28,12 @@ public class OIConstants {
             HeadingControl, // The rotation stick controls the heading of the robot
             OmegaControl // The rotation stick controls the angular velocity of the robot
         }
+
+        public static double TRANSLATION_DEADBAND = 0.05;
+        public static double ROTATION_DEADBAND = 0.05;
+
+        public static final Function<Double, Double> TRANSLATION_INPUT_CURVE = (x) -> .8 * x + .2 * (x * x * x);
+        public static final Function<Double, Double> SPIN_CURVE = (x) -> (x * x * x);
 
         public static double STICK_DEADBAND = 0.08;
 
@@ -51,16 +58,10 @@ public class OIConstants {
         private static final DoubleSupplier DRIVE_MULTIPLIER =
                 () -> (DRIVE_CONTROLLER.getHID().getRawButton(1) ? FAST_SPEED : NORMAL_SPEED);
 
-        public static final DoubleSupplier X_TRANSLATION =
-                () -> INPUT_CURVE.apply(-DRIVE_CONTROLLER.getY()) * DRIVE_MULTIPLIER.getAsDouble();
+        public static final DoubleSupplier X_TRANSLATION = () -> -DRIVE_CONTROLLER.getLeftY();
+        public static final DoubleSupplier Y_TRANSLATION = () -> -DRIVE_CONTROLLER.getLeftX();
 
-        public static final DoubleSupplier Y_TRANSLATION =
-                () -> INPUT_CURVE.apply(-DRIVE_CONTROLLER.getX()) * DRIVE_MULTIPLIER.getAsDouble();
-
-        public static final DoubleSupplier ROTATION_SPEED =
-                () ->
-                        (DRIVE_CONTROLLER.getHID().getRawButton(3) ? SUPER_SPIN : SPIN_SPEED)
-                                * SPIN_CURVE.apply(-DRIVE_CONTROLLER.getTwist());
+        public static final DoubleSupplier ROTATION_SPEED = () -> -DRIVE_CONTROLLER.getRightX();
 
         public static final DoubleSupplier HEADING_CONTROL = () -> Double.NaN;
         //                        0 * Math.hypot(DRIVE_CONTROLLER.getLeftY(),
