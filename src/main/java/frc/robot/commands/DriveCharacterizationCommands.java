@@ -47,7 +47,7 @@ public class DriveCharacterizationCommands {
                             timer.restart();
 
                             initialYaw.inner = drive.getPigeon2().getYaw().getValue();
-                            initialPositions.inner = drive.getState().ModulePositions;
+                            initialPositions.inner = drive.getState().clone().ModulePositions;
                         }
                 ),
                 drive.applyRequest(
@@ -74,7 +74,7 @@ public class DriveCharacterizationCommands {
                                         // same here
                                         var metersTraveled = Math.abs(finalPositions[i].distanceMeters - initialPositions.get()[i].distanceMeters);
 
-                                        return metersTraveled / (assumedWheelRadius * Math.PI);
+                                        return metersTraveled / (2 * assumedWheelRadius * Math.PI);
                                     }).toArray();
 
                             System.out.printf("Wheel Diameter Characterization Completed in %.2f seconds\n", timer.get());
@@ -83,7 +83,7 @@ public class DriveCharacterizationCommands {
                             double[] moduleDiametersInches = new double[numModules];
 
                             for (int i = 0; i < numModules; i++) {
-                                var moduleDistMeters = drive.getModuleLocations()[i].getNorm() * totalRotations[i];
+                                var moduleDistMeters = drive.getModuleLocations()[i].getNorm() * yawDeltaRadians;
 
                                 // dist traveled / rotations = dist per rotation (circumference)
                                 // circumference / pi = diameter
@@ -92,7 +92,7 @@ public class DriveCharacterizationCommands {
                                 var moduleDiameterInches = Units.metersToInches(moduleDiameter);
                                 moduleDiametersInches[i] = moduleDiameterInches;
 
-                                System.out.printf("Module %d rotated %.2f times. Calculated diameter: %.10f\n in", i, totalRotations[i], moduleDiameterInches);
+                                System.out.printf("Module %d rotated %.2f times. Calculated diameter: %.10f in\n", i, totalRotations[i], moduleDiameterInches);
                             }
 
                             var averageDiameter = Arrays.stream(moduleDiametersInches).summaryStatistics().getAverage();
