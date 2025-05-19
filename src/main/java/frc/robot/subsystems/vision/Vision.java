@@ -72,7 +72,12 @@ public class Vision extends SubsystemBase {
                                     estimatedRobotPose,
                                     VisionUtils.calculateStdDevs(estimatedRobotPose));
 
-                            Logger.recordOutput(logKey + "/stdDev", obs.stdDevs);
+                            Logger.recordOutput(logKey + "/stdDev",
+                                    new double[] {
+                                            obs.stdDevs.get(0, 0),
+                                            obs.stdDevs.get(1, 0),
+                                            obs.stdDevs.get(2, 0)
+                                    });
 
                             estimations.add(
                                     new PoseObservation(
