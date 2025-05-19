@@ -99,27 +99,27 @@ public class Elevator extends BlitzSubsystem {
                 new SysIdRoutine.Mechanism(
                         (volts) -> io.setVolts(volts.in(Units.Volts)), null, this));
 
-        characterizationTab.add(sysIdQuasistatic(SysIdRoutine.Direction.kForward)
-                .withName("Elevator Quasistic Forward"));
-        characterizationTab.add(sysIdQuasistatic(SysIdRoutine.Direction.kReverse)
-                .withName("Elevator Quasistic Reverse"));
-
-        characterizationTab.add(
-                sysIdDynamic(SysIdRoutine.Direction.kForward).withName("Elevator Dynamic Forward"));
-        characterizationTab.add(
-                sysIdDynamic(SysIdRoutine.Direction.kReverse).withName("Elevator Dynamic Reverse"));
-
-        characterizationTab.add(
-                "elevator/0.1m",
-                withGoal(new TrapezoidProfile.State(.1, 0))
-                        .alongWith(superstructureIdle.get())
-                        .withName("elevator/0.1m test"));
-
-        characterizationTab.add(
-                "elevator/0.4m",
-                withGoal(new TrapezoidProfile.State(.8, 0))
-                        .alongWith(superstructureIdle.get())
-                        .withName("elevator/0.5m test"));
+//        characterizationTab.add(sysIdQuasistatic(SysIdRoutine.Direction.kForward)
+//                .withName("Elevator Quasistic Forward"));
+//        characterizationTab.add(sysIdQuasistatic(SysIdRoutine.Direction.kReverse)
+//                .withName("Elevator Quasistic Reverse"));
+//
+//        characterizationTab.add(
+//                sysIdDynamic(SysIdRoutine.Direction.kForward).withName("Elevator Dynamic Forward"));
+//        characterizationTab.add(
+//                sysIdDynamic(SysIdRoutine.Direction.kReverse).withName("Elevator Dynamic Reverse"));
+//
+//        characterizationTab.add(
+//                "elevator/0.1m",
+//                withGoal(new TrapezoidProfile.State(.1, 0))
+//                        .alongWith(superstructureIdle.get())
+//                        .withName("elevator/0.1m test"));
+//
+//        characterizationTab.add(
+//                "elevator/0.4m",
+//                withGoal(new TrapezoidProfile.State(.8, 0))
+//                        .alongWith(superstructureIdle.get())
+//                        .withName("elevator/0.5m test"));
 
         loopTimer.restart();
     }

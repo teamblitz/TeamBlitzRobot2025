@@ -222,17 +222,17 @@ public class RobotContainer {
     }
 
     private void configureDashboard() {
-        var tab = Shuffleboard.getTab("tuning");
-
-        tab.add(
-                "Phoenix SignalLogger",
-                runEnd(SignalLogger::start, SignalLogger::stop).ignoringDisable(true));
-
-        tab.add("drive/resetOdometry", Commands.runOnce(() -> drive.resetPose(new Pose2d())));
-
-        tab.add(
-                "wheel radius characterization",
-                DriveCharacterizationCommands.characterizeWheelDiameter(drive));
+//        var tab = Shuffleboard.getTab("tuning");
+//
+//        tab.add(
+//                "Phoenix SignalLogger",
+//                runEnd(SignalLogger::start, SignalLogger::stop).ignoringDisable(true));
+//
+//        tab.add("drive/resetOdometry", Commands.runOnce(() -> drive.resetPose(new Pose2d())));
+//
+//        tab.add(
+//                "wheel radius characterization",
+//                DriveCharacterizationCommands.characterizeWheelDiameter(drive));
 
         new Trigger(() -> DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue)
                         == DriverStation.Alliance.Blue)

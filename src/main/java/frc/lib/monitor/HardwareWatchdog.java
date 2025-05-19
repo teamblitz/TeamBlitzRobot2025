@@ -43,11 +43,11 @@ public class HardwareWatchdog {
         var timer = new Timer();
         timer.start();
 
-        CommandScheduler.getInstance().getDefaultButtonLoop().bind(() -> {
-            if (timer.get() > gracePeriod) {
-                eventLoop.poll();
-            }
-        });
+//        CommandScheduler.getInstance().getDefaultButtonLoop().bind(() -> {
+//            if (timer.get() > gracePeriod) {
+//                eventLoop.poll();
+//            }
+//        });
     }
 
     public void registerCTREDevice(ParentDevice device, Class<?> parent) {

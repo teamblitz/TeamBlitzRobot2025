@@ -71,15 +71,15 @@ public class Climber extends BlitzSubsystem {
 
         ShuffleboardTab characterizationTab = Shuffleboard.getTab("characterization/climber");
 
-        characterizationTab.add(sysIdQuasistatic(SysIdRoutine.Direction.kForward)
-                .withName("Climber Quasistic Forward"));
-        characterizationTab.add(sysIdQuasistatic(SysIdRoutine.Direction.kReverse)
-                .withName("Climber Quasistic Reverse"));
-
-        characterizationTab.add(
-                sysIdDynamic(SysIdRoutine.Direction.kForward).withName("Climber Dynamic Forward"));
-        characterizationTab.add(
-                sysIdDynamic(SysIdRoutine.Direction.kReverse).withName("Climber Dynamic Reverse"));
+//        characterizationTab.add(sysIdQuasistatic(SysIdRoutine.Direction.kForward)
+//                .withName("Climber Quasistic Forward"));
+//        characterizationTab.add(sysIdQuasistatic(SysIdRoutine.Direction.kReverse)
+//                .withName("Climber Quasistic Reverse"));
+//
+//        characterizationTab.add(
+//                sysIdDynamic(SysIdRoutine.Direction.kForward).withName("Climber Dynamic Forward"));
+//        characterizationTab.add(
+//                sysIdDynamic(SysIdRoutine.Direction.kReverse).withName("Climber Dynamic Reverse"));
 
         //        ShuffleboardTab climbTab = Shuffleboard.getTab("climber");
         //        climbTab.add(deployClimber());

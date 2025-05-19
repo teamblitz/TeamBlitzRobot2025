@@ -102,11 +102,11 @@ public class DriveSysId {
 
         var tab = Shuffleboard.getTab("driveCharacterization");
 
-        tab.add("sysIdRoutine", routineChooser);
-        tab.add("sysIdDirection", directionChooser);
-        tab.add("sysIdType", typeChooser);
-
-        tab.add("runSysid", typeChooser.getSelected());
+//        tab.add("sysIdRoutine", routineChooser);
+//        tab.add("sysIdDirection", directionChooser);
+//        tab.add("sysIdType", typeChooser);
+//
+//        tab.add("runSysid", typeChooser.getSelected());
     }
 
     /* Swerve requests to apply during SysId characterization */

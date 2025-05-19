@@ -82,24 +82,24 @@ public class Wrist extends BlitzSubsystem {
                 new SysIdRoutine.Mechanism(
                         (volts) -> io.setVolts(volts.in(Units.Volts)), null, this));
 
-        characterizationTab.add(sysIdQuasistatic(SysIdRoutine.Direction.kForward)
-                .withName("Wrist Quasistic Forward"));
-        characterizationTab.add(sysIdQuasistatic(SysIdRoutine.Direction.kReverse)
-                .withName("Wrist Quasistic Reverse"));
-
-        characterizationTab.add(
-                sysIdDynamic(SysIdRoutine.Direction.kForward).withName("Wrist Dynamic Forward"));
-        characterizationTab.add(
-                sysIdDynamic(SysIdRoutine.Direction.kReverse).withName("Wrist Dynamic Reverse"));
-
-        characterizationTab.add(
-                "wrist/45",
-                withGoal(new TrapezoidProfile.State(Math.toRadians(45), 0))
-                        .withName("wrist/test45"));
-        characterizationTab.add(
-                "wrist/minus45",
-                withGoal(new TrapezoidProfile.State(Math.toRadians(-45), 0))
-                        .withName("wrist/testminus45"));
+//        characterizationTab.add(sysIdQuasistatic(SysIdRoutine.Direction.kForward)
+//                .withName("Wrist Quasistic Forward"));
+//        characterizationTab.add(sysIdQuasistatic(SysIdRoutine.Direction.kReverse)
+//                .withName("Wrist Quasistic Reverse"));
+//
+//        characterizationTab.add(
+//                sysIdDynamic(SysIdRoutine.Direction.kForward).withName("Wrist Dynamic Forward"));
+//        characterizationTab.add(
+//                sysIdDynamic(SysIdRoutine.Direction.kReverse).withName("Wrist Dynamic Reverse"));
+//
+//        characterizationTab.add(
+//                "wrist/45",
+//                withGoal(new TrapezoidProfile.State(Math.toRadians(45), 0))
+//                        .withName("wrist/test45"));
+//        characterizationTab.add(
+//                "wrist/minus45",
+//                withGoal(new TrapezoidProfile.State(Math.toRadians(-45), 0))
+//                        .withName("wrist/testminus45"));
     }
 
     @Override

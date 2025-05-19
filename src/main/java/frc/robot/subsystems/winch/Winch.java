@@ -37,19 +37,19 @@ public class Winch extends BlitzSubsystem {
         super("winch");
         this.io = io;
 
-        ShuffleboardTab winchTab = Shuffleboard.getTab("winch");
-        winchTab.add(raiseFunnel());
-        winchTab.add(lowerFunnel());
-        winchTab.add(pitFunnelReady());
-
-        Shuffleboard.getTab("winch")
-                .add(
-                        "FIX ENCODER",
-                        runOnce(() -> {
-                                    io.setPosition(PIT_FUNNEL_STOW);
-                                })
-                                .ignoringDisable(true)
-                                .withName("RESET ENCODER"));
+//        ShuffleboardTab winchTab = Shuffleboard.getTab("winch");
+//        winchTab.add(raiseFunnel());
+//        winchTab.add(lowerFunnel());
+//        winchTab.add(pitFunnelReady());
+//
+//        Shuffleboard.getTab("winch")
+//                .add(
+//                        "FIX ENCODER",
+//                        runOnce(() -> {
+//                                    io.setPosition(PIT_FUNNEL_STOW);
+//                                })
+//                                .ignoringDisable(true)
+//                                .withName("RESET ENCODER"));
     }
 
     @Override

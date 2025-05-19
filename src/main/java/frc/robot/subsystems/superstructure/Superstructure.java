@@ -71,24 +71,24 @@ public class Superstructure extends BlitzSubsystem {
                 //                entry(Goal.L4_PLOP, L4_PLOP)
                 );
 
-        ShuffleboardTab tab = Shuffleboard.getTab("SuperStructure");
-        GenericEntry elevatorTestEntry = tab.add("elevatorTest", 0).getEntry();
-        GenericEntry wristTestEntry = tab.add("wristTest", 45).getEntry();
+//        ShuffleboardTab tab = Shuffleboard.getTab("SuperStructure");
+//        GenericEntry elevatorTestEntry = tab.add("elevatorTest", 0).getEntry();
+//        GenericEntry wristTestEntry = tab.add("wristTest", 45).getEntry();
 
-        tab.add(
-                "positionTest",
-                Commands.defer(
-                                () -> Commands.parallel(
-                                                elevator.withGoal(new TrapezoidProfile.State(
-                                                        elevatorTestEntry.getDouble(0), 0)),
-                                                wrist.withGoal(new TrapezoidProfile.State(
-                                                        Math.toRadians(
-                                                                wristTestEntry.getDouble(45)),
-                                                        0)))
-                                        .finallyDo((interrupt) ->
-                                                Commands.print("SuperClosedTestEnd, " + interrupt)),
-                                Set.of(this))
-                        .withName("SuperStructure/closedTest"));
+//        tab.add(
+//                "positionTest",
+//                Commands.defer(
+//                                () -> Commands.parallel(
+//                                                elevator.withGoal(new TrapezoidProfile.State(
+//                                                        elevatorTestEntry.getDouble(0), 0)),
+//                                                wrist.withGoal(new TrapezoidProfile.State(
+//                                                        Math.toRadians(
+//                                                                wristTestEntry.getDouble(45)),
+//                                                        0)))
+//                                        .finallyDo((interrupt) ->
+//                                                Commands.print("SuperClosedTestEnd, " + interrupt)),
+//                                Set.of(this))
+//                        .withName("SuperStructure/closedTest"));
     }
 
     @Override
