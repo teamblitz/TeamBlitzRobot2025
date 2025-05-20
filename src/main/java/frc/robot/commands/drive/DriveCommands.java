@@ -1,4 +1,4 @@
-package frc.robot.commands;
+package frc.robot.commands.drive;
 
 import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveRequest;
@@ -174,6 +174,10 @@ public class DriveCommands {
             double deadband,
             double maxAngularVelocity,
             double maxAngularAcceleration) {
+
+        SwerveRequest.FieldCentric request = new SwerveRequest.FieldCentric()
+                .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage)
+                .withForwardPerspective(SwerveRequest.ForwardPerspectiveValue.BlueAlliance);
         VectorSlewRateLimiter<N2> accelerationLimiter =
                 new VectorSlewRateLimiter<>(maxAcceleration, VecBuilder.fill(0, 0));
 
@@ -217,12 +221,18 @@ public class DriveCommands {
                     // Apply our acceleration limit
                     velocityVector = accelerationLimiter.calculate(velocityVector);
 
-                    Logger.recordOutput("drive/pullToPose/velocityVector", velocityVector);
+                    Logger.recordOutput(
+                            "drive/pullToPose/velocityVector",
+                            new ChassisSpeeds(velocityVector.get(0), velocityVector.get(1), 0));
 
-                    return fieldCentric
-                            .withVelocityX(velocityVector.get(0))
+                    return request.withVelocityX(velocityVector.get(0))
                             .withVelocityY(velocityVector.get(1))
-                            .withRotationalRate(0);
+                            .withRotationalRate(5
+                                    * -MathUtil.applyDeadband(
+                                            MathUtil.angleModulus(
+                                                    drive.getHeading().getRadians()),
+                                            Math.toRadians(5),
+                                            Math.PI));
                 }));
     }
 }

@@ -19,6 +19,7 @@ import frc.lib.reefscape.ScoringPositions;
 import frc.lib.reefscape.ScoringPositions.Branch;
 import frc.robot.Constants;
 import frc.robot.PositionConstants;
+import frc.robot.commands.drive.DriveCommands;
 import frc.robot.subsystems.drive.CommandSwerveDrivetrain;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.superstructure.Superstructure;
@@ -260,7 +261,7 @@ public class AutoCommands {
     public AutoRoutine demoFollowAprilTag() {
         AutoRoutine routine = autoFactory.newRoutine("demoFollowAprilTag");
 
-        var pose = new Pose2d(-1, 0, Rotation2d.kZero);
+        var pose = new Pose2d(-2, 0, Rotation2d.kZero);
 
         routine.active()
                 .whileTrue(runOnce(() -> {
@@ -269,7 +270,7 @@ public class AutoCommands {
                         })
                         .andThen(waitSeconds(1))
                         .andThen(driveCommands.pullToPose(
-                                () -> pose, 4, 1, 2, .05, .5 * Math.PI, Math.PI))
+                                () -> pose, 3, 1.5, 2, .12, .5 * Math.PI, Math.PI))
                         .finallyDo(() -> vision.setAprilTagLayout(Vision.DEFAULT_FIELD_LAYOUT)));
 
         return routine;
