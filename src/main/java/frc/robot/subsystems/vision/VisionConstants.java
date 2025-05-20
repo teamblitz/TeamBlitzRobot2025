@@ -14,7 +14,7 @@ public class VisionConstants {
     // Larger numbers mean less trust.
     public static final Matrix<N3, N1> WHEEL_ODOMETRY_TRUST = VecBuilder.fill(0.1, 0.1, 0.1);
 
-    public static final Matrix<N3, N1> SINGLE_TAG_TRUST =  VecBuilder.fill(0.025, 0.025, Double.MAX_VALUE);
+    public static final Matrix<N3, N1> SINGLE_TAG_TRUST =  VecBuilder.fill(0.025, 0.025, .2);
     public static final Matrix<N3, N1> MULTI_TAG_TRUST =  VecBuilder.fill(.010, .010, 0.025);
 
     public static final Matrix<N3, N1> NO_TRUST = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);

@@ -1,12 +1,15 @@
 package frc.robot.commands;
 
+import static edu.wpi.first.wpilibj2.command.Commands.*;
+
 import choreo.Choreo;
 import choreo.auto.AutoFactory;
 import choreo.auto.AutoRoutine;
 import choreo.auto.AutoTrajectory;
 import choreo.trajectory.SwerveSample;
 
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -19,6 +22,7 @@ import frc.robot.PositionConstants;
 import frc.robot.subsystems.drive.CommandSwerveDrivetrain;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.superstructure.Superstructure;
+import frc.robot.subsystems.vision.Vision;
 
 import org.littletonrobotics.junction.Logger;
 
@@ -27,10 +31,12 @@ import java.util.stream.IntStream;
 
 public class AutoCommands {
     private final CommandSwerveDrivetrain drive;
-    private final SwerveDriveKinematics kinematics;
     private final AutoFactory autoFactory;
     private final Superstructure superstructure;
     private final Intake intake;
+    private final Vision vision;
+
+    private final DriveCommands driveCommands;
 
     //    private final Command configAutonDefault;
     private final Command configTeleDefault;
@@ -38,11 +44,17 @@ public class AutoCommands {
     private SwerveSample lastSample;
 
     public AutoCommands(
-            CommandSwerveDrivetrain drive, Superstructure superstructure, Intake intake) {
+            CommandSwerveDrivetrain drive,
+            Vision vision,
+            Superstructure superstructure,
+            Intake intake,
+            DriveCommands driveCommands) {
         this.drive = drive;
+        this.vision = vision;
         this.superstructure = superstructure;
         this.intake = intake;
-        this.kinematics = Constants.Drive.KINEMATICS;
+
+        this.driveCommands = driveCommands;
 
         autoFactory = new AutoFactory(
                 drive::getPose,
@@ -243,5 +255,23 @@ public class AutoCommands {
 
     private Command handoff() {
         return CommandFactory.handoff(superstructure, intake);
+    }
+
+    public AutoRoutine demoFollowAprilTag() {
+        AutoRoutine routine = autoFactory.newRoutine("demoFollowAprilTag");
+
+        var pose = new Pose2d(-1, 0, Rotation2d.kZero);
+
+        routine.active()
+                .whileTrue(runOnce(() -> {
+                            drive.resetPose(pose);
+                            vision.setAprilTagLayout(Vision.DEMO_FOLLOW_LAYOUT);
+                        })
+                        .andThen(waitSeconds(1))
+                        .andThen(driveCommands.pullToPose(
+                                () -> pose, 4, 1, 2, .05, .5 * Math.PI, Math.PI))
+                        .finallyDo(() -> vision.setAprilTagLayout(Vision.DEFAULT_FIELD_LAYOUT)));
+
+        return routine;
     }
 }

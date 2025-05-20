@@ -6,12 +6,10 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
-import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N2;
-import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -168,69 +166,63 @@ public class DriveCommands {
         return rotationControl * maxOmega;
     }
 
-
     public Command pullToPose(
             Supplier<Pose2d> goalSupplier,
             double kP,
             double maxVelocity,
             double maxAcceleration,
+            double deadband,
             double maxAngularVelocity,
-            double maxAngularAcceleration
-    ) {
-        VectorSlewRateLimiter<N2> accelerationLimiter = new VectorSlewRateLimiter<>(maxAcceleration, VecBuilder.fill(0, 0));
+            double maxAngularAcceleration) {
+        VectorSlewRateLimiter<N2> accelerationLimiter =
+                new VectorSlewRateLimiter<>(maxAcceleration, VecBuilder.fill(0, 0));
 
-        return Commands.runOnce(
-                () -> {
+        return Commands.runOnce(() -> {
                     var currentSpeeds = drive.getFieldSpeeds();
 
-                    accelerationLimiter.reset(VecBuilder.fill(currentSpeeds.vxMetersPerSecond, currentSpeeds.vyMetersPerSecond));
-                }
-        ).andThen(drive.applyRequest(
-                    () -> {
-                        var goal = goalSupplier.get();
+                    accelerationLimiter.reset(VecBuilder.fill(
+                            currentSpeeds.vxMetersPerSecond, currentSpeeds.vyMetersPerSecond));
+                })
+                .andThen(drive.applyRequest(() -> {
+                    var goal = goalSupplier.get();
 
-                        // bot to goal vector
-                        var botToGoal = goal.minus(drive.getPose()).getTranslation().toVector();
+                    // bot to goal vector
+                    var botToGoal = goal.minus(drive.getPose()).getTranslation().toVector();
 
-                        Logger.recordOutput("drive/pullToPose/pose", goal);
+                    Logger.recordOutput("drive/pullToPose/pose", goal);
 
-                        // Distance is positive
-                        double distance = botToGoal.norm();
+                    // Distance is positive
+                    double distance = Math.max(0, botToGoal.norm() - deadband);
 
-                        Logger.recordOutput("drive/pullToPose/distance", distance);
+                    Logger.recordOutput("drive/pullToPose/distance", distance);
 
+                    // We are now thinking in 2 space, and are trying to get to the "origin" (our
+                    // goal)
+                    // from our current positive distance, thus velocity is negative.
+                    double velocity = DualPhaseProfile.ComputeApproachVelocity(
+                            distance, kP, maxAcceleration, maxVelocity);
 
-                        // We are now thinking in 2 space, and are trying to get to the "origin" (our goal)
-                        // from our current positive distance, thus velocity is negative.
-                        double velocity = DualPhaseProfile.ComputeApproachVelocity(
-                                distance,
-                                kP,
-                                maxAcceleration,
-                                maxVelocity
-                        );
+                    Logger.recordOutput("drive/pullToPose/speed", Math.abs(velocity));
 
-                        Logger.recordOutput("drive/pullToPose/speed", Math.abs(velocity));
+                    Vector<N2> velocityVector;
 
-                        Vector<N2> velocityVector;
-
-                        // take the absolute value of velocity, and apply it to the bot to goal unit vector
-                        if (botToGoal.norm() != 0) {
-                            velocityVector = botToGoal.unit().times(Math.abs(velocity));
-                        } else {
-                            velocityVector = VecBuilder.fill(0, 0);
-                        }
-
-                        // Apply our acceleration limit
-                        velocityVector = accelerationLimiter.calculate(velocityVector);
-
-                        Logger.recordOutput("drive/pullToPose/velocityVector", velocityVector);
-
-                        return fieldCentric
-                                .withVelocityX(velocityVector.get(0))
-                                .withVelocityY(velocityVector.get(1))
-                                .withRotationalRate(0);
+                    // take the absolute value of velocity, and apply it to the bot to goal unit
+                    // vector
+                    if (botToGoal.norm() != 0) {
+                        velocityVector = botToGoal.unit().times(Math.abs(velocity));
+                    } else {
+                        velocityVector = VecBuilder.fill(0, 0);
                     }
-            )
-        );
+
+                    // Apply our acceleration limit
+                    velocityVector = accelerationLimiter.calculate(velocityVector);
+
+                    Logger.recordOutput("drive/pullToPose/velocityVector", velocityVector);
+
+                    return fieldCentric
+                            .withVelocityX(velocityVector.get(0))
+                            .withVelocityY(velocityVector.get(1))
+                            .withRotationalRate(0);
+                }));
     }
 }

@@ -260,12 +260,14 @@ public class RobotContainer {
         autoChooser = new AutoChooser();
         SmartDashboard.putData("autoChooser", autoChooser);
 
-        autoCommands = new AutoCommands(drive, superstructure, intake);
+        autoCommands = new AutoCommands(drive, vision, superstructure, intake, driveCommands);
 
         autoChooser.addRoutine("twoPiece", autoCommands::twoPiece);
         //        autoChooser.addRoutine("test", autoCommands::testDrive);
         autoChooser.addRoutine("fourPieceLeft", autoCommands::fourPieceLeft);
         autoChooser.addRoutine("leaveRight", () -> autoCommands.leave("leaveRight"));
+
+        autoChooser.addRoutine("demoFollowAprilTag", () -> autoCommands.demoFollowAprilTag());
     }
 
     public Command getAutonomousCommand() {
