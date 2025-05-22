@@ -207,15 +207,17 @@ public class RobotContainer {
                                 climber.coastCommand())
                         .onlyWhile(RobotState::isDisabled));
 
-        OIConstants.Drive.ALIGN_LEFT.whileTrue(new DeferredCommand(
-                () -> drive.driveToPose(PositionConstants.Reef.SCORING_POSITIONS.get(
-                        PositionConstants.getClosestFace(drive.getPose())[0])),
-                Set.of(drive)));
+        OIConstants.Drive.ALIGN_LEFT.whileTrue(
+                AlignmentCommandFactory.alignLeftReefPole(
+                        drive,
+                        driveCommands
+                ));
 
-        OIConstants.Drive.ALIGN_RIGHT.whileTrue(new DeferredCommand(
-                () -> drive.driveToPose(PositionConstants.Reef.SCORING_POSITIONS.get(
-                        PositionConstants.getClosestFace(drive.getPose())[1])),
-                Set.of(drive)));
+        OIConstants.Drive.ALIGN_RIGHT.whileTrue(
+                AlignmentCommandFactory.alignRightReefPole(
+                        drive,
+                        driveCommands
+                ));
     }
 
     private void configureDashboard() {

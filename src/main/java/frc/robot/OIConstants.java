@@ -79,12 +79,12 @@ public class OIConstants {
         public static final Trigger COAST = UNBOUND;
         public static final Trigger BRAKE = UNBOUND;
 
-        public static final Trigger ALIGN_LEFT =
-                new Trigger(() -> DRIVE_CONTROLLER.getHID().getPOV() > 180);
+        public static final Trigger ALIGN_LEFT = DRIVE_CONTROLLER.leftBumper();
+//                new Trigger(() -> DRIVE_CONTROLLER.getHID().getPOV() > 180);
 
-        public static final Trigger ALIGN_RIGHT =
-                new Trigger(() -> DRIVE_CONTROLLER.getHID().getPOV() < 180
-                        && DRIVE_CONTROLLER.getHID().getPOV() > 0);
+        public static final Trigger ALIGN_RIGHT = DRIVE_CONTROLLER.rightBumper();
+//                new Trigger(() -> DRIVE_CONTROLLER.getHID().getPOV() < 180
+//                        && DRIVE_CONTROLLER.getHID().getPOV() > 0);
     }
 
     public static final class Overrides {
@@ -130,7 +130,7 @@ public class OIConstants {
     }
 
     public static final class SuperStructure {
-        public static final Trigger SCORE = DRIVE_CONTROLLER.button(2);
+        public static final Trigger SCORE = DRIVE_CONTROLLER.rightTrigger();
 
         public static final Trigger L1 = OPERATOR_CONTROLLER.povDown();
         public static final Trigger L2 = OPERATOR_CONTROLLER.povLeft();
@@ -148,19 +148,19 @@ public class OIConstants {
     }
 
     public static final class Winch {
-        public static final Trigger WINCH_MAN_UP = DRIVE_CONTROLLER.button(7);
-        public static final Trigger WINCH_MAN_DOWN = DRIVE_CONTROLLER.button(8);
+        public static final Trigger WINCH_MAN_UP = UNBOUND;//.button(7);
+        public static final Trigger WINCH_MAN_DOWN = UNBOUND;// DRIVE_CONTROLLER.button(8);
 
         public static final Trigger FUNNEL_UP = UNBOUND;
         public static final Trigger FUNNEL_DOWN = UNBOUND;
     }
 
     public static final class Climber {
-        public static final Trigger DEPLOY_CLIMBER = DRIVE_CONTROLLER.button(4); // TODO BIND
-        public static final Trigger RESTOW_CLIMBER = DRIVE_CONTROLLER.button(6);
+        public static final Trigger DEPLOY_CLIMBER = UNBOUND;//DRIVE_CONTROLLER.button(4); // TODO BIND
+        public static final Trigger RESTOW_CLIMBER = UNBOUND;//DRIVE_CONTROLLER.button(6);
 
-        public static final Trigger CLIMBER_UP_MAN = DRIVE_CONTROLLER.button(9);
-        public static final Trigger CLIMBER_DOWN_MAN = DRIVE_CONTROLLER.button(10);
+        public static final Trigger CLIMBER_UP_MAN = UNBOUND;//DRIVE_CONTROLLER.button(9);
+        public static final Trigger CLIMBER_DOWN_MAN = UNBOUND;//DRIVE_CONTROLLER.button(10);
     }
 
     //    public static final class TestMode {

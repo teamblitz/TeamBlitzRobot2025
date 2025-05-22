@@ -6,10 +6,12 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N2;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -175,17 +177,28 @@ public class DriveCommands {
             double maxAngularVelocity,
             double maxAngularAcceleration) {
 
-        SwerveRequest.FieldCentric request = new SwerveRequest.FieldCentric()
+        SwerveRequest.FieldCentricFacingAngle request = new SwerveRequest.FieldCentricFacingAngle()
                 .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage)
-                .withForwardPerspective(SwerveRequest.ForwardPerspectiveValue.BlueAlliance);
+                .withForwardPerspective(SwerveRequest.ForwardPerspectiveValue.BlueAlliance)
+                .withHeadingPID(10, 0, 0);
+
+
         VectorSlewRateLimiter<N2> accelerationLimiter =
                 new VectorSlewRateLimiter<>(maxAcceleration, VecBuilder.fill(0, 0));
+
+        ProfiledPIDController headingController = new ProfiledPIDController(
+                0, 0, 0, new TrapezoidProfile.Constraints(maxAngularVelocity, maxAngularAcceleration)
+        );
+
+        headingController.enableContinuousInput(-Math.PI, Math.PI);
 
         return Commands.runOnce(() -> {
                     var currentSpeeds = drive.getFieldSpeeds();
 
                     accelerationLimiter.reset(VecBuilder.fill(
                             currentSpeeds.vxMetersPerSecond, currentSpeeds.vyMetersPerSecond));
+
+                    headingController.reset(drive.getHeading().getRadians(), drive.getSpeeds().omegaRadiansPerSecond);
                 })
                 .andThen(drive.applyRequest(() -> {
                     var goal = goalSupplier.get();
@@ -225,14 +238,23 @@ public class DriveCommands {
                             "drive/pullToPose/velocityVector",
                             new ChassisSpeeds(velocityVector.get(0), velocityVector.get(1), 0));
 
+                    headingController.calculate(drive.getHeading().getRadians());
+                    var headingSetpoint = headingController.getSetpoint();
+
                     return request.withVelocityX(velocityVector.get(0))
                             .withVelocityY(velocityVector.get(1))
-                            .withRotationalRate(5
-                                    * -MathUtil.applyDeadband(
-                                            MathUtil.angleModulus(
-                                                    drive.getHeading().getRadians()),
-                                            Math.toRadians(5),
-                                            Math.PI));
+                            .withTargetDirection(
+                                    Rotation2d.fromRadians(headingSetpoint.position)
+                            )
+                            .withTargetRateFeedforward(
+                                    headingSetpoint.velocity
+                            );
+//                            .withRotationalRate(5
+//                                    * -MathUtil.applyDeadband(
+//                                            MathUtil.angleModulus(
+//                                                    drive.getHeading().getRadians()),
+//                                            Math.toRadians(5),
+//                                            Math.PI));
                 }));
     }
 }
