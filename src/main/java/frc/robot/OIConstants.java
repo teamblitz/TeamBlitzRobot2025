@@ -74,7 +74,7 @@ public class OIConstants {
         //                                : Double.NaN;
 
         // Drive on the fly modes
-        public static final Trigger RESET_GYRO = DRIVE_CONTROLLER.button(5);
+        public static final Trigger RESET_GYRO = DRIVE_CONTROLLER.back();
         public static final Trigger X_BREAK = UNBOUND;
         public static final Trigger COAST = UNBOUND;
         public static final Trigger BRAKE = UNBOUND;

@@ -199,12 +199,13 @@ public class DriveCommands {
                             currentSpeeds.vxMetersPerSecond, currentSpeeds.vyMetersPerSecond));
 
                     headingController.reset(drive.getHeading().getRadians(), drive.getSpeeds().omegaRadiansPerSecond);
+                    headingController.setGoal(new TrapezoidProfile.State(goalSupplier.get().getRotation().getRadians(), 0));
                 })
                 .andThen(drive.applyRequest(() -> {
                     var goal = goalSupplier.get();
 
-                    // bot to goal vector
-                    var botToGoal = goal.minus(drive.getPose()).getTranslation().toVector();
+                    // bot to goal
+                    var botToGoal = goal.getTranslation().minus(drive.getPose().getTranslation()).toVector();
 
                     Logger.recordOutput("drive/pullToPose/pose", goal);
 
@@ -241,6 +242,10 @@ public class DriveCommands {
                     headingController.calculate(drive.getHeading().getRadians());
                     var headingSetpoint = headingController.getSetpoint();
 
+                    Logger.recordOutput("drive/pullToPose/heading/headingSetpoint", headingSetpoint.position);
+                    Logger.recordOutput("drive/pullToPose/heading/velocitySetpoint", headingSetpoint.velocity);
+
+
                     return request.withVelocityX(velocityVector.get(0))
                             .withVelocityY(velocityVector.get(1))
                             .withTargetDirection(
@@ -249,12 +254,6 @@ public class DriveCommands {
                             .withTargetRateFeedforward(
                                     headingSetpoint.velocity
                             );
-//                            .withRotationalRate(5
-//                                    * -MathUtil.applyDeadband(
-//                                            MathUtil.angleModulus(
-//                                                    drive.getHeading().getRadians()),
-//                                            Math.toRadians(5),
-//                                            Math.PI));
                 }));
     }
 }
