@@ -92,6 +92,14 @@ public class DriveCommands {
                         boolean maintainHeadingValid =
                                 maintainHeadingTimer.hasElapsed(maintainHeadingDelay);
 
+                        // A large jump in heading could mean that for instance our vision has been updated or gyro was reset
+                        // Thus we don't want to spin really
+                        if (headingSetpoint.get() != null && Math.abs(MathUtil.angleModulus(headingSetpoint.get().minus(drive.getHeading()).getRadians())) < Math.toRadians(15)
+                        ) {
+                            headingSetpoint.inner = null;
+                        }
+
+
                         Logger.recordOutput(
                                 "drive/joystick/maintainHeading/timer", maintainHeadingTimer.get());
                         Logger.recordOutput(

@@ -134,7 +134,7 @@ public class RobotContainer {
     }
 
     private void configureTriggerBindings() {
-        OIConstants.Drive.RESET_GYRO.onTrue(Commands.runOnce(() -> drive.resetRotation(
+        OIConstants.Drive.RESET_GYRO.onTrue(drive.runOnce(() -> drive.resetRotation(
                 AllianceFlipUtil.shouldFlip() ? Rotation2d.k180deg : Rotation2d.kZero)));
         //        OIConstants.Drive.X_BREAK.onTrue(drive.park());
         //

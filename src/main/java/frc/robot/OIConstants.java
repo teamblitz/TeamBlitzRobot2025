@@ -29,7 +29,7 @@ public class OIConstants {
             OmegaControl // The rotation stick controls the angular velocity of the robot
         }
 
-        public static double TRANSLATION_DEADBAND = 0.05;
+        public static double TRANSLATION_DEADBAND = 0.05 * Math.sqrt(2)/2;
         public static double ROTATION_DEADBAND = 0.05;
 
         public static final Function<Double, Double> TRANSLATION_INPUT_CURVE =
