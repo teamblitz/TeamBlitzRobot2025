@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.math.VectorSlewRateLimiter;
 import frc.lib.math.VectorUtils;
 import frc.lib.math.controller.DualPhaseProfile;
@@ -176,6 +177,10 @@ public class DriveCommands {
         return rotationControl * maxOmega;
     }
 
+    private boolean atGoal;
+
+    public final Trigger AT_GOAL = new Trigger(() -> atGoal);
+
     public Command pullToPose(
             Supplier<Pose2d> goalSupplier,
             double kP,
@@ -218,9 +223,16 @@ public class DriveCommands {
                     Logger.recordOutput("drive/pullToPose/pose", goal);
 
                     // Distance is positive
-                    double distance = Math.max(0, botToGoal.norm() - deadband);
+                    double distance = botToGoal.norm();
 
                     Logger.recordOutput("drive/pullToPose/distance", distance);
+
+                    if (distance < deadband) {
+                        atGoal = true;
+                        distance = 0;
+                    } else {
+                        atGoal = false;
+                    }
 
                     // We are now thinking in 2 space, and are trying to get to the "origin" (our
                     // goal)
@@ -262,6 +274,8 @@ public class DriveCommands {
                             .withTargetRateFeedforward(
                                     headingSetpoint.velocity
                             );
-                }));
+                })).finallyDo(
+                        () -> atGoal = false
+                );
     }
 }

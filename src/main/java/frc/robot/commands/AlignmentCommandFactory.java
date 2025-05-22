@@ -43,7 +43,7 @@ public class AlignmentCommandFactory {
                 3,
                 2,
                 3,
-                .01,
+                .0075,
                 .5 * Math.PI,
                 Math.PI
         );

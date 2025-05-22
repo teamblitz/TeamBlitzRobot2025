@@ -211,13 +211,30 @@ public class RobotContainer {
                 AlignmentCommandFactory.alignLeftReefPole(
                         drive,
                         driveCommands
-                ));
+                ).onlyIf(vision.VISION_FRESH));
 
         OIConstants.Drive.ALIGN_RIGHT.whileTrue(
                 AlignmentCommandFactory.alignRightReefPole(
                         drive,
                         driveCommands
-                ));
+                ).onlyIf(vision.VISION_FRESH));
+
+
+        OIConstants.Reef.LEFT_L4.whileTrue(
+                Commands.parallel(
+                        AlignmentCommandFactory.alignLeftReefPole(drive, driveCommands),
+                        superstructure.toGoalThenIdle(Superstructure.Goal.L4).asProxy()
+                ).withDeadline(
+                        Commands.sequence(
+                                waitUntil(
+                                        driveCommands.AT_GOAL
+                                                .and(superstructure.triggerAtGoal(Superstructure.Goal.L4))
+                                                .debounce(.5)
+                                ),
+                                CommandFactory.l4Plop(superstructure, intake).asProxy()
+                        )
+                )
+        );
     }
 
     private void configureDashboard() {

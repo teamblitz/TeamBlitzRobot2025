@@ -14,6 +14,7 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.drive.CommandSwerveDrivetrain;
 
 import org.littletonrobotics.junction.Logger;
@@ -39,7 +40,14 @@ public class Vision extends SubsystemBase {
             DEFAULT_FIELD_LAYOUT.getFieldLength(),
             DEFAULT_FIELD_LAYOUT.getFieldWidth());
 
+    Timer timeSinceLastUpdate = new Timer();
+
+    public Trigger VISION_FRESH = new Trigger(
+            () ->
+                    !timeSinceLastUpdate.hasElapsed(VisionConstants.STALE_AFTER));
+
     CommandSwerveDrivetrain drive;
+
 
     public Vision(CommandSwerveDrivetrain drive) {
         this.drive = drive;
@@ -53,16 +61,23 @@ public class Vision extends SubsystemBase {
                                 DEFAULT_FIELD_LAYOUT,
                                 PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
                                 camera.pose())));
+
+        timeSinceLastUpdate.start();
     }
 
     @Override
     public void periodic() {
+        Logger.recordOutput("vision/timeSinceLastUpdate", timeSinceLastUpdate.get());
+        Logger.recordOutput("vision/isStale", !VISION_FRESH.getAsBoolean());
+
         List<PoseObservation> estimations = new ArrayList<>();
 
         poseEstimators.forEach((PhotonCamera camera, PhotonPoseEstimator poseEstimator) ->
                 camera.getAllUnreadResults().forEach((result) -> poseEstimator
                         .update(result)
                         .ifPresent((estimatedRobotPose) -> {
+                            timeSinceLastUpdate.reset();
+
                             var logKey = "vision/" + camera.getName();
 
                             Logger.recordOutput(logKey + "/pose", estimatedRobotPose.estimatedPose);

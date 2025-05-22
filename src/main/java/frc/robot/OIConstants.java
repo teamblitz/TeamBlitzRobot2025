@@ -2,6 +2,7 @@ package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -79,10 +80,10 @@ public class OIConstants {
         public static final Trigger COAST = UNBOUND;
         public static final Trigger BRAKE = UNBOUND;
 
-        public static final Trigger ALIGN_LEFT = DRIVE_CONTROLLER.leftBumper();
+        public static final Trigger ALIGN_LEFT = UNBOUND; //.leftBumper();
 //                new Trigger(() -> DRIVE_CONTROLLER.getHID().getPOV() > 180);
 
-        public static final Trigger ALIGN_RIGHT = DRIVE_CONTROLLER.rightBumper();
+        public static final Trigger ALIGN_RIGHT = UNBOUND; // DRIVE_CONTROLLER.rightBumper();
 //                new Trigger(() -> DRIVE_CONTROLLER.getHID().getPOV() < 180
 //                        && DRIVE_CONTROLLER.getHID().getPOV() > 0);
     }
@@ -145,6 +146,17 @@ public class OIConstants {
 
         public static final Trigger MANUAL_MODE = new Trigger(
                 () -> Elevator.MANUAL.getAsDouble() != 0 || Wrist.MANUAL.getAsDouble() != 0);
+    }
+
+    public static final class Reef {
+        public static final Trigger LEFT_L4 = DRIVE_CONTROLLER.leftBumper();
+        public static final Trigger RIGHT_L4 = DRIVE_CONTROLLER.rightBumper();
+
+        public static final Trigger LEFT_L3 = DRIVE_CONTROLLER.leftTrigger();
+        public static final Trigger RIGHT_L3 = DRIVE_CONTROLLER.rightTrigger();
+
+        public static final Trigger LEFT_L2 = DRIVE_CONTROLLER.povLeft();
+        public static final Trigger RIGHT_L2 = DRIVE_CONTROLLER.povRight();
     }
 
     public static final class Winch {

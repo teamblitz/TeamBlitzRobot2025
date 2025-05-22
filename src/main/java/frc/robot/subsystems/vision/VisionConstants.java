@@ -28,4 +28,6 @@ public class VisionConstants {
     public static final double MAX_AMBIGUITY = 0.40;
     public static final double MAX_DISTANCE_SINGLE_TAG = 3.75;
     public static final double MAX_DISTANCE_MULTI_TAG = 6.0;
+
+    public static final double STALE_AFTER = 3;
 }
