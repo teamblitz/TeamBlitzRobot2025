@@ -46,7 +46,8 @@ public class WristIOKraken implements WristIO {
         config.Feedback.withSensorToMechanismRatio(WRIST_GEAR_RATIO);
 
         config.MotionMagic.withMotionMagicCruiseVelocity(Units.radiansToRotations(MAX_VELOCITY))
-                .withMotionMagicAcceleration(Units.radiansToRotations(MAX_ACCEL));
+                .withMotionMagicAcceleration(Units.radiansToRotations(MAX_ACCEL))
+                .withMotionMagicJerk(Units.radiansToRotations(MAX_JERK));
 
         config.Slot0.withGravityType(GravityTypeValue.Arm_Cosine)
                 .withKS(KrakenGains.KS)

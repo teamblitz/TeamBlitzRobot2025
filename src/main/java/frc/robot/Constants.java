@@ -215,6 +215,7 @@ public final class Constants {
 
         public static final double MAX_VEL = compBot() ? 6 : 2;
         public static final double MAX_ACCEL = compBot() ? 12 : 3;
+        public static final double MAX_JERK = 12 * 8;
 
         public static final class RightGains {
             public static final double KS = 0.26266;
@@ -265,6 +266,8 @@ public final class Constants {
                 Constants.compBot() ? Units.rotationsToRadians(4) : Units.degreesToRadians(180);
         public static final double MAX_ACCEL =
                 Constants.compBot() ? Units.rotationsToRadians(8) : Units.degreesToRadians(360);
+        public static final double MAX_JERK = MAX_ACCEL * 8;
+
 
         public static final class PidGains {
             public static final double KP = 2;
