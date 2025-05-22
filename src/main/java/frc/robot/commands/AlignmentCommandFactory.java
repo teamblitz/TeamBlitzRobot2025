@@ -40,12 +40,12 @@ public class AlignmentCommandFactory {
     private static Command alignToPose(Pose2d pose, CommandSwerveDrivetrain drive, DriveCommands drivecommands) {
         return drivecommands.pullToPose(
                 () -> pose,
-                4 * .5,
-                2 *.5,
-                3 *.5,
+                3,
+                2,
+                3,
                 .01,
-                .5 * Math.PI *.5,
-                Math.PI *.5
+                .5 * Math.PI,
+                Math.PI
         );
     }
 
