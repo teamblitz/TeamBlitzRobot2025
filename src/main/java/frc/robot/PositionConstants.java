@@ -25,7 +25,7 @@ public class PositionConstants {
                 new HashMap<>();
 
         static {
-            double adjustX = Units.inchesToMeters(32.745545 + 22 - 3);
+            double adjustX = Units.inchesToMeters(32.745545 + 22 - 3 + 2);
             double adjustY = Units.inchesToMeters(6.469);
 
             Translation2d leftRelative = new Translation2d(-adjustX, adjustY);
