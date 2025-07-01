@@ -260,7 +260,7 @@ public class RobotContainer {
                         Commands.sequence(
                                 waitUntil(
                                         driveCommands.AT_GOAL
-                                                .and(superstructure.triggerAtGoal(Superstructure.Goal.L4))
+                                                .and(superstructure.triggerAtGoal(Superstructure.Goal.L3))
                                                 .debounce(.25)
                                 ),
                                 intake.shoot_coral().asProxy()
@@ -276,7 +276,39 @@ public class RobotContainer {
                         Commands.sequence(
                                 waitUntil(
                                         driveCommands.AT_GOAL
-                                                .and(superstructure.triggerAtGoal(Superstructure.Goal.L4))
+                                                .and(superstructure.triggerAtGoal(Superstructure.Goal.L3))
+                                                .debounce(.25)
+                                ),
+                                intake.shoot_coral().asProxy()
+                        )
+                )
+        );
+
+        OIConstants.Reef.LEFT_L2.whileTrue(
+                Commands.parallel(
+                        AlignmentCommandFactory.alignLeftReefPole(drive, driveCommands),
+                        superstructure.toGoalThenIdle(Superstructure.Goal.L2).asProxy()
+                ).withDeadline(
+                        Commands.sequence(
+                                waitUntil(
+                                        driveCommands.AT_GOAL
+                                                .and(superstructure.triggerAtGoal(Superstructure.Goal.L2))
+                                                .debounce(.25)
+                                ),
+                                intake.shoot_coral().asProxy()
+                        )
+                )
+        );
+
+        OIConstants.Reef.RIGHT_L2.whileTrue(
+                Commands.parallel(
+                        AlignmentCommandFactory.alignRightReefPole(drive, driveCommands),
+                        superstructure.toGoalThenIdle(Superstructure.Goal.L2).asProxy()
+                ).withDeadline(
+                        Commands.sequence(
+                                waitUntil(
+                                        driveCommands.AT_GOAL
+                                                .and(superstructure.triggerAtGoal(Superstructure.Goal.L2))
                                                 .debounce(.25)
                                 ),
                                 intake.shoot_coral().asProxy()
