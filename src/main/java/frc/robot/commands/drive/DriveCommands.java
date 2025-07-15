@@ -206,6 +206,8 @@ public class DriveCommands {
         headingController.enableContinuousInput(-Math.PI, Math.PI);
 
         return Commands.runOnce(() -> {
+                    atGoal = false;
+
                     var currentSpeeds = drive.getFieldSpeeds();
 
                     accelerationLimiter.reset(VecBuilder.fill(

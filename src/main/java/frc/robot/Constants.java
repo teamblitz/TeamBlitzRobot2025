@@ -304,11 +304,11 @@ public final class Constants {
         public static final SuperstructureState L1 =
                 new SuperstructureState(.2, Math.toRadians(60));
         public static final SuperstructureState L2 =
-                new SuperstructureState(.48, Math.toRadians(60));
+                new SuperstructureState(.48 - .02, Math.toRadians(60));
         public static final SuperstructureState L3 =
                 new SuperstructureState(.85, Math.toRadians(60));
         public static final SuperstructureState L4 =
-                new SuperstructureState(1.48, Math.toRadians(57.5)); // Value is not with Drop
+                new SuperstructureState(1.48, Math.toRadians(60)); // Value is not with Drop
 
         public static final SuperstructureState KICK_LOW_ALGAE =
                 new SuperstructureState(.48, Math.toRadians(42));
