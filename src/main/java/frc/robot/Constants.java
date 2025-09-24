@@ -610,7 +610,7 @@ public final class Constants {
 
     public static final class Auto {
         public static final class Timings {
-            public static final double STOW_TO_L4_READY = 1.25; // IDK ACTUAL TIMINGS
+            public static final double STOW_TO_L4_READY = 3.0; // IDK ACTUAL TIMINGS
         }
 
     }
