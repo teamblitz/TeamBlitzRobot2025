@@ -8,7 +8,7 @@
 package frc.robot;
 
 import choreo.auto.AutoChooser;
-import edu.wpi.first.cameraserver.CameraServer;
+// import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotState;
@@ -80,7 +80,7 @@ public class RobotContainer {
     private final LoggedDashboardChooser<StartingPosition> startingPositionChooser;
 
     public RobotContainer() {
-        CameraServer.startAutomaticCapture();
+        //CameraServer.startAutomaticCapture();
         configureSubsystems();
 
         configureButtonBindings();
