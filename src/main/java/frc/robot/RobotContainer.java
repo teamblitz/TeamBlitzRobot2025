@@ -52,6 +52,7 @@ import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.winch.Winch;
 import frc.robot.subsystems.winch.WinchIO;
 import frc.robot.subsystems.winch.WinchIOSpark;
+// import frc.robot.subsystems.roller.Roller;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -294,6 +295,8 @@ public class RobotContainer {
                                         elevator.coastCommand(),
                                         climber.coastCommand())
                                 .onlyWhile(RobotState::isDisabled));
+
+        // OIConstants.Roller.RUN.whileTrue(.runRoller());
     }
 
     private void configureAutoCommands() {

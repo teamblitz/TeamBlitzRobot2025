@@ -576,6 +576,11 @@ public final class Constants {
         public static final double MAX_ACCEL_LOADED = 1;
     }
 
+    public static final class Roller {
+        public static final int kDriverControllerPort = 0;
+        public static double ROLLER_SPEED = 0.3;
+    }
+
     public static final class Vision {
 
         public static final List<RobotCamera> CAMERAS =
