@@ -6,7 +6,6 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import frc.lib.BlitzSubsystem;
 import frc.lib.util.LoggedTunableNumber;
@@ -58,9 +57,9 @@ public class Winch extends BlitzSubsystem {
         io.updateInputs(inputs);
         Logger.processInputs(logKey, inputs);
 
-//        LoggedTunableNumber.ifChanged(hashCode(), p -> io.setPid(p[0], 0, 0), kP);
-//
-//        LoggedTunableNumber.ifChanged(hashCode(), OUT -> io.setMaxOutput(OUT[0]), maxOut);
+        //        LoggedTunableNumber.ifChanged(hashCode(), p -> io.setPid(p[0], 0, 0), kP);
+        //
+        //        LoggedTunableNumber.ifChanged(hashCode(), OUT -> io.setMaxOutput(OUT[0]), maxOut);
     }
 
     public Command manualUp() {

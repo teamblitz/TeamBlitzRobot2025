@@ -6,7 +6,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import frc.lib.math.AllianceFlipUtil;
 import frc.lib.util.ScoringPositions;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -14,12 +13,10 @@ import java.util.function.Supplier;
 public class PositionConstants {
     public static final class Reef {
         public static final Translation2d REEF_CENTER =
-                new Translation2d(
-                        Units.inchesToMeters(176.746),
-                        Units.inchesToMeters(317. / 2.)
-                );
+                new Translation2d(Units.inchesToMeters(176.746), Units.inchesToMeters(317. / 2.));
 
-        public static final Map<ScoringPositions.Branch, Supplier<Pose2d>> SCORING_POSITIONS = new HashMap<>();
+        public static final Map<ScoringPositions.Branch, Supplier<Pose2d>> SCORING_POSITIONS =
+                new HashMap<>();
 
         static {
             double adjustX = Units.inchesToMeters(32.745545 + 22 - 3);
@@ -45,7 +42,8 @@ public class PositionConstants {
 
                 // Determine the corresponding branches
                 ScoringPositions.Branch leftBranch = ScoringPositions.Branch.values()[face * 2];
-                ScoringPositions.Branch rightBranch = ScoringPositions.Branch.values()[face * 2 + 1];
+                ScoringPositions.Branch rightBranch =
+                        ScoringPositions.Branch.values()[face * 2 + 1];
 
                 // Add to the map
                 SCORING_POSITIONS.put(leftBranch, () -> AllianceFlipUtil.apply(rotatedLeft));

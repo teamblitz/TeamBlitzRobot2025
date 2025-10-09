@@ -6,7 +6,6 @@ import static edu.wpi.first.units.Units.*;
 import static frc.robot.Constants.Drive.*;
 
 import choreo.trajectory.SwerveSample;
-import choreo.util.ChoreoAllianceFlipUtil;
 import com.ctre.phoenix6.SignalLogger;
 import com.pathplanner.lib.util.DriveFeedforwards;
 import com.pathplanner.lib.util.swerve.SwerveSetpoint;
@@ -36,7 +35,6 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -428,9 +426,10 @@ public class Drive extends BlitzSubsystem {
                 angularSysIdDynamic(SysIdRoutine.Direction.kReverse)
                         .withName("DriveAngular Dynamic Reverse"));
 
-
         for (ScoringPositions.Branch branch : ScoringPositions.Branch.values()) {
-            SmartDashboard.putData(branch.name(), driveToPose(PositionConstants.Reef.SCORING_POSITIONS.get(branch)));
+            SmartDashboard.putData(
+                    branch.name(),
+                    driveToPose(PositionConstants.Reef.SCORING_POSITIONS.get(branch)));
         }
     }
 
@@ -484,15 +483,20 @@ public class Drive extends BlitzSubsystem {
         Logger.recordOutput("Drive/keepHeadingSetpointSet", keepHeadingSetpointSet);
         Logger.recordOutput("Drive/keepSetpoint", keepHeadingPid.getSetpoint());
 
-        var fieldRelativeSpeeds = new ChassisSpeeds(translation.getX(), translation.getY(), rotation);
-        var flippedFieldSpeeds = new ChassisSpeeds(-fieldRelativeSpeeds.vxMetersPerSecond, -fieldRelativeSpeeds.vyMetersPerSecond, rotation);
+        var fieldRelativeSpeeds =
+                new ChassisSpeeds(translation.getX(), translation.getY(), rotation);
+        var flippedFieldSpeeds =
+                new ChassisSpeeds(
+                        -fieldRelativeSpeeds.vxMetersPerSecond,
+                        -fieldRelativeSpeeds.vyMetersPerSecond,
+                        rotation);
 
-        var correctFieldSpeeds = AllianceFlipUtil.shouldFlip() ? flippedFieldSpeeds : fieldRelativeSpeeds;
+        var correctFieldSpeeds =
+                AllianceFlipUtil.shouldFlip() ? flippedFieldSpeeds : fieldRelativeSpeeds;
 
         ChassisSpeeds robotRel =
                 fieldRelative
-                        ? ChassisSpeeds.fromFieldRelativeSpeeds(
-                                correctFieldSpeeds, getYaw())
+                        ? ChassisSpeeds.fromFieldRelativeSpeeds(correctFieldSpeeds, getYaw())
                         : new ChassisSpeeds(translation.getX(), translation.getY(), rotation);
 
         drive(robotRel, isOpenLoop);
@@ -884,7 +888,8 @@ public class Drive extends BlitzSubsystem {
     TrapezoidProfile.State rotationState = new State(0, 0);
 
     // Threshold for "close enough" to avoid microadjustments
-    public final Trigger atDriveToPosePose = atPose(() -> goal.inner, Units.inchesToMeters(0.5), Units.degreesToRadians(1));
+    public final Trigger atDriveToPosePose =
+            atPose(() -> goal.inner, Units.inchesToMeters(0.5), Units.degreesToRadians(1));
 
     /**
      * <B>IMPORTANT, While this takes a pose supplier, this is mostly for convince. and <U>once the
@@ -932,11 +937,12 @@ public class Drive extends BlitzSubsystem {
                                                     -driveToPoseConstraints.maxVelocity,
                                                     0);
 
-                                    Logger.recordOutput("drive/driveToPose/unclampedInitialVelocity", VecBuilder.fill(
-                                                    speeds.vxMetersPerSecond,
-                                                    speeds.vyMetersPerSecond)
-                                            .dot(directionGoalToBot));
-
+                                    Logger.recordOutput(
+                                            "drive/driveToPose/unclampedInitialVelocity",
+                                            VecBuilder.fill(
+                                                            speeds.vxMetersPerSecond,
+                                                            speeds.vyMetersPerSecond)
+                                                    .dot(directionGoalToBot));
 
                                     // Initial state of rotation
                                     driveToPoseRotationGoal.position =
@@ -946,11 +952,14 @@ public class Drive extends BlitzSubsystem {
                                             initial.inner.getRotation().getRadians();
                                     rotationState.velocity = speeds.omegaRadiansPerSecond;
 
-
                                     Logger.recordOutput("drive/driveToPose/initial", initial.inner);
                                     Logger.recordOutput("drive/driveToPose/goal", goal.inner);
-                                    Logger.recordOutput("drive/driveToPose/initialDistance", translationState.position);
-                                    Logger.recordOutput("drive/driveToPose/initialVelocity", translationState.velocity);
+                                    Logger.recordOutput(
+                                            "drive/driveToPose/initialDistance",
+                                            translationState.position);
+                                    Logger.recordOutput(
+                                            "drive/driveToPose/initialVelocity",
+                                            translationState.velocity);
                                 })
                         .andThen(
                                 run(
@@ -963,8 +972,12 @@ public class Drive extends BlitzSubsystem {
                                             translationState.position = setpoint.position;
                                             translationState.velocity = setpoint.velocity;
 
-                                            Logger.recordOutput("drive/driveToPose/distance", translationState.position);
-                                            Logger.recordOutput("drive/driveToPose/velocity", translationState.velocity);
+                                            Logger.recordOutput(
+                                                    "drive/driveToPose/distance",
+                                                    translationState.position);
+                                            Logger.recordOutput(
+                                                    "drive/driveToPose/velocity",
+                                                    translationState.velocity);
 
                                             // I am trusting them here
 
@@ -1015,7 +1028,6 @@ public class Drive extends BlitzSubsystem {
                                                                     startPose.getTranslation(),
                                                                     setpoint.position
                                                                             / distance.inner);
-
 
                                             if (atDriveToPosePose.getAsBoolean()) {
                                                 this.drive(new ChassisSpeeds(), true);

@@ -19,11 +19,9 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import frc.lib.util.COTSSwerveConstants;
-import frc.lib.util.ScoringPositions;
 import frc.lib.util.SwerveModuleConstants;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.function.DoubleUnaryOperator;
 
 /**
@@ -97,10 +95,8 @@ public final class Constants {
                                 : COTSSwerveConstants.driveGearRatios.SDSMK4i_L2);
 
         /* Drivetrain Constants */
-        public static final double TRACK_WIDTH =
-                Units.inchesToMeters(24.25);
-        public static final double WHEEL_BASE =
-                Units.inchesToMeters(24.25);
+        public static final double TRACK_WIDTH = Units.inchesToMeters(24.25);
+        public static final double WHEEL_BASE = Units.inchesToMeters(24.25);
         public static final double WHEEL_CIRCUMFERENCE = CHOSEN_MODULE.wheelCircumference;
 
         /* Motor Inverts */
@@ -165,7 +161,7 @@ public final class Constants {
         public static final double CLOSED_LOOP_RAMP = 0.0;
 
         /* Angle Motor PID Values */
-        public static final double ANGLE_KP = compBot() ? .05 : 0.0035;
+        public static final double ANGLE_KP = 0.0;
         public static final double ANGLE_KI = 0.0;
         public static final double ANGLE_KD = 0.0;
         public static final double ANGLE_KF = 0.0; // For now, should remain zero
@@ -177,15 +173,15 @@ public final class Constants {
          * try both or else just guess and check ig
          * .06 something might, but that is quite high
          */
-        public static final double DRIVE_KP = compBot() ? 0.73983 : 0.028215;
+        public static final double DRIVE_KP = 0.0;
         //        public static final double DRIVE_KP = 0;
         public static final double DRIVE_KI = 0.0;
         public static final double DRIVE_KD = 0.0;
 
         /* Drive Motor Characterization Values in volts*/
-        public static final double DRIVE_KS = compBot() ? 0.179124 : (0.19714);
-        public static final double DRIVE_KV = compBot() ? 0.7389575 : (2.6198);
-        public static final double DRIVE_KA = compBot() ? 0.14679 : (0.59488);
+        public static final double DRIVE_KS = 0;
+        public static final double DRIVE_KV = 0;
+        public static final double DRIVE_KA = 0;
 
         /* Drive Profiling Values */
         /** Meters per Second */
@@ -215,9 +211,9 @@ public final class Constants {
         /* Module Specific Constants */
         /* Front Left Module - Module 0 */
         public static final class Mod0 {
-            public static final int DRIVE_MOTOR_ID = 6;
-            public static final int ANGLE_MOTOR_ID = 7;
-            public static final int CAN_CODER_ID = 2;
+            public static final int DRIVE_MOTOR_ID = 8;
+            public static final int ANGLE_MOTOR_ID = 4;
+            public static final int CAN_CODER_ID = 3;
             public static final Rotation2d ANGLE_OFFSET =
                     Rotation2d.fromDegrees(ROBOT == Robot.CompBot ? 148.89 : 0);
             public static final SwerveModuleConstants CONSTANTS =
@@ -227,9 +223,9 @@ public final class Constants {
 
         /* Front Right Module - Module 1 */
         public static final class Mod1 {
-            public static final int DRIVE_MOTOR_ID = 8;
-            public static final int ANGLE_MOTOR_ID = 9;
-            public static final int CAN_CODER_ID = 3;
+            public static final int DRIVE_MOTOR_ID = 6;
+            public static final int ANGLE_MOTOR_ID = 11;
+            public static final int CAN_CODER_ID = 1;
             public static final Rotation2d ANGLE_OFFSET =
                     Rotation2d.fromDegrees(ROBOT == Robot.CompBot ? 113.56 : 0);
             public static final SwerveModuleConstants CONSTANTS =
@@ -239,8 +235,8 @@ public final class Constants {
 
         /* Back Left Module - Module 2 */
         public static final class Mod2 {
-            public static final int DRIVE_MOTOR_ID = 10;
-            public static final int ANGLE_MOTOR_ID = 11;
+            public static final int DRIVE_MOTOR_ID = 12;
+            public static final int ANGLE_MOTOR_ID = 0;
             public static final int CAN_CODER_ID = 4;
             public static final Rotation2d ANGLE_OFFSET =
                     Rotation2d.fromDegrees(ROBOT == Robot.CompBot ? 177.19 : 0);
@@ -251,9 +247,9 @@ public final class Constants {
 
         /* Back Right Module - Module 3 */
         public static final class Mod3 {
-            public static final int DRIVE_MOTOR_ID = 12;
-            public static final int ANGLE_MOTOR_ID = 13;
-            public static final int CAN_CODER_ID = 5;
+            public static final int DRIVE_MOTOR_ID = 10;
+            public static final int ANGLE_MOTOR_ID = 9;
+            public static final int CAN_CODER_ID = 2;
             public static final Rotation2d ANGLE_OFFSET =
                     Rotation2d.fromDegrees(ROBOT == Robot.CompBot ? 129.73 : 0);
             public static final SwerveModuleConstants CONSTANTS =
@@ -612,6 +608,5 @@ public final class Constants {
         public static final class Timings {
             public static final double STOW_TO_L4_READY = 1.25; // IDK ACTUAL TIMINGS
         }
-
     }
 }
