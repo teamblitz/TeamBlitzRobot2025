@@ -295,7 +295,7 @@ public class RobotContainer {
         //                                climber.coastCommand())
         //                        .onlyWhile(RobotState::isDisabled));
 
-        OIConstants.Roller.RUN.whileTrue(roller.runRoller());
+        //OIConstants.Roller.RUN.whileTrue(roller.runRoller());
     }
 
     private void configureAutoCommands() {
