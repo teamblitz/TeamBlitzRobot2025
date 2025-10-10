@@ -175,9 +175,9 @@ public final class Constants {
         public static final double DRIVE_KD = 0.0;
 
         /* Drive Motor Characterization Values in volts*/
-        public static final double DRIVE_KS = 0;
-        public static final double DRIVE_KV = 0;
-        public static final double DRIVE_KA = 0;
+        public static final double DRIVE_KS = 0.179124;
+        public static final double DRIVE_KV = 0.7389575;
+        public static final double DRIVE_KA = 0.14679;
 
         /* Drive Profiling Values */
         /** Meters per Second */
