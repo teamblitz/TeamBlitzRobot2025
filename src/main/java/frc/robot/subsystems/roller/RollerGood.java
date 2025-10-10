@@ -16,8 +16,8 @@ public class RollerGood extends SubsystemBase {
 
     public Command score() {
          return startEnd(
-            () -> {
-                roller.set(0.5);
+             () -> {
+                roller.set(-0.5);
             },
             () -> {
                 roller.set(0);
