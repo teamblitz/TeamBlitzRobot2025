@@ -15,17 +15,17 @@ public class RollerGood extends SubsystemBase {
     }
 
     public Command score() {
-       /*  return startEnd(
+         return startEnd(
             () -> {
                 roller.set(1);
             },
             () -> {
                 roller.set(0);
-            });*/
-            return run(
+            });
+            /*return run(
                 () -> {
                 roller.set(1);
-                });
+                });*/
              
     }
 
