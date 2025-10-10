@@ -169,7 +169,7 @@ public final class Constants {
          * try both or else just guess and check ig
          * .06 something might, but that is quite high
          */
-        public static final double DRIVE_KP = 0.0;
+        public static final double DRIVE_KP = 0.028215;
         //        public static final double DRIVE_KP = 0;
         public static final double DRIVE_KI = 0.0;
         public static final double DRIVE_KD = 0.0;
