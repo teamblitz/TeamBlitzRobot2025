@@ -53,6 +53,7 @@ import frc.robot.subsystems.drive.swerveModule.encoder.EncoderIO;
 import frc.robot.subsystems.roller.Roller;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+import frc.robot.subsystems.roller.RollerGood;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -72,7 +73,7 @@ public class RobotContainer {
     // private Winch winch;
     // private Climber climber;
     private AutoCommands autoCommands;
-    private Roller roller;
+    private RollerGood roller;
 
     /* ***** --- Autonomous --- ***** */
     private final AutoChooser autoChooser;
@@ -222,6 +223,8 @@ public class RobotContainer {
 
         OIConstants.Drive.BRAKE.onTrue(Commands.runOnce(() -> drive.setBrakeMode(true)));
         OIConstants.Drive.COAST.onTrue(Commands.runOnce(() -> drive.setBrakeMode(false)));
+
+        OIConstants.RollerGood.score.whileTrue(roller.score());
 
         // OIConstants.SuperStructure.L1.whileTrue(
         //        superstructure.toGoalThenIdle(Superstructure.Goal.L1));
