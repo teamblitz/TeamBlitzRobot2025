@@ -160,7 +160,7 @@ public class OIConstants {
     //     public static final Trigger CLIMBER_DOWN_MAN = DRIVE_CONTROLLER.button(10);
     // }
 
-    public static final class Roller {
+    public static final class RollerGood {
         public static final Trigger score = OPERATOR_CONTROLLER.a();
     }
 
