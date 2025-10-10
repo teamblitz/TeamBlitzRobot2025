@@ -161,7 +161,7 @@ public class OIConstants {
     // }
 
     public static final class Roller {
-        public static final Trigger RUN = OPERATOR_CONTROLLER.rightBumper();
+        public static final Trigger RUN = OPERATOR_CONTROLLER.a();
     }
 
     //    public static final class TestMode {
