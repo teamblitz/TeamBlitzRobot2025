@@ -322,12 +322,6 @@ public final class Constants {
         public static final int INTERVAL = 5;
     }
 
-    public static final class Roller {
-        public static final int ROLLER_ID = 13;
-
-        public static final double ROLLER_SPEED = 1.0;
-    }
-
     //     public static final class Elevator {
 
     //         public static final int RIGHT_ID = 20;
