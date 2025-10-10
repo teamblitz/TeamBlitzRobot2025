@@ -215,6 +215,7 @@ public class RobotContainer {
         //
         // climber = new Climber(Constants.compBot() ? new ClimberIOKraken() : new ClimberIO() {});
         // winch = new Winch(Constants.compBot() ? new WinchIOSpark() : new WinchIO() {});
+        roller = new RollerGood();
     }
 
     private void configureButtonBindings() {
