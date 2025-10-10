@@ -104,24 +104,24 @@ public class OIConstants {
         //                        ::get;
     }
 
-    public static final class Intake {
-        public static final Trigger HANDOFF = UNBOUND;
-        public static final Trigger ALGAE_REMOVAL = UNBOUND;
-        public static final Trigger REVERSE = OPERATOR_CONTROLLER.leftBumper();
-        public static final Trigger SHOOT_CORAL = OPERATOR_CONTROLLER.rightBumper();
-        public static final Trigger INTAKE_ALGAE = OPERATOR_CONTROLLER.leftTrigger();
-        public static final Trigger EJECT_ALGAE = OPERATOR_CONTROLLER.rightTrigger();
-    }
+    // public static final class Intake {
+    //     public static final Trigger HANDOFF = UNBOUND;
+    //     public static final Trigger ALGAE_REMOVAL = UNBOUND;
+    //     public static final Trigger REVERSE = OPERATOR_CONTROLLER.leftBumper();
+    //     public static final Trigger SHOOT_CORAL = OPERATOR_CONTROLLER.rightBumper();
+    //     public static final Trigger INTAKE_ALGAE = OPERATOR_CONTROLLER.leftTrigger();
+    //     public static final Trigger EJECT_ALGAE = OPERATOR_CONTROLLER.rightTrigger();
+    // }
 
-    public static final class Wrist {
-        public static final DoubleSupplier MANUAL =
-                () -> MathUtil.applyDeadband(-OPERATOR_CONTROLLER.getRightY(), .1);
-    }
+    // public static final class Wrist {
+    //     public static final DoubleSupplier MANUAL =
+    //             () -> MathUtil.applyDeadband(-OPERATOR_CONTROLLER.getRightY(), .1);
+    // }
 
-    public static final class Elevator {
-        public static final DoubleSupplier MANUAL =
-                () -> .3 * MathUtil.applyDeadband(-OPERATOR_CONTROLLER.getLeftY(), .1);
-    }
+    // public static final class Elevator {
+    //     public static final DoubleSupplier MANUAL =
+    //             () -> .3 * MathUtil.applyDeadband(-OPERATOR_CONTROLLER.getLeftY(), .1);
+    // }
 
     /*public static final class SuperStructure {
         public static final Trigger SCORE = DRIVE_CONTROLLER.button(2);
@@ -144,21 +144,21 @@ public class OIConstants {
                                         || Wrist.MANUAL.getAsDouble() != 0);
     }*/
 
-    public static final class Winch {
-        public static final Trigger WINCH_MAN_UP = DRIVE_CONTROLLER.button(7);
-        public static final Trigger WINCH_MAN_DOWN = DRIVE_CONTROLLER.button(8);
+    // public static final class Winch {
+    //     public static final Trigger WINCH_MAN_UP = DRIVE_CONTROLLER.button(7);
+    //     public static final Trigger WINCH_MAN_DOWN = DRIVE_CONTROLLER.button(8);
 
-        public static final Trigger FUNNEL_UP = UNBOUND;
-        public static final Trigger FUNNEL_DOWN = UNBOUND;
-    }
+    //     public static final Trigger FUNNEL_UP = UNBOUND;
+    //     public static final Trigger FUNNEL_DOWN = UNBOUND;
+    // }
 
-    public static final class Climber {
-        public static final Trigger DEPLOY_CLIMBER = DRIVE_CONTROLLER.button(4); // TODO BIND
-        public static final Trigger RESTOW_CLIMBER = DRIVE_CONTROLLER.button(6);
+    // public static final class Climber {
+    //     public static final Trigger DEPLOY_CLIMBER = DRIVE_CONTROLLER.button(4); // TODO BIND
+    //     public static final Trigger RESTOW_CLIMBER = DRIVE_CONTROLLER.button(6);
 
-        public static final Trigger CLIMBER_UP_MAN = DRIVE_CONTROLLER.button(9);
-        public static final Trigger CLIMBER_DOWN_MAN = DRIVE_CONTROLLER.button(10);
-    }
+    //     public static final Trigger CLIMBER_UP_MAN = DRIVE_CONTROLLER.button(9);
+    //     public static final Trigger CLIMBER_DOWN_MAN = DRIVE_CONTROLLER.button(10);
+    // }
 
     public static final class Roller {
         public static final Trigger RUN = OPERATOR_CONTROLLER.rightBumper();
