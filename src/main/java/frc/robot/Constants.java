@@ -202,7 +202,7 @@ public final class Constants {
 
         /* Brake Modes */
         public static final boolean ANGLE_BRAKE_MODE = false;
-        public static final boolean DRIVE_BRAKE_MODE = true;
+        public static final boolean DRIVE_BRAKE_MODE = true; 
 
         /* Module Specific Constants */
         /* Front Left Module - Module 0 */
