@@ -235,7 +235,7 @@ public final class Constants {
             public static final int ANGLE_MOTOR_ID = 0;
             public static final int CAN_CODER_ID = 4;
             public static final Rotation2d ANGLE_OFFSET =
-                    Rotation2d.fromDegrees(ROBOT == Robot.CompBot ? 0 : 0);
+                    Rotation2d.fromDegrees(ROBOT == Robot.CompBot ? 100 : 0);
             public static final SwerveModuleConstants CONSTANTS =
                     new SwerveModuleConstants(
                             DRIVE_MOTOR_ID, ANGLE_MOTOR_ID, CAN_CODER_ID, ANGLE_OFFSET);
