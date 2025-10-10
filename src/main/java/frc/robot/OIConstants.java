@@ -161,7 +161,8 @@ public class OIConstants {
     // }
 
     public static final class RollerGood {
-        public static final Trigger score = OPERATOR_CONTROLLER.a();
+       //ublic static final Trigger score = OPERATOR_CONTROLLER.a();
+        public static final Trigger score = DRIVE_CONTROLLER.button(2);
     }
 
     //    public static final class TestMode {
