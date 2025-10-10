@@ -123,7 +123,7 @@ public class OIConstants {
                 () -> .3 * MathUtil.applyDeadband(-OPERATOR_CONTROLLER.getLeftY(), .1);
     }
 
-    public static final class SuperStructure {
+    /*public static final class SuperStructure {
         public static final Trigger SCORE = DRIVE_CONTROLLER.button(2);
 
         public static final Trigger L1 = OPERATOR_CONTROLLER.povDown();
@@ -142,7 +142,7 @@ public class OIConstants {
                         () ->
                                 Elevator.MANUAL.getAsDouble() != 0
                                         || Wrist.MANUAL.getAsDouble() != 0);
-    }
+    }*/
 
     public static final class Winch {
         public static final Trigger WINCH_MAN_UP = DRIVE_CONTROLLER.button(7);
