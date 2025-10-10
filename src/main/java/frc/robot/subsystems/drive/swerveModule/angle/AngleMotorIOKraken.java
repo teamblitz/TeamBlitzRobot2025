@@ -21,7 +21,7 @@ public class AngleMotorIOKraken implements AngleMotorIO {
         this.angleOffset = moduleConstants.angleOffset;
 
         /* Angle motor */
-        motor = new TalonFX(moduleConstants.angleMotorID, "drive");
+        motor = new TalonFX(moduleConstants.angleMotorID);
         configAngleMotor();
     }
 
