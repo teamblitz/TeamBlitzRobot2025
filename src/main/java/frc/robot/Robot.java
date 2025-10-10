@@ -157,6 +157,7 @@ public class Robot extends LoggedRobot {
         // commands, running already-scheduled commands, removing finished or interrupted commands,
         // and running subsystem periodic() methods.  This must be called from the robot's periodic
         // block in order for anything in the Command-based framework to work.
+        System.out.println("Begin robot periodic");
 
         long t0 = System.nanoTime();
 
@@ -171,6 +172,8 @@ public class Robot extends LoggedRobot {
         robotPeriodicNano = System.nanoTime();
 
         ResourceMonitor.getInstance().update();
+
+        System.out.println("End robot periodic");
     }
 
     /* ***** --- Autonomous --- ***** */
