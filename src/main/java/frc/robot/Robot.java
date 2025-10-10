@@ -42,6 +42,8 @@ public class Robot extends LoggedRobot {
 
         Leds.getInstance(); // Start leds
 
+        System.out.println("After leds");
+
         // Record metadata
         Logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);
         Logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
@@ -139,6 +141,8 @@ public class Robot extends LoggedRobot {
                         });
 
         Runtime runtime = Runtime.getRuntime();
+
+        System.out.println("After get runtime");
 
         GCMonitor.registerGCListener();
 
