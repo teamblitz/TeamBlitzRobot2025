@@ -2,6 +2,7 @@ package frc.robot.subsystems.roller;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
+import static frc.robot.Constants.Roller.*;
 
 public class RollerIOKraken implements RollerIO {
     // TODO FIX EVERYTHING(I hate imports.)
@@ -9,7 +10,7 @@ public class RollerIOKraken implements RollerIO {
 
     // private final DigitalInput breakBeam;
     public RollerIOKraken() {
-        rollerMotor = new TalonFX(0); // TODO SET VALUE
+        rollerMotor = new TalonFX(ROLLER_ID); // TODO SET VALUE
 
         TalonFXConfiguration config = new TalonFXConfiguration();
 
