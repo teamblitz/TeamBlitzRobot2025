@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.Constants;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.roller.RollerGood;
 // import frc.robot.subsystems.intake.Intake;
 // import frc.robot.subsystems.superstructure.Superstructure;
 import org.littletonrobotics.junction.Logger;
@@ -17,6 +18,7 @@ public class AutoCommands {
     private final Drive drive;
     private final SwerveDriveKinematics kinematics;
     private final AutoFactory autoFactory;
+    private final RollerGood roller;
     // private final Superstructure superstructure;
     // private final Intake intake;
 
@@ -25,8 +27,9 @@ public class AutoCommands {
 
     private SwerveSample lastSample;
 
-    public AutoCommands(Drive drive) {
+    public AutoCommands(Drive drive, RollerGood roller) {
         this.drive = drive;
+        this.roller = roller;
         //  this.superstructure = superstructure;
         //  this.intake = intake;
         this.kinematics = Constants.Drive.KINEMATICS;
@@ -119,6 +122,18 @@ public class AutoCommands {
         routine.active()
                 .whileTrue(
                         Commands.sequence(traj.resetOdometry(), traj.cmd())
+                                .withName("auto/cmdSec"));
+
+        return routine;
+    }
+
+    public AutoRoutine leaveScore(String pathName) {
+        final var routine = autoFactory.newRoutine(pathName);
+        final var traj = routine.trajectory(pathName);
+
+        routine.active()
+                .whileTrue(
+                        Commands.sequence(traj.resetOdometry(), traj.cmd(), roller.score().withTimeout(1))
                                 .withName("auto/cmdSec"));
 
         return routine;

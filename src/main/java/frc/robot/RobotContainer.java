@@ -97,12 +97,12 @@ public class RobotContainer {
         autoChooser = new AutoChooser();
         SmartDashboard.putData("autoChooser", autoChooser);
 
-        autoCommands = new AutoCommands(drive);
+        autoCommands = new AutoCommands(drive, roller);
 
         // autoChooser.addRoutine("twoPiece", autoCommands::twoPiece);
         ////        autoChooser.addRoutine("test", autoCommands::testDrive);
         // autoChooser.addRoutine("fourPieceLeft", autoCommands::fourPieceLeft);
-        autoChooser.addRoutine("leaveRight", () -> autoCommands.leave("leaveRight"));
+        autoChooser.addRoutine("leaveRightScore", () -> autoCommands.leaveScore("leaveRight"));
 
         startingPositionChooser = new LoggedDashboardChooser<>("startingPos");
         startingPositionChooser.addDefaultOption("Center", StartingPosition.CENTER);
@@ -325,6 +325,8 @@ public class RobotContainer {
                                 () -> drive.setGyro(AllianceFlipUtil.shouldFlip() ? 0 : 180)),
                         autoChooser.selectedCommandScheduler())
                 .withName("Auto Command");
+
+
         //        return Commands.sequence(
         //                        Commands.runOnce(() -> drive.setGyro(180)),
         //                        Commands.parallel(winch.lowerFunnel(),
