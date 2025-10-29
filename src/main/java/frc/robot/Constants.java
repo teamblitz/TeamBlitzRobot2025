@@ -213,7 +213,7 @@ public final class Constants {
         public static final InvertedValue LEFT_INVERT = InvertedValue.CounterClockwise_Positive;
         public static final InvertedValue RIGHT_INVERT = InvertedValue.Clockwise_Positive;
 
-        public static final double MAX_VEL = compBot() ? 6 : 2;
+        public static final double MAX_VEL = compBot() ? 2 : 2;
         public static final double MAX_ACCEL = compBot() ? 12 : 3;
         public static final double MAX_JERK = 12 * 8;
 

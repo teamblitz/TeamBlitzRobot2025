@@ -42,8 +42,8 @@ public class OIConstants {
         private static final double SPIN_SPEED = Constants.compBot() ? .32 : .4;
         private static final double SUPER_SPIN = 1.0;
         private static final double SLOW_SPEED = .3;
-        public static final double NORMAL_SPEED = .6;
-        public static final double FAST_SPEED = 1;
+        public static final double NORMAL_SPEED = .1;
+        public static final double FAST_SPEED = 0.1;
 
         private static final SlewRateLimiter DRIVE_MULTIPLIER_LIMITER =
                 new SlewRateLimiter(.25); // Todo, try without this?
