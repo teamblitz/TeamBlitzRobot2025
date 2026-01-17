@@ -43,11 +43,9 @@ import frc.robot.subsystems.intake.IntakeIOKraken;
 import frc.robot.subsystems.intake.IntakeIOSpark;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.superstructure.elevator.Elevator;
-import frc.robot.subsystems.superstructure.elevator.ElevatorIO;
 import frc.robot.subsystems.superstructure.elevator.ElevatorIOKraken;
 import frc.robot.subsystems.superstructure.elevator.ElevatorIOSpark;
 import frc.robot.subsystems.superstructure.wrist.Wrist;
-import frc.robot.subsystems.superstructure.wrist.WristIO;
 import frc.robot.subsystems.superstructure.wrist.WristIOKraken;
 import frc.robot.subsystems.superstructure.wrist.WristIOSpark;
 import frc.robot.subsystems.vision.Vision;
@@ -56,7 +54,6 @@ import frc.robot.subsystems.winch.WinchIO;
 import frc.robot.subsystems.winch.WinchIOSpark;
 import java.util.Set;
 import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -91,7 +88,6 @@ public class RobotContainer {
         DriverStation.silenceJoystickConnectionWarning(true);
         Shuffleboard.getTab("Drive")
                 .add("ResetOdometry", Commands.runOnce(() -> drive.resetOdometry(new Pose2d())));
-
 
         autoChooser = new AutoChooser();
         SmartDashboard.putData("autoChooser", autoChooser);
@@ -316,9 +312,7 @@ public class RobotContainer {
                 .schedule();
     }
 
-    private void configureAutoCommands() {
-
-    }
+    private void configureAutoCommands() {}
 
     public Command getAutonomousCommand() {
         Logger.recordOutput("selectedAuto", autoChooser.selectedCommand().getName());

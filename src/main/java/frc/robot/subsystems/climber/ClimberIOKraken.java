@@ -75,7 +75,7 @@ public class ClimberIOKraken implements ClimberIO {
 
         HardwareWatchdog.getInstance().registerCTREDevice(leftMotor, this.getClass());
         HardwareWatchdog.getInstance().registerCTREDevice(rightMotor, this.getClass());
-        
+
         HardwareWatchdog.getInstance().registerDutyCycleEncoder(absEncoder, this.getClass());
     }
 

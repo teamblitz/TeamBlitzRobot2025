@@ -22,7 +22,6 @@ import frc.lib.util.COTSSwerveConstants;
 import frc.lib.util.SwerveModuleConstants;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.DoubleUnaryOperator;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -166,8 +165,8 @@ public final class Constants {
         public static final double MAX_SPEED = 4.6; // TODO: This must be tuned to specific robot
 
         /**
-         * Theoretical value can be calculated by dividing MAX_LINEAR_SPEED by the distance between the center of
-         * rotation and the wheel.
+         * Theoretical value can be calculated by dividing MAX_LINEAR_SPEED by the distance between
+         * the center of rotation and the wheel.
          */
         public static final double MAX_ANGULAR_VELOCITY =
                 10.0; // TODO: This must be tuned to specific robot
