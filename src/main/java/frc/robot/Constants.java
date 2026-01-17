@@ -11,8 +11,8 @@ import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
 
 import com.ctre.phoenix6.signals.InvertedValue;
-import com.pathplanner.lib.config.ModuleConfig;
-import com.pathplanner.lib.config.RobotConfig;
+//import com.pathplanner.lib.config.ModuleConfig;
+//import com.pathplanner.lib.config.RobotConfig;
 
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -178,21 +178,21 @@ public final class Constants {
         public static final double MAX_MODULE_ANGULAR_VELOCITY =
                 Units.rotationsToRadians(10.0); // CONFIG
 
-        public static final RobotConfig PHYSICAL_CONSTANTS = new RobotConfig(
-                MASS,
-                MOI,
-                new ModuleConfig(
-                        WHEEL_CIRCUMFERENCE / (2 * Math.PI),
-                        MAX_SPEED,
-                        1.2, // TODO, MEASURE WHEEL COEFFICIENT OF FRICTION,
-                        DCMotor.getKrakenX60Foc(1).withReduction(DRIVE_GEAR_RATIO),
-                        60,
-                        1),
-                CENTER_TO_MODULE.get(FL),
-                CENTER_TO_MODULE.get(FR),
-                CENTER_TO_MODULE.get(BL),
-                CENTER_TO_MODULE.get(BR));
-    }
+    //     public static final RobotConfig PHYSICAL_CONSTANTS = new RobotConfig(
+    //             MASS,
+    //             MOI,
+    //             new ModuleConfig(
+    //                     WHEEL_CIRCUMFERENCE / (2 * Math.PI),
+    //                     MAX_SPEED,
+    //                     1.2, // TODO, MEASURE WHEEL COEFFICIENT OF FRICTION,
+    //                     DCMotor.getKrakenX60Foc(1).withReduction(DRIVE_GEAR_RATIO),
+    //                     60,
+    //                     1),
+    //             CENTER_TO_MODULE.get(FL),
+    //             CENTER_TO_MODULE.get(FR),
+    //             CENTER_TO_MODULE.get(BL),
+    //             CENTER_TO_MODULE.get(BR));
+    // }
 
     public static final class Elevator {
 
@@ -473,4 +473,5 @@ public final class Constants {
             public static final double STOW_TO_L4_READY = 1.25; // IDK ACTUAL TIMINGS
         }
     }
+}
 }
