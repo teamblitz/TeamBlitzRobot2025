@@ -3,8 +3,6 @@ package frc.robot.subsystems.winch;
 import static frc.robot.Constants.Winch.*;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 
@@ -37,19 +35,19 @@ public class Winch extends BlitzSubsystem {
         super("winch");
         this.io = io;
 
-//        ShuffleboardTab winchTab = Shuffleboard.getTab("winch");
-//        winchTab.add(raiseFunnel());
-//        winchTab.add(lowerFunnel());
-//        winchTab.add(pitFunnelReady());
-//
-//        Shuffleboard.getTab("winch")
-//                .add(
-//                        "FIX ENCODER",
-//                        runOnce(() -> {
-//                                    io.setPosition(PIT_FUNNEL_STOW);
-//                                })
-//                                .ignoringDisable(true)
-//                                .withName("RESET ENCODER"));
+        //        ShuffleboardTab winchTab = Shuffleboard.getTab("winch");
+        //        winchTab.add(raiseFunnel());
+        //        winchTab.add(lowerFunnel());
+        //        winchTab.add(pitFunnelReady());
+        //
+        //        Shuffleboard.getTab("winch")
+        //                .add(
+        //                        "FIX ENCODER",
+        //                        runOnce(() -> {
+        //                                    io.setPosition(PIT_FUNNEL_STOW);
+        //                                })
+        //                                .ignoringDisable(true)
+        //                                .withName("RESET ENCODER"));
     }
 
     @Override

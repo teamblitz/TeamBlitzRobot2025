@@ -6,7 +6,6 @@ import com.revrobotics.spark.SparkBase;
 
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.event.EventLoop;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -43,11 +42,11 @@ public class HardwareWatchdog {
         var timer = new Timer();
         timer.start();
 
-//        CommandScheduler.getInstance().getDefaultButtonLoop().bind(() -> {
-//            if (timer.get() > gracePeriod) {
-//                eventLoop.poll();
-//            }
-//        });
+        //        CommandScheduler.getInstance().getDefaultButtonLoop().bind(() -> {
+        //            if (timer.get() > gracePeriod) {
+        //                eventLoop.poll();
+        //            }
+        //        });
     }
 
     public void registerCTREDevice(ParentDevice device, Class<?> parent) {

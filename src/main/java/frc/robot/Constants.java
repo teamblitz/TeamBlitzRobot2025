@@ -268,7 +268,6 @@ public final class Constants {
                 Constants.compBot() ? Units.rotationsToRadians(8) : Units.degreesToRadians(360);
         public static final double MAX_JERK = MAX_ACCEL * 8;
 
-
         public static final class PidGains {
             public static final double KP = 2;
             public static final double KI = 0;
